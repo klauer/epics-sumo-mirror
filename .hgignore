@@ -1,0 +1,11 @@
+# vim swap-files:
+.*\.swp
+.*\.swm
+.*\.swn
+.*\.swo
+
+# python:
+.*\.pyc
+
+
+
