@@ -245,6 +245,15 @@ def json_dump(var):
     else:
         print json.dumps(var, sort_keys= True, indent= 4)
 
+def print_var(var, use_json= False):
+    """print with either pprint or json.
+    """
+    if use_json:
+        json_dump(var)
+    else:
+        pprint.pprint(var)
+
+
 def show_progress(cnt, cnt_max, message= None):
     """show progress on stderr.
     """
@@ -588,11 +597,36 @@ def script_shortname():
     """return the name of this script without a path component."""
     return os.path.basename(sys.argv[0])
 
-# pylint: disable= R0912
+# pylint: disable= R0912,R0915
 
 def process(options):
     """do all the work.
     """
+    if options.list_supports:
+        if options.read_json:
+            fh= open(options.read_json)
+            results= json.load(fh)
+            fh.close()
+        else:
+            if not options.parse_release:
+                sys.exit("--parse_release is mandatory")
+            deps= \
+               dependency_data(options.parse_release,
+                               options.progress,
+                               options.verbose,
+                               options.dry_run
+                              )
+            darcs_data= darcs_info(deps,
+                                   options.progress,
+                                   options.verbose, options.dry_run)
+            deps= deps2repospec(deps, darcs_data)
+            results["deps"]= deps
+        all_paths= all_paths_from_deps(results["deps"])
+        versions_dict= calc_version_dict(all_paths)
+        result= sorted(versions_dict.keys())
+        print_var(result, options.json)
+        sys.exit(0)
+
     if options.make_distribution:
         if options.read_json:
             fh= open(options.read_json)
@@ -616,10 +650,7 @@ def process(options):
         result= { "required": supports,
                   "all" : dependency_tree(supports, results["deps"])
                 }
-        if options.json:
-            json_dump(result)
-        else:
-            pprint.pprint(result)
+        print_var(result, options.json)
         sys.exit(0)
 
     if options.parse_release:
@@ -647,13 +678,10 @@ def process(options):
             results["darcs"]= darcs_data
         if options.deps:
             results["deps"]= deps
-        if options.json:
-            json_dump(results)
-        else:
-            pprint.pprint(results)
+        print_var(result, options.json)
     sys.exit(0)
 
-# pylint: enable= R0912
+# pylint: enable= R0912,R0915
 
 def print_summary():
     """print a short summary of the scripts function."""
@@ -708,6 +736,11 @@ def main():
                            "a path of a darcs repository with an optional "+\
                            "#tag appended",
                       metavar="DIR"  
+                      )
+    parser.add_option("--list-supports",
+                      action="store_true", 
+                      help="Create a shortened list of support modules, "+\
+                           "remove version tags if possible.",
                       )
     parser.add_option("--make-json",
                       action="store_true", 
