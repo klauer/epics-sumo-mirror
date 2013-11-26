@@ -162,6 +162,18 @@ def rev2str(rev):
             n.append(str(e))
     return "-".join(n)
 
+rx_gen_paths1= re.compile(r'^\$SUPPORT/')
+rx_gen_paths2= re.compile(r'^.*/support/')
+
+
+def generic_support_path(path):
+    """calculate a generic path from a repo.
+    """
+    n= re.sub(rx_gen_paths1, "", path)
+    n= re.sub(rx_gen_paths2, "", n)
+    n= n.replace("/","_")
+    return n
+
 def versionedsupport_split(sup):
     """split a versionedsupport in (path,version).
 
@@ -207,6 +219,16 @@ def versionedsupport_has_version(sup):
     False
     """
     return "#" in sup
+
+def url_type(path):
+    """checks what type the path is.
+    """
+    l= path.split(":", 1)
+    if len(l)<=1:
+        return "darcs", path
+    return l
+
+def gen_path_to_command(@@@@@)
 
 def is_standardpath(path, darcs_tag):
     """checks if path is complient to Bessy convention for support paths.
@@ -642,6 +664,22 @@ def get_dependencies(options, read_json, keep_darcs= False):
 def process(options):
     """do all the work.
     """
+    if options.create_distribution_by_file:
+        data= json_loadfile(options.create_distribution_by_file)
+        generic_paths= {}
+        for path in data["all"]:
+            (repo,tag)= versionedsupport_split(path)
+            full_repo_path= resolve_macros(repo)
+            cmdlst= ["darcs get %s" % full_repo_path]
+            if tag:
+                cmdlst.append("--tag %s" % tag)
+            generic_paths[repo]= generic_support_path(repo)
+            cmdlst.append(generic_paths[repo])
+            cmd= " ".join(cmdlst)
+            _system(cmd, False, 
+                    options.verbose, options.dry_run)
+        sys.exit(0)
+
     if options.list_supports:
         results= get_dependencies(options, options.read_json)
         all_paths= all_paths_from_deps(results["deps"])
