@@ -310,6 +310,10 @@ def darcs_source_repo(directory, verbose, dry_run):
     repository" it is returned. If this is not presents the function
     returns "Root repository" as it is returned from darcs.
     """
+    def _canonify(darcspath):
+        """convert the darcspath to a real dictionary.
+        """
+        return resolve_macros(use_macros(darcspath))
     if not os.path.exists(os.path.join(directory,"_darcs")):
         return
     try:
@@ -323,7 +327,10 @@ def darcs_source_repo(directory, verbose, dry_run):
     for line in reply.splitlines():
         m= rx_darcs_repo.match(line)
         if m:
-            default_repo= m.group(1).strip()
+            r= _canonify(m.group(1).strip())
+            if not os.path.exists(os.path.join(r,"_darcs")):
+                continue
+            default_repo= r
             continue
         m= rx_darcs_root.match(line)
         if m:
@@ -678,7 +685,7 @@ def process(options):
             results["darcs"]= darcs_data
         if options.deps:
             results["deps"]= deps
-        print_var(result, options.json)
+        print_var(results, options.json)
     sys.exit(0)
 
 # pylint: enable= R0912,R0915
