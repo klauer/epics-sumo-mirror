@@ -221,6 +221,14 @@ def is_standardpath(path, darcs_tag):
     """
     return path.endswith("/"+darcs_tag[1:])
 
+def json_loadfile(filename):
+    """load a JSON file.
+    """
+    fh= open(filename)
+    results= json.load(fh)
+    fh.close()
+    return results
+
 def json_dump(var):
     """Dump a variable in JSON format.
 
@@ -503,7 +511,7 @@ def dependency_tree(supports, deps):
             except ValueError, _:
                 pass
         if not success:
-            raise ValueError, ("no non-conflicting configuraion found "+ \
+            raise ValueError, ("no non-conflicting configuration found "+ \
                     "(stopped at %s)") % support
         support_dict.update(d)
     lst= []
@@ -604,56 +612,50 @@ def script_shortname():
     """return the name of this script without a path component."""
     return os.path.basename(sys.argv[0])
 
+def get_dependencies(options, read_json, keep_darcs= False):
+    """get the dependencies.
+    """
+    if read_json:
+        return json_loadfile(options.read_json)
+    else:
+        if not options.parse_release:
+            sys.exit("--parse_release is mandatory")
+        deps= \
+           dependency_data(options.parse_release,
+                           options.progress,
+                           options.verbose,
+                           options.dry_run
+                          )
+        darcs_data= darcs_info(deps,
+                               options.progress,
+                               options.verbose, options.dry_run)
+        # do always convert paths:
+        deps= deps2repospec(deps, darcs_data)
+        result= { "deps": deps }
+        if keep_darcs:
+            result["darcs"]= darcs_data
+        return result
+
+
 # pylint: disable= R0912,R0915
 
 def process(options):
     """do all the work.
     """
     if options.list_supports:
-        if options.read_json:
-            fh= open(options.read_json)
-            results= json.load(fh)
-            fh.close()
-        else:
-            if not options.parse_release:
-                sys.exit("--parse_release is mandatory")
-            deps= \
-               dependency_data(options.parse_release,
-                               options.progress,
-                               options.verbose,
-                               options.dry_run
-                              )
-            darcs_data= darcs_info(deps,
-                                   options.progress,
-                                   options.verbose, options.dry_run)
-            deps= deps2repospec(deps, darcs_data)
-            results["deps"]= deps
+        results= get_dependencies(options, options.read_json)
         all_paths= all_paths_from_deps(results["deps"])
         versions_dict= calc_version_dict(all_paths)
         result= sorted(versions_dict.keys())
         print_var(result, options.json)
         sys.exit(0)
 
-    if options.make_distribution:
-        if options.read_json:
-            fh= open(options.read_json)
-            results= json.load(fh)
-            fh.close()
+    if options.calc_distribution or options.calc_distribution_by_file:
+        results= get_dependencies(options, options.read_json)
+        if options.calc_distribution:
+            supports= sorted(options.calc_distribution.split())
         else:
-            if not options.parse_release:
-                sys.exit("--parse_release is mandatory")
-            deps= \
-               dependency_data(options.parse_release,
-                               options.progress,
-                               options.verbose,
-                               options.dry_run
-                              )
-            darcs_data= darcs_info(deps,
-                                   options.progress,
-                                   options.verbose, options.dry_run)
-            deps= deps2repospec(deps, darcs_data)
-            results["deps"]= deps
-        supports= sorted(options.make_distribution.split())
+            supports= json_loadfile(options.calc_distribution_by_file)
         result= { "required": supports,
                   "all" : dependency_tree(supports, results["deps"])
                 }
@@ -661,30 +663,16 @@ def process(options):
         sys.exit(0)
 
     if options.parse_release:
-        deps= \
-           dependency_data(options.parse_release,
-                           options.progress,
-                           options.verbose,
-                           options.dry_run
-                          )
-        results= {}
-        darcs_data= None
-        if options.darcs or options.deps_repospec:
-            darcs_data= darcs_info(deps,
-                                   options.progress,
-                                   options.verbose, options.dry_run)
-        if options.deps_repospec:
-            deps= deps2repospec(deps, darcs_data)
+        results= get_dependencies(
+                          options, 
+                          read_json= False,
+                          keep_darcs= options.darcs)
         if options.name2paths:
             results["name2paths"]= \
-                    dict_sets_to_lists(name2path_from_deps(deps))
+                    dict_sets_to_lists(name2path_from_deps(results["deps"]))
         if options.path2names:
             results["path2names"]= \
-                    dict_sets_to_lists(path2name_from_deps(deps))
-        if options.darcs:
-            results["darcs"]= darcs_data
-        if options.deps:
-            results["deps"]= deps
+                    dict_sets_to_lists(path2name_from_deps(results["deps"]))
         print_var(results, options.json)
     sys.exit(0)
 
@@ -735,7 +723,7 @@ def main():
                       help="read information from JSONFILE",
                       metavar="JSONFILE"  
                       )
-    parser.add_option("--make-distribution",
+    parser.add_option("--calc-distribution",
                       action="store", 
                       type="string",  
                       help="MODULESPECS must be a space separated list "+\
@@ -744,6 +732,20 @@ def main():
                            "#tag appended",
                       metavar="DIR"  
                       )
+    parser.add_option("--calc-distribution-by-file",
+                      action="store", 
+                      type="string",  
+                      help="Make a distribution from the list of "+ \
+                           "MODULESPECS listed in a JSONFILE.",
+                      metavar="JSONFILE"  
+                      )
+    parser.add_option("--create-distribution-by-file",
+                      action="store", 
+                      type="string",  
+                      help="Checkout a distribution by given JSONFILE "+ \
+                           "containing MODULESPECS.",
+                      metavar="JSONFILE"  
+                      )
     parser.add_option("--list-supports",
                       action="store_true", 
                       help="Create a shortened list of support modules, "+\
@@ -751,8 +753,8 @@ def main():
                       )
     parser.add_option("--make-json",
                       action="store_true", 
-                      help="implies --name2paths, --path2names, --deps, "+\
-                           "--darcs --deps-repospec, --json",
+                      help="implies --name2paths, --path2names "+\
+                           "--darcs --json",
                       )
     parser.add_option("--name2paths",   
                       action="store_true", 
@@ -762,18 +764,9 @@ def main():
                       action="store_true", 
                       help="show path2names information",
                       )
-    parser.add_option("--deps",   
-                      action="store_true", 
-                      help="show module dependencies",
-                      )
     parser.add_option("--darcs",   
                       action="store_true", 
                       help="show darcs information for paths",
-                      )
-    parser.add_option("--deps-repospec",   
-                      action="store_true", 
-                      help="convert paths in deps (dependencies) to "+\
-                           "repospecs (if possible)",
                       )
     parser.add_option("-p", "--progress", 
                       action="store_true", 
@@ -812,9 +805,7 @@ def main():
     if options.make_json:
         options.name2paths    = True
         options.path2names    = True
-        options.deps          = True
         options.darcs         = True
-        options.deps_repospec = True
         options.json          = True
 
     # we could pass "args" as an additional parameter to process here if it
