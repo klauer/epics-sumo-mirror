@@ -2,6 +2,7 @@
 """
 import sys
 import subprocess
+import os
 import os.path
 import pprint
 import copy
@@ -196,8 +197,33 @@ def system(cmd, catch_stdout, verbose, dry_run):
     return(child_stdout)
 
 # -----------------------------------------------
+# directory utilities
+# -----------------------------------------------
+
+# The following is needed in order to support python2.5
+# where os.walk cannot follow symbolic links
+
+def dirwalk(start_dir):
+    """walk directories, follow symbolic links.
+
+    Implemented to behave like os.walk
+    On Python newer than 2.5 os.walk can follow symbolic links itself.
+    """
+    for (dirpath, dirnames, filenames) in os.walk(start_dir, topdown= True):
+        yield (dirpath, dirnames, filenames)
+        for dn in dirnames:
+            p= os.path.join(dirpath, dn)
+            if os.path.islink(p):
+                for (dp, dn, fn) in dirwalk(p):
+                    yield (dp, dn, fn)
+
+# -----------------------------------------------
 # version and path support
 # -----------------------------------------------
+
+def contains_treetag(path):
+    """returns True if the path looks like it contains a treetag."""
+    return "+" in path
 
 def split_treetag(path):
     """split a path into head,treetag.
@@ -218,7 +244,7 @@ def split_treetag(path):
     return l
 
 def rev2key(rev):
-    """convert a revsion number to a comparable string.
+    """convert a revision number to a comparable string.
 
     This is needed to compare darcs revision tags.
 

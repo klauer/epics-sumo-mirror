@@ -56,7 +56,6 @@ import sys
 import os.path
 import os
 import re
-import pprint
 
 import pys_utils as utils
 
@@ -111,7 +110,9 @@ def scan_support_release(support_path,
                              external_definitions,
                              verbose= verbose, dry_run= dry_run)
 
-def dependency_data(support_tree, progress= False, 
+def dependency_data(support_tree, 
+                    buildtag,
+                    progress= False, 
                     verbose= False, dry_run= False):
     """scan a whole file-tree.
     """
@@ -124,19 +125,37 @@ def dependency_data(support_tree, progress= False,
         try:
             i= l.index(val)
         except ValueError, _:
-            return l
+            return 
         l[i+1:]= []
         l[0:i]= []
-        return l
+    def slice_buildtag(l, buildtag):
+        """narrow the search to a given buildtag."""
+        index=0
+        i= None
+        for e in l:
+            if utils.split_treetag(e)[1]==buildtag:
+                i= index
+                break
+            index+=1
+        if i is None:
+            return
+        l[i+1:]= []
+        l[0:i]= []
+
     dict_= {}
     cnt_max= 50
     cnt= 0
     if progress:
         utils.show_progress(cnt, cnt_max, "directories searched for RELEASE")
-    for (dirpath, dirnames, filenames) in os.walk(support_tree, topdown= True):
+    # not possible on python 2.5:
+    #for (dirpath, dirnames, filenames) in os.walk(support_tree, 
+    #                                              topdown= True):
+    for (dirpath, dirnames, filenames) in utils.dirwalk(support_tree):
         if progress:
             cnt= utils.show_progress(cnt, cnt_max)
         slicer(dirnames, "configure")
+        if buildtag is not None:
+            slice_buildtag(dirnames, buildtag)
         if os.path.basename(dirpath)=="configure":
             if "RELEASE" in filenames:
                 # get the path of the versioned support:
@@ -336,6 +355,7 @@ def get_dependencies(options):
         sys.exit("--dir is mandatory")
     deps= \
        dependency_data(options.dir,
+                       options.buildtag,
                        options.progress,
                        options.verbose,
                        options.dry_run
@@ -480,6 +500,12 @@ def main():
     parser.add_option("--missing-repo",
                       action="store_true", 
                       help="show directories where no repository was found",
+                      )
+    parser.add_option("-t", "--buildtag",
+                      action="store", 
+                      type="string",  
+                      help="scan only directories of the given buildtag",
+                      metavar="BUILDTAG"  
                       )
     parser.add_option("-p", "--progress", 
                       action="store_true", 
