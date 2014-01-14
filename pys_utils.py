@@ -331,18 +331,21 @@ def is_standardpath(path, darcs_tag):
     l= split_path(path)
     return l[1]==tag2version(darcs_tag)
 
-class Builddb(object):
-    """the buildtree database."""
+class JSONstruct(object):
+    """an object that is a python structure.
+    
+    This is a dict that contains other dicts or lists or strings or floats or
+    integers.
+    """
     def __init__(self, dict_= None):
         """create the object."""
         if dict_ is None:
             self.dict_= {}
         else:
             self.dict_= dict_
-    def add(self, other):
-        """add data from another Builddb object."""
-        for key in ["modules", "linked"]:
-            self.dict_[key].update(other[key])
+    def datadict(self):
+        """return the internal dict."""
+        return self.dict_
     def to_dict(self):
         """return the object as a dict."""
         return self.dict_
@@ -365,10 +368,6 @@ class Builddb(object):
             return cls(json_loadfile(filename))
         else:
             return cls()
-    def add_json_file(self, filename):
-        """add data from a JSON file."""
-        data= json_loadfile(filename)
-        self.add(data)
     def json_string(self):
         """return a JSON representation of the object."""
         return json_str(self.to_dict())
@@ -390,14 +389,84 @@ class Builddb(object):
                 os.rename(filename, backup)
         if not dry_run:
             json_dump_file(filename, self.to_dict())
+
+class PathSource(JSONstruct):
+    """the structure that holds the source information for a path."""
+    def __init__(self, dict_= None):
+        """create the object."""
+        super(PathSource, self).__init__(dict_)
+    def add_path(self, path):
+        """add a simple path."""
+        self.datadict()[path]= ["path", path]
+    def add_darcs(self, path, url, tag= None):
+        """add darcs repository information."""
+        if tag is None:
+            self.datadict()[path]= ["darcs", url]
+        else:
+            self.datadict()[path]= ["darcs", url, tag]
+    def iterate(self):
+        """iterate on all items."""
+        return self.datadict().iteritems()
+    def filter_no_repos(self):
+        """return a new object where "path" enities are removed."""
+        new= self.__class__()
+        for path, data in self.iterate():
+            if data[0]!="path":
+                new.datadict()[path]= data
+        return new
+    def filter_no_tags(self):
+        """return a new object containing repos without tags."""
+        new= self.__class__()
+        for path, data in self.iterate():
+            if data[0]=="path":
+                continue
+            if len(data)<3:
+                new.datadict()[path]= data
+        return new
+    def get_struct(self, path):
+        """return data as a structure."""
+        return self.datadict()[path]
+    def get(self, path):
+        """return data for a given path.
+
+        Returns:
+          (type, url, tag)
+
+        type: "path" or "darcs" 
+        url : the url where to get
+        tag : the repository tag, may be empty ("").
+
+        Note: raises KeyError if path doesn't exist
+        """
+        d= self.datadict()[path]
+        if len(d)>2:
+            return tuple(d)
+        else:
+            return (d[0], d[1], "")
+
+
+class Builddb(JSONstruct):
+    """the buildtree database."""
+    def __init__(self, dict_= None):
+        """create the object."""
+        super(Builddb, self).__init__(dict_)
+    def add(self, other):
+        """add data from another Builddb object."""
+        d= self.datadict()
+        for key in ["modules", "linked"]:
+            d[key].update(other[key])
+    def add_json_file(self, filename):
+        """add data from a JSON file."""
+        data= json_loadfile(filename)
+        self.add(data)
     def has_build_tag(self, build_tag):
         """returns if build_tag is contained."""
-        return self.dict_.has_key(build_tag)
+        return self.datadict().has_key(build_tag)
     def add_module(self, build_tag, 
                    module_build_tag,
                    modulename, versionname):
         """add a module definition."""
-        build_= self.dict_.setdefault(build_tag, {})
+        build_= self.datadict().setdefault(build_tag, {})
         modules_= build_.setdefault("modules", {})
         modules_[modulename]= versionname
         if build_tag!= module_build_tag:
@@ -405,31 +474,31 @@ class Builddb(object):
             linked_[modulename]= module_build_tag
     def has_module(self, build_tag, modulename):
         """returns if the module is contained here."""
-        build_= self.dict_[build_tag]
+        build_= self.datadict()[build_tag]
         module_dict= build_["modules"]
         return module_dict.has_key(modulename)
 
     def module_is_linked(self, build_tag, 
                          modulename):
         """return if the module is linked."""
-        build_= self.dict_[build_tag]
+        build_= self.datadict()[build_tag]
         linked_ = build_.get("linked")
         if linked_ is None:
             return False
         return linked_.has_key(modulename)
     def iter_builds(self):
         """return a build iterator."""
-        for t in sorted(self.dict_.keys()):
+        for t in sorted(self.datadict().keys()):
             yield t
     def iter_modules(self, build_tag):
         """return an iterator on the modules."""
-        build_= self.dict_[build_tag]
+        build_= self.datadict()[build_tag]
         module_dict= build_["modules"]
         for module in sorted(module_dict.keys()):
             yield (module, module_dict[module])
     def modules(self, build_tag):
         """return all modules of a build."""
-        build_ = self.dict_[build_tag]
+        build_ = self.datadict()[build_tag]
         return build_["modules"]
 
 def _test():

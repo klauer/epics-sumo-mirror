@@ -167,18 +167,20 @@ def create_database(deps, repoinfo, groups):
             # reconstruct the original directory path:
             versionedmodule_path= os.path.join(root_path, subdir)
             # get the repository data:
-            modulesource_data= repoinfo.get(versionedmodule_path)
-            if modulesource_data is None:
+            try:
+                (source_type, _, source_tag) = \
+                    repoinfo.get(versionedmodule_path)
+            except KeyError, _:
                 # shouldn't happen, but we just print a warning in this case:
                 errmsg("no source data: %s" % versionedmodule_path)
                 continue
-            if modulesource_data[0]=="path":
+            if source_type=="path":
                 # the source is a directory path, not a repository. We generate
                 # the unique versionname:
                 versionname= "PATH-%03d" % _pathcnt
                 _pathcnt+= 1
-            elif modulesource_data[0]=="darcs":
-                if len(modulesource_data)<3:
+            elif source_type=="darcs":
+                if not source_tag:
                     # the source is a darcs repository but has no tag. We
                     # generate a unique versionname:
                     versionname= "TAGLESS-%03d" % _taglesscnt
@@ -186,10 +188,11 @@ def create_database(deps, repoinfo, groups):
                 else:
                     # the source is a darcs repository with a tag. We use the
                     # tag as unique versionname:
-                    versionname= modulesource_data[2]
+                    versionname= source_tag
             db_versionedmodule= {}
             db_moduleversions[versionname]= db_versionedmodule
-            db_versionedmodule["source"]= modulesource_data
+            db_versionedmodule["source"]= \
+                repoinfo.get_struct(versionedmodule_path)
 
             _path2namevname[versionedmodule_path]= (module_name,versionname)
             # when we assume that a versionedmodule_path may contain a
@@ -344,7 +347,7 @@ def process(options):
             sys.exit("--group-file is mandatory for this command")
 
         deps= utils.json_loadfile(options.dep_file)
-        repoinfo= utils.json_loadfile(options.repo_file)
+        repoinfo= utils.PathSource.from_json_file(options.repo_file)
         groups= utils.json_loadfile(options.group_file)
 
         db= create_database(deps, repoinfo, groups)

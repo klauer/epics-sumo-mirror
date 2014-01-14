@@ -15,7 +15,7 @@ import pys_utils as utils
 my_version= "1.0"
 
 # -----------------------------------------------
-# RELEASE file scanning
+# dependency file scanning
 # -----------------------------------------------
 
 def all_paths_from_deps(deps):
@@ -87,10 +87,10 @@ def darcs_last_tag(directory, verbose, dry_run):
     return reply.splitlines()[0].strip()
 
 def repo_info(deps, progress, verbose, dry_run):
-    """return a dict with repository informations.
+    """return a PathSource object with repository informations.
     """
     path_set= all_paths_from_deps(deps)
-    new= {}
+    new= utils.PathSource()
     cnt_max= 50
     cnt= 0
     if progress:
@@ -99,21 +99,21 @@ def repo_info(deps, progress, verbose, dry_run):
         if progress:
             cnt= utils.show_progress(cnt, cnt_max)
         if not os.path.exists(os.path.join(path,"_darcs")):
-            new[path]= ["path", path]
+            new.add_path(path)
             continue
         # try to find source repository:
         src= darcs_source_repo(path, verbose, dry_run)
         if not src:
-            new[path]= ["path", path]
+            new.add_path(path)
             continue
         tag= darcs_last_tag(path, verbose, dry_run)
         if not tag:
-            new[path]= ["darcs", src]
+            new.add_darcs(path, src)
             continue
         if not utils.is_standardpath(path, tag):
-            new[path]= ["darcs", src]
+            new.add_darcs(path, src)
             continue
-        new[path]= ["darcs", src, tag]
+        new.add_darcs(path, src, tag)
     if progress:
         sys.stderr.write("\n")
     return new
@@ -138,32 +138,6 @@ def filter_no_tags(data):
             new[path]= lst
     return new
 
-def create_group(data):
-    """create groups of the entries.
-    """
-    pure_paths= set()
-    repos     = {}
-    for path, lst in data.items():
-        # lst: (type,path,tag), type is "path" or "darcs"
-        # tag may be missing
-        if lst[0]=="path":
-            pure_paths.add(lst[1])
-            continue
-        repo_dict= repos.setdefault(lst[0], {})
-        d= repo_dict.setdefault(lst[1], {})
-        if len(lst)<3: # no tag
-            rd= d.setdefault("clones", set())
-            rd.add(path)
-            continue
-        td= d.setdefault("tags", set())
-        td.add(lst[2])
-    pure_paths= sorted(pure_paths)
-    for r in repos.values():
-        for dct in r.values():
-            for k, v in dct.items():
-                dct[k]= sorted(v)
-    return { "paths": pure_paths, "repos": repos }
-
 # -----------------------------------------------
 # main
 # -----------------------------------------------
@@ -183,21 +157,18 @@ def process(options):
                              options.progress,
                              options.verbose, options.dry_run)
     elif options.info_file:
-        repo_data= utils.json_loadfile(options.info_file)
+        repo_data= utils.PathSource.from_json_file(options.info_file)
 
-    if not repo_data:
+    if repo_data is None:
         required=["--info-file","--dep-file"]
         sys.exit("error, one of these options must be provided: %s" % \
                  (" ".join(required)))
 
-    if options.group:
-        utils.json_dump(create_group(repo_data))
-        return
     if options.missing_repo:
         repo_data= filter_no_repos(repo_data)
     if options.missing_tag:
         repo_data= filter_no_tags(repo_data)
-    utils.json_dump(repo_data)
+    repo_data.json_print()
     return
 
 
@@ -248,10 +219,6 @@ def main():
                            "DEPENCYFILE is \"-\" read from standard "+ \
                            "input.",
                       metavar="DEPENCYFILE"  
-                      )
-    parser.add_option("--group",
-                      action="store_true", 
-                      help="show entries grouped by repository path",
                       )
     parser.add_option("--missing-tag",
                       action="store_true", 
