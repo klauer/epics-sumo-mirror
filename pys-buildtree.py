@@ -68,16 +68,43 @@ def gather_dependencies(db, modulename, versionname,
                                            gathered_deps)
     return gathered_deps
 
-def gen_DEPS(db, buildtag, modulename, versionname, 
-             verbose, dry_run):
-    """generate the DEPS file."""
-    dir_= module_dir_string(buildtag, modulename, versionname)
-    filename= os.path.join(dir_, "DEPS")
-    deps= gather_dependencies(db, modulename, versionname)
-    if verbose:
-        print "creating %s" % filename
+def gather_all_dependencies(db):
+    """gather all dependencies for a db.
+    """
+    deps= {}
+    for modulename, moduleversions in db.items():
+        if len(moduleversions.keys())!=1:
+            raise AssertionError, "m:%s v:%s" % \
+                     (modulename, repr(moduleversions))
+        versionname= moduleversions.keys()[0]
+        deps[modulename]= versionname
+        deps= gather_dependencies(db, modulename, 
+                                  versionname, deps)
+    return deps
+
+def add_builddb(db, builddb_file, buildtag, verbose, dry_run):
+    """add an entry to the build database.
+    """
+    if os.path.exists(builddb_file):
+        builddb= utils.json_loadfile(builddb_file)
+    else:
+        builddb= {}
+    if builddb.has_key(buildtag):
+        sys.exit("error, buildtag \"%s\" already taken" % buildtag)
+    builddb[buildtag]= gather_all_dependencies(db)
+    backup= "%s.bak" % builddb_file
+    if os.path.exists(backup):
+        if verbose:
+            print "remove %s" % backup
+        if not dry_run:
+            os.remove(backup)
+    if os.path.exists(builddb_file):
+        if verbose:
+            print "rename %s to %s" % (builddb_file, backup)
+        if not dry_run:
+            os.rename(builddb_file, backup)
     if not dry_run:
-        utils.json_dump_file(filename, deps)
+        utils.json_dump_file(builddb_file, builddb)
 
 def gen_RELEASE(db, buildtag, modulename, versionname, epicsbase,
                 verbose, dry_run):
@@ -158,8 +185,6 @@ def create_module(db, build_tag,
     gen_RELEASE(db, build_tag, modulename, versionname, 
                 epicsbase,
                 verbose, dry_run)
-    gen_DEPS(db, build_tag, modulename, versionname, 
-             verbose, dry_run)
 
 def create_makefile(db, build_tag, verbose, dry_run):
     """generate a makefile.
@@ -229,11 +254,16 @@ def process(options):
         sys.exit("--buildtag is mandatory")
     if not options.epicsbase:
         sys.exit("--epicsbase is mandatory")
+    if not options.builddb:
+        sys.exit("--builddb is mandatory")
     db= utils.json_loadfile(options.distribution)
     create_modules(db, options.buildtag, options.epicsbase,
                    options.verbose, options.dry_run)
     create_makefile(db, options.buildtag, 
                     options.verbose, options.dry_run)
+    add_builddb(db, options.builddb, options.buildtag,
+                options.verbose, options.dry_run)
+
     return
 
 def print_summary():
@@ -282,6 +312,12 @@ def main():
                       help="specify the BUILDTAG"+\
                            "file.",
                       metavar="BUILDTAG"  
+                      )
+    parser.add_option("--builddb",
+                      action="store", 
+                      type="string",  
+                      help="specify the BUILDDATABASE",
+                      metavar="BUILDDATABASE"  
                       )
     parser.add_option("--epicsbase",
                       action="store", 
