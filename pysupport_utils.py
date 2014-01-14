@@ -3,7 +3,7 @@
 import sys
 import subprocess
 
-# pylint: disable=C0322
+# pylint: disable=C0322,C0103
 
 if sys.version_info[0]>2 or (sys.version_info[0]==2 and sys.version_info[1]>5):
     import json
@@ -38,10 +38,16 @@ def json_dump(var):
 
 def json_loadfile(filename):
     """load a JSON file.
+
+    If filename is "-" read from stdin.
     """
-    fh= open(filename)
+    if filename != "-":
+        fh= open(filename)
+    else:
+        fh= sys.stdin
     results= json.load(fh)
-    fh.close()
+    if filename != "-":
+        fh.close()
     return results
 
 def show_progress(cnt, cnt_max, message= None):
@@ -60,7 +66,7 @@ def show_progress(cnt, cnt_max, message= None):
 # basic system utilities
 # -----------------------------------------------
 
-def _system(cmd, catch_stdout, verbose, dry_run):
+def system(cmd, catch_stdout, verbose, dry_run):
     """execute a command.
 
     execute a command and return the programs output
