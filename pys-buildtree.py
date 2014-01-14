@@ -13,6 +13,8 @@ import pys_utils as utils
 # version of the program:
 my_version= "1.0"
 
+KNOWN_COMMANDS=set(("new", "partialdb"))
+
 # -----------------------------------------------
 # main
 # -----------------------------------------------
@@ -244,31 +246,56 @@ def create_makefile(db, builddb, build_tag, verbose, dry_run):
     if not dry_run:
         fh.close()
 
+def create_partialdb(db, builddb, buildtag):
+    """create a partial database from a build."""
+    new= utils.Dependencies()
+    for modulename, versionname in builddb.iter_modules(buildtag):
+        new.copy_module_data(db, modulename, versionname)
+    return new
+
 def script_shortname():
     """return the name of this script without a path component."""
     return os.path.basename(sys.argv[0])
 
-def process(options):
+def process(options, commands):
     """do all the work.
     """
-    if not options.distribution:
-        sys.exit("--distribution is mandatory")
-    if not options.buildtag:
-        sys.exit("--buildtag is mandatory")
-    if not options.epicsbase:
-        sys.exit("--epicsbase is mandatory")
-    if not options.builddb:
-        sys.exit("--builddb is mandatory")
-    db= utils.Dependencies.from_json_file(options.distribution)
-    builddb= utils.Builddb.from_json_file(options.builddb)
-    if builddb.has_build_tag(options.buildtag):
-        sys.exit("error, buildtag \"%s\" already taken" % options.buildtag)
-    create_modules(db, builddb, options.buildtag, 
-                   options.epicsbase,
-                   options.verbose, options.dry_run)
-    create_makefile(db, builddb, options.buildtag, 
-                    options.verbose, options.dry_run)
-    builddb.json_save(options.builddb, options.verbose, options.dry_run)
+    if not commands:
+        sys.exit("command missing")
+    for c in commands:
+        if not c in KNOWN_COMMANDS:
+            sys.exit("unknown command: %s" % c)
+
+    if "new" in commands:
+        if not options.db:
+            sys.exit("--db is mandatory")
+        if not options.buildtag:
+            sys.exit("--buildtag is mandatory")
+        if not options.epicsbase:
+            sys.exit("--epicsbase is mandatory")
+        if not options.builddb:
+            sys.exit("--builddb is mandatory")
+        db= utils.Dependencies.from_json_file(options.db)
+        builddb= utils.Builddb.from_json_file(options.builddb)
+        if builddb.has_build_tag(options.buildtag):
+            sys.exit("error, buildtag \"%s\" already taken" % options.buildtag)
+        create_modules(db, builddb, options.buildtag, 
+                       options.epicsbase,
+                       options.verbose, options.dry_run)
+        create_makefile(db, builddb, options.buildtag, 
+                        options.verbose, options.dry_run)
+        builddb.json_save(options.builddb, options.verbose, options.dry_run)
+    if "partialdb" in commands:
+        if not options.db:
+            sys.exit("--db is mandatory")
+        if not options.buildtag:
+            sys.exit("--buildtag is mandatory")
+        if not options.builddb:
+            sys.exit("--builddb is mandatory")
+        db= utils.Dependencies.from_json_file(options.db)
+        builddb= utils.Builddb.from_json_file(options.builddb)
+        new_db= create_partialdb(db, builddb, options.buildtag)
+        new_db.json_print()
     return
 
 def print_summary():
@@ -289,7 +316,10 @@ def main():
     parse the command-line options and perform the command
     """
     # command-line options and command-line help:
-    usage = "usage: %prog [options] {files}"
+    usage = "usage: %prog [options] command\n" + \
+            "where command is:\n" + \
+            "  new       : create a new buildtree\n" + \
+            "  partialdb : recreate a partial db from existing tree\n\n"
 
     parser = OptionParser(usage=usage,
                           version="%%prog %s" % my_version,
@@ -304,12 +334,11 @@ def main():
                       action="store_true",
                       help="perform simple self-test", 
                       )
-    parser.add_option("-d", "--distribution",
+    parser.add_option("--db", 
                       action="store", 
                       type="string",  
-                      help="create a build-tree from a DISTRIBUTION "+\
-                           "file.",
-                      metavar="DISTRIBUTION"  
+                      help="define the name of the DBFILE",
+                      metavar="DBFILE"  
                       )
     parser.add_option("-t", "--buildtag",
                       action="store", 
@@ -358,7 +387,7 @@ def main():
 
     # we could pass "args" as an additional parameter to process here if it
     # would be needed to process remaining command line arguments.
-    process(options)
+    process(options, args)
     sys.exit(0)
 
 if __name__ == "__main__":

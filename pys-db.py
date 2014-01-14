@@ -173,12 +173,26 @@ def create_database(deps, repoinfo, groups):
             if source_type=="path":
                 # the source is a directory path, not a repository. We generate
                 # the unique versionname:
-                versionname= "PATH-%s" % subdir
+                if subdir.startswith("PATH-"):
+                    # Try to handle a subdir that was created by this set of
+                    # tools. Such a subdir may already be named
+                    # "PATH-<name>+<treetag>". We want to take <name> as
+                    # versionname in this case:
+                    versionname= utils.split_treetag(subdir)[0]
+                else:
+                    versionname= "PATH-%s" % subdir
             elif source_type=="darcs":
                 if not source_tag:
                     # the source is a darcs repository but has no tag. We
                     # generate a unique versionname:
-                    versionname= "TAGLESS-%s" % subdir
+                    if subdir.startswith("TAGLESS-"):
+                        # Try to handle a subdir that was created by this set
+                        # of tools. Such a subdir may already be named
+                        # "PATH-<name>+<treetag>". We want to take <name> as
+                        # versionname in this case:
+                        versionname= utils.split_treetag(subdir)[0]
+                    else:
+                        versionname= "TAGLESS-%s" % subdir
                     # patch URL to <versionedmodule_path>. Since we do not know
                     # in what state the working copy repository is, we have to
                     # take this as a source instead of the central repository:

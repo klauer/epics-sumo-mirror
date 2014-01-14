@@ -4,6 +4,7 @@ import sys
 import subprocess
 import os.path
 import pprint
+import copy
 
 # pylint: disable=C0322,C0103
 
@@ -368,7 +369,7 @@ class JSONstruct(object):
     @classmethod
     def from_json_file(cls, filename):
         """create an object from a json file."""
-        if os.path.exists(filename):
+        if os.path.exists(filename) or (filename=="-"):
             return cls(json_loadfile(filename))
         else:
             return cls()
@@ -453,6 +454,11 @@ class Dependencies(JSONstruct):
     def __init__(self, dict_= None):
         """create the object."""
         super(Dependencies, self).__init__(dict_)
+    def copy_module_data(self, other, module_name, versionname):
+        """copy the module data from another Dependencies object."""
+        m= self.datadict().setdefault(module_name,{})
+        m[versionname]= copy.deepcopy(
+                            other.datadict()[module_name][versionname])
     def add_source(self, module_name, versionname, source_type, url, tag):
         """add a module with source specification."""
         version_dict= self.datadict().setdefault(module_name,{})
