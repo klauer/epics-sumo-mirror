@@ -130,7 +130,9 @@ import pys_utils as utils
 # version of the program:
 my_version= "1.0"
 
-KNOWN_COMMANDS=set(("convert", "distribution"))
+KNOWN_COMMANDS=set(("convert", "distribution", 
+                    "show",
+                    "shownewest", "showall"))
 
 # -----------------------------------------------
 # main
@@ -283,10 +285,9 @@ def _distribution_add(db, dist, modulename, versionname):
             raise ValueError, "last found %s" % errst
     return new_dist
 
-def distribution(db, modulespecs):
+def distribution(db, modulespec_list):
     """create a distribution.
     """
-    modulespec_list= modulespecs.split(",")
     versioned_modules= []
     versionless_modules= []
     for m in modulespec_list:
@@ -330,41 +331,61 @@ def process(options, commands):
     """
     if not commands:
         sys.exit("command missing")
-    for c in commands:
-        if not c in KNOWN_COMMANDS:
-            sys.exit("unknown command: %s" % c)
+    if commands[0] not in KNOWN_COMMANDS:
+        sys.exit("unknown command: %s" % commands[0])
 
-    if options.info_file:
-        db= utils.Dependencies.from_json_file(options.info_file)
-    else:
-        if options.scanfile:
-            scandata= utils.json_loadfile(options.scanfile)
-            deps= scandata["dependencies"]
-            repoinfo= utils.PathSource(scandata["repos"])
-            groups= scandata["groups"]
-        else:
-            if not options.dep_file:
-                sys.exit("--dep-file is mandatory for this command")
-            if not options.repo_file:
-                sys.exit("--repo-file is mandatory for this command")
-            if not options.group_file:
-                sys.exit("--group-file is mandatory for this command")
-            deps= utils.json_loadfile(options.dep_file)
-            repoinfo= utils.PathSource.from_json_file(options.repo_file)
-            groups= utils.json_loadfile(options.group_file)
-
+    if commands[0]=="convert":
+        if len(commands)!=2:
+            sys.exit("exactly one filename must follow \"convert\"")
+        scandata= utils.json_loadfile(commands[1])
+        deps= scandata["dependencies"]
+        repoinfo= utils.PathSource(scandata["repos"])
+        groups= scandata["groups"]
         db= create_database(deps, repoinfo, groups)
-
-    if "convert" in commands:
         db.json_print()
         return
 
-    if "distribution" in commands:
-        (dist_dict, dist_obj)= distribution(db, options.modules)
+    if commands[0]=="distribution":
+        if len(commands)<=1:
+            sys.exit("error: no modules specified")
+        if not options.db:
+            sys.exit("error, --db is mandatory here")
+        db= utils.Dependencies.from_json_file(options.db)
+        modulespecs= commands[1:]
+        (dist_dict, dist_obj)= distribution(db, modulespecs)
         if options.brief:
             utils.json_dump(dist_dict)
         else:
             dist_obj.json_print()
+        return
+
+    if commands[0]=="show":
+        if len(commands)>1:
+            sys.exit("error: extra arguments following \"show\"")
+        if not options.db:
+            sys.exit("error, --db is mandatory here")
+        db= utils.Dependencies.from_json_file(options.db)
+        result= sorted(db.iterate())
+        utils.json_dump(result)
+        return
+
+    if commands[0]=="shownewest" or commands[0]=="showall":
+        showall= (commands[0]=="showall")
+        if not options.db:
+            sys.exit("error, --db is mandatory here")
+        db= utils.Dependencies.from_json_file(options.db)
+        if len(commands)>1:
+            modulenames= commands[1:]
+        else:
+            modulenames= list(db.iterate())
+        result= {}
+        for modulename in modulenames:
+            versions= list(db.iter_sorted_versions(modulename))
+            if not showall:
+                result[modulename]= versions[0]
+            else:
+                result[modulename]= versions
+        utils.json_dump(result)
         return
 
 def print_doc():
@@ -383,17 +404,29 @@ def _test():
     doctest.testmod()
     print "done!"
 
+usage = """usage: %prog [options] command
+where command is:
+  convert [SCANFILE]: 
+          convert SCANFILE to a new DB
+  distribution [modules]: 
+          create distribution from DB where all specified modules are
+          contained. If you want a specific version of a module use
+          modulename:versioname instead of the modulename alone.
+  show:   show the names of all modules
+  shownewest {modules}: 
+          show newest version for each module. If {modules} is missing, take
+          all modules of the database.
+  showall {modules}: 
+          show all versions for each module. If {modules} is missing, take
+          all modules of the database.
+"""
+
 def main():
     """The main function.
 
     parse the command-line options and perform the command
     """
     # command-line options and command-line help:
-    usage = "usage: %prog [options] command\n" + \
-            "where command is:\n" + \
-            "  convert       : convert SCANFILE to a new DB" + \
-            "  distribution  : create distribution from DB"
-
 
     parser = OptionParser(usage=usage,
                           version="%%prog %s" % my_version,
@@ -412,49 +445,11 @@ def main():
                       action="store_true",
                       help="perform simple self-test", 
                       )
-    parser.add_option("-i","--info-file",
+    parser.add_option("--db", 
                       action="store", 
                       type="string",  
-                      help="read information from INFOFILE. This is a "+ \
-                           "file generated by this script in a prevous run.",
-                      metavar="INFOFILE"  
-                      )
-    parser.add_option("--modules",
-                      action="store", 
-                      type="string",  
-                      help="create a distribution from MODULESPECS. "+ \
-                           "This is a comma separated list of "+ \
-                           "NAME:VERSION pairs. If you want any version "+ \
-                           "just specify NAME.",
-                      metavar="MODULESPECS"  
-                      )
-    parser.add_option("--scanfile",
-                      action="store", 
-                      type="string",  
-                      help="read information from SCANFILE. This must "+ \
-                           "contain dependency, repo and group "+ \
-                           "information.",
-                      metavar="SCANFILE"  
-                      )
-    parser.add_option("-d","--dep-file",
-                      action="store", 
-                      type="string",  
-                      help="read information from DEPENCYFILE. If "+ \
-                           "DEPENCYFILE is \"-\" read from standard "+ \
-                           "input.",
-                      metavar="DEPENCYFILE"  
-                      )
-    parser.add_option("-r","--repo-file",
-                      action="store", 
-                      type="string",  
-                      help="read information from REPOINFOFILE.",
-                      metavar="REPOINFOFILE"  
-                      )
-    parser.add_option("-g","--group-file",
-                      action="store", 
-                      type="string",  
-                      help="read information from GROUPFILE.",
-                      metavar="GROUPFILE"  
+                      help="define the name of the DBFILE",
+                      metavar="DBFILE"  
                       )
     parser.add_option("-b", "--brief", 
                       action="store_true", 
