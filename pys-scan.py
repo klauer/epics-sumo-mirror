@@ -2,9 +2,9 @@
 # -*- coding: UTF-8 -*-
 
 """
-================
-scan-releases.py
-================
+===========
+pys-scan.py
+===========
 
 Introduction
 ------------
@@ -57,7 +57,7 @@ import os.path
 import os
 import re
 
-import pysupport_utils as utils
+import pys_utils as utils
 
 # version of the program:
 my_version= "1.0"
