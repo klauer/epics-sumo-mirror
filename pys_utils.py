@@ -145,6 +145,24 @@ def system(cmd, catch_stdout, verbose, dry_run):
 # version and path support
 # -----------------------------------------------
 
+def split_treetag(path):
+    """split a path into head,treetag.
+
+    A path like /opt/Epics/R3.14.8/support/BIIcsem/1-0+001
+    is splitted to
+    "/opt/Epics/R3.14.8/support/BIIcsem/1-0","001"
+
+    Here is an example:
+    >>> split_treetag("abc/def/1-0")
+    ['abc/def/1-0', '']
+    >>> split_treetag("abc/def/1-0+001")
+    ['abc/def/1-0', '001']
+    """
+    l= path.rsplit("+",1)
+    if len(l)<2:
+        l.append("")
+    return l
+
 def rev2key(rev):
     """convert a revsion number to a comparable string.
 
@@ -207,18 +225,20 @@ def rev2key(rev):
             n.append(str(e))
     return ".".join(n)
 
-def split_version(path):
-    """split a path into (base, version).
+def split_path(path):
+    """split a path into (base, version, treetag).
 
-    A path may have two forms:
-
-      a/b/c/version       - splitted to "a/b/c" and "version"
-      darcs,a/b/c,version - splitted to "darcs,a/b/c" and "version"
+    Here are some examples:
+    >>> split_path("abc/def/1-3+001")
+    ['abc/def', '1-3', '001']
+    >>> split_path("abc/def/1-3")
+    ['abc/def', '1-3', '']
+    >>> split_path("abc/def/head+002")
+    ['abc/def', 'head', '002']
     """
-    l= path.split(",")
-    if len(l)==3:
-        return (",".join(l[0:2]),l[2])
-    return os.path.split(path)
+    (head,tail)= os.path.split(path)
+    (version, treetag)= split_treetag(tail)
+    return [head, version, treetag]
 
 def tag2version(tag):
     """convert a darcs tag to a version.
@@ -270,12 +290,11 @@ def is_standardpath(path, darcs_tag):
     False
     >>> is_standardpath("support/mcan/head", "R2-3")
     False
+    >>> is_standardpath("support/mcan/2-3+001", "R2-3")
+    True
     """
-    l= split_version(path)
-    if len(l)<2:
-        return False
+    l= split_path(path)
     return l[1]==tag2version(darcs_tag)
-
 
 def _test():
     """perform internal tests."""

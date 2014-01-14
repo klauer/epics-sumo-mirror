@@ -11,11 +11,15 @@ Logical definitions
 -------------------
 
 module:
-    Each module has a unique *modulename* and *moduleversions*. moduleversions
-    is a set where each item is a *versionedmodule*.
+    A module is a software package, usually an EPICS support module. Modules
+    have a directory tree with the sources and are usually managed with a
+    version control system. At the HZB we use darcs.  Each module has a unique
+    *modulename*. The source of the module is available in several versions.
+    The set of versions that have been tested are called the *moduleversions*.
+    A single item of this set is called a *versionedmodule*.
 
 versionedmodule:
-    This is a specific version of a module. A versionedmodule has a
+    This is a named and tested version of a module. A versionedmodule has a
     *versionname* that is unique for that module, a *modulesource* and
     *dependencies*.
 
@@ -24,8 +28,10 @@ modulesource:
     consists of a *sourcetype*, a *sourceurl* and an optional *sourcetag*.
 
 dependencies:
-    These is the specification of the dependencies of the versionedmodule. Each
-    item is a *dependency*, consiting of a *modulename* and a *versionname*.
+    This is the specification of the dependencies of the versionedmodule. Each
+    item is a *dependency*, consisting of a *modulename* and a *versionname*.
+    Additionally, an *aliases* set defines alternative names for the dependency
+    modules, these are needed for generation of configure/RELEASE files.
 
 Datastructure
 -------------
@@ -43,21 +49,28 @@ modulename:
 
 moduleversions:
     This is a map where each key is a *versionname* and each value is a
-    *versiondata* map.
+    *versiondata* item.
 
 versiondata:
-    This is a map that has two keys, "source" and "dependencies". The value
-    associated to "source" is a *modulesource*. The value for "dependencies" is
-    a *dependencies* entity.
-
-dependencies:
-    This is a map that for each module this module depends on has a key that is
-    a *modulename* and a value that is a *versionname*.
+    This is a map that contains the information associated with the
+    versionedmodile. The map keys are "source", the *modulesource* definition,
+    "aliases", the alias map and "dependencies", the dependencies
+    specification.
 
 modulesource:
     This is the specification on how to obtain the module. It is a list of 2 to
     3 items. The first one is the *sourcetype*, the second one is the
     *sourceurl* and the optional third one is the *sourcetag*.
+
+aliases:
+    This is a map that contains optional alias names for modulenames in the
+    dependency specification. These aliases may be needed for the generation of
+    the configure/RELEASE files.
+
+dependencies:
+    This item contains the dependency specification for a module. It is a map
+    where each key is a modulename and the value is a list of versionnames.
+
 
 Example
 -------
@@ -135,54 +148,91 @@ def create_database(deps, repoinfo, groups):
     _path2namevname= {}
     _namevname2path= {}
     db= {}
+    # we first create the map from modulenames to versiondata. In this loop we
+    # populate the versiondata only with the source specification. We also
+    # create two maps:
+    #    _path2namevname: maps a diretory path to (module_name, versionname)
+    #    _namevname2path: maps (module_name,versionname) to a diretory path
     for module_name, groupdata in groups.items():
         _taglesscnt=0
         _pathcnt= 0
         db_moduleversions= {}
         db[module_name] = db_moduleversions
+        # the root directory of all the versions:
         root_path= groupdata["path"]
-        versions_from_path= groupdata["versions"]
+        subdirs= groupdata["subdirs"]
 
-        for version_from_path in sorted(versions_from_path):
-            versionedmodule_path= os.path.join(root_path, version_from_path)
+        for subdir in sorted(subdirs):
+            # iterate over all versions from <groups>:
+            # reconstruct the original directory path:
+            versionedmodule_path= os.path.join(root_path, subdir)
+            # get the repository data:
             modulesource_data= repoinfo.get(versionedmodule_path)
             if modulesource_data is None:
-                errmsg("no source data: %s %s" % \
-                       (module_name, version_from_path))
+                # shouldn't happen, but we just print a warning in this case:
+                errmsg("no source data: %s" % versionedmodule_path)
                 continue
             if modulesource_data[0]=="path":
+                # the source is a directory path, not a repository. We generate
+                # the unique versionname:
                 versionname= "PATH-%03d" % _pathcnt
                 _pathcnt+= 1
             elif modulesource_data[0]=="darcs":
                 if len(modulesource_data)<3:
+                    # the source is a darcs repository but has no tag. We
+                    # generate a unique versionname:
                     versionname= "TAGLESS-%03d" % _taglesscnt
                     _taglesscnt+= 1
                 else:
+                    # the source is a darcs repository with a tag. We use the
+                    # tag as unique versionname:
                     versionname= modulesource_data[2]
             db_versionedmodule= {}
             db_moduleversions[versionname]= db_versionedmodule
             db_versionedmodule["source"]= modulesource_data
 
             _path2namevname[versionedmodule_path]= (module_name,versionname)
-            _namevname2path[(module_name, versionname)]= versionedmodule_path
+            # when we assume that a versionedmodule_path may contain a
+            # buildtag, there may be several versionedmodule_paths for a pair
+            # of (module_name, versionname).
+            _paths= _namevname2path.setdefault((module_name, versionname),[])
+            _paths.append(versionedmodule_path)
 
+    # here we populate the versiondata with the dependency specifications:
     for modulename, module in db.items():
         for versionname, versionedmodule in module.items():
             db_dependencies= {}
             versionedmodule["dependencies"]= db_dependencies
-            versionedmodule_path= _namevname2path[(modulename, versionname)]
-            _deps= deps.get(versionedmodule_path)
-            if _deps is None:
-                errmsg("no dependency info for path %s" % \
-                       versionedmodule_path)
-                continue
-            for alias, dep_path in _deps.items():
-                (_dep_name, _dep_version)= _path2namevname[dep_path]
-                _l= [_dep_version]
-                if _dep_name!=alias:
-                    _l.append(alias)
-                db_dependencies[_dep_name]= _l
+            db_aliases= {}
+            versionedmodule_paths= _namevname2path[(modulename, versionname)]
 
+            for versionedmodule_path in versionedmodule_paths:
+                _deps= deps.get(versionedmodule_path)
+                if _deps is None:
+                    errmsg("no dependency info for path %s" % \
+                           versionedmodule_path)
+                    continue
+                for alias, dep_path in _deps.items():
+                    try:
+                        (_dep_name, _dep_version)= _path2namevname[dep_path]
+                    except KeyError, e:
+                        sys.exit(("at module %s version %s: "+ \
+                                  "missing data for "+ \
+                                  "dependency \"%s\"") % \
+                                  (modulename, versionname, dep_path))
+                    if _dep_name != alias:
+                        if db_aliases.has_key(_dep_name):
+                            if db_aliases[_dep_name]!=alias:
+                                errmsg(("multiple aliases in module %s: " + \
+                                        "dependency %s aliases %s!=%s\n") % \
+                                        (modulename, _dep_name, 
+                                         db_aliases[_dep_name], alias))
+                        else:
+                            db_aliases[_dep_name]= alias
+                    _dep= db_dependencies.setdefault(_dep_name, [])
+                    _dep.append(_dep_version)
+            if db_aliases:
+                versionedmodule["aliases"]= db_aliases
     return db
 
 def _distribution_add(db, dist, modulename, versionname):
@@ -209,7 +259,20 @@ def _distribution_add(db, dist, modulename, versionname):
     new_dist= dict(dist)
     new_dist[modulename]= versionname
     for dep_modulename, dep_data in versionedmodule["dependencies"].items():
-        new_dist= _distribution_add(db, new_dist, dep_modulename, dep_data[0])
+        for dep_version in sorted(dep_data,
+                                  key= utils.rev2key, reverse= True):
+            errst= None
+            try:
+                new_dist= _distribution_add(db, 
+                                            new_dist, 
+                                            dep_modulename, 
+                                            dep_version)
+                errst= None
+                break
+            except ValueError, e:
+                errst= str(e)
+        if errst:
+            raise ValueError, "last found %s" % errst
     return new_dist
 
 def distribution(db, modulespecs):

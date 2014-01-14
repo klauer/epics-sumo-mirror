@@ -178,7 +178,7 @@ def groups_from_deps(deps):
     for k, v in groups.items():
         name= os.path.basename(k).upper()
         new[name]= { "path": k,
-                     "versions": sorted(v)
+                     "subdirs": sorted(v)
                    }
     return new
 

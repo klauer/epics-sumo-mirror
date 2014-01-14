@@ -67,11 +67,15 @@ def gen_RELEASE(db, buildtag, modulename, versionname, epicsbase,
         print "creating %s" % filename
     if not dry_run:
         fh= open(filename, "w")
+
+    aliases= versionedmodule.get("aliases")
     for depname, dep_data in dependencies.items():
         dep_versionname= dep_data[0]
-        name_here= depname
-        if len(dep_data)>1:
-            name_here= dep_data[1]
+        name_here= None
+        if aliases:
+            name_here= aliases.get(depname)
+        if not name_here:
+            name_here= depname
         path= os.path.abspath(
                   module_dir_string(buildtag, depname, dep_versionname) 
                              )
