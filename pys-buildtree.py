@@ -20,8 +20,9 @@ my_version= "1.0"
 def ensure_dir(dir_, dry_run):
     """create a dir if it doesn't already exist.
     """
-    if not os.path.exists(dir_):
-        os.makedirs(dir_)
+    if not dry_run:
+        if not os.path.exists(dir_):
+            os.makedirs(dir_)
 
 def module_dir_string(buildtag, modulename, versionname):
     """create a module directory string."""
@@ -50,6 +51,33 @@ def get_versioned_module(db, modulename, versionname):
                  (modulename, versionname))
     return versionedmodule
 
+def gather_dependencies(db, modulename, versionname, 
+                        gathered_deps= None):
+    """recursively gather all dependencies of a module."""
+    if gathered_deps is None:
+        gathered_deps= {}
+    versionedmodule= get_versioned_module(db, modulename, versionname)
+    deps= versionedmodule["dependencies"]
+    for dep_name, dep_versions in deps.items():
+        if len(dep_versions)>1:
+            raise AssertionError, "m:%s v:%s d:%s" % \
+                    (modulename, versionname, repr(deps))
+        dep_version= dep_versions[0]
+        gathered_deps[dep_name]= dep_version
+        gathered_deps= gather_dependencies(db, dep_name,  dep_version,
+                                           gathered_deps)
+    return gathered_deps
+
+def gen_DEPS(db, buildtag, modulename, versionname, 
+             verbose, dry_run):
+    """generate the DEPS file."""
+    dir_= module_dir_string(buildtag, modulename, versionname)
+    filename= os.path.join(dir_, "DEPS")
+    deps= gather_dependencies(db, modulename, versionname)
+    if verbose:
+        print "creating %s" % filename
+    if not dry_run:
+        utils.json_dump_file(filename, deps)
 
 def gen_RELEASE(db, buildtag, modulename, versionname, epicsbase,
                 verbose, dry_run):
@@ -130,6 +158,8 @@ def create_module(db, build_tag,
     gen_RELEASE(db, build_tag, modulename, versionname, 
                 epicsbase,
                 verbose, dry_run)
+    gen_DEPS(db, build_tag, modulename, versionname, 
+             verbose, dry_run)
 
 def create_makefile(db, build_tag, verbose, dry_run):
     """generate a makefile.

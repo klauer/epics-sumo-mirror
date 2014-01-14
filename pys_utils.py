@@ -17,7 +17,33 @@ else:
     import simplejson as json
     _JSON_TYPE= 0
 
-def json_dump(var):
+def json_dump_file(filename, var):
+    """Dump a variable in JSON format to a file.
+
+    Here is an example:
+    >>> var= {"key":[1,2,3], "key2":"val", "key3":{"A":1,"B":2}}
+    >>> json_dump(var)
+    {
+        "key": [
+            1,
+            2,
+            3
+        ],
+        "key2": "val",
+        "key3": {
+            "A": 1,
+            "B": 2
+        }
+    }
+    """
+    fh= open(filename, "w")
+    if _JSON_TYPE==0:
+        json.dump(var, fh, sort_keys= True, indent= 4*" ")
+    else:
+        json.dump(var, fh, sort_keys= True, indent= 4)
+    fh.close()
+
+def json_dump(filename, var):
     """Dump a variable in JSON format.
 
     Here is an example:
