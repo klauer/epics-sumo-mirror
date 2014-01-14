@@ -49,7 +49,6 @@ def all_paths_from_deps(deps):
 # darcs utilities
 # -----------------------------------------------
 
-rx_darcs_root= re.compile(r'^\s*Root:\s*(.*)')
 rx_darcs_repo= re.compile(r'^\s*Default Remote:\s*(.*)')
 
 rx_darcs= re.compile(r'.*?(?:/darcs/epics|:darcs-repos/epics)/support(.*)')
@@ -75,7 +74,6 @@ def darcs_source_repo(directory, verbose, dry_run):
     except IOError, _:
         # probably no darcs repo found
         return
-    root_repo= None
     default_repo= None
     for line in reply.splitlines():
         m= rx_darcs_repo.match(line)
@@ -85,12 +83,7 @@ def darcs_source_repo(directory, verbose, dry_run):
                 continue
             default_repo= r
             continue
-        m= rx_darcs_root.match(line)
-        if m:
-            root_repo= m.group(1).strip()
-    if (not root_repo) and (not default_repo):
-        return # repo not found
-    url= root_repo
+    url= directory
     if default_repo:
         url= default_repo
     #return url
@@ -152,10 +145,12 @@ def filter_no_repos(data):
     return new
 
 def filter_no_tags(data):
-    """leave only entries of type "darcs" where the tag is missing.
+    """leave only entries where type!="path" and where the tag is missing.
     """
     new= {}
     for path, lst in data.items():
+        if lst[0]=="path":
+            continue
         if len(lst)<3:
             new[path]= lst
     return new
