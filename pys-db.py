@@ -292,12 +292,14 @@ def distribution(db, modulespec_list):
     versioned_modules= []
     versionless_modules= []
     for m in modulespec_list:
-        l= m.split(":")
-        if len(l)<=1:
-            versionless_modules.append(l[0])
+        (modulename,flag,versionname)= utils.scan_modulespec(m)
+        if flag=="any":
+            versionless_modules.append(modulename)
+        elif flag=="this":
+            versioned_modules.append((modulename, versionname))
         else:
-            versioned_modules.append(l)
-
+            raise ValueError, "\"-version\" and \"+version\" not "+ \
+                              "supported here"
     dist= {}
     for (modulename, versionname) in versioned_modules:
         try:

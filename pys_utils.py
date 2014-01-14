@@ -502,6 +502,41 @@ def list_update(list1, list2):
     s.update(list2)
     return sorted(s)
 
+def scan_modulespec(spec):
+    """parse a module specification.
+
+    A module specification has the form:
+
+      modulename                : any version
+      modulename:versionname    : exactly this version
+      modulename:+versionname   : this version or newer
+      modulename:-versionname   : this version or older
+
+    returns a tuple:
+      (modulename,flag,versionname) 
+      
+    which flag: "any", "this", "this_or_newer", "this_or_older"
+
+    Here are some examples:
+    >>> scan_modulespec("ALARM")
+    ('ALARM', 'any', '')
+    >>> scan_modulespec("ALARM:R3-5")
+    ('ALARM', 'this', 'R3-5')
+    >>> scan_modulespec("ALARM:-R3-5")
+    ('ALARM', 'this_or_older', 'R3-5')
+    >>> scan_modulespec("ALARM:+R3-5")
+    ('ALARM', 'this_or_newer', 'R3-5')
+    """
+    l= spec.split(":")
+    if len(l)<=1:
+        return (spec, "any", "")
+    if l[1][0]=="-":
+        return (l[0], "this_or_older", l[1][1:])
+    if l[1][0]=="+":
+        return (l[0], "this_or_newer", l[1][1:])
+    return (l[0], "this", l[1])
+
+
 class Dependencies(JSONstruct):
     """the dependency database."""
     def __init__(self, dict_= None):
@@ -697,11 +732,14 @@ class Dependencies(JSONstruct):
         """
         d= {}
         for s in specs:
-            l= s.split(":")
-            if len(l)<=1:
-                d[l[0]]= None
+            (modulename,flag,versionname)= scan_modulespec(s)
+            if flag=="any":
+                d[modulename]= None
+            elif flag=="this":
+                d[modulename]= versionname
             else:
-                d[l[0]]= l[1]
+                raise ValueError, "\"-version\" and \"+version\" not "+ \
+                                  "supported here"
         return self.filter(d)
 
 class Builddb(JSONstruct):
