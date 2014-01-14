@@ -242,6 +242,24 @@ def version2tag(tag):
         return "R"+tag
     return tag
 
+def uni_path(parts, tag_required= False):
+    """create a universal path.
+
+    parts must be a list. If it is only one element, the function returns
+    "path,<parts>". If it has more than one element, the function returns a
+    string that is a comma separated list of the parts.
+
+    The concept here is to identify paths, repoisitories and repositories with
+    a tag with a string. We currently have three possibilities:
+
+      path,<path>                 - a simple path
+      darcs,<repo-url>            - a darcs repository
+      darcs,<repo-url>,<repo-tag> - a darcs repository with a tag
+    """
+    if len(parts)==1:
+        return "path,%s" % parts[0]
+    return ",".join(parts)
+
 def is_standardpath(path, darcs_tag):
     """checks if path is complient to Bessy convention for support paths.
     
