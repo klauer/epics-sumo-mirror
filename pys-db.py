@@ -147,15 +147,13 @@ def create_database(deps, repoinfo, groups):
 
     _path2namevname= {}
     _namevname2path= {}
-    db= {}
+    db= utils.Dependencies()
     # we first create the map from modulenames to versiondata. In this loop we
     # populate the versiondata only with the source specification. We also
     # create two maps:
     #    _path2namevname: maps a diretory path to (module_name, versionname)
     #    _namevname2path: maps (module_name,versionname) to a diretory path
     for module_name, groupdata in groups.items():
-        db_moduleversions= {}
-        db[module_name] = db_moduleversions
         # the root directory of all the versions:
         root_path= groupdata["path"]
         subdirs= groupdata["subdirs"]
@@ -189,12 +187,8 @@ def create_database(deps, repoinfo, groups):
                     # the source is a darcs repository with a tag. We use the
                     # tag as unique versionname:
                     versionname= source_tag
-            db_versionedmodule= {}
-            db_moduleversions[versionname]= db_versionedmodule
-            l= [source_type, url]
-            if source_tag:
-                l.append(source_tag)
-            db_versionedmodule["source"]= l
+            db.add_source(module_name, versionname, source_type, 
+                          url, source_tag)
 
             _path2namevname[versionedmodule_path]= (module_name,versionname)
             # when we assume that a versionedmodule_path may contain a
@@ -207,9 +201,8 @@ def create_database(deps, repoinfo, groups):
     #sys.exit(0)
 
     # here we populate the versiondata with the dependency specifications:
-    for modulename, module in db.items():
-        for versionname, versionedmodule in module.items():
-            db_aliases= {}
+    for modulename in db.iterate():
+        for versionname in db.iter_versions(modulename):
             versionedmodule_paths= _namevname2path[(modulename, versionname)]
 
             for versionedmodule_path in versionedmodule_paths:
@@ -230,37 +223,18 @@ def create_database(deps, repoinfo, groups):
                                    versionedmodule_path,
                                    dep_path))
                     if _dep_name != alias:
-                        if db_aliases.has_key(_dep_name):
-                            if db_aliases[_dep_name]!=alias:
-                                errmsg(("multiple aliases in module %s: " + \
-                                        "dependency %s aliases %s!=%s\n") % \
-                                        (modulename, _dep_name, 
-                                         db_aliases[_dep_name], alias))
-                        else:
-                            db_aliases[_dep_name]= alias
-                    db_dependencies= \
-                        versionedmodule.setdefault("dependencies", {})
-                    _dep= db_dependencies.setdefault(_dep_name, [])
-                    _dep.append(_dep_version)
-            if db_aliases:
-                versionedmodule["aliases"]= db_aliases
+                        try:
+                            db.add_alias(modulename, versionname,
+                                         alias, _dep_name)
+                        except ValueError, e:
+                            errmsg("alias error in module %s: %s" % str(e))
+                    db.add_dependency(modulename, versionname,
+                                      _dep_name, _dep_version)
     return db
 
 def _distribution_add(db, dist, modulename, versionname):
     """add a module to the set."""
-    def _get_versionedmodule(db, modulename, versionname):
-        """get the entry for modulename:versionname."""
-        module= db.get(modulename)
-        if module is None:
-            return
-        versionedmodule= module.get(versionname)
-        if versionedmodule is None:
-            return
-        return versionedmodule
-    versionedmodule= _get_versionedmodule(db, modulename, versionname)
-    if versionedmodule is None:
-        sys.exit("no information for module %s version %s" % \
-                 (modulename, versionname))
+    #print "_distribution_add(..,..,",modulename,",",versionname,")"
     existing_versionname= dist.get(modulename)
     if existing_versionname is not None:
         if existing_versionname != versionname:
@@ -269,13 +243,16 @@ def _distribution_add(db, dist, modulename, versionname):
         return dist
     new_dist= dict(dist)
     new_dist[modulename]= versionname
-    db_dependencies= versionedmodule.get("dependencies")
-    if db_dependencies is None:
-        return new_dist
+    try:
+        if not db.dependencies_found(modulename, versionname):
+            return new_dist
+    except KeyError, e:
+        sys.exit("no information for module %s version %s" % \
+                 (modulename, versionname))
 
-    for dep_modulename, dep_data in db_dependencies.items():
-        for dep_version in sorted(dep_data,
-                                  key= utils.rev2key, reverse= True):
+    for dep_modulename in db.iter_dependencies(modulename, versionname):
+        for dep_version in db.iter_sorted_dependency_versions(
+                modulename, versionname, dep_modulename):
             errst= None
             try:
                 new_dist= _distribution_add(db, 
@@ -311,14 +288,13 @@ def distribution(db, modulespecs):
             sys.exit(str(e))
 
     for modulename in versionless_modules:
-        moduleversions= db.get(modulename)
-        if moduleversions is None:
+        try:
+            it= db.iter_sorted_versions(modulename)
+        except KeyError, e:
             sys.exit("no data for module %s" % modulename)
-        versionnames= sorted(moduleversions.keys(),
-                             key= utils.rev2key,
-                             reverse= True)
+
         found= False
-        for versionname in versionnames:
+        for versionname in it:
             try:
                 dist= _distribution_add(db, dist, modulename, versionname)
                 found= True
@@ -328,9 +304,7 @@ def distribution(db, modulespecs):
         if not found:
             sys.exit("no non conflicting versions found for %s" % modulename)
 
-    new= {}
-    for (modulename, versionname) in dist.items():
-        new[modulename]= { versionname: db[modulename][versionname] }
+    new= db.filter(dist)
     return (dist,new)
 
 
@@ -339,7 +313,7 @@ def process(options):
     """do all the work.
     """
     if options.info_file:
-        db= utils.json_loadfile(options.info_file)
+        db= utils.Dependencies.from_json_file(options.info_file)
     else:
         if options.scanfile:
             scandata= utils.json_loadfile(options.scanfile)
@@ -360,14 +334,14 @@ def process(options):
         db= create_database(deps, repoinfo, groups)
 
     if not options.distribution:
-        utils.json_dump(db)
+        db.json_print()
         return
 
-    (dist_short, dist_long)= distribution(db, options.distribution)
+    (dist_dict, dist_obj)= distribution(db, options.distribution)
     if options.brief:
-        utils.json_dump(dist_short)
+        utils.json_dump(dist_dict)
     else:
-        utils.json_dump(dist_long)
+        dist_obj.json_print()
     return
 
 def print_doc():

@@ -331,6 +331,10 @@ def is_standardpath(path, darcs_tag):
     l= split_path(path)
     return l[1]==tag2version(darcs_tag)
 
+# -----------------------------------------------
+# classes
+# -----------------------------------------------
+
 class JSONstruct(object):
     """an object that is a python structure.
     
@@ -444,6 +448,111 @@ class PathSource(JSONstruct):
         else:
             return (d[0], d[1], "")
 
+class Dependencies(JSONstruct):
+    """the dependency database."""
+    def __init__(self, dict_= None):
+        """create the object."""
+        super(Dependencies, self).__init__(dict_)
+    def add_source(self, module_name, versionname, source_type, url, tag):
+        """add a module with source specification."""
+        version_dict= self.datadict().setdefault(module_name,{})
+        version= version_dict.setdefault(versionname, {})
+        l= [source_type, url]
+        if tag:
+            l.append(tag)
+        version["source"]= l
+    def add_dependency(self, modulename, versionname, 
+                       dep_modulename, dep_versionname):
+        """add dependency for a module:version.
+        """
+        m_dict= self.datadict()[modulename]
+        dep_dict= m_dict[versionname].setdefault("dependencies",{})
+        l= dep_dict.setdefault(dep_modulename, [])
+        l.append(dep_versionname)
+    def add_alias(self, modulename, versionname, 
+                  alias_name, real_name):
+        """add an alias for modulename:versionname."""
+        m_dict= self.datadict()[modulename]
+        alias_dict= m_dict[versionname].setdefault("aliases",{})
+        if alias_dict.has_key(real_name):
+            if alias_dict[real_name]==alias_name:
+                return
+            raise ValueError, \
+                  "alias \"%s\" defined with two different names" % alias_name
+        alias_dict[real_name]= alias_name
+    def get_alias(self, modulename, versionname,
+                  dep_modulename):
+        """return the alias or the original name for dep_modulename."""
+        a_dict= self.datadict()[modulename][versionname].get("aliases")
+        if a_dict is None:
+            return dep_modulename
+        return a_dict.get(dep_modulename, dep_modulename)
+    def dependencies_found(self, modulename, versionname):
+        """return if dependencies are found for modulename:versionname.
+        """
+        # may raise KeyError exception in this line:
+        d= self.datadict()[modulename][versionname]
+        return d.has_key("dependencies")
+    def source(self, modulename, versionname):
+        """return a tuple (type,url,tag) for the module source."""
+        l= self.datadict()[modulename][versionname]["source"]
+        if len(l)<3:
+            return (l[0], l[1], "")
+        else:
+            return tuple(l)
+    def iter_dependencies(self, modulename, versionname):
+        """return an iterator on dependency modulenames of a module."""
+        d= self.datadict()[modulename][versionname]
+        deps= d.get("dependencies")
+        if deps is None:
+            return iter([])
+        return deps.iterkeys()
+    def iter_dependency_versions(self, modulename, versionname,
+                                 dependencyname):
+        """return an iterator on dependency names."""
+        d= self.datadict()[modulename][versionname]
+        deps= d.get("dependencies")
+        if deps is None:
+            dep_list= []
+        else:
+            dep_list= deps[dependencyname]
+        for d in dep_list:
+            yield d
+    def iter_sorted_dependency_versions(self, modulename, versionname,
+                                        dependencyname):
+        """return an iterator on sorted dependency names."""
+        d= self.datadict()[modulename][versionname]
+        deps= d.get("dependencies")
+        if deps is None:
+            dep_list= []
+        else:
+            dep_list= sorted(deps[dependencyname],
+                             key= rev2key, 
+                             reverse= True)
+        for d in dep_list:
+            yield d
+    def iterate(self):
+        """return an iterator on module names."""
+        return self.datadict().iterkeys()
+    def iter_versions(self, modulename):
+        """return an iterator on versionnames of a module."""
+        return self.datadict()[modulename].iterkeys()
+    def iter_sorted_versions(self, modulename):
+        """return an iterator on sorted versionnames of a module."""
+        for v in  sorted(self.datadict()[modulename].keys(),
+                         key= rev2key,
+                         reverse= True):
+            yield v
+    def filter(self, elements):
+        """take items from the Dependencies object and create a new one.
+        
+        elements must be a dict { modulename: versionname }
+        """
+        new= self.__class__()
+        for modulename, versionname in elements.items():
+            d= new.datadict().setdefault(modulename, {})
+            d[versionname]= self.datadict()[modulename][versionname]
+        return new
 
 class Builddb(JSONstruct):
     """the buildtree database."""

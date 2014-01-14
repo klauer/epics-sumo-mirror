@@ -37,20 +37,6 @@ def errmsg(msg):
     """print something on stderr."""
     sys.stderr.write(msg+"\n")
 
-def get_versioned_module(db, modulename, versionname):
-    """return versionedmodule.
-
-    exits the program in case of an error.
-    """
-    module= db.get(modulename)
-    if module is None:
-        sys.exit("no information found for module %s" % modulename)
-    versionedmodule= module.get(versionname)
-    if versionedmodule is None:
-        sys.exit("no information found for module %s %s" % \
-                 (modulename, versionname))
-    return versionedmodule
-
 def builddb_match(db, builddb, modulename, versionname):
     """try to find matching deps in builddb.
     """
@@ -82,14 +68,13 @@ def gather_dependencies(db, modulename, versionname,
     """recursively gather all dependencies of a module."""
     if gathered_deps is None:
         gathered_deps= {}
-    versionedmodule= get_versioned_module(db, modulename, versionname)
-    deps= versionedmodule.get("dependencies")
-    if deps is None:
-        return gathered_deps
-    for dep_name, dep_versions in deps.items():
+    for dep_name in db.iter_dependencies(modulename, versionname):
+        dep_versions= list(db.iter_dependency_versions(modulename, 
+                                                       versionname, 
+                                                       dep_name))
         if len(dep_versions)>1:
             raise AssertionError, "m:%s v:%s d:%s" % \
-                    (modulename, versionname, repr(deps))
+                    (modulename, versionname, dep_name)
         dep_version= dep_versions[0]
         gathered_deps[dep_name]= dep_version
         gathered_deps= gather_dependencies(db, dep_name,  dep_version,
@@ -113,7 +98,6 @@ def gather_all_dependencies(db):
 def gen_RELEASE(db, buildtag, modulename, versionname, epicsbase,
                 verbose, dry_run):
     """generate a RELEASE file."""
-    versionedmodule= get_versioned_module(db, modulename, versionname)
     dir_= module_dir_string(buildtag, modulename, versionname)
     config_dir= os.path.join(dir_, "configure")
     if not dry_run:
@@ -126,24 +110,20 @@ def gen_RELEASE(db, buildtag, modulename, versionname, epicsbase,
     if not dry_run:
         fh= open(filename, "w")
 
-    aliases= versionedmodule.get("aliases")
-    dependencies= versionedmodule.get("dependencies")
-    if dependencies is not None:
-        for depname, dep_data in dependencies.items():
-            dep_versionname= dep_data[0]
-            name_here= None
-            if aliases:
-                name_here= aliases.get(depname)
-            if not name_here:
-                name_here= depname
-            path= os.path.abspath(
-                      module_dir_string(buildtag, depname, dep_versionname) 
-                                 )
-            str_= "%s=%s\n" % (name_here,path)
-            if verbose:
-                print str_,
-            if not dry_run:
-                fh.write(str_)
+    for dep_name in db.iter_dependencies(modulename, versionname):
+        dep_versions= list(db.iter_dependency_versions(modulename, 
+                                                       versionname, 
+                                                       dep_name))
+        dep_versionname= dep_versions[0]
+        name_here= db.get_alias(modulename, versionname, dep_name)
+        path= os.path.abspath(
+                  module_dir_string(buildtag, dep_name, dep_versionname) 
+                             )
+        str_= "%s=%s\n" % (name_here,path)
+        if verbose:
+            print str_,
+        if not dry_run:
+            fh.write(str_)
     str_= "EPICS_BASE=%s\n" % epicsbase
     if verbose:
         print str_,
@@ -152,14 +132,11 @@ def gen_RELEASE(db, buildtag, modulename, versionname, epicsbase,
     if not dry_run:
         fh.close()
 
-def create_source(source_data, destdir, verbose, dry_run):
+def create_source(db, modulename, versionname, 
+                  destdir, verbose, dry_run):
     """create directory by given source spec.
     """
-    type_= source_data[0]
-    url  = source_data[1]
-    tag  = None
-    if len(source_data)>2:
-        tag= source_data[2]
+    (type_, url, tag)= db.source(modulename, versionname)
     if type_=="path":
         #cmd= "scp -r -p \"%s\" %s" % (url, destdir)
         # join(url,"") effectively adds a "/" at the end of the path. This is
@@ -186,9 +163,6 @@ def create_module(db, builddb, build_tag,
     returns the build_tag that was used. If the module was found in another
     build, return that built-tag.
     """
-
-    versionedmodule= get_versioned_module(db, modulename, versionname)
-
     basedir= module_basedir_string(modulename)
     ensure_dir(basedir, dry_run) # creates basedir if it doesn't exist
     dirname= module_dir_string(build_tag, modulename, versionname)
@@ -202,8 +176,7 @@ def create_module(db, builddb, build_tag,
         os.symlink(src_dirname, dirname)
         return compatible_build
 
-    modulesource_data= versionedmodule["source"]
-    create_source(modulesource_data, dirname, verbose, dry_run)
+    create_source(db, modulename, versionname, dirname, verbose, dry_run)
     gen_RELEASE(db, build_tag, modulename, versionname, 
                 epicsbase,
                 verbose, dry_run)
@@ -212,10 +185,11 @@ def create_module(db, builddb, build_tag,
 def create_modules(db, builddb, build_tag, epicsbase, verbose, dry_run):
     """create all modules.
     """
-    for modulename, moduleversions in db.items():
-        if len(moduleversions.keys())!=1:
+    for modulename in db.iterate():
+        moduleversions= list(db.iter_versions(modulename))
+        if len(moduleversions)!=1:
             raise ValueError, "more than one version for %s" % modulename
-        versionname= moduleversions.keys()[0]
+        versionname= moduleversions[0]
         build_tag_used= \
             create_module(db, builddb, build_tag, 
                           modulename, versionname,
@@ -253,13 +227,15 @@ def create_makefile(db, builddb, build_tag, verbose, dry_run):
         (modulename, versionname)= spec
         own_stamp= os.path.join(path, "stamp")
         dep_stamps= []
-        dependencies= db[modulename][versionname].get("dependencies")
-        if dependencies is not None:
-            for dep_name, dep_spec in dependencies.items():
-                if builddb.module_is_linked(build_tag, dep_name):
-                    continue
-                dep_path= module_dir_string(build_tag, dep_name, dep_spec[0])
-                dep_stamps.append(os.path.join(dep_path,"stamp"))
+        for dep_name in db.iter_dependencies(modulename, versionname):
+            if builddb.module_is_linked(build_tag, dep_name):
+                continue
+            dep_versions= list(db.iter_dependency_versions(modulename, 
+                                                           versionname, 
+                                                           dep_name))
+            dep_path= module_dir_string(build_tag, dep_name, dep_versions[0])
+            dep_stamps.append(os.path.join(dep_path,"stamp"))
+
         if dep_stamps:
             wr(fh, "\n%s: %s\n" % (own_stamp, " ".join(dep_stamps)), verbose)
     wr(fh, "\n%/stamp:\n", verbose)
@@ -283,7 +259,7 @@ def process(options):
         sys.exit("--epicsbase is mandatory")
     if not options.builddb:
         sys.exit("--builddb is mandatory")
-    db= utils.json_loadfile(options.distribution)
+    db= utils.Dependencies.from_json_file(options.distribution)
     builddb= utils.Builddb.from_json_file(options.builddb)
     if builddb.has_build_tag(options.buildtag):
         sys.exit("error, buildtag \"%s\" already taken" % options.buildtag)
