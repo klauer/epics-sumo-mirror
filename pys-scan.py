@@ -62,6 +62,8 @@ import pys_utils as utils
 # version of the program:
 my_version= "1.0"
 
+KNOWN_COMMANDS=set(("deps", "name2paths", "path2names", "groups", "repos"))
+
 IGNORE_NAMES= set(["TOP", "EPICS_BASE"])
 
 # temporarily search modules in my local bii_scripts copy:
@@ -217,6 +219,106 @@ def filter_exclude_deps(deps, regexp):
     return new
 
 # -----------------------------------------------
+# repository scanning
+# -----------------------------------------------
+
+def all_paths_from_deps(deps):
+    """get a collection of all paths from the dependency dict.
+    """
+    all_paths= set()
+    for path, dependends in deps.items():
+        all_paths.add(path)
+        for dep_path in dependends.values():
+            all_paths.add(dep_path)
+    return all_paths
+
+rx_darcs_repo= re.compile(r'^\s*Default Remote:\s*(.*)')
+
+rx_darcs= re.compile(r'.*?(?:/darcs/epics|:darcs-repos/epics)/support(.*)')
+
+def darcs_source_repo(directory, verbose, dry_run):
+    """get the darcs source repository.
+
+    This function calls "darcs show repo". If there is a "Default
+    repository" it is returned. If this is not presents the function
+    returns "Root repository" as it is returned from darcs.
+    """
+    def _canonify(darcspath):
+        """convert the darcspath to a real dictionary.
+        """
+        return rx_darcs.sub(
+                   r"/opt/repositories/controls/darcs/epics/support\1", 
+                   darcspath)
+    if not os.path.exists(os.path.join(directory,"_darcs")):
+        return
+    try:
+        reply= utils.system("cd %s && darcs show repo" % directory, 
+                             True, verbose, dry_run)
+    except IOError, _:
+        # probably no darcs repo found
+        return
+    default_repo= None
+    for line in reply.splitlines():
+        m= rx_darcs_repo.match(line)
+        if m:
+            r= _canonify(m.group(1).strip())
+            if not os.path.exists(os.path.join(r,"_darcs")):
+                continue
+            default_repo= r
+            continue
+    url= directory
+    if default_repo:
+        url= default_repo
+    #return url
+    return _canonify(url)
+
+def darcs_last_tag(directory, verbose, dry_run):
+    """Returns the topmost darcs tag.
+    """
+    try:
+        reply= utils.system("cd %s && darcs show tags" % directory, True, 
+                             verbose, dry_run)
+    except IOError, _:
+        # probably no darcs repo found
+        return
+    if not reply:
+        # no tags found
+        return
+    return reply.splitlines()[0].strip()
+
+def repo_info(deps, progress, verbose, dry_run):
+    """return a PathSource object with repository informations.
+    """
+    path_set= all_paths_from_deps(deps)
+    new= utils.PathSource()
+    cnt_max= 50
+    cnt= 0
+    if progress:
+        utils.show_progress(cnt, cnt_max, "paths searched for darcs")
+    for path in path_set:
+        if progress:
+            cnt= utils.show_progress(cnt, cnt_max)
+        if not os.path.exists(os.path.join(path,"_darcs")):
+            new.add_path(path)
+            continue
+        # try to find source repository:
+        src= darcs_source_repo(path, verbose, dry_run)
+        if not src:
+            new.add_path(path)
+            continue
+        tag= darcs_last_tag(path, verbose, dry_run)
+        if not tag:
+            new.add_darcs(path, src)
+            continue
+        if not utils.is_standardpath(path, tag):
+            new.add_darcs(path, src)
+            continue
+        new.add_darcs(path, src, tag)
+    if progress:
+        sys.stderr.write("\n")
+    return new
+
+# -----------------------------------------------
 # main
 # -----------------------------------------------
 
@@ -237,33 +339,52 @@ def get_dependencies(options):
                       )
     return deps
 
-def process(options):
+def process(options, commands):
     """do all the work.
-    """
-    results= None
-    if options.dir:
-        results= get_dependencies(options)
-    elif options.info_file:
-        results= utils.json_loadfile(options.info_file)
 
-    if not results:
-        required=["--dir","--info-file"]
-        sys.exit("error, one of these options must be provided: %s" % \
-                 (" ".join(required)))
+    known commands:
+      deps
+      repos
+      groups
+    """
+    if not commands:
+        sys.exit("command missing")
+    for c in commands:
+        if not c in KNOWN_COMMANDS:
+            sys.exit("unknown command: %s" % c)
+
+    deps= None
+
+    if options.dir:
+        deps= get_dependencies(options)
+    elif options.info_file:
+        deps= utils.json_loadfile(options.info_file)
+    else:
+        sys.exit("error: -d or -i required for command")
+
     if options.exclude_paths:
-        results= filter_exclude_paths(results, options.exclude_paths)
+        deps= filter_exclude_paths(deps, options.exclude_paths)
     if options.exclude_deps:
-        results= filter_exclude_deps(results, options.exclude_deps)
-    if options.groups:
-        utils.json_dump( groups_from_deps(results, options.groups))
-        return
-    if options.name2paths:
-        utils.json_dump( name2path_from_deps(results))
-        return
-    if options.path2names:
-        utils.json_dump( path2name_from_deps(results))
-        return
-    utils.json_dump(results)
+        deps= filter_exclude_deps(deps, options.exclude_deps)
+
+    if "deps" in commands:
+        utils.json_dump(deps)
+    if "name2paths" in commands:
+        utils.json_dump( name2path_from_deps(deps))
+    if "path2names" in commands:
+        utils.json_dump( path2name_from_deps(deps))
+    if "groups" in commands:
+        utils.json_dump( groups_from_deps(deps, options.group_basedir))
+    if "repos" in commands:
+        repo_data= repo_info(deps,
+                             options.progress,
+                             options.verbose, options.dry_run)
+        if options.missing_repo:
+            repo_data= repo_data.filter_no_repos()
+        if options.missing_tag:
+            repo_data= repo_data.filter_no_tags()
+        repo_data.json_print()
+
 
 def print_doc():
     """print a short summary of the scripts function."""
@@ -287,7 +408,15 @@ def main():
     parse the command-line options and perform the command
     """
     # command-line options and command-line help:
-    usage = "usage: %prog [options] {files}"
+    usage = "usage: %prog [options] command\n" + \
+            "where command is:\n" + \
+            "  deps  : scan RELEASE files\n" + \
+            "  repos : scan for repositories\n" + \
+            "  groups: group directories by name\n" + \
+            "  name2paths: return a map mapping names to paths\n" + \
+            "  path2names: return a map mapping paths to names\n" + \
+            "  groups: scan for groups\n\n" + \
+            "commands can be combined!"
 
     parser = OptionParser(usage=usage,
                           version="%%prog %s" % my_version,
@@ -321,19 +450,11 @@ def main():
                            "file generated by this script in a prevous run.",
                       metavar="INFOFILE"  
                       )
-    parser.add_option("--groups",
+    parser.add_option("--group-basedir",
                       action="store", 
                       help="try to group directories by their name. The "+ \
                            "BASEDIR is taken as directory base to "+ \
                            "calculate group names from directory names",
-                      )
-    parser.add_option("--name2paths",
-                      action="store_true", 
-                      help="return a map mapping names to paths",
-                      )
-    parser.add_option("--path2names",
-                      action="store_true", 
-                      help="return a map mapping paths to names",
                       )
     parser.add_option("--exclude-paths",
                       action="store", 
@@ -348,6 +469,15 @@ def main():
                       help="exclude all paths whose dependencies "+ \
                            "match REGEXP",
                       metavar="REGEXP"  
+                      )
+    parser.add_option("--missing-tag",
+                      action="store_true", 
+                      help="show directories where a repository was "+ \
+                           "found but no tag",
+                      )
+    parser.add_option("--missing-repo",
+                      action="store_true", 
+                      help="show directories where no repository was found",
                       )
     parser.add_option("-p", "--progress", 
                       action="store_true", 
@@ -381,7 +511,7 @@ def main():
 
     # we could pass "args" as an additional parameter to process here if it
     # would be needed to process remaining command line arguments.
-    process(options)
+    process(options, args)
     sys.exit(0)
 
 if __name__ == "__main__":
