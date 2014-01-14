@@ -51,6 +51,73 @@ def get_versioned_module(db, modulename, versionname):
                  (modulename, versionname))
     return versionedmodule
 
+def load_builddb(builddb_filename):
+    """load the build db."""
+    if os.path.exists(builddb_filename):
+        return utils.json_loadfile(builddb_filename)
+    else:
+        return {}
+
+def save_builddb(builddb_filename, builddb, verbose, dry_run):
+    """save the builddb file.
+    """
+    backup= "%s.bak" % builddb_filename
+    if os.path.exists(backup):
+        if verbose:
+            print "remove %s" % backup
+        if not dry_run:
+            os.remove(backup)
+    if os.path.exists(builddb_filename):
+        if verbose:
+            print "rename %s to %s" % (builddb_filename, backup)
+        if not dry_run:
+            os.rename(builddb_filename, backup)
+    if not dry_run:
+        utils.json_dump_file(builddb_filename, builddb)
+
+def builddb_match(db, builddb, modulename, versionname):
+    """try to find matching deps in builddb.
+    """
+    deps= gather_dependencies(db, modulename, versionname)
+    for build in sorted(builddb.keys()):
+        build_data= builddb[build]
+        module_data= build_data.get(modulename)
+        if module_data is None:
+            continue
+        if not isinstance(module_data, str):
+            # if it is a list, it is a symlink from another module.
+            continue
+        if module_data!=versionname:
+            # version doesn't match
+            continue
+        # from here: check if all dependencies match:
+        match= True
+        for module_name, versionname in deps.items():
+            other= build_data.get(module_name)
+            if not isinstance(other, str):
+                # it's a list (versionname, buildtag)
+                # extract the buildtag:
+                other= other[0] 
+            if versionname != other:
+                match= False
+                break
+        if match:
+            return build
+    return
+
+def add_builddb(builddb, buildtag, modules_dict):
+    """add an entry to the build database.
+    """
+    if builddb.has_key(buildtag):
+        sys.exit("error, buildtag \"%s\" already taken" % buildtag)
+    new= {}
+    builddb[buildtag]= new
+    for module_name, module_data in modules_dict.items():
+        if module_data[1]== buildtag:
+            new[module_name]= module_data[0]
+        else:
+            new[module_name]= module_data
+
 def gather_dependencies(db, modulename, versionname, 
                         gathered_deps= None):
     """recursively gather all dependencies of a module."""
@@ -81,30 +148,6 @@ def gather_all_dependencies(db):
         deps= gather_dependencies(db, modulename, 
                                   versionname, deps)
     return deps
-
-def add_builddb(db, builddb_file, buildtag, verbose, dry_run):
-    """add an entry to the build database.
-    """
-    if os.path.exists(builddb_file):
-        builddb= utils.json_loadfile(builddb_file)
-    else:
-        builddb= {}
-    if builddb.has_key(buildtag):
-        sys.exit("error, buildtag \"%s\" already taken" % buildtag)
-    builddb[buildtag]= gather_all_dependencies(db)
-    backup= "%s.bak" % builddb_file
-    if os.path.exists(backup):
-        if verbose:
-            print "remove %s" % backup
-        if not dry_run:
-            os.remove(backup)
-    if os.path.exists(builddb_file):
-        if verbose:
-            print "rename %s to %s" % (builddb_file, backup)
-        if not dry_run:
-            os.rename(builddb_file, backup)
-    if not dry_run:
-        utils.json_dump_file(builddb_file, builddb)
 
 def gen_RELEASE(db, buildtag, modulename, versionname, epicsbase,
                 verbose, dry_run):
@@ -169,24 +212,55 @@ def create_source(source_data, destdir, verbose, dry_run):
     else:
         raise AssertionError, "unsupported source type %s" % type_
 
-def create_module(db, build_tag, 
+def create_module(db, builddb, build_tag, 
                   modulename, versionname, 
                   epicsbase,
                   verbose, dry_run):
-    """check out a module."""
+    """check out a module.
+
+    returns the build_tag that was used. If the module was found in another
+    build, return that built-tag.
+    """
+
     versionedmodule= get_versioned_module(db, modulename, versionname)
+
     basedir= module_basedir_string(modulename)
-    ensure_dir(basedir, dry_run)
+    ensure_dir(basedir, dry_run) # creates basedir if it doesn't exist
     dirname= module_dir_string(build_tag, modulename, versionname)
     if os.path.exists(dirname):
         raise ValueError, "directory %s already exists" % dirname
+
+    compatible_build= builddb_match(db, builddb, modulename, versionname)
+    if compatible_build:
+        src_dirname= module_dir_string(compatible_build, 
+                                       "", versionname)
+        os.symlink(src_dirname, dirname)
+        return compatible_build
+
     modulesource_data= versionedmodule["source"]
     create_source(modulesource_data, dirname, verbose, dry_run)
     gen_RELEASE(db, build_tag, modulename, versionname, 
                 epicsbase,
                 verbose, dry_run)
+    return build_tag
 
-def create_makefile(db, build_tag, verbose, dry_run):
+def create_modules(db, builddb, build_tag, epicsbase, verbose, dry_run):
+    """create all modules.
+    """
+    modules_dict= {}
+    for modulename, moduleversions in db.items():
+        if len(moduleversions.keys())!=1:
+            raise ValueError, "more than one version for %s" % modulename
+        versionname= moduleversions.keys()[0]
+        build_tag_used= \
+            create_module(db, builddb, build_tag, 
+                          modulename, versionname,
+                          epicsbase,
+                          verbose, dry_run)
+        modules_dict[modulename]= [versionname, build_tag_used]
+    return modules_dict
+
+def create_makefile(db, modules_dict, build_tag, verbose, dry_run):
     """generate a makefile.
     """
     def wr(fh, st, verbose):
@@ -196,14 +270,13 @@ def create_makefile(db, build_tag, verbose, dry_run):
         if fh:
             fh.write(st)
     paths= {}
-    for modulename, moduleversions in db.items():
-        if len(moduleversions.keys())!=1:
-            raise ValueError, "more than one version for %s" % modulename
-        versionname= moduleversions.keys()[0]
-        paths[(modulename, versionname)]= \
-                     module_dir_string(build_tag, 
-                                       modulename, 
-                                       moduleversions.keys()[0])
+    for modulename, moduledata in modules_dict.items():
+        (versionname, module_build_tag)= moduledata
+        if module_build_tag==build_tag:
+            paths[(modulename, versionname)]= \
+                         module_dir_string(build_tag, 
+                                           modulename, 
+                                           versionname)
     filename= "Makefile-%s" % build_tag
     stamps= sorted([os.path.join(p,"stamp") for p in paths.values()])
     fh= None
@@ -216,10 +289,14 @@ def create_makefile(db, build_tag, verbose, dry_run):
     wr(fh, "\n", verbose)
     for spec, path in paths.items():
         (modulename, versionname)= spec
+        if modules_dict[modulename][1]!=build_tag:
+            continue
         own_stamp= os.path.join(path, "stamp")
         dep_stamps= []
         for dep_name, dep_spec in \
                 db[modulename][versionname]["dependencies"].items():
+            if modules_dict[dep_name][1]!=build_tag:
+                continue
             dep_path= module_dir_string(build_tag, dep_name, dep_spec[0])
             dep_stamps.append(os.path.join(dep_path,"stamp"))
         if dep_stamps:
@@ -229,17 +306,6 @@ def create_makefile(db, build_tag, verbose, dry_run):
     wr(fh, "\ttouch $@\n", verbose)
     if not dry_run:
         fh.close()
-
-def create_modules(db, build_tag, epicsbase, verbose, dry_run):
-    """create all modules.
-    """
-    for modulename, moduleversions in db.items():
-        if len(moduleversions.keys())!=1:
-            raise ValueError, "more than one version for %s" % modulename
-        create_module(db, build_tag, 
-                      modulename, moduleversions.keys()[0],
-                      epicsbase,
-                      verbose, dry_run)
 
 def script_shortname():
     """return the name of this script without a path component."""
@@ -257,13 +323,17 @@ def process(options):
     if not options.builddb:
         sys.exit("--builddb is mandatory")
     db= utils.json_loadfile(options.distribution)
-    create_modules(db, options.buildtag, options.epicsbase,
-                   options.verbose, options.dry_run)
-    create_makefile(db, options.buildtag, 
+    builddb= load_builddb(options.builddb)
+    if builddb.has_key(options.buildtag):
+        sys.exit("error, buildtag \"%s\" already taken" % options.buildtag)
+    modules_dict= create_modules(db, builddb, options.buildtag, 
+                                 options.epicsbase,
+                                 options.verbose, options.dry_run)
+    create_makefile(db, modules_dict, options.buildtag, 
                     options.verbose, options.dry_run)
-    add_builddb(db, options.builddb, options.buildtag,
-                options.verbose, options.dry_run)
-
+    add_builddb(builddb, options.buildtag, modules_dict)
+    save_builddb(options.builddb, builddb,
+                 options.verbose, options.dry_run)
     return
 
 def print_summary():
