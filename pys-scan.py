@@ -56,6 +56,7 @@ import sys
 import os.path
 import os
 import re
+import pprint
 
 import pys_utils as utils
 
@@ -90,13 +91,14 @@ def scan_release_file(filename, external_definitions= None,
     for (k,v) in data.items():
         if not os.path.exists(v):
             continue
-        if not "support" in v:
-            continue
-        if v.endswith("support"):
-            continue
+        #if not "support" in v:
+        #    continue
+        #if v.endswith("support"):
+        #    continue
         if k in IGNORE_NAMES: # names to ignore
             continue
-        v= v.replace("//","/") # replace double-slashes
+        v= os.path.realpath(v)
+        #v= v.replace("//","/") # replace double-slashes
         dependencies[k]= v
     return dependencies
 
@@ -138,7 +140,7 @@ def dependency_data(support_tree, progress= False,
         if os.path.basename(dirpath)=="configure":
             if "RELEASE" in filenames:
                 # get the path of the versioned support:
-                versioned_path= os.path.dirname(dirpath)
+                versioned_path= os.path.realpath(os.path.dirname(dirpath))
                 data= scan_support_release(versioned_path,
                                            verbose= verbose, dry_run= dry_run)
                 dict_[versioned_path]= data
@@ -185,6 +187,7 @@ def groups_from_deps(deps, basedir):
         for deppath in dependencies.values():
             _add(groups, deppath)
     new= {}
+    basedir= os.path.realpath(basedir)
     for k, v in groups.items():
         new[gen_name(k,basedir)]= { "path": k,
                                     "subdirs": sorted(v)
@@ -342,10 +345,6 @@ def get_dependencies(options):
 def process(options, commands):
     """do all the work.
 
-    known commands:
-      deps
-      repos
-      groups
     """
     if not commands:
         sys.exit("command missing")

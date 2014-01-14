@@ -329,7 +329,7 @@ def is_standardpath(path, darcs_tag):
     True
     """
     l= split_path(path)
-    return l[1]==tag2version(darcs_tag)
+    return tag2version(l[1])==tag2version(darcs_tag)
 
 # -----------------------------------------------
 # classes
