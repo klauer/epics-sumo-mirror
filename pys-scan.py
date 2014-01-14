@@ -367,24 +367,27 @@ def process(options, commands):
     if options.exclude_deps:
         deps= filter_exclude_deps(deps, options.exclude_deps)
 
+    bag= {}
+
     if "deps" in commands:
-        utils.json_dump(deps)
+        bag["dependencies"]= deps
     if "name2paths" in commands:
-        utils.json_dump( name2path_from_deps(deps))
+        bag["name2paths"]= name2path_from_deps(deps)
     if "path2names" in commands:
-        utils.json_dump( path2name_from_deps(deps))
+        bag["path2names"]= path2name_from_deps(deps)
     if "groups" in commands:
-        utils.json_dump( groups_from_deps(deps, options.group_basedir))
+        bag["groups"]= groups_from_deps(deps, options.group_basedir)
     if "repos" in commands:
+        # a utils.PathSource object:
         repo_data= repo_info(deps,
                              options.progress,
                              options.verbose, options.dry_run)
+        bag["repos"]= repo_data.to_dict()
         if options.missing_repo:
-            repo_data= repo_data.filter_no_repos()
+            bag["missing-repo"]= repo_data.filter_no_repos()
         if options.missing_tag:
-            repo_data= repo_data.filter_no_tags()
-        repo_data.json_print()
-
+            bag["missing-tag"]= repo_data.filter_no_tags()
+    utils.json_dump(bag)
 
 def print_doc():
     """print a short summary of the scripts function."""

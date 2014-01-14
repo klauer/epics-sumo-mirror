@@ -339,16 +339,21 @@ def process(options):
     if options.info_file:
         db= utils.json_loadfile(options.info_file)
     else:
-        if not options.dep_file:
-            sys.exit("--dep-file is mandatory for this command")
-        if not options.repo_file:
-            sys.exit("--repo-file is mandatory for this command")
-        if not options.group_file:
-            sys.exit("--group-file is mandatory for this command")
-
-        deps= utils.json_loadfile(options.dep_file)
-        repoinfo= utils.PathSource.from_json_file(options.repo_file)
-        groups= utils.json_loadfile(options.group_file)
+        if options.scanfile:
+            scandata= utils.json_loadfile(options.scanfile)
+            deps= scandata["dependencies"]
+            repoinfo= utils.PathSource(scandata["repos"])
+            groups= scandata["groups"]
+        else:
+            if not options.dep_file:
+                sys.exit("--dep-file is mandatory for this command")
+            if not options.repo_file:
+                sys.exit("--repo-file is mandatory for this command")
+            if not options.group_file:
+                sys.exit("--group-file is mandatory for this command")
+            deps= utils.json_loadfile(options.dep_file)
+            repoinfo= utils.PathSource.from_json_file(options.repo_file)
+            groups= utils.json_loadfile(options.group_file)
 
         db= create_database(deps, repoinfo, groups)
 
@@ -419,6 +424,14 @@ def main():
                            "NAME:VERSION pairs. If you want any version "+ \
                            "just specify NAME.",
                       metavar="MODULESPECS"  
+                      )
+    parser.add_option("--scanfile",
+                      action="store", 
+                      type="string",  
+                      help="read information from SCANFILE. This must "+ \
+                           "contain dependency, repo and group "+ \
+                           "information.",
+                      metavar="SCANFILE"  
                       )
     parser.add_option("-d","--dep-file",
                       action="store", 
