@@ -13,7 +13,7 @@ import pys_utils as utils
 # version of the program:
 my_version= "1.0"
 
-KNOWN_COMMANDS=set(("newtree", "partialdb", "findtree", 
+KNOWN_COMMANDS=set(("show", "state", "newtree", "partialdb", "findtree", 
                     "apprelease", "fullapprelease"))
 
 # -----------------------------------------------
@@ -101,6 +101,8 @@ def builddb_match(db, builddb, modulename, versionname):
     """
     deps= gather_dependencies(db, modulename, versionname)
     for build_tag in builddb.iter_builds():
+        if not builddb.is_stable(build_tag):
+            continue
         if not builddb.has_module(build_tag, modulename):
             continue
         if builddb.module_link(build_tag, modulename):
@@ -340,6 +342,45 @@ def process(options, commands):
     if not options.extra:
         options.extra= []
 
+    if commands[0]=="show":
+        if len(commands)>2:
+            sys.exit("error: extra arguments following \"show\"")
+        if len(commands)<=1:
+            sys.exit("error: buildtag missing")
+        if not options.builddb:
+            sys.exit("--builddb is mandatory")
+        buildtag= commands[1]
+        builddb= utils.Builddb.from_json_file(options.builddb)
+        if not builddb.has_build_tag(buildtag):
+            sys.exit("error, buildtag \"%s\" not found" % buildtag)
+        new_builddb= utils.Builddb()
+        new_builddb.add_build(builddb, buildtag)
+        new_builddb.json_print()
+        return
+
+    if commands[0]=="state":
+        if len(commands)>3:
+            sys.exit("error: extra arguments following \"state\"")
+        if len(commands)<=1:
+            sys.exit("error: buildtag missing")
+        if not options.builddb:
+            sys.exit("--builddb is mandatory")
+        buildtag= commands[1]
+        builddb= utils.Builddb.from_json_file(options.builddb)
+        if not builddb.has_build_tag(buildtag):
+            sys.exit("error, buildtag \"%s\" not found" % buildtag)
+        if len(commands)<=2:
+            print "%-20s : %s" % (buildtag, builddb.state(buildtag))
+        else:
+            new_state= utils.Builddb.guess_state(commands[2].strip())
+            try:
+                builddb.change_state(buildtag, new_state)
+            except ValueError, e:
+                sys.exit(str(e))
+            builddb.json_save(options.builddb, 
+                              options.verbose, options.dry_run)
+        return
+
     if commands[0]=="newtree":
         if len(commands)>2:
             sys.exit("error: extra arguments following \"newtree\"")
@@ -354,6 +395,9 @@ def process(options, commands):
         builddb= utils.Builddb.from_json_file(options.builddb)
         if builddb.has_build_tag(buildtag):
             sys.exit("error, buildtag \"%s\" already taken" % buildtag)
+        # create a new build in builddb, initial state is "testing":
+        builddb.new_build(buildtag)
+        # modifies builddb:
         create_modules(db, builddb, buildtag, 
                        options.extra,
                        options.verbose, options.dry_run)
@@ -481,6 +525,11 @@ where command is:
   apprelease [buildtag] [modules]: create a RELEASE file for an application, 
           use only the mentioned modules and the modules they depend on. Note
           that --db is mandatory for this command.
+  show [buildtag]
+          show the data of the build
+  state [buildtag] {new state}
+          show or change the state of the build. Allowed states are "stable"
+          and "testing".
 """
 
 def main():

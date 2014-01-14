@@ -806,6 +806,20 @@ class Dependencies(JSONstruct):
 
 class Builddb(JSONstruct):
     """the buildtree database."""
+    _states= set(("stable","testing"))
+    @staticmethod
+    def guess_state(st):
+        """convert an abbreviation to a valid state."""
+        errst= "error: cannot determine what state is meant by %s" % st
+        match= None
+        for s in Builddb._states:
+            if s.startswith(st):
+                if match is not None:
+                    raise ValueError, errst
+                match= s
+        if match is None:
+            raise ValueError, errst
+        return match
     def __init__(self, dict_= None):
         """create the object."""
         super(Builddb, self).__init__(dict_)
@@ -827,6 +841,32 @@ class Builddb(JSONstruct):
     def has_build_tag(self, build_tag):
         """returns if build_tag is contained."""
         return self.datadict().has_key(build_tag)
+    def new_build(self, build_tag):
+        """create a new build.
+
+        Note that the build state is initially set to "testing".
+        """
+        d= self.datadict()
+        if d.has_key(build_tag):
+            raise ValueError, "cannot create, build %s already exists" % \
+                               build_tag
+        d[build_tag]= { "state": "testing" }
+    def is_stable(self, build_tag):
+        """returns True if the build is marked stable.
+        """
+        d= self.datadict()
+        return d[build_tag]["state"] == "stable"
+    def state(self, build_tag):
+        """return the state of the build."""
+        d= self.datadict()
+        return d[build_tag]["state"] 
+    def change_state(self, build_tag, new_state):
+        """sets the state to a new value."""
+        allowed= set(["stable", "testing"])
+        if new_state not in Builddb._states:
+            raise ValueError, "not an allowed state: %s" % new_state
+        d= self.datadict()
+        d[build_tag]["state"]= new_state
     def add_build(self, other, build_tag):
         """add build data from another Builddb to this one.
 
