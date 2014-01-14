@@ -43,7 +43,7 @@ def json_dump_file(filename, var):
         json.dump(var, fh, sort_keys= True, indent= 4)
     fh.close()
 
-def json_dump(filename, var):
+def json_dump(var):
     """Dump a variable in JSON format.
 
     Here is an example:
