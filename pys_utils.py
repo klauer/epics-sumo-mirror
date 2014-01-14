@@ -857,14 +857,14 @@ class Builddb(JSONstruct):
         module_dict= build_["modules"]
         return module_dict.get(modulename)
 
-    def module_is_linked(self, build_tag, 
+    def module_link(self, build_tag, 
                          modulename):
-        """return if the module is linked."""
+        """return linked build_tag if the module is linked or None."""
         build_= self.datadict()[build_tag]
         linked_ = build_.get("linked")
         if linked_ is None:
-            return False
-        return linked_.has_key(modulename)
+            return 
+        return linked_.get(modulename)
     def filter_by_spec(self, string_specs):
         """return a new Builddb that satisfies the given list of specs.
         """

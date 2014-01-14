@@ -103,7 +103,7 @@ def builddb_match(db, builddb, modulename, versionname):
     for build_tag in builddb.iter_builds():
         if not builddb.has_module(build_tag, modulename):
             continue
-        if builddb.module_is_linked(build_tag, modulename):
+        if builddb.module_link(build_tag, modulename):
             # if this build has only a link of the module, skip it
             continue
         modules= builddb.modules(build_tag)
@@ -122,7 +122,7 @@ def builddb_match(db, builddb, modulename, versionname):
             return build_tag
     return
 
-def gen_RELEASE(db, buildtag, modulename, versionname, 
+def gen_RELEASE(db, builddb, buildtag, modulename, versionname, 
                 extra_lines,
                 verbose, dry_run):
     """generate a RELEASE file."""
@@ -151,8 +151,11 @@ def gen_RELEASE(db, buildtag, modulename, versionname,
                                                        dep_name))
         dep_versionname= dep_versions[0]
         name_here= db.get_alias(modulename, versionname, dep_name)
+        buildtag_here= builddb.module_link(buildtag, dep_name)
+        if buildtag_here is None:
+            buildtag_here= buildtag
         path= os.path.join("$(SUPPORT)", 
-                           module_dir_string(buildtag, dep_name, 
+                           module_dir_string(buildtag_here, dep_name, 
                                              dep_versionname) 
                           )
         myprint("%s=%s\n" % (name_here,path))
@@ -198,20 +201,12 @@ def create_module(db, builddb, build_tag,
     if os.path.exists(dirname):
         raise ValueError, "directory %s already exists" % dirname
 
-    compatible_build= builddb_match(db, builddb, modulename, versionname)
-    if compatible_build:
-        src_dirname= module_dir_string(compatible_build, 
-                                       "", versionname)
-        os.symlink(src_dirname, dirname)
-        return compatible_build
-
     create_source(db, modulename, versionname, dirname, verbose, dry_run)
-    gen_RELEASE(db, build_tag, modulename, versionname, 
+    gen_RELEASE(db, builddb, build_tag, modulename, versionname, 
                 extra_defs,
                 verbose, dry_run)
-    return build_tag
 
-def create_modules(db, builddb, build_tag, extra_lines, verbose, dry_run):
+def add_modules(db, builddb, build_tag):
     """create all modules.
     """
     for modulename in db.iterate():
@@ -219,12 +214,30 @@ def create_modules(db, builddb, build_tag, extra_lines, verbose, dry_run):
         if len(moduleversions)!=1:
             raise ValueError, "more than one version for %s" % modulename
         versionname= moduleversions[0]
-        build_tag_used= \
-            create_module(db, builddb, build_tag, 
-                          modulename, versionname,
-                          extra_lines,
-                          verbose, dry_run)
+
+        compatible_build= builddb_match(db, builddb, modulename, versionname)
+        if compatible_build is None:
+            build_tag_used= build_tag
+        else:
+            build_tag_used= compatible_build
+        
         builddb.add_module(build_tag, build_tag_used, modulename, versionname)
+
+def create_modules(db, builddb, build_tag, extra_lines, verbose, dry_run):
+    """create all modules.
+    """
+    add_modules(db, builddb, build_tag)
+
+    for modulename in db.iterate():
+        versionname= builddb.module_version(build_tag, modulename)
+        # do not re-create modules that are links:
+        if builddb.module_link(build_tag, modulename):
+            continue
+        create_module(db, builddb, build_tag, 
+                      modulename, versionname,
+                      extra_lines,
+                      verbose, dry_run)
+
 
 def create_makefile(db, builddb, build_tag, verbose, dry_run):
     """generate a makefile.
@@ -237,7 +250,7 @@ def create_makefile(db, builddb, build_tag, verbose, dry_run):
             fh.write(st)
     paths= {}
     for modulename, versionname in builddb.iter_modules(build_tag):
-        if not builddb.module_is_linked(build_tag, modulename):
+        if not builddb.module_link(build_tag, modulename):
             paths[(modulename, versionname)]= \
                          module_dir_string(build_tag, 
                                            modulename, 
@@ -257,7 +270,7 @@ def create_makefile(db, builddb, build_tag, verbose, dry_run):
         own_stamp= os.path.join(path, "stamp")
         dep_stamps= []
         for dep_name in db.iter_dependencies(modulename, versionname):
-            if builddb.module_is_linked(build_tag, dep_name):
+            if builddb.module_link(build_tag, dep_name):
                 continue
             dep_versions= list(db.iter_dependency_versions(modulename, 
                                                            versionname, 
