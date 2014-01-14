@@ -536,6 +536,42 @@ def scan_modulespec(spec):
         return (l[0], "this_or_newer", l[1][1:])
     return (l[0], "this", l[1])
 
+def compare_versions_flag(flag, version1, version2):
+    """compare versions according to given flag.
+
+    Here are some examples:
+    >>> compare_versions_flag("any", "R1-2", "R1-3")
+    True
+    >>> compare_versions_flag("this", "R1-2", "R1-3")
+    False
+    >>> compare_versions_flag("this", "R1-2", "R1-2")
+    True
+    >>> compare_versions_flag("this", "R1-2", "1-2")
+    True
+    >>> compare_versions_flag("this_or_older", "R1-2", "1-2")
+    True
+    >>> compare_versions_flag("this_or_older", "R1-1", "R1-2")
+    True
+    >>> compare_versions_flag("this_or_older", "R1-3", "R1-2")
+    False
+    >>> compare_versions_flag("this_or_newer", "R1-1", "R1-2")
+    False
+    >>> compare_versions_flag("this_or_newer", "R1-2", "R1-2")
+    True
+    >>> compare_versions_flag("this_or_newer", "R1-3", "R1-2")
+    True
+    """
+    if flag=="any":
+        return True
+    k1= rev2key(version1)
+    k2= rev2key(version2)
+    if flag=="this":
+        return (k1==k2)
+    if flag=="this_or_older":
+        return (k1<=k2)
+    if flag=="this_or_newer":
+        return (k1>=k2)
+    raise AssertionError, "unknown flag: %s" % flag
 
 class Dependencies(JSONstruct):
     """the dependency database."""
@@ -747,8 +783,11 @@ class Builddb(JSONstruct):
     def __init__(self, dict_= None):
         """create the object."""
         super(Builddb, self).__init__(dict_)
+    def is_empty(self):
+        """shows of the object is empty."""
+        return not bool(self.datadict())
     def add(self, other):
-        """add data from another Builddb object."""
+        """add data from a dict."""
         d= self.datadict()
         for key in ["modules", "linked"]:
             d[key].update(other[key])
@@ -759,6 +798,15 @@ class Builddb(JSONstruct):
     def has_build_tag(self, build_tag):
         """returns if build_tag is contained."""
         return self.datadict().has_key(build_tag)
+    def add_build(self, other, build_tag):
+        """add build data from another Builddb to this one.
+
+        Note: this does NOT do a deep copy, it copies just references.
+        """
+        d= self.datadict()
+        if d.has_key(build_tag):
+            raise ValueError, "cannot add, build %s already exists" % build_tag
+        d[build_tag]= other.datadict()[build_tag]
     def add_module(self, build_tag, 
                    module_build_tag,
                    modulename, versionname):
@@ -783,6 +831,26 @@ class Builddb(JSONstruct):
         if linked_ is None:
             return False
         return linked_.has_key(modulename)
+    def filter_by_spec(self, string_specs):
+        """return a new Builddb that satisfies the given list of specs.
+        """
+        specs= [scan_modulespec(s) for s in string_specs]
+        new= self.__class__()
+        for build_tag in self.iter_builds():
+            found= True
+            m= self.modules(build_tag)
+            for (module,flag,version) in specs:
+                v= m.get(module)
+                if v is None:
+                    found= False
+                    break
+                if not compare_versions_flag(flag,v,version):
+                    found= False
+                    break
+            if found:
+                new.add_build(self, build_tag)
+        return new
+
     def iter_builds(self):
         """return a build iterator."""
         for t in sorted(self.datadict().keys()):

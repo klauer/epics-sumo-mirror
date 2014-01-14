@@ -13,7 +13,7 @@ import pys_utils as utils
 # version of the program:
 my_version= "1.0"
 
-KNOWN_COMMANDS=set(("new", "partialdb"))
+KNOWN_COMMANDS=set(("newtree", "partialdb", "findtree"))
 
 # -----------------------------------------------
 # main
@@ -262,11 +262,12 @@ def process(options, commands):
     """
     if not commands:
         sys.exit("command missing")
-    for c in commands:
-        if not c in KNOWN_COMMANDS:
-            sys.exit("unknown command: %s" % c)
+    if commands[0] not in KNOWN_COMMANDS:
+        sys.exit("unknown command: %s" % commands[0])
 
-    if "new" in commands:
+    if commands[0]=="newtree":
+        if len(commands)>1:
+            sys.exit("error: extra arguments following \"newtree\"")
         if not options.db:
             sys.exit("--db is mandatory")
         if not options.buildtag:
@@ -285,7 +286,10 @@ def process(options, commands):
         create_makefile(db, builddb, options.buildtag, 
                         options.verbose, options.dry_run)
         builddb.json_save(options.builddb, options.verbose, options.dry_run)
-    if "partialdb" in commands:
+        return
+    if commands[0]=="partialdb":
+        if len(commands)>1:
+            sys.exit("error: extra arguments following \"partialdb\"")
         if not options.db:
             sys.exit("--db is mandatory")
         if not options.buildtag:
@@ -296,7 +300,26 @@ def process(options, commands):
         builddb= utils.Builddb.from_json_file(options.builddb)
         new_db= create_partialdb(db, builddb, options.buildtag)
         new_db.json_print()
-    return
+        return
+    if commands[0]=="findtree":
+        if len(commands)<2:
+            sys.exit("error: module specs missing")
+        if not options.builddb:
+            sys.exit("--builddb is mandatory")
+        builddb= utils.Builddb.from_json_file(options.builddb)
+        new_builddb= builddb.filter_by_spec(commands[1:])
+        if not options.brief:
+            new_builddb.json_print()
+        else:
+            if new_builddb.is_empty():
+                print "no matching buildtrees found"
+            else:
+                print "matches:"
+                d= {}
+                for b in new_builddb.iter_builds():
+                    d[b]= new_builddb.modules(b)
+                utils.json_dump(d)
+        return
 
 def print_summary():
     """print a short summary of the scripts function."""
@@ -310,16 +333,20 @@ def _test():
     doctest.testmod()
     print "done!"
 
+usage = """usage: %prog [options] command
+where command is:
+  newtree   : create a new buildtree
+  partialdb : recreate a partial db from a complete db and an buildtree
+  findtree [modules] :
+              find buildtrees that have all the given modules.
+"""
+
 def main():
     """The main function.
 
     parse the command-line options and perform the command
     """
     # command-line options and command-line help:
-    usage = "usage: %prog [options] command\n" + \
-            "where command is:\n" + \
-            "  new       : create a new buildtree\n" + \
-            "  partialdb : recreate a partial db from existing tree\n\n"
 
     parser = OptionParser(usage=usage,
                           version="%%prog %s" % my_version,
@@ -358,6 +385,10 @@ def main():
                       type="string",  
                       help="specify the EPICSBASE",
                       metavar="EPICSBASE"  
+                      )
+    parser.add_option("-b", "--brief", 
+                      action="store_true", 
+                      help="do a more brief output for some commands",
                       )
     parser.add_option("-p", "--progress", 
                       action="store_true", 
