@@ -287,17 +287,24 @@ def rev2key(rev):
     if not rev: # empty string
         return "-"
     if (rev[0]== "/") or (rev[0]==","):
+        # remove leading "/" or ",":
         if len(rev)<=1:
             return "-"
         rev= rev[1:]
     if len(rev)>1:
+        # remove leading "R" if it is followed by a digit:
         if rev[0]=="R" and rev[1].isdigit():
             rev= rev[1:]
+    # if first character is not a digit, return string prepended with a "-".
+    # This ensures that revision strings with a digit will come after such a
+    # string.
     if not rev[0].isdigit():
         return "-"+rev
+    # allow "-" and "." as separator for numbers:
     rev= rev.replace("-",".")
     l= rev.split(".")
     n= []
+    # reformat all numbers in a 3-digit form:
     for e in l:
         try:
             n.append("%03d" % int(e))
@@ -652,6 +659,16 @@ class Dependencies(JSONstruct):
         if a_dict is None:
             return dep_modulename
         return a_dict.get(dep_modulename, dep_modulename)
+    def test_module(self, modulename, versionname):
+        """return True if the module is found, raise KeyError otherwise.
+        """
+        d= self.datadict().get(modulename)
+        if d is None:
+            raise KeyError, "no data for module %s" % modulename
+        v= d.get(versionname)
+        if v is None:
+            raise KeyError, "version %s not found for module %s" % \
+                    (versionname, modulename)
     def dependencies_found(self, modulename, versionname):
         """return if dependencies are found for modulename:versionname.
         """
@@ -672,6 +689,15 @@ class Dependencies(JSONstruct):
         if deps is None:
             return iter([])
         return deps.iterkeys()
+    def list_dependency_versions(self, modulename, versionname,
+                                 dependencyname):
+        """return dependency names as a list."""
+        d= self.datadict()[modulename][versionname]
+        deps= d.get("dependencies")
+        if deps is None:
+            return []
+        else:
+            return deps.get(dependencyname,[])
     def iter_dependency_versions(self, modulename, versionname,
                                  dependencyname):
         """return an iterator on dependency names."""
@@ -786,6 +812,9 @@ class Builddb(JSONstruct):
     def is_empty(self):
         """shows of the object is empty."""
         return not bool(self.datadict())
+    def __len__(self):
+        """return the number of buildtrees."""
+        return len(self.datadict())
     def add(self, other):
         """add data from a dict."""
         d= self.datadict()
@@ -822,6 +851,11 @@ class Builddb(JSONstruct):
         build_= self.datadict()[build_tag]
         module_dict= build_["modules"]
         return module_dict.has_key(modulename)
+    def module_version(self, build_tag, modulename):
+        """returns the version of the module or None."""
+        build_= self.datadict()[build_tag]
+        module_dict= build_["modules"]
+        return module_dict.get(modulename)
 
     def module_is_linked(self, build_tag, 
                          modulename):
@@ -862,7 +896,11 @@ class Builddb(JSONstruct):
         for module in sorted(module_dict.keys()):
             yield (module, module_dict[module])
     def modules(self, build_tag):
-        """return all modules of a build."""
+        """return all modules of a build.
+        
+        The returned structure is a dictionary mapping modulenames to
+        versionnames.
+        """
         build_ = self.datadict()[build_tag]
         return build_["modules"]
 
