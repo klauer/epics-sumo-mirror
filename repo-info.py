@@ -138,6 +138,32 @@ def filter_no_tags(data):
             new[path]= lst
     return new
 
+def create_group(data):
+    """create groups of the entries.
+    """
+    pure_paths= set()
+    repos     = {}
+    for path, lst in data.items():
+        # lst: (type,path,tag), type is "path" or "darcs"
+        # tag may be missing
+        if lst[0]=="path":
+            pure_paths.add(lst[1])
+            continue
+        repo_dict= repos.setdefault(lst[0], {})
+        d= repo_dict.setdefault(lst[1], {})
+        if len(lst)<3: # no tag
+            rd= d.setdefault("clones", set())
+            rd.add(path)
+            continue
+        td= d.setdefault("tags", set())
+        td.add(lst[2])
+    pure_paths= sorted(pure_paths)
+    for r in repos.values():
+        for dct in r.values():
+            for k, v in dct.items():
+                dct[k]= sorted(v)
+    return { "paths": pure_paths, "repos": repos }
+
 # -----------------------------------------------
 # main
 # -----------------------------------------------
@@ -164,6 +190,9 @@ def process(options):
         sys.exit("error, one of these options must be provided: %s" % \
                  (" ".join(required)))
 
+    if options.group:
+        utils.json_dump(create_group(repo_data))
+        return
     if options.missing_repo:
         repo_data= filter_no_repos(repo_data)
     if options.missing_tag:
@@ -219,6 +248,10 @@ def main():
                            "DEPENCYFILE is \"-\" read from standard "+ \
                            "input.",
                       metavar="DEPENCYFILE"  
+                      )
+    parser.add_option("--group",
+                      action="store_true", 
+                      help="show entries grouped by repository path",
                       )
     parser.add_option("--missing-tag",
                       action="store_true", 

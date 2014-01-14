@@ -76,7 +76,7 @@ def show_progress(cnt, cnt_max, message= None):
 # -----------------------------------------------
 
 def dict_of_sets_add(dict_, key, val):
-    """add a key, create a list if needed.
+    """add a key, create a set if needed.
 
     Here is an example:
     >>> import pprint
