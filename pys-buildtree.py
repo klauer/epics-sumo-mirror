@@ -126,6 +126,11 @@ def gen_RELEASE(db, buildtag, modulename, versionname,
                 extra_lines,
                 verbose, dry_run):
     """generate a RELEASE file."""
+    def myprint(st):
+        if verbose:
+            print st,
+        if not dry_run:
+            fh.write(st)
     dir_= module_dir_string(buildtag, modulename, versionname)
     config_dir= os.path.join(dir_, "configure")
     if not dry_run:
@@ -138,26 +143,21 @@ def gen_RELEASE(db, buildtag, modulename, versionname,
     if not dry_run:
         fh= open(filename, "w")
 
+    basedir= os.path.abspath(".")
+    myprint("SUPPORT=%s\n" % basedir)
     for dep_name in db.iter_dependencies(modulename, versionname):
         dep_versions= list(db.iter_dependency_versions(modulename, 
                                                        versionname, 
                                                        dep_name))
         dep_versionname= dep_versions[0]
         name_here= db.get_alias(modulename, versionname, dep_name)
-        path= os.path.abspath(
-                  module_dir_string(buildtag, dep_name, dep_versionname) 
-                             )
-        str_= "%s=%s\n" % (name_here,path)
-        if verbose:
-            print str_,
-        if not dry_run:
-            fh.write(str_)
+        path= os.path.join("$(SUPPORT)", 
+                           module_dir_string(buildtag, dep_name, 
+                                             dep_versionname) 
+                          )
+        myprint("%s=%s\n" % (name_here,path))
     for l in extra_lines:
-        str_= "%s\n" % l.rstrip()
-        if verbose:
-            print str_,
-        if not dry_run:
-            fh.write(str_)
+        myprint("%s\n" % l.rstrip())
     if not dry_run:
         fh.close()
 
@@ -283,12 +283,12 @@ def create_partialdb(db, builddb, buildtag):
 def fullapprelease(build_path, build_tag, module_dict, extra_lines):
     """create entries for an release file.
     """
-    lines= []
+    lines= ["SUPPORT=%s" % os.path.abspath(build_path)]
     for m in sorted(module_dict.keys()):
         basename= module_dir_string(build_tag, m, module_dict[m])
         lines.append("%s=%s" % \
                 (m, 
-                 os.path.abspath(os.path.join(build_path, basename))
+                 os.path.join("$(SUPPORT)", basename)
                 ))
     lines.extend(extra_lines)
     return "\n".join(lines)
