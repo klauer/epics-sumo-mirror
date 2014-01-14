@@ -266,39 +266,41 @@ def process(options, commands):
         sys.exit("unknown command: %s" % commands[0])
 
     if commands[0]=="newtree":
-        if len(commands)>1:
+        if len(commands)>2:
             sys.exit("error: extra arguments following \"newtree\"")
+        if len(commands)<=1:
+            sys.exit("error: buildtag missing")
         if not options.db:
             sys.exit("--db is mandatory")
-        if not options.buildtag:
-            sys.exit("--buildtag is mandatory")
         if not options.epicsbase:
             sys.exit("--epicsbase is mandatory")
         if not options.builddb:
             sys.exit("--builddb is mandatory")
+        buildtag= commands[1]
         db= utils.Dependencies.from_json_file(options.db)
         builddb= utils.Builddb.from_json_file(options.builddb)
-        if builddb.has_build_tag(options.buildtag):
-            sys.exit("error, buildtag \"%s\" already taken" % options.buildtag)
-        create_modules(db, builddb, options.buildtag, 
+        if builddb.has_build_tag(buildtag):
+            sys.exit("error, buildtag \"%s\" already taken" % buildtag)
+        create_modules(db, builddb, buildtag, 
                        options.epicsbase,
                        options.verbose, options.dry_run)
-        create_makefile(db, builddb, options.buildtag, 
+        create_makefile(db, builddb, buildtag, 
                         options.verbose, options.dry_run)
         builddb.json_save(options.builddb, options.verbose, options.dry_run)
         return
     if commands[0]=="partialdb":
-        if len(commands)>1:
+        if len(commands)>2:
             sys.exit("error: extra arguments following \"partialdb\"")
+        if len(commands)<=1:
+            sys.exit("error: buildtag missing")
         if not options.db:
             sys.exit("--db is mandatory")
-        if not options.buildtag:
-            sys.exit("--buildtag is mandatory")
         if not options.builddb:
             sys.exit("--builddb is mandatory")
+        buildtag= commands[1]
         db= utils.Dependencies.from_json_file(options.db)
         builddb= utils.Builddb.from_json_file(options.builddb)
-        new_db= create_partialdb(db, builddb, options.buildtag)
+        new_db= create_partialdb(db, builddb, buildtag)
         new_db.json_print()
         return
     if commands[0]=="findtree":
@@ -335,10 +337,12 @@ def _test():
 
 usage = """usage: %prog [options] command
 where command is:
-  newtree   : create a new buildtree
-  partialdb : recreate a partial db from a complete db and an buildtree
+  newtree [buildtag]  : 
+          create a new buildtree
+  partialdb [buildtag]: 
+          recreate a partial db from a complete db and an buildtree
   findtree [modules] :
-              find buildtrees that have all the given modules.
+          find buildtrees that have all the given modules.
 """
 
 def main():
@@ -366,13 +370,6 @@ def main():
                       type="string",  
                       help="define the name of the DBFILE",
                       metavar="DBFILE"  
-                      )
-    parser.add_option("-t", "--buildtag",
-                      action="store", 
-                      type="string",  
-                      help="specify the BUILDTAG"+\
-                           "file.",
-                      metavar="BUILDTAG"  
                       )
     parser.add_option("--builddb",
                       action="store", 
