@@ -162,13 +162,21 @@ def path2name_from_deps(deps):
             utils.dict_of_sets_add(path2name, dep_path, name)
     return utils.dict_sets_to_lists(path2name)
 
-def groups_from_deps(deps):
+def groups_from_deps(deps, basedir):
     """try to group directories.
     """
     def _add(dict_, p):
         """add a path."""
         (head,tail)= os.path.split(p)
         dict_.setdefault(head, set()).add(tail)
+    def gen_name(name, basedir):
+        """generate a module name."""
+        if name.startswith(basedir):
+            name= name.replace(basedir,"")
+        if name[0]=="/":
+            name= name[1:]
+        name= name.replace("/","_")
+        return name.upper()
     groups= {}
     for path, dependencies in deps.items():
         _add(groups, path)
@@ -176,10 +184,9 @@ def groups_from_deps(deps):
             _add(groups, deppath)
     new= {}
     for k, v in groups.items():
-        name= os.path.basename(k).upper()
-        new[name]= { "path": k,
-                     "subdirs": sorted(v)
-                   }
+        new[gen_name(k,basedir)]= { "path": k,
+                                    "subdirs": sorted(v)
+                                  }
     return new
 
 
@@ -248,7 +255,7 @@ def process(options):
     if options.exclude_deps:
         results= filter_exclude_deps(results, options.exclude_deps)
     if options.groups:
-        utils.json_dump( groups_from_deps(results))
+        utils.json_dump( groups_from_deps(results, options.groups))
         return
     if options.name2paths:
         utils.json_dump( name2path_from_deps(results))
@@ -315,8 +322,10 @@ def main():
                       metavar="INFOFILE"  
                       )
     parser.add_option("--groups",
-                      action="store_true", 
-                      help="try to group directories by their name",
+                      action="store", 
+                      help="try to group directories by their name. The "+ \
+                           "BASEDIR is taken as directory base to "+ \
+                           "calculate group names from directory names",
                       )
     parser.add_option("--name2paths",
                       action="store_true", 

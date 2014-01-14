@@ -198,6 +198,9 @@ def create_database(deps, repoinfo, groups):
             _paths= _namevname2path.setdefault((module_name, versionname),[])
             _paths.append(versionedmodule_path)
 
+    #utils.json_dump(_path2namevname)
+    #sys.exit(0)
+
     # here we populate the versiondata with the dependency specifications:
     for modulename, module in db.items():
         for versionname, versionedmodule in module.items():
@@ -216,10 +219,13 @@ def create_database(deps, repoinfo, groups):
                     try:
                         (_dep_name, _dep_version)= _path2namevname[dep_path]
                     except KeyError, e:
-                        sys.exit(("at module %s version %s: "+ \
+                        sys.exit(("at module %s version %s "+ \
+                                  "path %s: "+ \
                                   "missing data for "+ \
                                   "dependency \"%s\"") % \
-                                  (modulename, versionname, dep_path))
+                                  (modulename, versionname, 
+                                   versionedmodule_path,
+                                   dep_path))
                     if _dep_name != alias:
                         if db_aliases.has_key(_dep_name):
                             if db_aliases[_dep_name]!=alias:
