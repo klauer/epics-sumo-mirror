@@ -55,6 +55,7 @@ from optparse import OptionParser
 import sys
 import os.path
 import os
+import re
 
 import pysupport_utils as utils
 
@@ -161,6 +162,32 @@ def path2name_from_deps(deps):
             utils.dict_of_sets_add(path2name, dep_path, name)
     return utils.dict_sets_to_lists(path2name)
 
+def filter_exclude_paths(deps, regexp):
+    """remove all paths that match regexp.
+    """
+    rx= re.compile(regexp)
+    new= {}
+    for path, dependency_dict in deps.items():
+        if rx.search(path):
+            continue
+        new[path]= dependency_dict
+    return new
+
+def filter_exclude_deps(deps, regexp):
+    """remove all paths whose dependencies match regexp.
+    """
+    rx= re.compile(regexp)
+    new= {}
+    for path, dependency_dict in deps.items():
+        matched= False
+        for _, dep in dependency_dict.items():
+            if rx.search(dep):
+                matched= True
+                break
+        if not matched:
+            new[path]= dependency_dict
+    return new
+
 # -----------------------------------------------
 # main
 # -----------------------------------------------
@@ -196,6 +223,10 @@ def process(options):
         required=["--dir","--info-file"]
         sys.exit("error, one of these options must be provided: %s" % \
                  (" ".join(required)))
+    if options.exclude_paths:
+        results= filter_exclude_paths(results, options.exclude_paths)
+    if options.exclude_deps:
+        results= filter_exclude_deps(results, options.exclude_deps)
     if options.name2paths:
         utils.json_dump( name2path_from_deps(results))
         return
@@ -267,6 +298,20 @@ def main():
     parser.add_option("--path2names",
                       action="store_true", 
                       help="return a map mapping paths to names",
+                      )
+    parser.add_option("--exclude-paths",
+                      action="store", 
+                      type="string",  
+                      help="exclude all paths that match REGEXP "+ \
+                           "from dependencies",
+                      metavar="REGEXP"  
+                      )
+    parser.add_option("--exclude-deps",
+                      action="store", 
+                      type="string",  
+                      help="exclude all paths whose dependencies "+ \
+                           "match REGEXP",
+                      metavar="REGEXP"  
                       )
     parser.add_option("-p", "--progress", 
                       action="store_true", 
