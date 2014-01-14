@@ -75,21 +75,34 @@ def save_builddb(builddb_filename, builddb, verbose, dry_run):
     if not dry_run:
         utils.json_dump_file(builddb_filename, builddb)
 
+def local_builddb_add(local_builddb, modulename, versionname, 
+                      own_build_tag, build_tag):
+    """add an entry to a buildd object.
+    """
+    modules = local_builddb.setdefault("modules", {})
+    modules[modulename]= versionname
+    if own_build_tag!=build_tag:
+        linked= local_builddb.setdefault("linked", {})
+        linked[modulename]= build_tag
+
 def builddb_match(db, builddb, modulename, versionname):
     """try to find matching deps in builddb.
     """
     deps= gather_dependencies(db, modulename, versionname)
     for build in sorted(builddb.keys()):
-        build_data= builddb[build]
+        build_data= builddb[build]["modules"]
         module_data= build_data.get(modulename)
         if module_data is None:
-            continue
-        if not isinstance(module_data, str):
-            # if it is a list, it is a symlink from another module.
             continue
         if module_data!=versionname:
             # version doesn't match
             continue
+        linked= builddb[build].get("linked")
+        if linked:
+            if linked.has_key(modulename):
+                # if this build has only a link of the module, skip it
+                continue
+
         # from here: check if all dependencies match:
         match= True
         for module_name, versionname in deps.items():
@@ -104,19 +117,6 @@ def builddb_match(db, builddb, modulename, versionname):
         if match:
             return build
     return
-
-def add_builddb(builddb, buildtag, modules_dict):
-    """add an entry to the build database.
-    """
-    if builddb.has_key(buildtag):
-        sys.exit("error, buildtag \"%s\" already taken" % buildtag)
-    new= {}
-    builddb[buildtag]= new
-    for module_name, module_data in modules_dict.items():
-        if module_data[1]== buildtag:
-            new[module_name]= module_data[0]
-        else:
-            new[module_name]= module_data
 
 def gather_dependencies(db, modulename, versionname, 
                         gathered_deps= None):
@@ -247,7 +247,7 @@ def create_module(db, builddb, build_tag,
 def create_modules(db, builddb, build_tag, epicsbase, verbose, dry_run):
     """create all modules.
     """
-    modules_dict= {}
+    local_builddb= {}
     for modulename, moduleversions in db.items():
         if len(moduleversions.keys())!=1:
             raise ValueError, "more than one version for %s" % modulename
@@ -257,10 +257,11 @@ def create_modules(db, builddb, build_tag, epicsbase, verbose, dry_run):
                           modulename, versionname,
                           epicsbase,
                           verbose, dry_run)
-        modules_dict[modulename]= [versionname, build_tag_used]
-    return modules_dict
+        local_builddb_add(local_builddb, modulename, versionname,
+                          build_tag, build_tag_used)
+    return local_builddb
 
-def create_makefile(db, modules_dict, build_tag, verbose, dry_run):
+def create_makefile(db, local_builddb, build_tag, verbose, dry_run):
     """generate a makefile.
     """
     def wr(fh, st, verbose):
@@ -270,9 +271,9 @@ def create_makefile(db, modules_dict, build_tag, verbose, dry_run):
         if fh:
             fh.write(st)
     paths= {}
-    for modulename, moduledata in modules_dict.items():
-        (versionname, module_build_tag)= moduledata
-        if module_build_tag==build_tag:
+    linked= local_builddb.get("linked", {})
+    for modulename, versionname in local_builddb["modules"].items():
+        if not linked.has_key(modulename):
             paths[(modulename, versionname)]= \
                          module_dir_string(build_tag, 
                                            modulename, 
@@ -289,13 +290,11 @@ def create_makefile(db, modules_dict, build_tag, verbose, dry_run):
     wr(fh, "\n", verbose)
     for spec, path in paths.items():
         (modulename, versionname)= spec
-        if modules_dict[modulename][1]!=build_tag:
-            continue
         own_stamp= os.path.join(path, "stamp")
         dep_stamps= []
         for dep_name, dep_spec in \
                 db[modulename][versionname]["dependencies"].items():
-            if modules_dict[dep_name][1]!=build_tag:
+            if linked.has_key(dep_name):
                 continue
             dep_path= module_dir_string(build_tag, dep_name, dep_spec[0])
             dep_stamps.append(os.path.join(dep_path,"stamp"))
@@ -326,12 +325,12 @@ def process(options):
     builddb= load_builddb(options.builddb)
     if builddb.has_key(options.buildtag):
         sys.exit("error, buildtag \"%s\" already taken" % options.buildtag)
-    modules_dict= create_modules(db, builddb, options.buildtag, 
-                                 options.epicsbase,
-                                 options.verbose, options.dry_run)
-    create_makefile(db, modules_dict, options.buildtag, 
+    local_builddb= create_modules(db, builddb, options.buildtag, 
+                                  options.epicsbase,
+                                  options.verbose, options.dry_run)
+    create_makefile(db, local_builddb, options.buildtag, 
                     options.verbose, options.dry_run)
-    add_builddb(builddb, options.buildtag, modules_dict)
+    builddb[options.buildtag]= local_builddb
     save_builddb(options.builddb, builddb,
                  options.verbose, options.dry_run)
     return
