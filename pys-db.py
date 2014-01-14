@@ -154,8 +154,6 @@ def create_database(deps, repoinfo, groups):
     #    _path2namevname: maps a diretory path to (module_name, versionname)
     #    _namevname2path: maps (module_name,versionname) to a diretory path
     for module_name, groupdata in groups.items():
-        _taglesscnt=0
-        _pathcnt= 0
         db_moduleversions= {}
         db[module_name] = db_moduleversions
         # the root directory of all the versions:
@@ -168,7 +166,7 @@ def create_database(deps, repoinfo, groups):
             versionedmodule_path= os.path.join(root_path, subdir)
             # get the repository data:
             try:
-                (source_type, _, source_tag) = \
+                (source_type, url, source_tag) = \
                     repoinfo.get(versionedmodule_path)
             except KeyError, _:
                 # shouldn't happen, but we just print a warning in this case:
@@ -177,22 +175,26 @@ def create_database(deps, repoinfo, groups):
             if source_type=="path":
                 # the source is a directory path, not a repository. We generate
                 # the unique versionname:
-                versionname= "PATH-%03d" % _pathcnt
-                _pathcnt+= 1
+                versionname= "PATH-%s" % subdir
             elif source_type=="darcs":
                 if not source_tag:
                     # the source is a darcs repository but has no tag. We
                     # generate a unique versionname:
-                    versionname= "TAGLESS-%03d" % _taglesscnt
-                    _taglesscnt+= 1
+                    versionname= "TAGLESS-%s" % subdir
+                    # patch URL to <versionedmodule_path>. Since we do not know
+                    # in what state the working copy repository is, we have to
+                    # take this as a source instead of the central repository:
+                    url= versionedmodule_path
                 else:
                     # the source is a darcs repository with a tag. We use the
                     # tag as unique versionname:
                     versionname= source_tag
             db_versionedmodule= {}
             db_moduleversions[versionname]= db_versionedmodule
-            db_versionedmodule["source"]= \
-                repoinfo.get_struct(versionedmodule_path)
+            l= [source_type, url]
+            if source_tag:
+                l.append(source_tag)
+            db_versionedmodule["source"]= l
 
             _path2namevname[versionedmodule_path]= (module_name,versionname)
             # when we assume that a versionedmodule_path may contain a
