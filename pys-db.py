@@ -131,8 +131,8 @@ import pys_utils as utils
 my_version= "1.0"
 
 KNOWN_COMMANDS=set(("convert", "distribution", 
-                    "show",
-                    "shownewest", "showall"))
+                    "show", "shownewest", "showall",
+                    "merge", "filter"))
 
 # -----------------------------------------------
 # main
@@ -359,6 +359,33 @@ def process(options, commands):
             dist_obj.json_print()
         return
 
+    if commands[0]=="filter":
+        if len(commands)<=1:
+            sys.exit("error: no modules specified")
+        if not options.db:
+            sys.exit("error, --db is mandatory here")
+        db= utils.Dependencies.from_json_file(options.db)
+        db= db.filter_by_specs(commands[1:])
+        if options.savedb:
+            db.json_save(options.db, options.verbose, options.dry_run)
+        else:
+            db.json_print()
+        return
+
+    if commands[0]=="merge":
+        if len(commands)!=2:
+            sys.exit("exactly one filename must follow \"merge\"")
+        if not options.db:
+            sys.exit("error, --db is mandatory here")
+        db = utils.Dependencies.from_json_file(options.db)
+        db2= utils.Dependencies.from_json_file(commands[1])
+        db.merge(db2)
+        if options.savedb:
+            db.json_save(options.db, options.verbose, options.dry_run)
+        else:
+            db.json_print()
+        return
+
     if commands[0]=="show":
         if len(commands)>1:
             sys.exit("error: extra arguments following \"show\"")
@@ -407,18 +434,24 @@ def _test():
 usage = """usage: %prog [options] command
 where command is:
   convert [SCANFILE]: 
-          convert SCANFILE to a new DB
+          Convert SCANFILE to a new DB
   distribution [modules]: 
-          create distribution from DB where all specified modules are
+          Create distribution from DB where all specified modules are
           contained. If you want a specific version of a module use
           modulename:versioname instead of the modulename alone.
   show:   show the names of all modules
   shownewest {modules}: 
-          show newest version for each module. If {modules} is missing, take
+          Show newest version for each module. If {modules} is missing, take
           all modules of the database.
   showall {modules}: 
-          show all versions for each module. If {modules} is missing, take
+          Show all versions for each module. If {modules} is missing, take
           all modules of the database.
+  merge [db]
+          Merge the given db with the one specified by --db
+  filter [modules]
+          Print the database for the given modules. If you want a specific
+          version of a module use modulename:versioname instead of the
+          modulename alone.
 """
 
 def main():
@@ -450,6 +483,12 @@ def main():
                       type="string",  
                       help="define the name of the DBFILE",
                       metavar="DBFILE"  
+                      )
+    parser.add_option("--savedb",
+                      action="store_true", 
+                      help="resave db if it was modified, currently "+ \
+                           "only for these commands :"+ \
+                           (" ".join(("merge","filter")))
                       )
     parser.add_option("-b", "--brief", 
                       action="store_true", 

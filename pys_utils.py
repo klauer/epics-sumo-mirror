@@ -381,6 +381,10 @@ class JSONstruct(object):
         print self.json_string()
     def json_save(self, filename, verbose, dry_run):
         """save as a JSON file."""
+        if not filename:
+            raise ValueError, "filename is empty"
+        if filename=="-":
+            raise ValueError, "filename must not be \"-\""
         backup= "%s.bak" % filename
         if os.path.exists(backup):
             if verbose:
@@ -449,11 +453,69 @@ class PathSource(JSONstruct):
         else:
             return (d[0], d[1], "")
 
+def dict_update(dict_, other):
+    """update dict_ with other but do not change existing values."""
+    for k,v in other.items():
+        old_v= dict_.get(k)
+        if old_v is None:
+            dict_[k]= v
+            continue
+        if old_v==v:
+            continue
+        raise ValueError, "key %s: contradicting values: %s %s" % \
+                          (k,repr(old_v),repr(v))
+
+def list_update(list1, list2):
+    """update a list with another.
+
+    In the returned list each element is unique and it is sorted.
+    """
+    if not list1:
+        return list2[:]
+    s= set(list1)
+    s.update(list2)
+    return sorted(s)
+
 class Dependencies(JSONstruct):
     """the dependency database."""
     def __init__(self, dict_= None):
         """create the object."""
         super(Dependencies, self).__init__(dict_)
+    def merge(self, other):
+        """merge another Dependencies object to self."""
+        for modulename in other.iterate():
+            m= self.datadict().setdefault(modulename,{})
+            for versionname in other.iter_versions(modulename):
+                vdict = m.setdefault(versionname,{})
+                vdict2= other.datadict()[modulename][versionname]
+                for dictname, dictval in vdict2.items():
+                    if dictname=="aliases":
+                        try:
+                            dict_update(vdict.setdefault(dictname,{}), 
+                                        dictval)
+                        except ValueError, e:
+                            raise ValueError, \
+                              "module %s version %s aliases: %s" % \
+                              (modulename, versionname, str(e))
+                        continue
+                    if dictname=="source":
+                        if not vdict.has_key(dictname):
+                            vdict[dictname]= copy.deepcopy(dictval)
+                        else:
+                            if vdict[dictname]!=dictval:
+                                raise ValueError, \
+                                  ("module %s version %s: different "+\
+                                   "sources: %s %s") % \
+                                  (modulename, versionname, 
+                                   repr(vdict[dictname]), repr(dictval))
+                        continue
+                    if dictname=="dependencies":
+                        d= vdict.setdefault(dictname,{})
+                        for versionname,lst in dictval.items():
+                            d[versionname]= \
+                                    list_update(d.get(versionname),lst)
+                        continue
+                    raise AssertionError, "unexpected dictname %s" % dictname
     def copy_module_data(self, other, module_name, versionname):
         """copy the module data from another Dependencies object."""
         m= self.datadict().setdefault(module_name,{})
@@ -552,13 +614,36 @@ class Dependencies(JSONstruct):
     def filter(self, elements):
         """take items from the Dependencies object and create a new one.
         
-        elements must be a dict { modulename: versionname }
+        elements must be a dict { modulename: versionname }. If versionname is
+        None, take all versions of the module.
+
+        Note that the new Dependencies object only contains references of the
+        data. This DOES NOT do a deep copy.
         """
         new= self.__class__()
         for modulename, versionname in elements.items():
             d= new.datadict().setdefault(modulename, {})
-            d[versionname]= self.datadict()[modulename][versionname]
+            if versionname:
+                versions= [versionname]
+            else:
+                versions= self.iter_versions(modulename)
+            for version in versions:
+                d[version]= self.datadict()[modulename][version]
         return new
+    def filter_by_specs(self, specs):
+        """similar to filter.
+
+        specs is a list of strings of the form "modulename" or
+        "modulename:versionname".
+        """
+        d= {}
+        for s in specs:
+            l= s.split(":")
+            if len(l)<=1:
+                d[l[0]]= None
+            else:
+                d[l[0]]= l[1]
+        return self.filter(d)
 
 class Builddb(JSONstruct):
     """the buildtree database."""
