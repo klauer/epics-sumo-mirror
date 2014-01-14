@@ -63,6 +63,41 @@ def show_progress(cnt, cnt_max, message= None):
     return cnt
 
 # -----------------------------------------------
+# data structure utilities
+# -----------------------------------------------
+
+def dict_of_sets_add(dict_, key, val):
+    """add a key, create a list if needed.
+
+    Here is an example:
+    >>> d= {}
+    >>> dict_of_sets_add(d,"a",1)
+    >>> dict_of_sets_add(d,"a",2)
+    >>> dict_of_sets_add(d,"b",1)
+    >>> pprint.pprint(d)
+    {'a': set([1, 2]), 'b': set([1])}
+    """
+    l= dict_.get(key)
+    if l is None:
+        dict_[key]= set([val])
+    else:
+        l.add(val)
+
+def dict_sets_to_lists(dict_):
+    """change values from sets to sorted lists.
+
+    Here is an example:
+    >>> d= {'a': set([1, 2]), 'b': set([1])}
+    >>> ld= dict_sets_to_lists(d)
+    >>> pprint.pprint(ld)
+    {'a': [1, 2], 'b': [1]}
+    """
+    new= {}
+    for (k,v) in dict_.items():
+        new[k]= sorted(list(v))
+    return new
+
+# -----------------------------------------------
 # basic system utilities
 # -----------------------------------------------
 
