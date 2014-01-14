@@ -204,8 +204,6 @@ def create_database(deps, repoinfo, groups):
     # here we populate the versiondata with the dependency specifications:
     for modulename, module in db.items():
         for versionname, versionedmodule in module.items():
-            db_dependencies= {}
-            versionedmodule["dependencies"]= db_dependencies
             db_aliases= {}
             versionedmodule_paths= _namevname2path[(modulename, versionname)]
 
@@ -218,7 +216,7 @@ def create_database(deps, repoinfo, groups):
                 for alias, dep_path in _deps.items():
                     try:
                         (_dep_name, _dep_version)= _path2namevname[dep_path]
-                    except KeyError, e:
+                    except KeyError, _:
                         sys.exit(("at module %s version %s "+ \
                                   "path %s: "+ \
                                   "missing data for "+ \
@@ -235,6 +233,8 @@ def create_database(deps, repoinfo, groups):
                                          db_aliases[_dep_name], alias))
                         else:
                             db_aliases[_dep_name]= alias
+                    db_dependencies= \
+                        versionedmodule.setdefault("dependencies", {})
                     _dep= db_dependencies.setdefault(_dep_name, [])
                     _dep.append(_dep_version)
             if db_aliases:
@@ -264,7 +264,11 @@ def _distribution_add(db, dist, modulename, versionname):
         return dist
     new_dist= dict(dist)
     new_dist[modulename]= versionname
-    for dep_modulename, dep_data in versionedmodule["dependencies"].items():
+    db_dependencies= versionedmodule.get("dependencies")
+    if db_dependencies is None:
+        return new_dist
+
+    for dep_modulename, dep_data in db_dependencies.items():
         for dep_version in sorted(dep_data,
                                   key= utils.rev2key, reverse= True):
             errst= None

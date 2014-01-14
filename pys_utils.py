@@ -3,6 +3,7 @@
 import sys
 import subprocess
 import os.path
+import pprint
 
 # pylint: disable=C0322,C0103
 
@@ -43,6 +44,30 @@ def json_dump_file(filename, var):
         json.dump(var, fh, sort_keys= True, indent= 4)
     fh.close()
 
+def json_str(var):
+    """convert a variable to JSON format.
+
+    Here is an example:
+    >>> var= {"key":[1,2,3], "key2":"val", "key3":{"A":1,"B":2}}
+    >>> print json_str(var)
+    {
+        "key": [
+            1,
+            2,
+            3
+        ],
+        "key2": "val",
+        "key3": {
+            "A": 1,
+            "B": 2
+        }
+    }
+    """
+    if _JSON_TYPE==0:
+        return json.dumps(var, sort_keys= True, indent= 4*" ")
+    else:
+        return json.dumps(var, sort_keys= True, indent= 4) 
+
 def json_dump(var):
     """Dump a variable in JSON format.
 
@@ -62,10 +87,12 @@ def json_dump(var):
         }
     }
     """
-    if _JSON_TYPE==0:
-        print json.dumps(var, sort_keys= True, indent= 4*" ")
-    else:
-        print json.dumps(var, sort_keys= True, indent= 4)
+    print json_str(var)
+
+def json_load(data):
+    """decode a JSON string.
+    """
+    return json.loads(data)
 
 def json_loadfile(filename):
     """load a JSON file.
@@ -288,24 +315,6 @@ def version2tag(tag):
         return "R"+tag
     return tag
 
-def uni_path(parts, tag_required= False):
-    """create a universal path.
-
-    parts must be a list. If it is only one element, the function returns
-    "path,<parts>". If it has more than one element, the function returns a
-    string that is a comma separated list of the parts.
-
-    The concept here is to identify paths, repoisitories and repositories with
-    a tag with a string. We currently have three possibilities:
-
-      path,<path>                 - a simple path
-      darcs,<repo-url>            - a darcs repository
-      darcs,<repo-url>,<repo-tag> - a darcs repository with a tag
-    """
-    if len(parts)==1:
-        return "path,%s" % parts[0]
-    return ",".join(parts)
-
 def is_standardpath(path, darcs_tag):
     """checks if path is complient to Bessy convention for support paths.
     
@@ -321,6 +330,107 @@ def is_standardpath(path, darcs_tag):
     """
     l= split_path(path)
     return l[1]==tag2version(darcs_tag)
+
+class Builddb(object):
+    """the buildtree database."""
+    def __init__(self, dict_= None):
+        """create the object."""
+        if dict_ is None:
+            self.dict_= {}
+        else:
+            self.dict_= dict_
+    def add(self, other):
+        """add data from another Builddb object."""
+        for key in ["modules", "linked"]:
+            self.dict_[key].update(other[key])
+    def to_dict(self):
+        """return the object as a dict."""
+        return self.dict_
+    def __repr__(self):
+        """return a repr string."""
+        return "%s(%s)" % (self.__class__.__name__, repr(self.to_dict()))
+    def __str__(self):
+        """return a human readable string."""
+        txt= ["%s:" % self.__class__.__name__]
+        txt.append(pprint.pformat(self.to_dict(), indent=2))
+        return "\n".join(txt)
+    @classmethod
+    def from_json(cls, json_data):
+        """create an object from a json string."""
+        return cls(json_load(json_data))
+    @classmethod
+    def from_json_file(cls, filename):
+        """create an object from a json file."""
+        if os.path.exists(filename):
+            return cls(json_loadfile(filename))
+        else:
+            return cls()
+    def add_json_file(self, filename):
+        """add data from a JSON file."""
+        data= json_loadfile(filename)
+        self.add(data)
+    def json_string(self):
+        """return a JSON representation of the object."""
+        return json_str(self.to_dict())
+    def json_print(self):
+        """print a JSON representation of the object."""
+        print self.json_string()
+    def json_save(self, filename, verbose, dry_run):
+        """save as a JSON file."""
+        backup= "%s.bak" % filename
+        if os.path.exists(backup):
+            if verbose:
+                print "remove %s" % backup
+            if not dry_run:
+                os.remove(backup)
+        if os.path.exists(filename):
+            if verbose:
+                print "rename %s to %s" % (filename, backup)
+            if not dry_run:
+                os.rename(filename, backup)
+        if not dry_run:
+            json_dump_file(filename, self.to_dict())
+    def has_build_tag(self, build_tag):
+        """returns if build_tag is contained."""
+        return self.dict_.has_key(build_tag)
+    def add_module(self, build_tag, 
+                   module_build_tag,
+                   modulename, versionname):
+        """add a module definition."""
+        build_= self.dict_.setdefault(build_tag, {})
+        modules_= build_.setdefault("modules", {})
+        modules_[modulename]= versionname
+        if build_tag!= module_build_tag:
+            linked_ = build_.setdefault("linked", {})
+            linked_[modulename]= module_build_tag
+    def has_module(self, build_tag, modulename):
+        """returns if the module is contained here."""
+        build_= self.dict_[build_tag]
+        module_dict= build_["modules"]
+        return module_dict.has_key(modulename)
+
+    def module_is_linked(self, build_tag, 
+                         modulename):
+        """return if the module is linked."""
+        build_= self.dict_[build_tag]
+        linked_ = build_.get("linked")
+        if linked_ is None:
+            return False
+        return linked_.has_key(modulename)
+    def iter_builds(self):
+        """return a build iterator."""
+        for t in sorted(self.dict_.keys()):
+            yield t
+    def iter_modules(self, build_tag):
+        """return an iterator on the modules."""
+        build_= self.dict_[build_tag]
+        module_dict= build_["modules"]
+        for module in sorted(module_dict.keys()):
+            yield (module, module_dict[module])
+    def modules(self, build_tag):
+        """return all modules of a build."""
+        build_ = self.dict_[build_tag]
+        return build_["modules"]
 
 def _test():
     """perform internal tests."""
