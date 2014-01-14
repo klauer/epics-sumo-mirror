@@ -122,7 +122,8 @@ def builddb_match(db, builddb, modulename, versionname):
             return build_tag
     return
 
-def gen_RELEASE(db, buildtag, modulename, versionname, epicsbase,
+def gen_RELEASE(db, buildtag, modulename, versionname, 
+                extra_lines,
                 verbose, dry_run):
     """generate a RELEASE file."""
     dir_= module_dir_string(buildtag, modulename, versionname)
@@ -151,11 +152,12 @@ def gen_RELEASE(db, buildtag, modulename, versionname, epicsbase,
             print str_,
         if not dry_run:
             fh.write(str_)
-    str_= "EPICS_BASE=%s\n" % epicsbase
-    if verbose:
-        print str_,
-    if not dry_run:
-        fh.write(str_)
+    for l in extra_lines:
+        str_= "%s\n" % l.rstrip()
+        if verbose:
+            print str_,
+        if not dry_run:
+            fh.write(str_)
     if not dry_run:
         fh.close()
 
@@ -183,7 +185,7 @@ def create_source(db, modulename, versionname,
 
 def create_module(db, builddb, build_tag, 
                   modulename, versionname, 
-                  epicsbase,
+                  extra_defs,
                   verbose, dry_run):
     """check out a module.
 
@@ -205,11 +207,11 @@ def create_module(db, builddb, build_tag,
 
     create_source(db, modulename, versionname, dirname, verbose, dry_run)
     gen_RELEASE(db, build_tag, modulename, versionname, 
-                epicsbase,
+                extra_defs,
                 verbose, dry_run)
     return build_tag
 
-def create_modules(db, builddb, build_tag, epicsbase, verbose, dry_run):
+def create_modules(db, builddb, build_tag, extra_lines, verbose, dry_run):
     """create all modules.
     """
     for modulename in db.iterate():
@@ -220,7 +222,7 @@ def create_modules(db, builddb, build_tag, epicsbase, verbose, dry_run):
         build_tag_used= \
             create_module(db, builddb, build_tag, 
                           modulename, versionname,
-                          epicsbase,
+                          extra_lines,
                           verbose, dry_run)
         builddb.add_module(build_tag, build_tag_used, modulename, versionname)
 
@@ -278,7 +280,7 @@ def create_partialdb(db, builddb, buildtag):
         new.copy_module_data(db, modulename, versionname)
     return new
 
-def fullapprelease(build_path, build_tag, module_dict, epicsbase):
+def fullapprelease(build_path, build_tag, module_dict, extra_lines):
     """create entries for an release file.
     """
     lines= []
@@ -288,10 +290,10 @@ def fullapprelease(build_path, build_tag, module_dict, epicsbase):
                 (m, 
                  os.path.abspath(os.path.join(build_path, basename))
                 ))
-    lines.append("EPICS_BASE=%s" % epicsbase)
+    lines.extend(extra_lines)
     return "\n".join(lines)
 
-def apprelease(build_path, build_tag, module_spec, builddb, db, epicsbase):
+def apprelease(build_path, build_tag, module_spec, builddb, db, extra_lines):
     """create entries for an release file.
     """
     build_modules= builddb.modules(build_tag)
@@ -308,7 +310,7 @@ def apprelease(build_path, build_tag, module_spec, builddb, db, epicsbase):
                           "found in build %s") % (m, build_tag))
         module_dict[modulename]= v
     get_dependencies(module_dict, db, builddb, build_tag)
-    return fullapprelease(build_path, build_tag, module_dict, epicsbase)
+    return fullapprelease(build_path, build_tag, module_dict, extra_lines)
 
 def script_shortname():
     """return the name of this script without a path component."""
@@ -322,6 +324,9 @@ def process(options, commands):
     if commands[0] not in KNOWN_COMMANDS:
         sys.exit("unknown command: %s" % commands[0])
 
+    if not options.extra:
+        options.extra= []
+
     if commands[0]=="newtree":
         if len(commands)>2:
             sys.exit("error: extra arguments following \"newtree\"")
@@ -329,8 +334,6 @@ def process(options, commands):
             sys.exit("error: buildtag missing")
         if not options.db:
             sys.exit("--db is mandatory")
-        if not options.epicsbase:
-            sys.exit("--epicsbase is mandatory")
         if not options.builddb:
             sys.exit("--builddb is mandatory")
         buildtag= commands[1]
@@ -339,7 +342,7 @@ def process(options, commands):
         if builddb.has_build_tag(buildtag):
             sys.exit("error, buildtag \"%s\" already taken" % buildtag)
         create_modules(db, builddb, buildtag, 
-                       options.epicsbase,
+                       options.extra,
                        options.verbose, options.dry_run)
         create_makefile(db, builddb, buildtag, 
                         options.verbose, options.dry_run)
@@ -384,14 +387,12 @@ def process(options, commands):
             sys.exit("error: extra arguments following \"fullapprelease\"")
         if len(commands)<=1:
             sys.exit("error: buildtag missing")
-        if not options.epicsbase:
-            sys.exit("--epicsbase is mandatory")
         buildtag= commands[1]
         builddb= utils.Builddb.from_json_file(options.builddb)
         print fullapprelease(os.path.dirname(options.builddb),
                              buildtag,
                              builddb.modules(buildtag),
-                             options.epicsbase)
+                             options.extra)
         return
     
     if commands[0]=="apprelease":
@@ -399,8 +400,6 @@ def process(options, commands):
             sys.exit("error: buildtag missing")
         if not options.db:
             sys.exit("--db is mandatory")
-        if not options.epicsbase:
-            sys.exit("--epicsbase is mandatory")
         buildtag= commands[1]
         modules= commands[2:]
         db= utils.Dependencies.from_json_file(options.db)
@@ -410,7 +409,7 @@ def process(options, commands):
                          modules,
                          builddb,
                          db,
-                         options.epicsbase)
+                         options.extra)
         return
 
 #        if len(commands)<2:
@@ -503,11 +502,13 @@ def main():
                       help="specify the BUILDDATABASE",
                       metavar="BUILDDATABASE"  
                       )
-    parser.add_option("--epicsbase",
-                      action="store", 
+    parser.add_option("-x", "--extra",
+                      action="append", 
                       type="string",  
-                      help="specify the EPICSBASE",
-                      metavar="EPICSBASE"  
+                      help="Extra lines that are added to the RELEASE "+ \
+                           "file. A LINE may be an arbitrary string or "+ \
+                           "definition.",
+                      metavar="LINE"  
                       )
     parser.add_option("-b", "--brief", 
                       action="store_true", 

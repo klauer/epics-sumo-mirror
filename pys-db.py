@@ -160,61 +160,63 @@ def create_database(deps, repoinfo, groups):
     #    _namevname2path: maps (module_name,versionname) to a diretory path
     for module_name, groupdata in groups.items():
         # the root directory of all the versions:
-        root_path= groupdata["path"]
-        subdirs= groupdata["subdirs"]
-
-        for subdir in sorted(subdirs):
-            # iterate over all versions from <groups>:
-            # reconstruct the original directory path:
-            versionedmodule_path= os.path.join(root_path, subdir)
-            # get the repository data:
-            try:
-                (source_type, url, source_tag) = \
-                    repoinfo.get(versionedmodule_path)
-            except KeyError, _:
-                # shouldn't happen, but we just print a warning in this case:
-                errmsg("no source data: %s" % versionedmodule_path)
-                continue
-            if source_type=="path":
-                # the source is a directory path, not a repository. We generate
-                # the unique versionname:
-                if subdir.startswith("PATH-"):
-                    # Try to handle a subdir that was created by this set of
-                    # tools. Such a subdir may already be named
-                    # "PATH-<name>+<treetag>". We want to take <name> as
-                    # versionname in this case:
-                    versionname= utils.split_treetag(subdir)[0]
-                else:
-                    versionname= "PATH-%s" % subdir
-            elif source_type=="darcs":
-                if not source_tag:
-                    # the source is a darcs repository but has no tag. We
-                    # generate a unique versionname:
-                    if subdir.startswith("TAGLESS-"):
+        for root_path, subdirs in groupdata.items():
+            for subdir in sorted(subdirs):
+                # iterate over all versions from <groups>:
+                # reconstruct the original directory path:
+                versionedmodule_path= os.path.join(root_path, subdir)
+                # get the repository data:
+                try:
+                    (source_type, url, source_tag) = \
+                        repoinfo.get(versionedmodule_path)
+                except KeyError, _:
+                    # shouldn't happen, but we just print a warning in this
+                    # case:
+                    errmsg("no source data: %s" % versionedmodule_path)
+                    continue
+                if source_type=="path":
+                    # the source is a directory path, not a repository. We
+                    # generate the unique versionname:
+                    if subdir.startswith("PATH-"):
                         # Try to handle a subdir that was created by this set
                         # of tools. Such a subdir may already be named
                         # "PATH-<name>+<treetag>". We want to take <name> as
                         # versionname in this case:
                         versionname= utils.split_treetag(subdir)[0]
                     else:
-                        versionname= "TAGLESS-%s" % subdir
-                    # patch URL to <versionedmodule_path>. Since we do not know
-                    # in what state the working copy repository is, we have to
-                    # take this as a source instead of the central repository:
-                    url= versionedmodule_path
-                else:
-                    # the source is a darcs repository with a tag. We use the
-                    # tag as unique versionname:
-                    versionname= source_tag
-            db.add_source(module_name, versionname, source_type, 
-                          url, source_tag)
+                        versionname= "PATH-%s" % subdir
+                elif source_type=="darcs":
+                    if not source_tag:
+                        # the source is a darcs repository but has no tag. We
+                        # generate a unique versionname:
+                        if subdir.startswith("TAGLESS-"):
+                            # Try to handle a subdir that was created by this
+                            # set of tools. Such a subdir may already be named
+                            # "PATH-<name>+<treetag>". We want to take <name>
+                            # as versionname in this case:
+                            versionname= utils.split_treetag(subdir)[0]
+                        else:
+                            versionname= "TAGLESS-%s" % subdir
+                        # patch URL to <versionedmodule_path>. Since we do not
+                        # know in what state the working copy repository is, we
+                        # have to take this as a source instead of the central
+                        # repository:
+                        url= versionedmodule_path
+                    else:
+                        # the source is a darcs repository with a tag. We use
+                        # the tag as unique versionname:
+                        versionname= source_tag
+                db.add_source(module_name, versionname, source_type, 
+                              url, source_tag)
 
-            _path2namevname[versionedmodule_path]= (module_name,versionname)
-            # when we assume that a versionedmodule_path may contain a
-            # buildtag, there may be several versionedmodule_paths for a pair
-            # of (module_name, versionname).
-            _paths= _namevname2path.setdefault((module_name, versionname),[])
-            _paths.append(versionedmodule_path)
+                _path2namevname[versionedmodule_path]= \
+                        (module_name,versionname)
+                # when we assume that a versionedmodule_path may contain a
+                # buildtag, there may be several versionedmodule_paths for a
+                # pair of (module_name, versionname).
+                _paths= _namevname2path.setdefault(
+                                    (module_name, versionname),[])
+                _paths.append(versionedmodule_path)
 
     #utils.json_dump(_path2namevname)
     #sys.exit(0)
