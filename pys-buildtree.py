@@ -7,6 +7,7 @@ from optparse import OptionParser
 import sys
 import os.path
 import os
+import shutil
 
 import pys_utils as utils
 
@@ -14,7 +15,7 @@ import pys_utils as utils
 my_version= "1.0"
 
 KNOWN_COMMANDS=set(("show", "state", "newtree", "partialdb", "findtree", 
-                    "apprelease", "fullapprelease"))
+                    "apprelease", "fullapprelease", "delete"))
 
 # -----------------------------------------------
 # main
@@ -187,6 +188,30 @@ def create_source(db, modulename, versionname,
         utils.system(cmd, False, verbose, dry_run)
     else:
         raise AssertionError, "unsupported source type %s" % type_
+
+def delete_module(build_tag, modulename, versionname, 
+                  verbose, dry_run):
+    """delete a single module."""
+    basedir= module_basedir_string(modulename)
+    dirname= module_dir_string(build_tag, modulename, versionname)
+    if verbose:
+        print "removing %s" % dirname
+    if not dry_run:
+        shutil.rmtree(dirname)
+
+def delete_modules(builddb, build_tag, verbose, dry_run):
+    """delete modules of a build.
+    """
+    for b in builddb.iter_builds():
+        if builddb.is_linked_to(b, build_tag):
+            raise ValueError, "error: other builds depend on build %s" % \
+                              build_tag
+    for modulename, versionname in builddb.iter_modules(build_tag):
+        if builddb.module_link(build_tag, modulename):
+            continue
+        delete_module(build_tag, modulename, versionname, verbose, dry_run)
+
+    builddb.delete(build_tag)
 
 def create_module(db, builddb, build_tag, 
                   modulename, versionname, 
@@ -381,6 +406,26 @@ def process(options, commands):
                               options.verbose, options.dry_run)
         return
 
+    if commands[0]=="delete":
+        if len(commands)>2:
+            sys.exit("error: extra arguments following \"delete\"")
+        if len(commands)<=1:
+            sys.exit("error: buildtag missing")
+        if not options.builddb:
+            sys.exit("--builddb is mandatory")
+        buildtag= commands[1]
+        builddb= utils.Builddb.from_json_file(options.builddb)
+        if not builddb.has_build_tag(buildtag):
+            sys.exit("error, buildtag \"%s\" not found" % buildtag)
+        try:
+            delete_modules(builddb, buildtag, 
+                           options.verbose, options.dry_run)
+        except ValueError, e:
+            sys.exit(str(e))
+        builddb.json_save(options.builddb, 
+                          options.verbose, options.dry_run)
+        return
+
     if commands[0]=="newtree":
         if len(commands)>2:
             sys.exit("error: extra arguments following \"newtree\"")
@@ -469,34 +514,6 @@ def process(options, commands):
                          options.extra)
         return
 
-#        if len(commands)<2:
-#            sys.exit("error: module spec and build_tag missing")
-#        if not options.db:
-#            sys.exit("--db is mandatory")
-#        if not options.builddb:
-#            sys.exit("--builddb is mandatory")
-#        db= utils.Dependencies.from_json_file(options.db)
-#        builddb= utils.Builddb.from_json_file(options.builddb)
-#        new_builddb= builddb.filter_by_spec(commands[1:])
-#        if new_builddb.is_empty():
-#            sys.exit("no buildtree matches your spec")
-#        matching_builds= list(new_builddb.iter_builds())
-#        if options.buildtag:
-#            if not options.buildtag in matching_builds:
-#                sys.exit(("error: buildtag %s not matching your "+\
-#                          "module spec") % options.buildtag
-#            build_tag= options.build_tag
-#        else:
-#            if len(matching_builds)>1:
-#                sys.exit("error: more than one build match your "+ \
-#                         "module spec")
-#            build_tag= matching_builds[0]
-#        release= app_release(db,
-#                             new_builddb.modules[build_tag], 
-#                             commands[1:])
-#        print release
-#        return
-
 def print_summary():
     """print a short summary of the scripts function."""
     print "%-20s: a tool for managing support EPICS trees \n" % \
@@ -530,6 +547,9 @@ where command is:
   state [buildtag] {new state}
           show or change the state of the build. Allowed states are "stable"
           and "testing".
+  delete [buildtag] 
+          delete the build if no other builds depend on it. Note that the build
+          is kept in the build database but marked as "deleted".
 """
 
 def main():

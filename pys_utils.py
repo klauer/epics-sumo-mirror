@@ -838,6 +838,10 @@ class Builddb(JSONstruct):
         """add data from a JSON file."""
         data= json_loadfile(filename)
         self.add(data)
+    def delete(self, build_tag):
+        """delete a build."""
+        d= self.datadict()
+        del d[build_tag]
     def has_build_tag(self, build_tag):
         """returns if build_tag is contained."""
         return self.datadict().has_key(build_tag)
@@ -898,13 +902,23 @@ class Builddb(JSONstruct):
         return module_dict.get(modulename)
 
     def module_link(self, build_tag, 
-                         modulename):
+                    modulename):
         """return linked build_tag if the module is linked or None."""
         build_= self.datadict()[build_tag]
         linked_ = build_.get("linked")
         if linked_ is None:
             return 
         return linked_.get(modulename)
+    def is_linked_to(self, build_tag, other_build_tag):
+        """returns True if there are links to other_build_tag."""
+        build_= self.datadict()[build_tag]
+        linked_ = build_.get("linked")
+        if linked_ is None:
+            return False
+        for v in linked_.values():
+            if v== other_build_tag:
+                return True
+        return False
     def filter_by_spec(self, string_specs):
         """return a new Builddb that satisfies the given list of specs.
         """
