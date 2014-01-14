@@ -62,7 +62,8 @@ import pys_utils as utils
 # version of the program:
 my_version= "1.0"
 
-KNOWN_COMMANDS=set(("deps", "name2paths", "path2names", "groups", "repos"))
+KNOWN_COMMANDS=set(("deps", "name2paths", "path2names", 
+                    "groups", "repos", "all"))
 
 IGNORE_NAMES= set(["TOP", "EPICS_BASE"])
 
@@ -372,6 +373,12 @@ def process(options, commands):
         if not c in KNOWN_COMMANDS:
             sys.exit("unknown command: %s" % c)
 
+    commands= set(commands)
+    if "all" in commands:
+        commands.add("deps")
+        commands.add("repos")
+        commands.add("groups")
+
     deps= None
 
     if options.dir:
@@ -424,22 +431,23 @@ def _test():
     doctest.testmod()
     print "done!"
 
+usage = """usage: %prog [options] command
+where command is:
+  deps  : scan RELEASE files
+  repos : scan for repositories
+  groups: group directories by name
+  all   : do commands "deps", "repos" and "groups"
+  name2paths: return a map mapping names to paths
+  path2names: return a map mapping paths to names
+commands can be combined!
+"""
+
 def main():
     """The main function.
 
     parse the command-line options and perform the command
     """
     # command-line options and command-line help:
-    usage = "usage: %prog [options] command\n" + \
-            "where command is:\n" + \
-            "  deps  : scan RELEASE files\n" + \
-            "  repos : scan for repositories\n" + \
-            "  groups: group directories by name\n" + \
-            "  name2paths: return a map mapping names to paths\n" + \
-            "  path2names: return a map mapping paths to names\n" + \
-            "  groups: scan for groups\n\n" + \
-            "commands can be combined!"
-
     parser = OptionParser(usage=usage,
                           version="%%prog %s" % my_version,
                           description="This program scans EPICS support "+\
