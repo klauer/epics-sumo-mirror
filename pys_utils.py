@@ -583,7 +583,7 @@ class Dependencies(JSONstruct):
         if deps is None:
             dep_list= []
         else:
-            dep_list= deps[dependencyname]
+            dep_list= deps.get(dependencyname,[])
         for d in dep_list:
             yield d
     def iter_sorted_dependency_versions(self, modulename, versionname,
@@ -611,6 +611,39 @@ class Dependencies(JSONstruct):
                          key= rev2key,
                          reverse= True):
             yield v
+    def patch_version(self, modulename, versionname, newversionname,
+                      do_replace):
+        """add a new version to the database by copying the old one.
+        """
+        moduledata= self.datadict()[modulename]
+        if moduledata.has_key(newversionname):
+            raise ValueError, "module %s: version %s already exists" % \
+                    (modulename, newversionname)
+        d= copy.deepcopy(self.datadict()[modulename][versionname])
+        src= d.get("source")
+        if src:
+            if len(src)>2: # a tag is defined
+                src[2]= src[2].replace(versionname, newversionname)
+        moduledata[newversionname]= d
+        if do_replace:
+            del moduledata[versionname]
+        for l_modulename in self.iterate():
+            for l_versionname in self.iter_versions(l_modulename):
+                vd= self.datadict()[l_modulename][l_versionname]
+                deps= vd.get("dependencies")
+                if deps is None:
+                    continue
+                lst= deps.get(modulename)
+                if lst is None:
+                    continue
+                if not versionname in lst:
+                    continue
+                depset= set(lst)
+                depset.add(newversionname)
+                if do_replace:
+                    depset.discard(versionname)
+                deps[modulename]= sorted(depset)
+
     def filter(self, elements):
         """take items from the Dependencies object and create a new one.
         

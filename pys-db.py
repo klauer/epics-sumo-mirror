@@ -132,7 +132,8 @@ my_version= "1.0"
 
 KNOWN_COMMANDS=set(("convert", "distribution", 
                     "show", "shownewest", "showall",
-                    "merge", "filter"))
+                    "merge", "filter", 
+                    "cloneversion", "replaceversion"))
 
 # -----------------------------------------------
 # main
@@ -386,6 +387,20 @@ def process(options, commands):
             db.json_print()
         return
 
+    if commands[0]=="cloneversion" or commands[0]=="replaceversion":
+        do_replace= (commands[0]=="replaceversion")
+        if len(commands)!=4:
+            sys.exit("exactly three arguments must follow \"cloneversion\"")
+        if not options.db:
+            sys.exit("error, --db is mandatory here")
+        db = utils.Dependencies.from_json_file(options.db)
+        db.patch_version(commands[1], commands[2], commands[3], do_replace)
+        if options.savedb:
+            db.json_save(options.db, options.verbose, options.dry_run)
+        else:
+            db.json_print()
+        return
+
     if commands[0]=="show":
         if len(commands)>1:
             sys.exit("error: extra arguments following \"show\"")
@@ -452,6 +467,15 @@ where command is:
           Print the database for the given modules. If you want a specific
           version of a module use modulename:versioname instead of the
           modulename alone.
+  cloneversion [module old-version new-version]
+          Add a new version to the database by copying the old version. The
+          old-version data is copied for the new version data. All modules that
+          depend on module:old-version now alternatively depend on
+          module:new-version.
+  replaceversion [module old-version new-version]
+          Replace a version to the database with a new one. The old-version
+          data is copied for the new version data. All modules that depend on
+          module:old-version now depend on module:new-version.
 """
 
 def main():
