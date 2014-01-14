@@ -1,5 +1,109 @@
 #! /usr/bin/env python2.5
 # -*- coding: UTF-8 -*-
+"""
+=========
+pys-db-py
+=========
+
+Create a JSON database with module and dependency information.
+
+Logical definitions
+-------------------
+
+module:
+    Each module has a unique *modulename* and *moduleversions*. moduleversions
+    is a set where each item is a *versionedmodule*.
+
+versionedmodule:
+    This is a specific version of a module. A versionedmodule has a
+    *versionname* that is unique for that module, a *modulesource* and
+    *dependencies*.
+
+modulesource:
+    This is the specification on how to obtain the module. The modulesource
+    consists of a *sourcetype*, a *sourceurl* and an optional *sourcetag*.
+
+dependencies:
+    These is the specification of the dependencies of the versionedmodule. Each
+    item is a *dependency*, consiting of a *modulename* and a *versionname*.
+
+Datastructure
+-------------
+
+Some parts of the entities described above are used as keys in maps (python
+dictionaries). In order to not to be confused with the definitions above we add
+some more here.
+
+dataset:
+    This is the collection of all the module data, a map. In this map, each key
+    is a *modulename* and the values are *moduleversions* entities.
+
+modulename:
+    The unique name of a module.
+
+moduleversions:
+    This is a map where each key is a *versionname* and each value is a
+    *versiondata* map.
+
+versiondata:
+    This is a map that has two keys, "source" and "dependencies". The value
+    associated to "source" is a *modulesource*. The value for "dependencies" is
+    a *dependencies* entity.
+
+dependencies:
+    This is a map that for each module this module depends on has a key that is
+    a *modulename* and a value that is a *versionname*.
+
+modulesource:
+    This is the specification on how to obtain the module. It is a list of 2 to
+    3 items. The first one is the *sourcetype*, the second one is the
+    *sourceurl* and the optional third one is the *sourcetag*.
+
+Example
+-------
+
+Here is an example of a dataset::
+
+  {
+      "ALARM": {
+          "R3-5": {
+              "dependencies": {
+                  "MISC": [
+                      "R2-4"
+                  ],
+                  "TIMER": [
+                      "R5-1"
+                  ]
+              },
+              "source": [
+                  "darcs",
+                  "/opt/repositories/controls/darcs/epics/support/alarm/base-3-14",
+                  "R3-5"
+              ]
+          }
+      },
+  
+      "MISC": {
+          "R2-1": {
+              "dependencies": {},
+              "source": [
+                  "darcs",
+                  "/opt/repositories/controls/darcs/epics/support/misc/base-3-14",
+                  "R2-1"
+              ]
+          },
+          "R2-4": {
+              "dependencies": {},
+              "source": [
+                  "darcs",
+                  "/opt/repositories/controls/darcs/epics/support/misc/base-3-14",
+                  "R2-4"
+              ]
+          }
+      },
+  }
+
+"""
 
 # pylint: disable=C0322,C0103
 
@@ -27,7 +131,6 @@ def create_database(deps, repoinfo, groups):
     def errmsg(msg):
         """print something on stderr."""
         sys.stderr.write(msg+"\n")
-
 
     _path2namevname= {}
     _namevname2path= {}
@@ -184,6 +287,10 @@ def process(options):
         utils.json_dump(dist_long)
     return
 
+def print_doc():
+    """print a short summary of the scripts function."""
+    print __doc__
+
 def print_summary():
     """print a short summary of the scripts function."""
     print "%-20s: a tool for managing support EPICS trees \n" % \
@@ -212,6 +319,10 @@ def main():
     parser.add_option("--summary",  
                       action="store_true", 
                       help="print a summary of the function of the program",
+                      )
+    parser.add_option("--doc",  
+                      action="store_true", 
+                      help="print a longer description of the program",
                       )
     parser.add_option("--test",  
                       action="store_true",
@@ -277,6 +388,10 @@ def main():
 
     if options.summary:
         print_summary()
+        sys.exit(0)
+
+    if options.doc:
+        print_doc()
         sys.exit(0)
 
     if options.test:
