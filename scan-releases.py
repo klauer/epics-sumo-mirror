@@ -55,7 +55,6 @@ from optparse import OptionParser
 import sys
 import os.path
 import os
-import subprocess
 
 import pysupport_utils as utils
 
@@ -71,43 +70,6 @@ sys.path.insert(0, "/home/pfeiffer/net/project/bii_scripts/lib/python")
 import makefile_scan
 
 makefile_scan_pre= {}
-
-# -----------------------------------------------
-# small utilities
-# -----------------------------------------------
-
-# -----------------------------------------------
-# basic system utilities
-# -----------------------------------------------
-
-def _system(cmd, catch_stdout, verbose, dry_run):
-    """execute a command.
-
-    execute a command and return the programs output
-    may raise:
-    IOError(errcode,stderr)
-    OSError(errno,strerr)
-    ValueError
-    """
-    if dry_run or verbose:
-        print ">", cmd
-        if dry_run:
-            return None
-    if catch_stdout:
-        stdout_par=subprocess.PIPE
-    else:
-        stdout_par=None
-
-    p= subprocess.Popen(cmd, shell=True,
-                        stdout=stdout_par, stderr=subprocess.PIPE,
-                        close_fds=True)
-    (child_stdout, child_stderr) = p.communicate()
-    # pylint: disable= E1101
-    if p.returncode!=0:
-        raise IOError(p.returncode,
-                      "cmd \"%s\", errmsg \"%s\"" % (cmd,child_stderr))
-    # pylint: enable= E1101
-    return(child_stdout)
 
 # -----------------------------------------------
 # RELEASE file scanning
