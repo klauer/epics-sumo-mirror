@@ -1,7 +1,12 @@
 #! /usr/bin/env python2.5
 # -*- coding: UTF-8 -*-
 
-# pylint: disable=C0322,C0103
+# pylint: disable=C0111
+#                          Missing docstring
+# pylint: disable=C0103
+#                          Invalid name ... for type module
+# pylint: disable=C0322
+#                          Operator not preceded by a space
 
 from optparse import OptionParser
 import sys
@@ -47,9 +52,11 @@ def gather_dependencies(db, modulename, versionname,
     if gathered_deps is None:
         gathered_deps= {}
     for dep_name in db.iter_dependencies(modulename, versionname):
+        # get all depdendencies, even ones marked "unstable":
         dep_versions= list(db.iter_dependency_versions(modulename, 
                                                        versionname, 
-                                                       dep_name))
+                                                       dep_name,
+                                                       "unstable"))
         # Here we expect a unique version for each dependency of the module.
         if len(dep_versions)>1:
             raise AssertionError, "m:%s v:%s d:%s" % \
@@ -72,15 +79,14 @@ def _add_dependencies(module_dict, db, build_module_dict,
                       modulename, versionname):
     """recursively add missing dependencies."""
     try:
-        db.test_module(modulename, versionname)
+        db.assert_module(modulename, versionname)
     except KeyError, e:
         sys.exit("%s in db file" % str(e))
     for dep in db.iter_dependencies(modulename, versionname):
         if module_dict.has_key(dep):
             continue
-        l= db.list_dependency_versions(modulename, versionname, dep)
         version_present= build_module_dict[dep]
-        if version_present not in l:
+        if not db.depends_on(modulename, versionname, dep, version_present):
             str_= ("warning: dependency %s:%s is not in list "+ \
                    "of dependecies of module %s:%s in db file\n") % \
                    (dep,version_present,modulename,versionname)
@@ -125,6 +131,11 @@ def builddb_match(db, builddb, modulename, versionname):
             return build_tag
     return
 
+# pylint: disable=R0913
+#                          Too many arguments
+# pylint: disable=R0914
+#                          Too many local variables
+
 def gen_RELEASE(db, builddb, buildtag, modulename, versionname, 
                 extra_lines,
                 verbose, dry_run):
@@ -149,9 +160,11 @@ def gen_RELEASE(db, builddb, buildtag, modulename, versionname,
     basedir= os.path.abspath(".")
     myprint("SUPPORT=%s\n" % basedir)
     for dep_name in db.iter_dependencies(modulename, versionname):
+        # get all depdendencies, even ones marked "unstable":
         dep_versions= list(db.iter_dependency_versions(modulename, 
                                                        versionname, 
-                                                       dep_name))
+                                                       dep_name,
+                                                       "unstable"))
         dep_versionname= dep_versions[0]
         name_here= db.get_alias(modulename, versionname, dep_name)
         buildtag_here= builddb.module_link(buildtag, dep_name)
@@ -167,11 +180,17 @@ def gen_RELEASE(db, builddb, buildtag, modulename, versionname,
     if not dry_run:
         fh.close()
 
+# pylint: enable=R0913
+# pylint: enable=R0914
+
+# pylint: disable=R0913
+#                          Too many arguments
+
 def create_source(db, modulename, versionname, 
                   destdir, verbose, dry_run):
     """create directory by given source spec.
     """
-    (type_, url, tag)= db.source(modulename, versionname)
+    (type_, url, tag)= db.module_source(modulename, versionname)
     if type_=="path":
         #cmd= "scp -r -p \"%s\" %s" % (url, destdir)
         # join(url,"") effectively adds a "/" at the end of the path. This is
@@ -189,10 +208,11 @@ def create_source(db, modulename, versionname,
     else:
         raise AssertionError, "unsupported source type %s" % type_
 
+# pylint: enable=R0913
+
 def delete_module(build_tag, modulename, versionname, 
                   verbose, dry_run):
     """delete a single module."""
-    basedir= module_basedir_string(modulename)
     dirname= module_dir_string(build_tag, modulename, versionname)
     if verbose:
         print "removing %s" % dirname
@@ -212,6 +232,9 @@ def delete_modules(builddb, build_tag, verbose, dry_run):
         delete_module(build_tag, modulename, versionname, verbose, dry_run)
 
     builddb.delete(build_tag)
+
+# pylint: disable=R0913
+#                          Too many arguments
 
 def create_module(db, builddb, build_tag, 
                   modulename, versionname, 
@@ -233,10 +256,12 @@ def create_module(db, builddb, build_tag,
                 extra_defs,
                 verbose, dry_run)
 
+# pylint: enable=R0913
+
 def add_modules(db, builddb, build_tag):
     """create all modules.
     """
-    for modulename in db.iterate():
+    for modulename in db.iter_modulenames():
         moduleversions= list(db.iter_versions(modulename))
         if len(moduleversions)!=1:
             raise ValueError, "more than one version for %s" % modulename
@@ -250,12 +275,15 @@ def add_modules(db, builddb, build_tag):
         
         builddb.add_module(build_tag, build_tag_used, modulename, versionname)
 
+# pylint: disable=R0913
+#                          Too many arguments
+
 def create_modules(db, builddb, build_tag, extra_lines, verbose, dry_run):
     """create all modules.
     """
     add_modules(db, builddb, build_tag)
 
-    for modulename in db.iterate():
+    for modulename in db.iter_modulenames():
         versionname= builddb.module_version(build_tag, modulename)
         # do not re-create modules that are links:
         if builddb.module_link(build_tag, modulename):
@@ -265,6 +293,10 @@ def create_modules(db, builddb, build_tag, extra_lines, verbose, dry_run):
                       extra_lines,
                       verbose, dry_run)
 
+# pylint: enable=R0913
+
+# pylint: disable=R0914
+#                          Too many local variables
 
 def create_makefile(db, builddb, build_tag, verbose, dry_run):
     """generate a makefile.
@@ -299,9 +331,11 @@ def create_makefile(db, builddb, build_tag, verbose, dry_run):
         for dep_name in db.iter_dependencies(modulename, versionname):
             if builddb.module_link(build_tag, dep_name):
                 continue
+            # get all depdendencies, even ones marked "unstable":
             dep_versions= list(db.iter_dependency_versions(modulename, 
                                                            versionname, 
-                                                           dep_name))
+                                                           dep_name,
+                                                           "unstable"))
             dep_path= module_dir_string(build_tag, dep_name, dep_versions[0])
             dep_stamps.append(os.path.join(dep_path,"stamp"))
 
@@ -313,11 +347,13 @@ def create_makefile(db, builddb, build_tag, verbose, dry_run):
     if not dry_run:
         fh.close()
 
+# pylint: enable=R0914
+
 def create_partialdb(db, builddb, buildtag):
     """create a partial database from a build."""
     new= utils.Dependencies()
     for modulename, versionname in builddb.iter_modules(buildtag):
-        new.copy_module_data(db, modulename, versionname)
+        new.import_module(db, modulename, versionname)
     return new
 
 def fullapprelease(build_path, build_tag, module_dict, extra_lines):
@@ -332,6 +368,9 @@ def fullapprelease(build_path, build_tag, module_dict, extra_lines):
                 ))
     lines.extend(extra_lines)
     return "\n".join(lines)
+
+# pylint: disable=R0913
+#                          Too many arguments
 
 def apprelease(build_path, build_tag, module_spec, builddb, db, extra_lines):
     """create entries for an release file.
@@ -352,9 +391,18 @@ def apprelease(build_path, build_tag, module_spec, builddb, db, extra_lines):
     get_dependencies(module_dict, db, builddb, build_tag)
     return fullapprelease(build_path, build_tag, module_dict, extra_lines)
 
+# pylint: enable=R0913
+
 def script_shortname():
     """return the name of this script without a path component."""
     return os.path.basename(sys.argv[0])
+
+# pylint: disable=R0912
+#                          Too many branches
+# pylint: disable=R0911
+#                          Too many return statements
+# pylint: disable=R0915
+#                          Too many statements
 
 def process(options, commands):
     """do all the work.
@@ -440,8 +488,8 @@ def process(options, commands):
         builddb= utils.Builddb.from_json_file(options.builddb)
         if builddb.has_build_tag(buildtag):
             sys.exit("error, buildtag \"%s\" already taken" % buildtag)
-        # create a new build in builddb, initial state is "testing":
-        builddb.new_build(buildtag)
+        # create a new build in builddb, initial state is "unstable":
+        builddb.new_build(buildtag, "unstable")
         # modifies builddb:
         create_modules(db, builddb, buildtag, 
                        options.extra,
@@ -513,6 +561,10 @@ def process(options, commands):
                          db,
                          options.extra)
         return
+
+# pylint: enable=R0912
+# pylint: enable=R0911
+# pylint: enable=R0915
 
 def print_summary():
     """print a short summary of the scripts function."""
@@ -609,7 +661,7 @@ def main():
                       help="just show what the program would do",
                       )
 
-    x= sys.argv
+    # x= sys.argv
     (options, args) = parser.parse_args()
     # options: the options-object
     # args: list of left-over args

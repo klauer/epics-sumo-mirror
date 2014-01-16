@@ -1,5 +1,8 @@
 #! /usr/bin/env python2.5
 # -*- coding: UTF-8 -*-
+
+# pylint: disable=C0301
+#                          Line too long
 """
 =========
 pys-db-py
@@ -117,8 +120,12 @@ Here is an example of a dataset::
   }
 
 """
+# pylint: enable=C0301
 
-# pylint: disable=C0322,C0103
+# pylint: disable=C0103
+#                          Invalid name ... for type module
+# pylint: disable=C0322
+#                          Operator not preceded by a space
 
 from optparse import OptionParser
 import sys
@@ -143,13 +150,22 @@ def script_shortname():
     """return the name of this script without a path component."""
     return os.path.basename(sys.argv[0])
 
-def create_database(deps, repoinfo, groups):
+# pylint: disable=R0914
+#                          Too many local variables
+# pylint: disable=R0912
+#                          Too many branches
+
+def create_database(deps, repoinfo, groups, state):
     """join the information of the three sources.
     """
     def errmsg(msg):
         """print something on stderr."""
         sys.stderr.write(msg+"\n")
 
+    try:
+        state= utils.Builddb.guess_state(state)
+    except ValueError, e:
+        sys.exit(str(e))
     _path2namevname= {}
     _namevname2path= {}
     db= utils.Dependencies()
@@ -206,7 +222,7 @@ def create_database(deps, repoinfo, groups):
                         # the source is a darcs repository with a tag. We use
                         # the tag as unique versionname:
                         versionname= source_tag
-                db.add_source(module_name, versionname, source_type, 
+                db.set_source(module_name, versionname, source_type, 
                               url, source_tag)
 
                 _path2namevname[versionedmodule_path]= \
@@ -222,7 +238,7 @@ def create_database(deps, repoinfo, groups):
     #sys.exit(0)
 
     # here we populate the versiondata with the dependency specifications:
-    for modulename in db.iterate():
+    for modulename in db.iter_modulenames():
         for versionname in db.iter_versions(modulename):
             versionedmodule_paths= _namevname2path[(modulename, versionname)]
 
@@ -250,10 +266,13 @@ def create_database(deps, repoinfo, groups):
                         except ValueError, e:
                             errmsg("alias error in module %s: %s" % str(e))
                     db.add_dependency(modulename, versionname,
-                                      _dep_name, _dep_version)
+                                      _dep_name, _dep_version, state)
     return db
 
-def _distribution_add(db, dist, modulename, versionname):
+# pylint: enable=R0914
+# pylint: enable=R0912
+
+def _distribution_add(db, dist, modulename, versionname, maxstate):
     """add a module to the set."""
     #print "_distribution_add(..,..,",modulename,",",versionname,")"
     existing_versionname= dist.get(modulename)
@@ -272,14 +291,14 @@ def _distribution_add(db, dist, modulename, versionname):
                  (modulename, versionname))
 
     for dep_modulename in db.iter_dependencies(modulename, versionname):
-        for dep_version in db.iter_sorted_dependency_versions(
-                modulename, versionname, dep_modulename):
+        for dep_version in db.sorted_dependency_versions(
+                modulename, versionname, dep_modulename, maxstate):
             errst= None
             try:
                 new_dist= _distribution_add(db, 
                                             new_dist, 
                                             dep_modulename, 
-                                            dep_version)
+                                            dep_version, maxstate)
                 errst= None
                 break
             except ValueError, e:
@@ -288,7 +307,7 @@ def _distribution_add(db, dist, modulename, versionname):
             raise ValueError, "last found %s" % errst
     return new_dist
 
-def distribution(db, modulespec_list):
+def distribution(db, modulespec_list, maxstate):
     """create a distribution.
     """
     versioned_modules= []
@@ -305,20 +324,22 @@ def distribution(db, modulespec_list):
     dist= {}
     for (modulename, versionname) in versioned_modules:
         try:
-            dist= _distribution_add(db, dist, modulename, versionname)
+            dist= _distribution_add(db, dist, modulename, versionname, 
+                                    maxstate)
         except ValueError, e:
             sys.exit(str(e))
 
     for modulename in versionless_modules:
         try:
-            it= db.iter_sorted_versions(modulename)
+            versionlist= db.sorted_moduleversions(modulename)
         except KeyError, e:
             sys.exit("no data for module %s" % modulename)
 
         found= False
-        for versionname in it:
+        for versionname in versionlist:
             try:
-                dist= _distribution_add(db, dist, modulename, versionname)
+                dist= _distribution_add(db, dist, modulename, versionname, 
+                                        maxstate)
                 found= True
                 break
             except ValueError, e:
@@ -326,10 +347,17 @@ def distribution(db, modulespec_list):
         if not found:
             sys.exit("no non conflicting versions found for %s" % modulename)
 
-    new= db.filter(dist)
+    new= db.partial_copy(dist)
     return (dist,new)
 
-
+# pylint: disable=R0914
+#                          Too many local variables
+# pylint: disable=R0912
+#                          Too many branches
+# pylint: disable=R0911
+#                          Too many return statements
+# pylint: disable=R0915
+#                          Too many statements
 
 def process(options, commands):
     """do all the work.
@@ -340,24 +368,28 @@ def process(options, commands):
         sys.exit("unknown command: %s" % commands[0])
 
     if commands[0]=="convert":
-        if len(commands)!=2:
-            sys.exit("exactly one filename must follow \"convert\"")
-        scandata= utils.json_loadfile(commands[1])
+        if len(commands)!=3:
+            sys.exit("a state and a filename must follow \"convert\"")
+        (state, filename)= commands[1:]
+        scandata= utils.json_loadfile(filename)
         deps= scandata["dependencies"]
         repoinfo= utils.PathSource(scandata["repos"])
         groups= scandata["groups"]
-        db= create_database(deps, repoinfo, groups)
+        db= create_database(deps, repoinfo, groups, state)
         db.json_print()
         return
 
     if commands[0]=="distribution":
         if len(commands)<=1:
+            sys.exit("error: MAXSTATE and module missing")
+        if len(commands)<=2:
             sys.exit("error: no modules specified")
         if not options.db:
             sys.exit("error, --db is mandatory here")
         db= utils.Dependencies.from_json_file(options.db)
-        modulespecs= commands[1:]
-        (dist_dict, dist_obj)= distribution(db, modulespecs)
+        maxstate= commands[1]
+        modulespecs= commands[2:]
+        (dist_dict, dist_obj)= distribution(db, modulespecs, maxstate)
         if options.brief:
             utils.json_dump(dist_dict)
         else:
@@ -370,7 +402,7 @@ def process(options, commands):
         if not options.db:
             sys.exit("error, --db is mandatory here")
         db= utils.Dependencies.from_json_file(options.db)
-        db= db.filter_by_specs(commands[1:])
+        db= db.partial_copy_by_specs(commands[1:])
         if options.savedb:
             db.json_save(options.db, options.verbose, options.dry_run)
         else:
@@ -411,7 +443,7 @@ def process(options, commands):
         if not options.db:
             sys.exit("error, --db is mandatory here")
         db= utils.Dependencies.from_json_file(options.db)
-        result= sorted(db.iterate())
+        result= sorted(db.iter_modulenames())
         utils.json_dump(result)
         return
 
@@ -423,16 +455,21 @@ def process(options, commands):
         if len(commands)>1:
             modulenames= commands[1:]
         else:
-            modulenames= list(db.iterate())
+            modulenames= list(db.iter_modulenames())
         result= {}
         for modulename in modulenames:
-            versions= list(db.iter_sorted_versions(modulename))
+            versions= db.sorted_moduleversions(modulename)
             if not showall:
                 result[modulename]= versions[0]
             else:
                 result[modulename]= versions
         utils.json_dump(result)
         return
+
+# pylint: enable=R0914
+# pylint: enable=R0912
+# pylint: enable=R0911
+# pylint: enable=R0915
 
 def print_doc():
     """print a short summary of the scripts function."""
@@ -452,12 +489,17 @@ def _test():
 
 usage = """usage: %prog [options] command
 where command is:
-  convert [SCANFILE]: 
-          Convert SCANFILE to a new DB
-  distribution [modules]: 
+  convert [STATE] [SCANFILE]: 
+          Convert SCANFILE to a new DB. All dependencies are marked with state
+          STATE. STATE may be "stable", "testing" or "unstable".
+  distribution [MAXSTATE] [modules]: 
           Create distribution from DB where all specified modules are
           contained. If you want a specific version of a module use
-          modulename:versioname instead of the modulename alone.
+          modulename:versioname instead of the modulename alone. MAXSTATE is
+          the "maximum" state of dependencies that are taken into account:
+              stable:   take only dependencies marked stable
+              testing:  take dependencies marked stable or testing
+              unstable: take dependencies marked stable, testing or unstable
   show:   show the names of all modules
   shownewest {modules}: 
           Show newest version for each module. If {modules} is missing, take
@@ -535,7 +577,7 @@ def main():
                       help="just show what the program would do",
                       )
 
-    x= sys.argv
+    # x= sys.argv
     (options, args) = parser.parse_args()
     # options: the options-object
     # args: list of left-over args

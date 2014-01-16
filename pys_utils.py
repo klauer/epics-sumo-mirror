@@ -1,5 +1,11 @@
 """Utilities for the pysupport scripts.
 """
+# pylint: disable=C0302
+#                          Too many lines in module
+# pylint: disable=C0322
+#                          Operator not preceded by a space
+# pylint: disable=C0103
+#                          Invalid name for type variable
 import sys
 import subprocess
 import os
@@ -7,7 +13,6 @@ import os.path
 import pprint
 import copy
 
-# pylint: disable=C0322,C0103
 
 # -----------------------------------------------
 # JSON support
@@ -189,11 +194,12 @@ def system(cmd, catch_stdout, verbose, dry_run):
                         stdout=stdout_par, stderr=subprocess.PIPE,
                         close_fds=True)
     (child_stdout, child_stderr) = p.communicate()
-    # pylint: disable= E1101
+    # pylint: disable=E1101
+    # "Instance 'Popen'has no 'returncode' member
     if p.returncode!=0:
         raise IOError(p.returncode,
                       "cmd \"%s\", errmsg \"%s\"" % (cmd,child_stderr))
-    # pylint: enable= E1101
+    # pylint: enable=E1101
     return(child_stdout)
 
 # -----------------------------------------------
@@ -365,6 +371,129 @@ def is_standardpath(path, darcs_tag):
     l= split_path(path)
     return tag2version(l[1])==tag2version(darcs_tag)
 
+def scan_modulespec(spec):
+    """parse a module specification.
+
+    A module specification has the form:
+
+      modulename                : any version
+      modulename:versionname    : exactly this version
+      modulename:+versionname   : this version or newer
+      modulename:-versionname   : this version or older
+
+    returns a tuple:
+      (modulename,flag,versionname) 
+      
+    which flag: "any", "this", "this_or_newer", "this_or_older"
+
+    Here are some examples:
+    >>> scan_modulespec("ALARM")
+    ('ALARM', 'any', '')
+    >>> scan_modulespec("ALARM:R3-5")
+    ('ALARM', 'this', 'R3-5')
+    >>> scan_modulespec("ALARM:-R3-5")
+    ('ALARM', 'this_or_older', 'R3-5')
+    >>> scan_modulespec("ALARM:+R3-5")
+    ('ALARM', 'this_or_newer', 'R3-5')
+    """
+    l= spec.split(":")
+    if len(l)<=1:
+        return (spec, "any", "")
+    if l[1][0]=="-":
+        return (l[0], "this_or_older", l[1][1:])
+    if l[1][0]=="+":
+        return (l[0], "this_or_newer", l[1][1:])
+    return (l[0], "this", l[1])
+
+def compare_versions_flag(flag, version1, version2):
+    """compare versions according to given flag.
+
+    Here are some examples:
+    >>> compare_versions_flag("any", "R1-2", "R1-3")
+    True
+    >>> compare_versions_flag("this", "R1-2", "R1-3")
+    False
+    >>> compare_versions_flag("this", "R1-2", "R1-2")
+    True
+    >>> compare_versions_flag("this", "R1-2", "1-2")
+    True
+    >>> compare_versions_flag("this_or_older", "R1-2", "1-2")
+    True
+    >>> compare_versions_flag("this_or_older", "R1-1", "R1-2")
+    True
+    >>> compare_versions_flag("this_or_older", "R1-3", "R1-2")
+    False
+    >>> compare_versions_flag("this_or_newer", "R1-1", "R1-2")
+    False
+    >>> compare_versions_flag("this_or_newer", "R1-2", "R1-2")
+    True
+    >>> compare_versions_flag("this_or_newer", "R1-3", "R1-2")
+    True
+    """
+    if flag=="any":
+        return True
+    k1= rev2key(version1)
+    k2= rev2key(version2)
+    if flag=="this":
+        return (k1==k2)
+    if flag=="this_or_older":
+        return (k1<=k2)
+    if flag=="this_or_newer":
+        return (k1>=k2)
+    raise AssertionError, "unknown flag: %s" % flag
+
+# -----------------------------------------------
+# string utilities
+# -----------------------------------------------
+
+def guess_string(st, allowed):
+    """guess a string that is abbreviated.
+
+    Allowed should be a set of allowed strings. The function tries to find a
+    unique string in allowed that starts with the same characters as st and
+    returns it. Returns None if no unoue match was found.
+    """
+    match= None
+    for s in allowed:
+        if s.startswith(st):
+            if match is not None:
+                return None
+            match= s
+    return match
+
+# -----------------------------------------------
+# generic datastructure utilities
+# -----------------------------------------------
+
+def dict_update(dict_, other, keylist= None):
+    """update dict_ with other but do not change existing values.
+
+    If keylist is given, update only these keys.
+    """
+    if keylist is None:
+        keylist= other.keys()
+    for k in keylist:
+        v= other[k]
+        old_v= dict_.get(k)
+        if old_v is None:
+            dict_[k]= v
+            continue
+        if old_v==v:
+            continue
+        raise ValueError, "key %s: contradicting values: %s %s" % \
+                          (k,repr(old_v),repr(v))
+
+def list_update(list1, list2):
+    """update a list with another.
+
+    In the returned list each element is unique and it is sorted.
+    """
+    if not list1:
+        return sorted(list2[:])
+    s= set(list1)
+    s.update(list2)
+    return sorted(s)
+
 # -----------------------------------------------
 # classes
 # -----------------------------------------------
@@ -486,108 +615,31 @@ class PathSource(JSONstruct):
         else:
             return (d[0], d[1], "")
 
-def dict_update(dict_, other):
-    """update dict_ with other but do not change existing values."""
-    for k,v in other.items():
-        old_v= dict_.get(k)
-        if old_v is None:
-            dict_[k]= v
-            continue
-        if old_v==v:
-            continue
-        raise ValueError, "key %s: contradicting values: %s %s" % \
-                          (k,repr(old_v),repr(v))
-
-def list_update(list1, list2):
-    """update a list with another.
-
-    In the returned list each element is unique and it is sorted.
-    """
-    if not list1:
-        return list2[:]
-    s= set(list1)
-    s.update(list2)
-    return sorted(s)
-
-def scan_modulespec(spec):
-    """parse a module specification.
-
-    A module specification has the form:
-
-      modulename                : any version
-      modulename:versionname    : exactly this version
-      modulename:+versionname   : this version or newer
-      modulename:-versionname   : this version or older
-
-    returns a tuple:
-      (modulename,flag,versionname) 
-      
-    which flag: "any", "this", "this_or_newer", "this_or_older"
-
-    Here are some examples:
-    >>> scan_modulespec("ALARM")
-    ('ALARM', 'any', '')
-    >>> scan_modulespec("ALARM:R3-5")
-    ('ALARM', 'this', 'R3-5')
-    >>> scan_modulespec("ALARM:-R3-5")
-    ('ALARM', 'this_or_older', 'R3-5')
-    >>> scan_modulespec("ALARM:+R3-5")
-    ('ALARM', 'this_or_newer', 'R3-5')
-    """
-    l= spec.split(":")
-    if len(l)<=1:
-        return (spec, "any", "")
-    if l[1][0]=="-":
-        return (l[0], "this_or_older", l[1][1:])
-    if l[1][0]=="+":
-        return (l[0], "this_or_newer", l[1][1:])
-    return (l[0], "this", l[1])
-
-def compare_versions_flag(flag, version1, version2):
-    """compare versions according to given flag.
-
-    Here are some examples:
-    >>> compare_versions_flag("any", "R1-2", "R1-3")
-    True
-    >>> compare_versions_flag("this", "R1-2", "R1-3")
-    False
-    >>> compare_versions_flag("this", "R1-2", "R1-2")
-    True
-    >>> compare_versions_flag("this", "R1-2", "1-2")
-    True
-    >>> compare_versions_flag("this_or_older", "R1-2", "1-2")
-    True
-    >>> compare_versions_flag("this_or_older", "R1-1", "R1-2")
-    True
-    >>> compare_versions_flag("this_or_older", "R1-3", "R1-2")
-    False
-    >>> compare_versions_flag("this_or_newer", "R1-1", "R1-2")
-    False
-    >>> compare_versions_flag("this_or_newer", "R1-2", "R1-2")
-    True
-    >>> compare_versions_flag("this_or_newer", "R1-3", "R1-2")
-    True
-    """
-    if flag=="any":
-        return True
-    k1= rev2key(version1)
-    k2= rev2key(version2)
-    if flag=="this":
-        return (k1==k2)
-    if flag=="this_or_older":
-        return (k1<=k2)
-    if flag=="this_or_newer":
-        return (k1>=k2)
-    raise AssertionError, "unknown flag: %s" % flag
+# pylint: disable=R0904
+#                          Too many public methods
+# pylint: disable=R0913
+#                          Too many arguments
 
 class Dependencies(JSONstruct):
     """the dependency database."""
+    states= set(("stable","testing","unstable"))
+    @staticmethod
+    def _allowed_states(max_state):
+        """generate a list of allowed states from a maximum state.
+        """
+        if max_state=="stable":
+            return set(("stable",))
+        if max_state=="testing":
+            return set(("stable","testing"))
+        if max_state=="unstable":
+            return set(("stable","testing","unstable"))
+        raise AssertionError, "invalid max_state: %s" % max_state
     def __init__(self, dict_= None):
         """create the object."""
         super(Dependencies, self).__init__(dict_)
     def merge(self, other):
         """merge another Dependencies object to self."""
-        for modulename in other.iterate():
+        for modulename in other.iter_modulenames():
             m= self.datadict().setdefault(modulename,{})
             for versionname in other.iter_versions(modulename):
                 vdict = m.setdefault(versionname,{})
@@ -603,29 +655,29 @@ class Dependencies(JSONstruct):
                               (modulename, versionname, str(e))
                         continue
                     if dictname=="source":
-                        if not vdict.has_key(dictname):
-                            vdict[dictname]= copy.deepcopy(dictval)
-                        else:
-                            if vdict[dictname]!=dictval:
-                                raise ValueError, \
-                                  ("module %s version %s: different "+\
-                                   "sources: %s %s") % \
-                                  (modulename, versionname, 
-                                   repr(vdict[dictname]), repr(dictval))
+                        try:
+                            dict_update(vdict, vdict2, [dictname])
+                        except ValueError, e:
+                            raise ValueError, \
+                              "module %s version %s source: %s" % \
+                              (modulename, versionname, str(e))
                         continue
                     if dictname=="dependencies":
-                        d= vdict.setdefault(dictname,{})
-                        for versionname,lst in dictval.items():
-                            d[versionname]= \
-                                    list_update(d.get(versionname),lst)
+                        try:
+                            dict_update(vdict.setdefault(dictname,{}),
+                                        dictval)
+                        except ValueError, e:
+                            raise ValueError, \
+                              "module %s version %s dependencies: %s" % \
+                              (modulename, versionname, str(e))
                         continue
                     raise AssertionError, "unexpected dictname %s" % dictname
-    def copy_module_data(self, other, module_name, versionname):
+    def import_module(self, other, module_name, versionname):
         """copy the module data from another Dependencies object."""
         m= self.datadict().setdefault(module_name,{})
         m[versionname]= copy.deepcopy(
                             other.datadict()[module_name][versionname])
-    def add_source(self, module_name, versionname, source_type, url, tag):
+    def set_source(self, module_name, versionname, source_type, url, tag):
         """add a module with source specification."""
         version_dict= self.datadict().setdefault(module_name,{})
         version= version_dict.setdefault(versionname, {})
@@ -634,13 +686,15 @@ class Dependencies(JSONstruct):
             l.append(tag)
         version["source"]= l
     def add_dependency(self, modulename, versionname, 
-                       dep_modulename, dep_versionname):
+                       dep_modulename, dep_versionname, state):
         """add dependency for a module:version.
         """
+        if state not in self.__class__.states:
+            raise ValueError, "invalid state: %s" % state
         m_dict= self.datadict()[modulename]
         dep_dict= m_dict[versionname].setdefault("dependencies",{})
-        l= dep_dict.setdefault(dep_modulename, [])
-        l.append(dep_versionname)
+        dep_module_dict= dep_dict.setdefault(dep_modulename, {})
+        dep_module_dict[dep_versionname]= state
     def add_alias(self, modulename, versionname, 
                   alias_name, real_name):
         """add an alias for modulename:versionname."""
@@ -659,8 +713,8 @@ class Dependencies(JSONstruct):
         if a_dict is None:
             return dep_modulename
         return a_dict.get(dep_modulename, dep_modulename)
-    def test_module(self, modulename, versionname):
-        """return True if the module is found, raise KeyError otherwise.
+    def assert_module(self, modulename, versionname):
+        """do nothing if the module is found, raise KeyError otherwise.
         """
         d= self.datadict().get(modulename)
         if d is None:
@@ -670,12 +724,12 @@ class Dependencies(JSONstruct):
             raise KeyError, "version %s not found for module %s" % \
                     (versionname, modulename)
     def dependencies_found(self, modulename, versionname):
-        """return if dependencies are found for modulename:versionname.
+        """returns True if dependencies are found for modulename:versionname.
         """
         # may raise KeyError exception in this line:
         d= self.datadict()[modulename][versionname]
         return d.has_key("dependencies")
-    def source(self, modulename, versionname):
+    def module_source(self, modulename, versionname):
         """return a tuple (type,url,tag) for the module source."""
         l= self.datadict()[modulename][versionname]["source"]
         if len(l)<3:
@@ -689,54 +743,72 @@ class Dependencies(JSONstruct):
         if deps is None:
             return iter([])
         return deps.iterkeys()
-    def list_dependency_versions(self, modulename, versionname,
-                                 dependencyname):
-        """return dependency names as a list."""
+    def depends_on(self, modulename, versionname, 
+                   dependencyname, dependencyversion):
+        """returns True if given dependency is found.
+        """
         d= self.datadict()[modulename][versionname]
         deps= d.get("dependencies")
         if deps is None:
-            return []
-        else:
-            return deps.get(dependencyname,[])
+            return False
+        dep_dict= deps.get(dependencyname)
+        if dep_dict is None:
+            return False
+        return dep_dict.has_key(dependencyversion)
     def iter_dependency_versions(self, modulename, versionname,
-                                 dependencyname):
-        """return an iterator on dependency names."""
+                                 dependencyname, max_state):
+        """return an iterator on dependency versions.
+        
+        max_state is the maximum allowed state:
+          "stable"  : return just stable
+          "testing" : return stable and testing
+          "unstable": return stable, testing and unstable
+        """
+        # pylint: disable=W0212
+        #                          Access to a protected member of a 
+        #                          client class
+        _states= self.__class__._allowed_states(max_state)
+        # pylint: enable=W0212
         d= self.datadict()[modulename][versionname]
         deps= d.get("dependencies")
         if deps is None:
-            dep_list= []
-        else:
-            dep_list= deps.get(dependencyname,[])
-        for d in dep_list:
-            yield d
-    def iter_sorted_dependency_versions(self, modulename, versionname,
-                                        dependencyname):
-        """return an iterator on sorted dependency names."""
-        d= self.datadict()[modulename][versionname]
-        deps= d.get("dependencies")
-        if deps is None:
-            dep_list= []
-        else:
-            dep_list= sorted(deps[dependencyname],
-                             key= rev2key, 
-                             reverse= True)
-        for d in dep_list:
-            yield d
-    def iterate(self):
+            raise StopIteration
+        dep_dict= deps.get(dependencyname,{})
+        if dep_dict is None:
+            raise StopIteration
+        for (dep_version, dep_state) in dep_dict.iteritems():
+            if dep_state not in _states:
+                continue
+            yield dep_version
+    def sorted_dependency_versions(self, modulename, versionname,
+                                   dependencyname, max_state):
+        """return sorted dependency versions.
+        
+        max_state is the maximum allowed state:
+          "stable"  : return just stable
+          "testing" : return stable and testing
+          "unstable": return stable, testing and unstable
+        """
+        dep_list= list(self.iter_dependency_versions(modulename, versionname,
+                                                     dependencyname, max_state))
+        dep_list.sort(key= rev2key, reverse= True)
+        return dep_list
+    def iter_modulenames(self):
         """return an iterator on module names."""
         return self.datadict().iterkeys()
     def iter_versions(self, modulename):
         """return an iterator on versionnames of a module."""
         return self.datadict()[modulename].iterkeys()
-    def iter_sorted_versions(self, modulename):
+    def sorted_moduleversions(self, modulename):
         """return an iterator on sorted versionnames of a module."""
-        for v in  sorted(self.datadict()[modulename].keys(),
-                         key= rev2key,
-                         reverse= True):
-            yield v
+        return sorted(self.datadict()[modulename].keys(),
+                      key= rev2key,
+                      reverse= True)
     def patch_version(self, modulename, versionname, newversionname,
                       do_replace):
         """add a new version to the database by copying the old one.
+
+        do_replace: if True, replace the old version with the new one
         """
         moduledata= self.datadict()[modulename]
         if moduledata.has_key(newversionname):
@@ -750,24 +822,24 @@ class Dependencies(JSONstruct):
         moduledata[newversionname]= d
         if do_replace:
             del moduledata[versionname]
-        for l_modulename in self.iterate():
+        # now scan all the references to modulename:versionname :
+        for l_modulename in self.iter_modulenames():
             for l_versionname in self.iter_versions(l_modulename):
                 vd= self.datadict()[l_modulename][l_versionname]
-                deps= vd.get("dependencies")
-                if deps is None:
+                dep_dict= vd.get("dependencies")
+                if dep_dict is None:
                     continue
-                lst= deps.get(modulename)
-                if lst is None:
+                dep_module_dict= dep_dict.get(modulename)
+                if dep_module_dict is None:
                     continue
-                if not versionname in lst:
+                if not dep_module_dict.has_key(versionname):
                     continue
-                depset= set(lst)
-                depset.add(newversionname)
                 if do_replace:
-                    depset.discard(versionname)
-                deps[modulename]= sorted(depset)
+                    del dep_module_dict[versionname]
+                # set the new dependency always to "unstable":
+                dep_module_dict[newversionname]= "unstable"
 
-    def filter(self, elements):
+    def partial_copy(self, elements):
         """take items from the Dependencies object and create a new one.
         
         elements must be a dict { modulename: versionname }. If versionname is
@@ -786,8 +858,8 @@ class Dependencies(JSONstruct):
             for version in versions:
                 d[version]= self.datadict()[modulename][version]
         return new
-    def filter_by_specs(self, specs):
-        """similar to filter.
+    def partial_copy_by_specs(self, specs):
+        """similar to partial_copy.
 
         specs is a list of strings of the form "modulename" or
         "modulename:versionname".
@@ -802,22 +874,24 @@ class Dependencies(JSONstruct):
             else:
                 raise ValueError, "\"-version\" and \"+version\" not "+ \
                                   "supported here"
-        return self.filter(d)
+        return self.partial_copy(d)
+
+# pylint: enable=R0904
+# pylint: enable=R0913
+
+# pylint: disable=R0904
+#                          Too many public methods
 
 class Builddb(JSONstruct):
     """the buildtree database."""
-    _states= set(("stable","testing"))
-    @staticmethod
-    def guess_state(st):
+    states= set(("stable","testing","unstable"))
+    @classmethod
+    def guess_state(cls,st):
         """convert an abbreviation to a valid state."""
         errst= "error: cannot determine what state is meant by %s" % st
-        match= None
-        for s in Builddb._states:
-            if s.startswith(st):
-                if match is not None:
-                    raise ValueError, errst
-                match= s
+        match= guess_string(st, cls.states)
         if match is None:
+            errst= "error: cannot determine what state is meant by %s" % st
             raise ValueError, errst
         return match
     def __init__(self, dict_= None):
@@ -826,9 +900,6 @@ class Builddb(JSONstruct):
     def is_empty(self):
         """shows of the object is empty."""
         return not bool(self.datadict())
-    def __len__(self):
-        """return the number of buildtrees."""
-        return len(self.datadict())
     def add(self, other):
         """add data from a dict."""
         d= self.datadict()
@@ -845,16 +916,16 @@ class Builddb(JSONstruct):
     def has_build_tag(self, build_tag):
         """returns if build_tag is contained."""
         return self.datadict().has_key(build_tag)
-    def new_build(self, build_tag):
-        """create a new build.
-
-        Note that the build state is initially set to "testing".
+    def new_build(self, build_tag, state):
+        """create a new build with the given state.
         """
+        if state not in self.__class__.states:
+            raise ValueError, "not an allowed state: %s" % state
         d= self.datadict()
         if d.has_key(build_tag):
             raise ValueError, "cannot create, build %s already exists" % \
                                build_tag
-        d[build_tag]= { "state": "testing" }
+        d[build_tag]= { "state": state }
     def is_stable(self, build_tag):
         """returns True if the build is marked stable.
         """
@@ -866,8 +937,7 @@ class Builddb(JSONstruct):
         return d[build_tag]["state"] 
     def change_state(self, build_tag, new_state):
         """sets the state to a new value."""
-        allowed= set(["stable", "testing"])
-        if new_state not in Builddb._states:
+        if new_state not in self.__class__.states:
             raise ValueError, "not an allowed state: %s" % new_state
         d= self.datadict()
         d[build_tag]["state"]= new_state
@@ -957,6 +1027,8 @@ class Builddb(JSONstruct):
         """
         build_ = self.datadict()[build_tag]
         return build_["modules"]
+
+# pylint: enable=R0904 
 
 def _test():
     """perform internal tests."""
