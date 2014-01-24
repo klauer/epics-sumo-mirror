@@ -39,13 +39,13 @@ clean:
 
 pure_module_test:
 ifeq ($(PYTHON),python)
-	$(PYTHON) ../pys/utils.py
+	$(PYTHON) ../sumo/utils.py
 else
-	@echo "skipping testing pys/utils.py"
+	@echo "skipping testing sumo/utils.py"
 endif
-	$(PYTHON) ../bin/pys-scan --test
-	$(PYTHON) ../bin/pys-db --test
-	$(PYTHON) ../bin/pys-buildtree --test
+	$(PYTHON) ../bin/sumo-scan --test
+	$(PYTHON) ../bin/sumo-db --test
+	$(PYTHON) ../bin/sumo-build --test
 
 ok: $(addsuffix .ok, $(testlist))
 

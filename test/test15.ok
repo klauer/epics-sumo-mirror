@@ -1,5 +1,5 @@
 
-pys-buildtree fullapprelease 001:
+sumo-build fullapprelease 001:
 SUPPORT=
 ALARM=$(SUPPORT)/ALARM/R3-5+001
 ASYN=$(SUPPORT)/ASYN/R4-15-bessy2+001
@@ -15,7 +15,7 @@ SEQ=$(SUPPORT)/SEQ/R2-0-12-1+001
 SOFT=$(SUPPORT)/SOFT/R2-5+001
 VXSTATS=$(SUPPORT)/VXSTATS/R2-0+001
 
-pys-buildtree fullapprelease 002:
+sumo-build fullapprelease 002:
 SUPPORT=
 ALARM=$(SUPPORT)/ALARM/R3-4+002
 ASYN=$(SUPPORT)/ASYN/R4-15-bessy2+002

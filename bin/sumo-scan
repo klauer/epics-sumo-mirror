@@ -5,9 +5,9 @@
 #                          Operator not preceded by a space
 
 """
-===========
-pys-scan.py
-===========
+============
+sumo-scan.py
+============
 
 Introduction
 ------------
@@ -60,7 +60,7 @@ import os.path
 import os
 import re
 
-import pys.utils as utils
+import sumo.utils as utils
 
 # version of the program:
 my_version= "1.0"
@@ -71,7 +71,7 @@ KNOWN_COMMANDS=set(("deps", "name2paths", "path2names",
 IGNORE_NAMES= set(["TOP", "EPICS_SUPPORT", 
                    "SUPPORT", "TEMPLATE_TOP"]) #, "EPICS_BASE"])
 
-import pys.makefile_scan
+import sumo.makefile_scan
 
 makefile_scan_pre= {}
 
@@ -83,7 +83,7 @@ def scan_release_file(filename, external_definitions= None,
                       verbose= False, dry_run= False):
     """scan a release file.
     """
-    data= pys.makefile_scan.scan(filename, 
+    data= sumo.makefile_scan.scan(filename, 
                              external_definitions,
                              makefile_scan_pre,
                              verbose, dry_run)

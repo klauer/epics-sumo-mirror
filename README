@@ -1,15 +1,15 @@
 About:
 
-    pys is a set of tools to support software development for the EPICS
-    framework. It manages build dependencies and consistent builds of the EPICS
-    base and EPICS support modules.
+    sumo, the SUpport MOdule manager, is a set of tools to support software
+    development for the EPICS framework. It manages build dependencies and
+    consistent builds of the EPICS base and EPICS support modules.
 
 Author:
     Goetz Pfeiffer <Goetz.Pfeiffer@helmholtz-berlin.de>
 
 Documentation:
     Documentation is in the directory "doc". You can read it by entering
-    "file://<path-to-pys>/doc/index.html" as URL in your browser.
+    "file://<path-to-sumo>/doc/index.html" as URL in your browser.
 
     The sources are written ReStructuredText format. docutils
     (http://docutils.sourceforge.net/) is used to generate html
@@ -18,7 +18,7 @@ Documentation:
 
 Installation:
 
-You may install pys from source:
+You may install sumo from source:
 
     The program uses the standard python distutils. See also
     http://docs.python.org/install/index.html for comprehensive

@@ -31,7 +31,7 @@ function patch_RELEASE {
     sed -i $1/configure/RELEASE -e "s#=/opt/Epics/R3.14.8/support#=$SUPPORTDIR#"
 }
 
-echo -e "\n-> Test pys-scan: checkout many modules and scan the directory tree." >&2
+echo -e "\n-> Test sumo-scan: checkout many modules and scan the directory tree." >&2
 echo -e "\tIf run for the first time this may take a while..." >&2
 
 if [ -d $EXAMPLEDIR ]; then
@@ -122,4 +122,4 @@ else
     cd ..
 fi
 
-$PYTHON ../bin/pys-scan -d $EXAMPLEDIR -g $EXAMPLEDIR all | sed -e "s#`pwd -P`##;s/,$/, /g"
+$PYTHON ../bin/sumo-scan -d $EXAMPLEDIR -g $EXAMPLEDIR all | sed -e "s#`pwd -P`##;s/,$/, /g"

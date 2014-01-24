@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 """
-setup.py file for pys.
+setup.py file for sumo.
 
 See http://docs.python.org/install
 on how to use setup.py
@@ -112,14 +112,14 @@ def copy_files(dest_dir, source_dir, source_files):
 
 # main      -------------------------
 
-doc_install_dir= os.path.join("share","doc","pys-%s" % my_version)
+doc_install_dir= os.path.join("share","doc","sumo-%s" % my_version)
 html_install_dir= os.path.join(doc_install_dir, "html")
 
 doc_dir= "doc"
 
 html_build_dir= os.path.join(doc_dir,"_build","html")
 
-data_doc_dir= os.path.join("pys","data")
+data_doc_dir= os.path.join("sumo","data")
 
 ## create HTML documentation if it doesn't already exist:
 #if not os.path.exists(html_build_dir):
@@ -134,17 +134,16 @@ data_files_list= [(doc_install_dir, ["README", "LICENSE"])]
 # add all generated html documentation to data_files_list:
 #data_files_list.extend(data_statements(html_install_dir, html_build_dir))
 
-setup(name='pys',
+setup(name='sumo',
       version= my_version,
       description='Python support tools for EPICS software development',
       author='Goetz Pfeiffer',
       author_email='Goetz.Pfeiffer@helmholtz-berlin.de',
-      url='http://www-csr.bessy.de/control/pys',
-      packages=['pys'],
-      #packages=['pys'],
-      #package_dir= {'': 'pys'},
-      package_data={'pys': ['data/*']},
+      url='http://www-csr.bessy.de/control/sumo',
+      packages=['sumo'],
+      #package_dir= {'': 'sumo'},
+      package_data={'sumo': ['data/*']},
       data_files= data_files_list,
       license= "HZB non commercial license, see file LICENSE",
-      scripts=['bin/pys-buildtree','bin/pys-db','bin/pys-scan'],
+      scripts=['bin/sumo-build','bin/sumo-db','bin/sumo-scan'],
      )

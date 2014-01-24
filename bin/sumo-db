@@ -4,9 +4,9 @@
 # pylint: disable=C0301
 #                          Line too long
 """
-=========
-pys-db-py
-=========
+==========
+sumo-db-py
+==========
 
 Create a JSON database with module and dependency information.
 
@@ -132,7 +132,7 @@ import sys
 import os.path
 import os
 
-import pys.utils as utils
+import sumo.utils as utils
 
 # version of the program:
 my_version= "1.0"

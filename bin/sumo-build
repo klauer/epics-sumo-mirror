@@ -14,7 +14,7 @@ import os.path
 import os
 import shutil
 
-import pys.utils as utils
+import sumo.utils as utils
 
 # version of the program:
 my_version= "1.0"
