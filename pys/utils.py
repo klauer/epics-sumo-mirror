@@ -26,23 +26,7 @@ else:
     _JSON_TYPE= 0
 
 def json_dump_file(filename, var):
-    """Dump a variable in JSON format to a file.
-
-    Here is an example:
-    >>> var= {"key":[1,2,3], "key2":"val", "key3":{"A":1,"B":2}}
-    >>> json_dump(var)
-    {
-        "key": [
-            1,
-            2,
-            3
-        ],
-        "key2": "val",
-        "key3": {
-            "A": 1,
-            "B": 2
-        }
-    }
+    """Dump a variable to a file in JSON format.
     """
     fh= open(filename, "w")
     if _JSON_TYPE==0:
@@ -59,13 +43,13 @@ def json_str(var):
     >>> print json_str(var)
     {
         "key": [
-            1,
-            2,
+            1, 
+            2, 
             3
-        ],
-        "key2": "val",
+        ], 
+        "key2": "val", 
         "key3": {
-            "A": 1,
+            "A": 1, 
             "B": 2
         }
     }
@@ -83,13 +67,13 @@ def json_dump(var):
     >>> json_dump(var)
     {
         "key": [
-            1,
-            2,
+            1, 
+            2, 
             3
-        ],
-        "key2": "val",
+        ], 
+        "key2": "val", 
         "key3": {
-            "A": 1,
+            "A": 1, 
             "B": 2
         }
     }

@@ -10,6 +10,11 @@
 # python build system
 ^build$
 
-^x$
+# test directories:
+^test/tmp-.*
+^test/.*\.out
+^test/.*\.tmp
+^test/.*\.bak
 
+^x$
 

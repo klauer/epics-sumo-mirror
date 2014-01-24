@@ -1,0 +1,43 @@
+
+BUILDS before:
+{
+    "001": {
+        "modules": {
+            "ALARM": "R3-5", 
+            "ASYN": "R4-15-bessy2", 
+            "BASE": "R3-14-8-2-0", 
+            "BSPDEP_CPUBOARDINIT": "R4-0", 
+            "BSPDEP_TIMER": "R5-1", 
+            "CSM": "R3-8", 
+            "EK": "R2-1", 
+            "GENSUB": "PATH-1-6-1", 
+            "MCAN": "R2-3-18", 
+            "MISC": "R2-4", 
+            "SEQ": "R2-0-12-1", 
+            "SOFT": "R2-5", 
+            "VXSTATS": "R2-0"
+        }, 
+        "state": "unstable"
+    }
+}
+BUILDS after:
+{
+    "001": {
+        "modules": {
+            "ALARM": "R3-5", 
+            "ASYN": "R4-15-bessy2", 
+            "BASE": "R3-14-8-2-0", 
+            "BSPDEP_CPUBOARDINIT": "R4-0", 
+            "BSPDEP_TIMER": "R5-1", 
+            "CSM": "R3-8", 
+            "EK": "R2-1", 
+            "GENSUB": "PATH-1-6-1", 
+            "MCAN": "R2-3-18", 
+            "MISC": "R2-4", 
+            "SEQ": "R2-0-12-1", 
+            "SOFT": "R2-5", 
+            "VXSTATS": "R2-0"
+        }, 
+        "state": "stable"
+    }
+}

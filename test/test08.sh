@@ -1,0 +1,36 @@
+#!/bin/sh
+
+PYTHON=$1
+
+echo -e "\n-> Test pys-buildtree newtree" >&2
+
+TESTDIR=tmp-test08
+
+if [ ! -d $TESTDIR ]; then
+    mkdir $TESTDIR
+    cp samples/DB $TESTDIR
+    cp samples/DB_IDCP $TESTDIR
+
+    cd $TESTDIR > /dev/null
+
+    $PYTHON ../../bin/pys-buildtree --db DB -P DB_IDCP --builddb BUILDS newtree 001 1>&2 
+else
+    echo -e "\t$TESTDIR already exists, effectively skipping this test..." 1>&2
+    cd $TESTDIR > /dev/null
+fi
+
+
+# sed is used to add spaces after each "," at the end of the line. The old JSON
+# library for python 2.5 doesn't do this.
+
+echo -e "\ndirectory tree (without darcs)"
+find . | egrep -v '_darcs|\.tmp|\.bak'
+echo -e "\ncontents of RELEASE files\n"
+for f in `find . -name RELEASE | sort`; do echo -e "\nFILE: $f"; cat $f | sed -e "s#`pwd -P`##"; done
+echo -e "\n\ncontent of DB:"
+cat DB | sed -e "s/,$/, /g"
+echo -e "\ncontent of BUILDS"
+cat BUILDS | sed -e "s/,$/, /g"
+echo -e "\ncontent of Makefile-001"
+cat Makefile-001
+

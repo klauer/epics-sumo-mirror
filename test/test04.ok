@@ -1,0 +1,246 @@
+{
+    "ALARM": {
+        "R3-4": {
+            "aliases": {
+                "BASE": "EPICS_BASE", 
+                "BSPDEP_TIMER": "TIMER"
+            }, 
+            "dependencies": {
+                "BASE": {
+                    "R3-14-8-2-0": "stable"
+                }, 
+                "BSPDEP_TIMER": {
+                    "R5-1": "stable"
+                }, 
+                "MISC": {
+                    "R2-4": "stable"
+                }
+            }, 
+            "source": [
+                "darcs", 
+                "rcsadm@aragon.acc.bessy.de:/opt/repositories/controls/darcs/epics/support/alarm/base-3-14", 
+                "R3-4"
+            ], 
+            "state": "unstable"
+        }
+    }, 
+    "ASYN": {
+        "R4-15-bessy2": {
+            "aliases": {
+                "BASE": "EPICS_BASE"
+            }, 
+            "dependencies": {
+                "BASE": {
+                    "R3-14-8-2-0": "stable"
+                }
+            }, 
+            "source": [
+                "darcs", 
+                "rcsadm@aragon.acc.bessy.de:/opt/csr/repositories/controls/darcs/epics/support/asyn/4-15", 
+                "R4-15-bessy2"
+            ], 
+            "state": "stable"
+        }
+    }, 
+    "BASE": {
+        "R3-14-8-2-0": {
+            "source": [
+                "darcs", 
+                "rcsadm@aragon.acc.bessy.de:/opt/repositories/controls/darcs/epics/base/3-14-8-2", 
+                "R3-14-8-2-0"
+            ], 
+            "state": "stable"
+        }
+    }, 
+    "BSPDEP_CPUBOARDINIT": {
+        "R4-0": {
+            "aliases": {
+                "BASE": "EPICS_BASE"
+            }, 
+            "dependencies": {
+                "BASE": {
+                    "R3-14-8-2-0": "stable"
+                }
+            }, 
+            "source": [
+                "darcs", 
+                "rcsadm@aragon.acc.bessy.de:/opt/repositories/controls/darcs/epics/support/bspDep/cpuBoardInit", 
+                "R4-0"
+            ], 
+            "state": "stable"
+        }
+    }, 
+    "BSPDEP_TIMER": {
+        "R5-1": {
+            "aliases": {
+                "BASE": "EPICS_BASE"
+            }, 
+            "dependencies": {
+                "BASE": {
+                    "R3-14-8-2-0": "stable"
+                }
+            }, 
+            "source": [
+                "darcs", 
+                "rcsadm@aragon.acc.bessy.de:/opt/repositories/controls/darcs/epics/support/bspDep/timer", 
+                "R5-1"
+            ], 
+            "state": "stable"
+        }
+    }, 
+    "CSM": {
+        "R3-8": {
+            "aliases": {
+                "BASE": "EPICS_BASE"
+            }, 
+            "dependencies": {
+                "BASE": {
+                    "R3-14-8-2-0": "stable"
+                }
+            }, 
+            "source": [
+                "darcs", 
+                "rcsadm@aragon.acc.bessy.de:/opt/csr/repositories/controls/darcs/epics/support/csm/base-3-14-8", 
+                "R3-8"
+            ], 
+            "state": "stable"
+        }
+    }, 
+    "EK": {
+        "R2-1": {
+            "aliases": {
+                "BASE": "EPICS_BASE"
+            }, 
+            "dependencies": {
+                "BASE": {
+                    "R3-14-8-2-0": "stable"
+                }, 
+                "MISC": {
+                    "R2-4": "stable"
+                }
+            }, 
+            "source": [
+                "darcs", 
+                "rcsadm@aragon.acc.bessy.de:/opt/csr/repositories/controls/darcs/epics/support/ek/base-3-14", 
+                "R2-1"
+            ], 
+            "state": "stable"
+        }
+    }, 
+    "GENSUB": {
+        "PATH-1-6-1": {
+            "aliases": {
+                "BASE": "EPICS_BASE"
+            }, 
+            "dependencies": {
+                "BASE": {
+                    "R3-14-8-2-0": "stable"
+                }
+            }, 
+            "source": [
+                "path", 
+                "rcsadm@aragon.acc.bessy.de:/opt/csr/Epics/R3.14.8/support/genSub/1-6-1"
+            ], 
+            "state": "stable"
+        }
+    }, 
+    "MCAN": {
+        "R2-3-18": {
+            "aliases": {
+                "BASE": "EPICS_BASE"
+            }, 
+            "dependencies": {
+                "ALARM": {
+                    "R3-4": "unstable"
+                }, 
+                "BASE": {
+                    "R3-14-8-2-0": "stable"
+                }, 
+                "MISC": {
+                    "R2-4": "stable"
+                }, 
+                "SOFT": {
+                    "R2-5": "stable"
+                }
+            }, 
+            "source": [
+                "darcs", 
+                "rcsadm@aragon.acc.bessy.de:/opt/csr/repositories/controls/darcs/epics/support/mcan/base-3-14-8", 
+                "R2-3-18"
+            ], 
+            "state": "stable"
+        }
+    }, 
+    "MISC": {
+        "R2-4": {
+            "aliases": {
+                "BASE": "EPICS_BASE"
+            }, 
+            "dependencies": {
+                "BASE": {
+                    "R3-14-8-2-0": "stable"
+                }
+            }, 
+            "source": [
+                "darcs", 
+                "rcsadm@aragon.acc.bessy.de:/opt/repositories/controls/darcs/epics/support/misc/base-3-14", 
+                "R2-4"
+            ], 
+            "state": "stable"
+        }
+    }, 
+    "SEQ": {
+        "R2-0-12-1": {
+            "aliases": {
+                "BASE": "EPICS_BASE"
+            }, 
+            "dependencies": {
+                "BASE": {
+                    "R3-14-8-2-0": "stable"
+                }
+            }, 
+            "source": [
+                "darcs", 
+                "rcsadm@aragon.acc.bessy.de:/opt/csr/Epics/R3.14.8/support/seq/2-0-12-1", 
+                "R2-0-12-1"
+            ], 
+            "state": "stable"
+        }
+    }, 
+    "SOFT": {
+        "R2-5": {
+            "aliases": {
+                "BASE": "EPICS_BASE"
+            }, 
+            "dependencies": {
+                "BASE": {
+                    "R3-14-8-2-0": "stable"
+                }
+            }, 
+            "source": [
+                "darcs", 
+                "rcsadm@aragon.acc.bessy.de:/opt/repositories/controls/darcs/epics/support/soft/base-3-14", 
+                "R2-5"
+            ], 
+            "state": "stable"
+        }
+    }, 
+    "VXSTATS": {
+        "R2-0": {
+            "aliases": {
+                "BASE": "EPICS_BASE"
+            }, 
+            "dependencies": {
+                "BASE": {
+                    "R3-14-8-2-0": "stable"
+                }
+            }, 
+            "source": [
+                "darcs", 
+                "rcsadm@aragon.acc.bessy.de:/opt/repositories/controls/darcs/epics/support/vxStats/base-3-14", 
+                "R2-0"
+            ], 
+            "state": "stable"
+        }
+    }
+}
