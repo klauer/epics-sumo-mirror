@@ -7,6 +7,9 @@
 # python:
 .*\.pyc
 
+# python build system
+^build$
+
 ^x$
 
 

@@ -1,5 +1,8 @@
-#! /usr/bin/env python2.5
+#! /usr/bin/env python
 # -*- coding: UTF-8 -*-
+
+# pylint: disable=C0322
+#                          Operator not preceded by a space
 
 """
 ===========
@@ -57,7 +60,7 @@ import os.path
 import os
 import re
 
-import pys_utils as utils
+import pys.utils as utils
 
 # version of the program:
 my_version= "1.0"
@@ -68,11 +71,7 @@ KNOWN_COMMANDS=set(("deps", "name2paths", "path2names",
 IGNORE_NAMES= set(["TOP", "EPICS_SUPPORT", 
                    "SUPPORT", "TEMPLATE_TOP"]) #, "EPICS_BASE"])
 
-# temporarily search modules in my local bii_scripts copy:
-# @@@@@
-sys.path.insert(0, "/home/pfeiffer/net/project/bii_scripts/lib/python")
-
-import makefile_scan
+import pys.makefile_scan
 
 makefile_scan_pre= {}
 
@@ -84,7 +83,7 @@ def scan_release_file(filename, external_definitions= None,
                       verbose= False, dry_run= False):
     """scan a release file.
     """
-    data= makefile_scan.scan(filename, 
+    data= pys.makefile_scan.scan(filename, 
                              external_definitions,
                              makefile_scan_pre,
                              verbose, dry_run)
@@ -111,6 +110,9 @@ def scan_support_release(support_path,
     return scan_release_file(os.path.join(support_path,"configure","RELEASE"),
                              external_definitions,
                              verbose= verbose, dry_run= dry_run)
+
+# pylint: disable=R0912
+#                          Too many branches
 
 def dependency_data(support_tree, 
                     buildtag,
@@ -168,6 +170,8 @@ def dependency_data(support_tree,
     if progress:
         sys.stderr.write("\n")
     return dict_
+
+# pylint: enable=R0912
 
 def name2path_from_deps(deps):
     """calculate name2path dict from dependency dict.
@@ -374,6 +378,9 @@ def get_dependencies(options):
                       )
     return deps
 
+# pylint: disable=R0912
+#                          Too many branches
+
 def process(options, commands):
     """do all the work.
 
@@ -425,6 +432,8 @@ def process(options, commands):
         if options.missing_tag:
             bag["missing-tag"]= repo_data.filter_no_tags()
     utils.json_dump(bag)
+
+# pylint: enable=R0912
 
 def print_doc():
     """print a short summary of the scripts function."""
@@ -540,7 +549,7 @@ def main():
                       help="just show what the program would do",
                       )
 
-    x= sys.argv
+    # x= sys.argv
     (options, args) = parser.parse_args()
     # options: the options-object
     # args: list of left-over args

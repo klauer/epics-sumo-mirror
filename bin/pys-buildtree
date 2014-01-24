@@ -1,4 +1,4 @@
-#! /usr/bin/env python2.5
+#! /usr/bin/env python
 # -*- coding: UTF-8 -*-
 
 # pylint: disable=C0111
@@ -14,7 +14,7 @@ import os.path
 import os
 import shutil
 
-import pys_utils as utils
+import pys.utils as utils
 
 # version of the program:
 my_version= "1.0"
