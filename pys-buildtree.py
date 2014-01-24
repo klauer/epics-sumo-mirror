@@ -262,7 +262,8 @@ def add_modules(db, builddb, build_tag):
     """add modules to the builddb object.
     """
     for modulename in db.iter_modulenames():
-        moduleversions= list(db.iter_versions(modulename))
+        # get all versions, stable, testing and unstable:
+        moduleversions= list(db.iter_versions(modulename, "unstable"))
         if len(moduleversions)!=1:
             raise ValueError, "more than one version for %s" % modulename
         versionname= moduleversions[0]

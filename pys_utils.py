@@ -625,6 +625,11 @@ class Dependencies(JSONstruct):
     states_list= ["stable", "testing", "unstable"]
     states_dict= dict(zip(states_list,range(len(states_list))))
     @classmethod
+    def _min_state(cls, state_list):
+        """return the minimum of a list of states."""
+        i= min([cls.states_dict[s] for s in state_list])
+        return cls.states_list[i]
+    @classmethod
     def _allowed_states(cls, max_state):
         """generate a list of allowed states from a maximum state.
         """
@@ -652,9 +657,7 @@ class Dependencies(JSONstruct):
                 if dest_state is None:
                     dest_dep_dict[src_ver]= src_state
                     continue
-                idx= min(cls.states_dict[src_state],
-                         cls.states_dict[dest_state])
-                dest_dep_dict[src_ver]= cls.states_list[idx]
+                dest_dep_dict[src_ver]= cls._min_state((src_state, dest_state))
     def __init__(self, dict_= None):
         """create the object."""
         super(Dependencies, self).__init__(dict_)
@@ -662,10 +665,22 @@ class Dependencies(JSONstruct):
         """merge another Dependencies object to self."""
         for modulename in other.iter_modulenames():
             m= self.datadict().setdefault(modulename,{})
-            for versionname in other.iter_versions(modulename):
+            # iterate on stable, testing and unstable versions:
+            for versionname in other.iter_versions(modulename, "unstable"):
                 vdict = m.setdefault(versionname,{})
                 vdict2= other.datadict()[modulename][versionname]
                 for dictname, dictval in vdict2.items():
+                    if dictname=="state":
+                        # pylint: disable=W0212
+                        #         Access to a protected member
+                        if constant_src_state is not None:
+                            src_state= constant_src_state
+                        else:
+                            src_state= vdict2[dictname]
+                        vdict[dictname]= self.__class__._min_state(
+                                (vdict[dictname], src_state))
+                        # pylint: enable=W0212
+                        continue
                     if dictname=="aliases":
                         try:
                             dict_update(vdict.setdefault(dictname,{}), 
@@ -698,10 +713,15 @@ class Dependencies(JSONstruct):
         m= self.datadict().setdefault(module_name,{})
         m[versionname]= copy.deepcopy(
                             other.datadict()[module_name][versionname])
-    def set_source(self, module_name, versionname, source_type, url, tag):
+    def set_source(self, module_name, versionname, state, 
+                   source_type, url, tag):
         """add a module with source specification."""
+        if not self.__class__.states_dict.has_key(state):
+            raise ValueError, "invalid state: %s" % state
         version_dict= self.datadict().setdefault(module_name,{})
         version= version_dict.setdefault(versionname, {})
+        if not version.has_key("state"):
+            version["state"]= state
         l= [source_type, url]
         if tag:
             l.append(tag)
@@ -817,12 +837,26 @@ class Dependencies(JSONstruct):
     def iter_modulenames(self):
         """return an iterator on module names."""
         return self.datadict().iterkeys()
-    def iter_versions(self, modulename):
-        """return an iterator on versionnames of a module."""
-        return self.datadict()[modulename].iterkeys()
-    def sorted_moduleversions(self, modulename):
+    def iter_versions(self, modulename, max_state):
+        """return an iterator on versionnames of a module.
+        
+        max_state is the maximum allowed state:
+          "stable"  : return just stable
+          "testing" : return stable and testing
+          "unstable": return stable, testing and unstable
+        """
+        # pylint: disable=W0212
+        #                          Access to a protected member of a 
+        #                          client class
+        _states= self.__class__._allowed_states(max_state)
+        # pylint: enable=W0212
+        for versionname, versiondata in self.datadict()[modulename].iteritems():
+            if versiondata["state"] not in _states:
+                continue
+            yield versionname
+    def sorted_moduleversions(self, modulename, max_state):
         """return an iterator on sorted versionnames of a module."""
-        return sorted(self.datadict()[modulename].keys(),
+        return sorted(self.iter_versions(modulename, max_state),
                       key= rev2key,
                       reverse= True)
     def patch_version(self, modulename, versionname, newversionname,
@@ -830,6 +864,7 @@ class Dependencies(JSONstruct):
         """add a new version to the database by copying the old one.
 
         do_replace: if True, replace the old version with the new one
+        Note: the state of the new version is always set to unstable.
         """
         moduledata= self.datadict()[modulename]
         if moduledata.has_key(newversionname):
@@ -840,12 +875,14 @@ class Dependencies(JSONstruct):
         if src:
             if len(src)>2: # a tag is defined
                 src[2]= src[2].replace(versionname, newversionname)
+        d["state"]= "unstable"
         moduledata[newversionname]= d
         if do_replace:
             del moduledata[versionname]
         # now scan all the references to modulename:versionname :
         for l_modulename in self.iter_modulenames():
-            for l_versionname in self.iter_versions(l_modulename):
+            # scan stable, testing and unstable versions:
+            for l_versionname in self.iter_versions(l_modulename, "unstable"):
                 vd= self.datadict()[l_modulename][l_versionname]
                 dep_dict= vd.get("dependencies")
                 if dep_dict is None:
@@ -875,7 +912,8 @@ class Dependencies(JSONstruct):
             if versionname:
                 versions= [versionname]
             else:
-                versions= self.iter_versions(modulename)
+                # scan stable, testing and unstable versions:
+                versions= self.iter_versions(modulename, "unstable")
             for version in versions:
                 d[version]= self.datadict()[modulename][version]
         return new

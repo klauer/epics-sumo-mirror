@@ -222,7 +222,7 @@ def create_database(deps, repoinfo, groups, state):
                         # the source is a darcs repository with a tag. We use
                         # the tag as unique versionname:
                         versionname= source_tag
-                db.set_source(module_name, versionname, source_type, 
+                db.set_source(module_name, versionname, state, source_type, 
                               url, source_tag)
 
                 _path2namevname[versionedmodule_path]= \
@@ -239,7 +239,8 @@ def create_database(deps, repoinfo, groups, state):
 
     # here we populate the versiondata with the dependency specifications:
     for modulename in db.iter_modulenames():
-        for versionname in db.iter_versions(modulename):
+        # loop on stable, testing and unstable versions:
+        for versionname in db.iter_versions(modulename, "unstable"):
             versionedmodule_paths= _namevname2path[(modulename, versionname)]
 
             for versionedmodule_path in versionedmodule_paths:
@@ -331,7 +332,7 @@ def distribution(db, modulespec_list, maxstate):
 
     for modulename in versionless_modules:
         try:
-            versionlist= db.sorted_moduleversions(modulename)
+            versionlist= db.sorted_moduleversions(modulename, maxstate)
         except KeyError, e:
             sys.exit("no data for module %s" % modulename)
 
@@ -449,16 +450,21 @@ def process(options, commands):
 
     if commands[0]=="shownewest" or commands[0]=="showall":
         showall= (commands[0]=="showall")
+        if len(commands)<=1:
+            sys.exit("error: MAXSTATE missing")
         if not options.db:
             sys.exit("error, --db is mandatory here")
         db= utils.Dependencies.from_json_file(options.db)
-        if len(commands)>1:
-            modulenames= commands[1:]
+        maxstate= commands[1]
+        if len(commands)>2:
+            modulenames= commands[2:]
         else:
             modulenames= list(db.iter_modulenames())
         result= {}
         for modulename in modulenames:
-            versions= db.sorted_moduleversions(modulename)
+            versions= db.sorted_moduleversions(modulename, maxstate)
+            if not versions: # no versions match maxstate criteria
+                continue
             if not showall:
                 result[modulename]= versions[0]
             else:
@@ -501,12 +507,14 @@ where command is:
               testing:  take dependencies marked stable or testing
               unstable: take dependencies marked stable, testing or unstable
   show:   show the names of all modules
-  shownewest {modules}: 
+  shownewest [MAXSTATE] {modules}: 
           Show newest version for each module. If {modules} is missing, take
-          all modules of the database.
-  showall {modules}: 
-          Show all versions for each module. If {modules} is missing, take
-          all modules of the database.
+          all modules of the database. MAXSTATE is the "maximum" state as
+          described above.
+  showall [MAXSTATE] {modules}: 
+          Show all versions for each module. If {modules} is missing, take all
+          modules of the database. MAXSTATE is the "maximum" state as described
+          above.
   merge [db]
           Merge the given db with the one specified by --db
   filter [modules]
