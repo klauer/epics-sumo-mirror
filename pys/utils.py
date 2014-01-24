@@ -709,7 +709,10 @@ class Dependencies(JSONstruct):
                         continue
                     raise AssertionError, "unexpected dictname %s" % dictname
     def import_module(self, other, module_name, versionname):
-        """copy the module data from another Dependencies object."""
+        """copy the module data from another Dependencies object.
+
+        This does a deepcopy of the data.
+        """
         m= self.datadict().setdefault(module_name,{})
         m[versionname]= copy.deepcopy(
                             other.datadict()[module_name][versionname])
@@ -736,6 +739,19 @@ class Dependencies(JSONstruct):
         dep_dict= m_dict[versionname].setdefault("dependencies",{})
         dep_module_dict= dep_dict.setdefault(dep_modulename, {})
         dep_module_dict[dep_versionname]= state
+    def del_dependency(self, modulename, versionname, 
+                       dep_modulename, dep_versionname):
+        """delete dependency for a module:version if it exists.
+        """
+        m_dict= self.datadict()[modulename]
+        dep_dict= m_dict[versionname].get("dependencies")
+        if dep_dict is None:
+            return
+        dep_module_dict= dep_dict.get(dep_modulename)
+        if dep_module_dict is None:
+            return
+        if dep_module_dict.has_key(dep_versionname):
+            del dep_module_dict[dep_versionname]
     def add_alias(self, modulename, versionname, 
                   alias_name, real_name):
         """add an alias for modulename:versionname."""
