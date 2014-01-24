@@ -402,10 +402,12 @@ def process(options, commands):
             sys.exit("error: no modules specified")
         if not options.db:
             sys.exit("error, --db is mandatory here")
-        db= utils.Dependencies.from_json_file(options.db)
+        db= utils.Dependencies.from_json_file(options.db, 
+                keep_locked= options.savedb and (not options.dry_run))
         db= db.partial_copy_by_specs(commands[1:])
         if options.savedb:
             db.json_save(options.db, options.verbose, options.dry_run)
+            # ^^^ does also unlock the file
         else:
             db.json_print()
         return
@@ -415,11 +417,13 @@ def process(options, commands):
             sys.exit("exactly one filename must follow \"merge\"")
         if not options.db:
             sys.exit("error, --db is mandatory here")
-        db = utils.Dependencies.from_json_file(options.db)
+        db = utils.Dependencies.from_json_file(options.db, 
+                keep_locked= options.savedb and (not options.dry_run))
         db2= utils.Dependencies.from_json_file(commands[1])
         db.merge(db2)
         if options.savedb:
             db.json_save(options.db, options.verbose, options.dry_run)
+            # ^^^ does also unlock the file
         else:
             db.json_print()
         return
@@ -430,10 +434,12 @@ def process(options, commands):
             sys.exit("exactly three arguments must follow \"cloneversion\"")
         if not options.db:
             sys.exit("error, --db is mandatory here")
-        db = utils.Dependencies.from_json_file(options.db)
+        db = utils.Dependencies.from_json_file(options.db,
+                keep_locked= options.savedb and (not options.dry_run))
         db.patch_version(commands[1], commands[2], commands[3], do_replace)
         if options.savedb:
             db.json_save(options.db, options.verbose, options.dry_run)
+            # ^^^ does also unlock the file
         else:
             db.json_print()
         return

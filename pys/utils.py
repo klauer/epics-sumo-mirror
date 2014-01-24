@@ -13,6 +13,16 @@ import os.path
 import pprint
 import copy
 
+try:
+    import lockfile
+    use_lockfile= True
+except ImportError, _lockfile_err:
+    if _lockfile_err.message != 'No module named lockfile':
+        raise
+    else:
+        sys.stderr.write("module 'lockfile' not found - " +\
+                         "file accesses will not be locked\n")
+        use_lockfile= False
 
 # -----------------------------------------------
 # JSON support
@@ -185,6 +195,37 @@ def system(cmd, catch_stdout, verbose, dry_run):
                       "cmd \"%s\", errmsg \"%s\"" % (cmd,child_stderr))
     # pylint: enable=E1101
     return(child_stdout)
+
+# -----------------------------------------------
+# file locking
+# -----------------------------------------------
+
+def lock_a_file(filename, timeout=20):
+    """lock a file.
+    """
+    if not use_lockfile:
+        return None
+    lock= lockfile.LockFile(filename)
+    # patch for not working lockfile module:
+    lock.unique_name= "%s-%s" % (lock.unique_name, os.path.basename(filename))
+    try:
+        lock.acquire(timeout)
+    except lockfile.Error,e:
+        txt= ("File locking of file %s failed after % seconds with "
+              "error %s. If you know that the file shouldn't be locked "
+              "you may try to remove the lockfile.") % \
+             (filename, timeout, str(e))
+        raise AssertionError, txt
+    return lock
+
+def unlock_a_file(lock):
+    """unlock a file.
+    """
+    if not use_lockfile:
+        return
+    if lock is None:
+        raise AssertionError, "unexpected: lock is None"
+    lock.release()
 
 # -----------------------------------------------
 # directory utilities
@@ -494,6 +535,25 @@ class JSONstruct(object):
             self.dict_= {}
         else:
             self.dict_= dict_
+        self.lock= None
+        self.lock_filename= None
+    def lock_file(self, filename):
+        """lock a file and store filename and lock in the object."""
+        if self.lock_filename==filename:
+            # already locked
+            return
+        self.unlock_file()
+        self.lock= lock_a_file(filename)
+        self.lock_filename= filename
+    def unlock_file(self):
+        """remove a filelock if there is one."""
+        if self.lock_filename is not None:
+            unlock_a_file(self.lock)
+            self.lock= None
+            self.lock_filename= None
+    def __del__(self):
+        """object destructor."""
+        self.unlock_file()
     def datadict(self):
         """return the internal dict."""
         return self.dict_
@@ -513,12 +573,20 @@ class JSONstruct(object):
         """create an object from a json string."""
         return cls(json_load(json_data))
     @classmethod
-    def from_json_file(cls, filename):
+    def from_json_file(cls, filename, keep_locked= False):
         """create an object from a json file."""
-        if os.path.exists(filename) or (filename=="-"):
+        if filename=="-":
             return cls(json_loadfile(filename))
+        if not os.path.exists(filename):
+            raise IOError, "file \"%s\" not found" % filename
+        l= lock_a_file(filename)
+        result= cls(json_loadfile(filename))
+        if keep_locked:
+            result.lock= l
+            result.lock_filename= filename
         else:
-            return cls()
+            unlock_a_file(l)
+        return result
     def json_string(self):
         """return a JSON representation of the object."""
         return json_str(self.to_dict())
@@ -532,6 +600,8 @@ class JSONstruct(object):
         if filename=="-":
             raise ValueError, "filename must not be \"-\""
         backup= "%s.bak" % filename
+        if not dry_run:
+            self.lock_file(filename)
         if os.path.exists(backup):
             if verbose:
                 print "remove %s" % backup
@@ -544,6 +614,8 @@ class JSONstruct(object):
                 os.rename(filename, backup)
         if not dry_run:
             json_dump_file(filename, self.to_dict())
+        if not dry_run:
+            self.unlock_file()
 
 class PathSource(JSONstruct):
     """the structure that holds the source information for a path."""
