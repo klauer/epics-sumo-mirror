@@ -373,6 +373,8 @@ def get_dependencies(options):
     """
     if not options.dir:
         sys.exit("--dir is mandatory")
+    if not os.path.exists(options.dir):
+        sys.exit("error, directory \"%s\" doesn't exist" % options.dir)
     deps= \
        dependency_data(options.dir,
                        options.buildtag,
