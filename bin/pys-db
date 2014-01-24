@@ -566,7 +566,8 @@ def main():
                       action="store_true", 
                       help="resave db if it was modified, currently "+ \
                            "only for these commands :"+ \
-                           (" ".join(("merge","filter")))
+                           (" ".join(("merge","filter", 
+                                      "cloneversion", "replaceversion")))
                       )
     parser.add_option("-b", "--brief", 
                       action="store_true", 
