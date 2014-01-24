@@ -16,5 +16,8 @@
 ^test/.*\.tmp
 ^test/.*\.bak
 
+# doc directories:
+^doc/
+
 ^x$
 
