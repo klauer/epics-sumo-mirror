@@ -259,7 +259,7 @@ def create_module(db, builddb, build_tag,
 # pylint: enable=R0913
 
 def add_modules(db, builddb, build_tag):
-    """create all modules.
+    """add modules to the builddb object.
     """
     for modulename in db.iter_modulenames():
         moduleversions= list(db.iter_versions(modulename))
@@ -278,17 +278,18 @@ def add_modules(db, builddb, build_tag):
 # pylint: disable=R0913
 #                          Too many arguments
 
-def create_modules(db, builddb, build_tag, extra_lines, verbose, dry_run):
+def create_modules(partialdb, builddb, build_tag, extra_lines, 
+                   verbose, dry_run):
     """create all modules.
     """
-    add_modules(db, builddb, build_tag)
+    add_modules(partialdb, builddb, build_tag)
 
-    for modulename in db.iter_modulenames():
+    for modulename in partialdb.iter_modulenames():
         versionname= builddb.module_version(build_tag, modulename)
         # do not re-create modules that are links:
         if builddb.module_link(build_tag, modulename):
             continue
-        create_module(db, builddb, build_tag, 
+        create_module(partialdb, builddb, build_tag, 
                       modulename, versionname,
                       extra_lines,
                       verbose, dry_run)
@@ -436,9 +437,16 @@ def process(options, commands):
             sys.exit("error: extra arguments following \"state\"")
         if len(commands)<=1:
             sys.exit("error: buildtag missing")
+        if len(commands)>2:
+            if not options.db:
+                sys.exit("--db is mandatory")
         if not options.builddb:
             sys.exit("--builddb is mandatory")
         buildtag= commands[1]
+        if len(commands)>2:
+            db= utils.Dependencies.from_json_file(options.db)
+        else:
+            db= None
         builddb= utils.Builddb.from_json_file(options.builddb)
         if not builddb.has_build_tag(buildtag):
             sys.exit("error, buildtag \"%s\" not found" % buildtag)
@@ -452,6 +460,9 @@ def process(options, commands):
                 sys.exit(str(e))
             builddb.json_save(options.builddb, 
                               options.verbose, options.dry_run)
+            partialdb= create_partialdb(db, builddb, buildtag)
+            db.merge(partialdb, new_state)
+            db.json_save(options.db, options.verbose, options.dry_run)
         return
 
     if commands[0]=="delete":
@@ -481,22 +492,27 @@ def process(options, commands):
             sys.exit("error: buildtag missing")
         if not options.db:
             sys.exit("--db is mandatory")
+        if not options.partialdb:
+            sys.exit("--partialdb is mandatory")
         if not options.builddb:
             sys.exit("--builddb is mandatory")
         buildtag= commands[1]
         db= utils.Dependencies.from_json_file(options.db)
+        partialdb= utils.Dependencies.from_json_file(options.partialdb)
         builddb= utils.Builddb.from_json_file(options.builddb)
         if builddb.has_build_tag(buildtag):
             sys.exit("error, buildtag \"%s\" already taken" % buildtag)
         # create a new build in builddb, initial state is "unstable":
         builddb.new_build(buildtag, "unstable")
         # modifies builddb:
-        create_modules(db, builddb, buildtag, 
+        create_modules(partialdb, builddb, buildtag, 
                        options.extra,
                        options.verbose, options.dry_run)
-        create_makefile(db, builddb, buildtag, 
+        create_makefile(partialdb, builddb, buildtag, 
                         options.verbose, options.dry_run)
         builddb.json_save(options.builddb, options.verbose, options.dry_run)
+        db.merge(partialdb, "unstable")
+        db.json_save(options.db, options.verbose, options.dry_run)
         return
     if commands[0]=="partialdb":
         if len(commands)>2:
@@ -629,6 +645,12 @@ def main():
                       type="string",  
                       help="define the name of the DBFILE",
                       metavar="DBFILE"  
+                      )
+    parser.add_option("-P", "--partialdb", 
+                      action="store", 
+                      type="string",  
+                      help="define the name of the PARTIALDBFILE",
+                      metavar="PARTIALDBFILE"  
                       )
     parser.add_option("--builddb",
                       action="store", 

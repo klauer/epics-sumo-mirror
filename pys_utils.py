@@ -622,22 +622,43 @@ class PathSource(JSONstruct):
 
 class Dependencies(JSONstruct):
     """the dependency database."""
-    states= set(("stable","testing","unstable"))
-    @staticmethod
-    def _allowed_states(max_state):
+    states_list= ["stable", "testing", "unstable"]
+    states_dict= dict(zip(states_list,range(len(states_list))))
+    @classmethod
+    def _allowed_states(cls, max_state):
         """generate a list of allowed states from a maximum state.
         """
-        if max_state=="stable":
-            return set(("stable",))
-        if max_state=="testing":
-            return set(("stable","testing"))
-        if max_state=="unstable":
-            return set(("stable","testing","unstable"))
-        raise AssertionError, "invalid max_state: %s" % max_state
+        idx= cls.states_dict.get(max_state)
+        if idx is None:
+            raise ValueError, "invalid max_state: %s" % max_state
+        return set( [x for x in cls.states_list if cls.states_dict[x]<=idx])
+    @classmethod
+    def _dependency_merge(cls, src_deps, dest_deps, 
+                          constant_src_state= None):
+        """intelligent merge of dependency dicts.
+
+        If a dependency exists, take the "smaller" state as new state, if it
+        doesn't exist, just take it.
+
+        If constant_src_state is given take this instead of the
+        state actually found in src_deps.
+        """
+        for modulename, src_dep_dict in src_deps.items():
+            dest_dep_dict= dest_deps.setdefault(modulename, {})
+            for src_ver, src_state in src_dep_dict.items():
+                if constant_src_state is not None:
+                    src_state= constant_src_state
+                dest_state= dest_dep_dict.get(src_ver)
+                if dest_state is None:
+                    dest_dep_dict[src_ver]= src_state
+                    continue
+                idx= min(cls.states_dict[src_state],
+                         cls.states_dict[dest_state])
+                dest_dep_dict[src_ver]= cls.states_list[idx]
     def __init__(self, dict_= None):
         """create the object."""
         super(Dependencies, self).__init__(dict_)
-    def merge(self, other):
+    def merge(self, other, constant_src_state= None):
         """merge another Dependencies object to self."""
         for modulename in other.iter_modulenames():
             m= self.datadict().setdefault(modulename,{})
@@ -663,13 +684,13 @@ class Dependencies(JSONstruct):
                               (modulename, versionname, str(e))
                         continue
                     if dictname=="dependencies":
-                        try:
-                            dict_update(vdict.setdefault(dictname,{}),
-                                        dictval)
-                        except ValueError, e:
-                            raise ValueError, \
-                              "module %s version %s dependencies: %s" % \
-                              (modulename, versionname, str(e))
+                        # pylint: disable=W0212
+                        #         Access to a protected member
+                        self.__class__._dependency_merge(
+                                dictval,
+                                vdict.setdefault(dictname,{}),
+                                constant_src_state) 
+                        # pylint: enable=W0212
                         continue
                     raise AssertionError, "unexpected dictname %s" % dictname
     def import_module(self, other, module_name, versionname):
@@ -689,7 +710,7 @@ class Dependencies(JSONstruct):
                        dep_modulename, dep_versionname, state):
         """add dependency for a module:version.
         """
-        if state not in self.__class__.states:
+        if not self.__class__.states_dict.has_key(state):
             raise ValueError, "invalid state: %s" % state
         m_dict= self.datadict()[modulename]
         dep_dict= m_dict[versionname].setdefault("dependencies",{})
