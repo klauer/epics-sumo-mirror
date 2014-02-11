@@ -805,6 +805,15 @@ class Dependencies(JSONstruct):
         if idx is None:
             raise ValueError("invalid max_state: %s" % max_state)
         return set( [x for x in cls.states_list if cls.states_dict[x]<=idx])
+    @staticmethod
+    def _check_arch(arch_dict, arch_list):
+        """check if all arch_list elements are keys in arch_dict."""
+        if arch_list is None:
+            return True
+        for a in arch_list:
+            if not arch_dict.has_key(a):
+                return False
+        return True
     @classmethod
     def _dependency_merge(cls, src_deps, dest_deps,
                           constant_src_state= None):
@@ -848,6 +857,9 @@ class Dependencies(JSONstruct):
                         vdict[dictname]= self.__class__._min_state(
                                 (vdict[dictname], src_state))
                         # pylint: enable=W0212
+                        continue
+                    if dictname=="archs":
+                        vdict[dictname].update(dictval)
                         continue
                     if dictname=="aliases":
                         try:
@@ -923,6 +935,10 @@ class Dependencies(JSONstruct):
             return
         if dep_module_dict.has_key(dep_versionname):
             del dep_module_dict[dep_versionname]
+    def get_archs(self, modulename, versionname):
+        """get archs for modulename:versionname."""
+        m_dict= self.datadict()[modulename]
+        return m_dict[versionname]["archs"]
     def add_alias(self, modulename, versionname,
                   alias_name, real_name):
         """add an alias for modulename:versionname."""
@@ -984,66 +1000,113 @@ class Dependencies(JSONstruct):
             return False
         return dep_dict.has_key(dependencyversion)
     def iter_dependency_versions(self, modulename, versionname,
-                                 dependencyname, max_state):
+                                 dependencyname, max_state,
+                                 archs):
         """return an iterator on dependency versions.
 
         max_state is the maximum allowed state:
           "stable"  : return just stable
           "testing" : return stable and testing
           "unstable": return stable, testing and unstable
+
+        archs is the desired architecture. Only dependencies with that
+          architecture are listed. If the architecture doesn't exist on at
+          least one of the dependencies or the module itself, a ValueError
+          exception is raised.
+          If arch is None, take the architectures from the module.
         """
         # pylint: disable=W0212
         #                          Access to a protected member of a
         #                          client class
+        _check_arch= self.__class__._check_arch
         _states= self.__class__._allowed_states(max_state)
         # pylint: enable=W0212
         d= self.datadict()[modulename][versionname]
+        if archs is None:
+            archs= d["archs"].keys()
+        else:
+            if not _check_arch(d["archs"], archs):
+                raise ValueError("archs %s not supported in %s:%s" % \
+                                 (repr(archs),modulename, versionname))
         deps= d.get("dependencies")
         if deps is None:
             raise StopIteration
         dep_dict= deps.get(dependencyname,{})
         if dep_dict is None:
             raise StopIteration
+        found= False
         for (dep_version, dep_state) in dep_dict.iteritems():
             if dep_state not in _states:
                 continue
+            if not _check_arch(self.get_archs(dependencyname, dep_version),
+                               archs):
+                continue
+            found= True
             yield dep_version
+        if not found:
+            raise ValueError("all dependencies excluded because of state "
+                             "or arch in module %s:%s. With given state "
+                             "and archs the module cannot be built." % \
+                                     (modulename, versionname))
     def sorted_dependency_versions(self, modulename, versionname,
-                                   dependencyname, max_state):
+                                   dependencyname, max_state, archs):
         """return sorted dependency versions.
 
         max_state is the maximum allowed state:
           "stable"  : return just stable
           "testing" : return stable and testing
           "unstable": return stable, testing and unstable
+
+        archs is the desired architecture. Only dependencies with that
+          architecture are listed. If the architecture doesn't exist on at
+          least one of the dependencies or the module itself, a ValueError
+          exception is raised.
+          If arch is None, take the architectures from the module.
         """
         dep_list= list(self.iter_dependency_versions(modulename, versionname,
-                                                     dependencyname, max_state))
+                                                     dependencyname,
+                                                     max_state, archs))
         dep_list.sort(key= rev2key, reverse= True)
         return dep_list
     def iter_modulenames(self):
         """return an iterator on module names."""
         return self.datadict().iterkeys()
-    def iter_versions(self, modulename, max_state):
+    def iter_versions(self, modulename, max_state, archs):
         """return an iterator on versionnames of a module.
 
         max_state is the maximum allowed state:
           "stable"  : return just stable
           "testing" : return stable and testing
           "unstable": return stable, testing and unstable
+
+        archs is the desired architecture. Only versions with that
+          architecture are listed. If the architecture doesn't exist on at
+          least one of the versions, a ValueError exception is raised.
+          If arch is None, take any architectures.
         """
         # pylint: disable=W0212
         #                          Access to a protected member of a
         #                          client class
+        _check_arch= self.__class__._check_arch
         _states= self.__class__._allowed_states(max_state)
         # pylint: enable=W0212
-        for versionname, versiondata in self.datadict()[modulename].iteritems():
+        found= False
+        for versionname, versiondata in \
+                self.datadict()[modulename].iteritems():
             if versiondata["state"] not in _states:
                 continue
+            if not _check_arch(versiondata["archs"], archs):
+                continue
+            found= True
             yield versionname
-    def sorted_moduleversions(self, modulename, max_state):
+        if not found:
+            raise ValueError("all versions excluded because of state "
+                             "or arch in module %s. With given state "
+                             "and archs the module cannot be built." % \
+                                     modulename)
+    def sorted_moduleversions(self, modulename, max_state, archs):
         """return an iterator on sorted versionnames of a module."""
-        return sorted(self.iter_versions(modulename, max_state),
+        return sorted(self.iter_versions(modulename, max_state, archs),
                       key= rev2key,
                       reverse= True)
     def patch_version(self, modulename, versionname, newversionname,
@@ -1069,7 +1132,8 @@ class Dependencies(JSONstruct):
         # now scan all the references to modulename:versionname :
         for l_modulename in self.iter_modulenames():
             # scan stable, testing and unstable versions:
-            for l_versionname in self.iter_versions(l_modulename, "unstable"):
+            for l_versionname in self.iter_versions(l_modulename,
+                                                    "unstable", None):
                 vd= self.datadict()[l_modulename][l_versionname]
                 dep_dict= vd.get("dependencies")
                 if dep_dict is None:
@@ -1084,7 +1148,7 @@ class Dependencies(JSONstruct):
                 # set the new dependency always to "unstable":
                 dep_module_dict[newversionname]= "unstable"
 
-    def partial_copy(self, elements):
+    def partial_copy(self, elements, archs):
         """take items from the Dependencies object and create a new one.
 
         elements must be a dict { modulename: versionname }. If versionname is
@@ -1100,11 +1164,11 @@ class Dependencies(JSONstruct):
                 versions= [versionname]
             else:
                 # scan stable, testing and unstable versions:
-                versions= self.iter_versions(modulename, "unstable")
+                versions= self.iter_versions(modulename, "unstable", archs)
             for version in versions:
                 d[version]= self.datadict()[modulename][version]
         return new
-    def partial_copy_by_specs(self, specs):
+    def partial_copy_by_specs(self, specs, archs):
         """similar to partial_copy.
 
         specs is a list of strings of the form "modulename" or
@@ -1120,7 +1184,7 @@ class Dependencies(JSONstruct):
             else:
                 raise ValueError("\"-version\" and \"+version\" not "
                                   "supported here")
-        return self.partial_copy(d)
+        return self.partial_copy(d, archs)
 
 # pylint: enable=R0904
 # pylint: enable=R0913
