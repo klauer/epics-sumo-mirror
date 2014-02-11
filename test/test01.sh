@@ -2,6 +2,10 @@
 
 PYTHON=$1
 
+# needed since sumo-scan call EPICS make:
+EPICS_HOST_ARCH=`scripts/EpicsHostArch.pl`
+export EPICS_HOST_ARCH
+
 EXAMPLEDIR=tmp-test01
 DARCSURL=rcsadm@aragon.acc.bessy.de
 DARCSREPO=$DARCSURL:/opt/repositories/controls/darcs/epics

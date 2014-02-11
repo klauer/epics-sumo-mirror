@@ -1,4 +1,58 @@
 {
+    "archs": {
+        "/tmp-test11/ALARM/R3-5+001": [
+            "vxWorks-68040", 
+            "vxWorks-ppc603"
+        ], 
+        "/tmp-test11/ASYN/R4-15-bessy2+001": [
+            "vxWorks-68040", 
+            "vxWorks-ppc603"
+        ], 
+        "/tmp-test11/BASE/R3-14-8-2-0+001": [
+            "vxWorks-68040", 
+            "vxWorks-ppc603"
+        ], 
+        "/tmp-test11/BSPDEP_CPUBOARDINIT/R4-0+001": [
+            "vxWorks-68040", 
+            "vxWorks-ppc603"
+        ], 
+        "/tmp-test11/BSPDEP_TIMER/R5-1+001": [
+            "vxWorks-68040", 
+            "vxWorks-ppc603"
+        ], 
+        "/tmp-test11/CSM/R3-8+001": [
+            "vxWorks-68040", 
+            "vxWorks-ppc603"
+        ], 
+        "/tmp-test11/EK/R2-1+001": [
+            "vxWorks-68040", 
+            "vxWorks-ppc603"
+        ], 
+        "/tmp-test11/GENSUB/PATH-1-6-1+001": [
+            "vxWorks-68040", 
+            "vxWorks-ppc603"
+        ], 
+        "/tmp-test11/MCAN/R2-3-18+001": [
+            "vxWorks-68040", 
+            "vxWorks-ppc603"
+        ], 
+        "/tmp-test11/MISC/R2-4+001": [
+            "vxWorks-68040", 
+            "vxWorks-ppc603"
+        ], 
+        "/tmp-test11/SEQ/R2-0-12-1+001": [
+            "vxWorks-68040", 
+            "vxWorks-ppc603"
+        ], 
+        "/tmp-test11/SOFT/R2-5+001": [
+            "vxWorks-68040", 
+            "vxWorks-ppc603"
+        ], 
+        "/tmp-test11/VXSTATS/R2-0+001": [
+            "vxWorks-68040", 
+            "vxWorks-ppc603"
+        ]
+    }, 
     "dependencies": {
         "/tmp-test11/ALARM/R3-5+001": {
             "EPICS_BASE": "/tmp-test11/BASE/R3-14-8-2-0+001", 

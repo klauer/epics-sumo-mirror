@@ -71,13 +71,16 @@ def _system(cmd, catch_stdout, verbose, dry_run):
 
 rx_def= re.compile(r'^(\w+)=(.*)$')
 
-def _scan(filenames, external_definitions= None, 
+def _scan(filenames, external_definitions= None,
+          warnings= True,
           verbose= False, dry_run= False):
     """scan makefile-like definitions.
     """
+    # pylint: disable=R0914
+    #                          Too many local variables
     for f in filenames:
         if not os.path.exists(f):
-            raise IOError, "file \"%s\" does not exist" % f
+            raise IOError("file \"%s\" does not exist" % f)
     if filenames:
         include_cmd= "include " + (" ".join(filenames))
     else:
@@ -101,13 +104,16 @@ def _scan(filenames, external_definitions= None,
     for line in reply.splitlines():
         m= rx_def.match(line)
         if m is None:
-            sys.stderr.write(("makefile_scan.py: line not "+ \
-                              "parsable:\"%s\"\n") % line)
+            if warnings:
+                sys.stderr.write("\nmakefile_scan.py: warning:\n"
+                                 "\tline not parsable in %s\n"
+                                 "\t'%s'\n" % (" ".join(filenames),line))
             continue
         data[m.group(1)]= m.group(2)
     return data
 
 def scan(filenames, external_definitions= None, pre= None,
+         warnings= True,
          verbose= False, dry_run= False):
     """scan makefile-like definitions.
 
@@ -124,18 +130,22 @@ def scan(filenames, external_definitions= None, pre= None,
       pre        - None or a dict. For consecutive calls of this function
                    providing an initially empty dictionary here speeds up calls
                    by a factor of 2.
+      warnings   - print a warning when a line cannot be parsed
       verbose    - if True, print command calls to the console
       dry_run    - if True, only print command calls to the console, do
                    not return anything.
     """
+    # pylint: disable=R0913
+    #                          Too many arguments
     if isinstance(filenames, str):
         filenames= [filenames]
     if pre is None:
-        pre= _scan([], external_definitions, verbose, dry_run)
+        pre= _scan([], external_definitions, warnings, verbose, dry_run)
     else:
         if not pre: # empty dict
-            pre.update(_scan([], external_definitions, verbose, dry_run))
-    post= _scan(filenames, external_definitions, verbose, dry_run)
+            pre.update(_scan([], external_definitions, warnings,
+                       verbose, dry_run))
+    post= _scan(filenames, external_definitions, warnings, verbose, dry_run)
     new= {}
     for (k,v) in post.items():
         if pre.has_key(k):

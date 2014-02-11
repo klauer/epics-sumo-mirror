@@ -2,6 +2,10 @@
 
 PYTHON=$1
 
+# needed since sumo-scan call EPICS make:
+EPICS_HOST_ARCH=`scripts/EpicsHostArch.pl`
+export EPICS_HOST_ARCH
+
 echo -e "\n-> Test sumo-scan all with buildtree" >&2
 
 TESTDIR=tmp-test11

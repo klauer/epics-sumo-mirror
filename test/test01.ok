@@ -1,4 +1,82 @@
 {
+    "archs": {
+        "/tmp-test01/ALARM/3-0": [
+            "vxWorks-68040", 
+            "vxWorks-ppc603"
+        ], 
+        "/tmp-test01/ALARM/3-5": [
+            "vxWorks-68040", 
+            "vxWorks-ppc603"
+        ], 
+        "/tmp-test01/ASYN/4-15": [
+            "vxWorks-68040", 
+            "vxWorks-ppc603"
+        ], 
+        "/tmp-test01/BASE/R3-14-8-2-0": [
+            "vxWorks-68040", 
+            "vxWorks-ppc603"
+        ], 
+        "/tmp-test01/BSPDEP/3-0": [
+            "vxWorks-68040", 
+            "vxWorks-ppc603"
+        ], 
+        "/tmp-test01/BSPDEP/CPUBOARDINIT/4-0": [
+            "vxWorks-68040", 
+            "vxWorks-ppc603"
+        ], 
+        "/tmp-test01/BSPDEP/TIMER/5-1": [
+            "vxWorks-68040", 
+            "vxWorks-ppc603"
+        ], 
+        "/tmp-test01/CSM/3-8": [
+            "vxWorks-68040", 
+            "vxWorks-ppc603"
+        ], 
+        "/tmp-test01/EK/2-0": [
+            "vxWorks-68040", 
+            "vxWorks-ppc603"
+        ], 
+        "/tmp-test01/EK/2-1": [
+            "vxWorks-68040", 
+            "vxWorks-ppc603"
+        ], 
+        "/tmp-test01/GENSUB/1-6-1": [
+            "vxWorks-68040", 
+            "vxWorks-ppc603"
+        ], 
+        "/tmp-test01/MCAN/2-0": [
+            "vxWorks-68040", 
+            "vxWorks-ppc603"
+        ], 
+        "/tmp-test01/MCAN/2-3-18": [
+            "vxWorks-68040", 
+            "vxWorks-ppc603"
+        ], 
+        "/tmp-test01/MISC/2-0": [
+            "vxWorks-68040", 
+            "vxWorks-ppc603"
+        ], 
+        "/tmp-test01/MISC/2-4": [
+            "vxWorks-68040", 
+            "vxWorks-ppc603"
+        ], 
+        "/tmp-test01/SEQ/2-0-12-1": [
+            "vxWorks-68040", 
+            "vxWorks-ppc603"
+        ], 
+        "/tmp-test01/SOFT/2-0": [
+            "vxWorks-68040", 
+            "vxWorks-ppc603"
+        ], 
+        "/tmp-test01/SOFT/2-5": [
+            "vxWorks-68040", 
+            "vxWorks-ppc603"
+        ], 
+        "/tmp-test01/VXSTATS/2-0": [
+            "vxWorks-68040", 
+            "vxWorks-ppc603"
+        ]
+    }, 
     "dependencies": {
         "/tmp-test01/ALARM/3-0": {
             "EPICS_BASE": "/tmp-test01/BASE/R3-14-8-2-0"

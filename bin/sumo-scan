@@ -81,6 +81,45 @@ makefile_scan_pre= {}
 # RELEASE file scanning
 # -----------------------------------------------
 
+def scan_config_file(filename, external_definitions= None,
+                      verbose= False, dry_run= False):
+    """scan CONFIG file.
+
+    return CROSS_COMPILER_TARGET_ARCHS.
+    """
+    wanted= { 'CROSS_COMPILER_TARGET_ARCHS': None
+            }
+    data= sumo.makefile_scan.scan(filename,
+                             external_definitions,
+                             makefile_scan_pre,
+                             False,
+                             verbose, dry_run)
+    for k in wanted.keys():
+        wanted[k]= data[k]
+    return wanted
+
+def scan_support_arch(support_path,
+                      verbose= False, dry_run= False):
+    """scan the CONFIG file of a support.
+    """
+    external_definitions= { "TOP": support_path }
+    dict_= None
+    for n in ("Makefile", "CONFIG"):
+        fn= os.path.join(support_path, n)
+        if not os.path.exists(fn):
+            continue
+        dict_= scan_config_file(fn,
+                                external_definitions,
+                                verbose= verbose, dry_run= dry_run)
+        break
+    if dict_ is None:
+        sys.stderr.write("\nwarning: %s: CROSS_COMPILER_TARGET_ARCHS "
+                         "not found\n" % support_path)
+        return []
+    arch_str= dict_["CROSS_COMPILER_TARGET_ARCHS"]
+    return sorted(arch_str.strip().split())
+
+
 def scan_release_file(filename, external_definitions= None,
                       verbose= False, dry_run= False):
     """scan a release file.
@@ -88,6 +127,7 @@ def scan_release_file(filename, external_definitions= None,
     data= sumo.makefile_scan.scan(filename,
                              external_definitions,
                              makefile_scan_pre,
+                             True, # warnings
                              verbose, dry_run)
     dependencies= {}
     for (k,v) in data.items():
@@ -104,7 +144,7 @@ def scan_release_file(filename, external_definitions= None,
         dependencies[k]= v
     return dependencies
 
-def scan_support_release(support_path,
+def scan_support_deps(support_path,
                          verbose= False, dry_run= False):
     """scan the RELEASE file of a support.
     """
@@ -113,15 +153,20 @@ def scan_support_release(support_path,
                              external_definitions,
                              verbose= verbose, dry_run= dry_run)
 
-# pylint: disable=R0912
-#                          Too many branches
 
-def dependency_data(support_tree,
+def support_configure_data(support_tree,
                     buildtag,
+                    rx_exclude_path,
                     progress= False,
                     verbose= False, dry_run= False):
-    """scan a whole file-tree.
+    """scan EPICS configuration files a whole file-tree of EPICS supports.
     """
+    # pylint: disable=R0912
+    #                          Too many branches
+    # pylint: disable=R0914
+    #                          Too many local variables
+    # pylint: disable=R0913
+    #                          Too many arguments
     def slicer(l, val):
         """changes a list to a single element list.
 
@@ -134,6 +179,9 @@ def dependency_data(support_tree,
             return
         l[i+1:]= []
         l[0:i]= []
+    def purge(l):
+        """empties a list by *directly* changing it."""
+        l[:]= []
     def slice_buildtag(l, buildtag):
         """narrow the search to a given buildtag."""
         index=0
@@ -147,8 +195,14 @@ def dependency_data(support_tree,
             return
         l[i+1:]= []
         l[0:i]= []
+    def exclude(path):
+        """test if the exclude expression matches"""
+        if rx_exclude_path is None:
+            return False
+        return bool(rx_exclude_path.search(path))
 
-    dict_= {}
+    release_dict= {}
+    arch_dict= {}
     cnt_max= 50
     cnt= 0
     if progress:
@@ -159,21 +213,25 @@ def dependency_data(support_tree,
     for (dirpath, dirnames, filenames) in utils.dirwalk(support_tree):
         if progress:
             cnt= utils.show_progress(cnt, cnt_max)
+        if exclude(dirpath):
+            purge(dirnames)
         slicer(dirnames, "configure")
         if buildtag is not None:
             slice_buildtag(dirnames, buildtag)
         if os.path.basename(dirpath)=="configure":
+            # get the path of the versioned support:
+            versioned_path= os.path.realpath(os.path.dirname(dirpath))
             if "RELEASE" in filenames:
-                # get the path of the versioned support:
-                versioned_path= os.path.realpath(os.path.dirname(dirpath))
-                data= scan_support_release(versioned_path,
+                data= scan_support_deps(versioned_path,
                                            verbose= verbose, dry_run= dry_run)
-                dict_[versioned_path]= data
+                release_dict[versioned_path]= data
+            if "CONFIG" in filenames:
+                archs= scan_support_arch(versioned_path,
+                                         verbose= verbose, dry_run= dry_run)
+                arch_dict[versioned_path]= archs
     if progress:
         sys.stderr.write("\n")
-    return dict_
-
-# pylint: enable=R0912
+    return (release_dict, arch_dict)
 
 def name2path_from_deps(deps):
     """calculate name2path dict from dependency dict.
@@ -382,21 +440,25 @@ def script_shortname():
     """return the name of this script without a path component."""
     return os.path.basename(sys.argv[0])
 
-def get_dependencies(options):
-    """get the dependencies.
+def get_configuration(options):
+    """get the support configuration data.
     """
     if not options.dir:
         sys.exit("--dir is mandatory")
     if not os.path.exists(options.dir):
         sys.exit("error, directory \"%s\" doesn't exist" % options.dir)
-    deps= \
-       dependency_data(options.dir,
+    rx_exclude= None
+    if options.exclude_paths:
+        rx_exclude= re.compile(options.exclude_paths)
+    (deps, archs)= \
+       support_configure_data(options.dir,
                        options.buildtag,
+                       rx_exclude,
                        options.progress,
                        options.verbose,
                        options.dry_run
                       )
-    return deps
+    return (deps, archs)
 
 # pylint: disable=R0912
 #                          Too many branches
@@ -420,14 +482,14 @@ def process(options, commands):
     deps= None
 
     if options.dir:
-        deps= get_dependencies(options)
+        (deps, archs)= get_configuration(options)
     elif options.info_file:
-        deps= utils.json_loadfile(options.info_file)
+        (deps, archs)= utils.json_loadfile(options.info_file)
     else:
         sys.exit("error: -d or -i required for command")
 
-    if options.exclude_paths:
-        deps= filter_exclude_paths(deps, options.exclude_paths)
+    #if options.exclude_paths:
+    #    deps= filter_exclude_paths(deps, options.exclude_paths)
     if options.exclude_deps:
         deps= filter_exclude_deps(deps, options.exclude_deps)
 
@@ -435,6 +497,7 @@ def process(options, commands):
 
     if "deps" in commands:
         bag["dependencies"]= deps
+        bag["archs"]= archs
     if "name2paths" in commands:
         bag["name2paths"]= name2path_from_deps(deps)
     if "path2names" in commands:
