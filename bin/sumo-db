@@ -98,7 +98,7 @@ Here is an example of a dataset::
               ]
           }
       },
-  
+
       "MISC": {
           "R2-1": {
               "dependencies": {},
@@ -137,9 +137,9 @@ import sumo.utils as utils
 # version of the program:
 my_version= "1.0"
 
-KNOWN_COMMANDS=set(("convert", "distribution", 
+KNOWN_COMMANDS=set(("convert", "distribution",
                     "show", "shownewest", "showall",
-                    "merge", "filter", 
+                    "merge", "filter",
                     "cloneversion", "replaceversion"))
 
 # -----------------------------------------------
@@ -222,7 +222,7 @@ def create_database(deps, repoinfo, groups, state):
                         # the source is a darcs repository with a tag. We use
                         # the tag as unique versionname:
                         versionname= source_tag
-                db.set_source(module_name, versionname, state, source_type, 
+                db.set_source(module_name, versionname, state, source_type,
                               url, source_tag)
 
                 _path2namevname[versionedmodule_path]= \
@@ -257,7 +257,7 @@ def create_database(deps, repoinfo, groups, state):
                                   "path %s: "+ \
                                   "missing data for "+ \
                                   "dependency \"%s\"") % \
-                                  (modulename, versionname, 
+                                  (modulename, versionname,
                                    versionedmodule_path,
                                    dep_path))
                     if _dep_name != alias:
@@ -279,8 +279,8 @@ def _distribution_add(db, dist, modulename, versionname, maxstate):
     existing_versionname= dist.get(modulename)
     if existing_versionname is not None:
         if existing_versionname != versionname:
-            raise ValueError, "conflict: %s %s %s" % \
-                      (modulename, existing_versionname, versionname)
+            raise ValueError("conflict: %s %s %s" % \
+                      (modulename, existing_versionname, versionname))
         return dist
     new_dist= dict(dist)
     new_dist[modulename]= versionname
@@ -296,16 +296,16 @@ def _distribution_add(db, dist, modulename, versionname, maxstate):
                 modulename, versionname, dep_modulename, maxstate):
             errst= None
             try:
-                new_dist= _distribution_add(db, 
-                                            new_dist, 
-                                            dep_modulename, 
+                new_dist= _distribution_add(db,
+                                            new_dist,
+                                            dep_modulename,
                                             dep_version, maxstate)
                 errst= None
                 break
             except ValueError, e:
                 errst= str(e)
         if errst:
-            raise ValueError, "last found %s" % errst
+            raise ValueError("last found %s" % errst)
     return new_dist
 
 def distribution(db, modulespec_list, maxstate):
@@ -320,12 +320,12 @@ def distribution(db, modulespec_list, maxstate):
         elif flag=="this":
             versioned_modules.append((modulename, versionname))
         else:
-            raise ValueError, "\"-version\" and \"+version\" not "+ \
-                              "supported here"
+            raise ValueError("\"-version\" and \"+version\" not "
+                             "supported here")
     dist= {}
     for (modulename, versionname) in versioned_modules:
         try:
-            dist= _distribution_add(db, dist, modulename, versionname, 
+            dist= _distribution_add(db, dist, modulename, versionname,
                                     maxstate)
         except ValueError, e:
             sys.exit(str(e))
@@ -339,7 +339,7 @@ def distribution(db, modulespec_list, maxstate):
         found= False
         for versionname in versionlist:
             try:
-                dist= _distribution_add(db, dist, modulename, versionname, 
+                dist= _distribution_add(db, dist, modulename, versionname,
                                         maxstate)
                 found= True
                 break
@@ -402,7 +402,7 @@ def process(options, commands):
             sys.exit("error: no modules specified")
         if not options.db:
             sys.exit("error, --db is mandatory here")
-        db= utils.Dependencies.from_json_file(options.db, 
+        db= utils.Dependencies.from_json_file(options.db,
                 keep_locked= options.savedb and (not options.dry_run))
         db= db.partial_copy_by_specs(commands[1:])
         if options.savedb:
@@ -417,7 +417,7 @@ def process(options, commands):
             sys.exit("exactly one filename must follow \"merge\"")
         if not options.db:
             sys.exit("error, --db is mandatory here")
-        db = utils.Dependencies.from_json_file(options.db, 
+        db = utils.Dependencies.from_json_file(options.db,
                 keep_locked= options.savedb and (not options.dry_run))
         db2= utils.Dependencies.from_json_file(commands[1])
         db.merge(db2)
@@ -550,45 +550,45 @@ def main():
                           description="This program manages EPICS support trees"
                          )
 
-    parser.add_option("--summary",  
-                      action="store_true", 
+    parser.add_option("--summary",
+                      action="store_true",
                       help="print a summary of the function of the program",
                       )
-    parser.add_option("--doc",  
-                      action="store_true", 
+    parser.add_option("--doc",
+                      action="store_true",
                       help="print a longer description of the program",
                       )
-    parser.add_option("--test",  
+    parser.add_option("--test",
                       action="store_true",
-                      help="perform simple self-test", 
+                      help="perform simple self-test",
                       )
-    parser.add_option("--db", 
-                      action="store", 
-                      type="string",  
+    parser.add_option("--db",
+                      action="store",
+                      type="string",
                       help="define the name of the DBFILE",
-                      metavar="DBFILE"  
+                      metavar="DBFILE"
                       )
     parser.add_option("--savedb",
-                      action="store_true", 
+                      action="store_true",
                       help="resave db if it was modified, currently "+ \
                            "only for these commands :"+ \
-                           (" ".join(("merge","filter", 
+                           (" ".join(("merge","filter",
                                       "cloneversion", "replaceversion")))
                       )
-    parser.add_option("-b", "--brief", 
-                      action="store_true", 
+    parser.add_option("-b", "--brief",
+                      action="store_true",
                       help="create a more brief output",
                       )
-    parser.add_option("-p", "--progress", 
-                      action="store_true", 
+    parser.add_option("-p", "--progress",
+                      action="store_true",
                       help="show progress on stderr",
                       )
-    parser.add_option("-v", "--verbose",   
-                      action="store_true", 
+    parser.add_option("-v", "--verbose",
+                      action="store_true",
                       help="show command calls ",
                       )
-    parser.add_option("-n", "--dry-run",   
-                      action="store_true", 
+    parser.add_option("-n", "--dry-run",
+                      action="store_true",
                       help="just show what the program would do",
                       )
 

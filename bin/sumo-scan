@@ -65,10 +65,10 @@ import sumo.utils as utils
 # version of the program:
 my_version= "1.0"
 
-KNOWN_COMMANDS=set(("deps", "name2paths", "path2names", 
+KNOWN_COMMANDS=set(("deps", "name2paths", "path2names",
                     "groups", "repos", "all"))
 
-IGNORE_NAMES= set(["TOP", "EPICS_SUPPORT", 
+IGNORE_NAMES= set(["TOP", "EPICS_SUPPORT",
                    "SUPPORT", "TEMPLATE_TOP"]) #, "EPICS_BASE"])
 
 import sumo.makefile_scan
@@ -79,11 +79,11 @@ makefile_scan_pre= {}
 # RELEASE file scanning
 # -----------------------------------------------
 
-def scan_release_file(filename, external_definitions= None, 
+def scan_release_file(filename, external_definitions= None,
                       verbose= False, dry_run= False):
     """scan a release file.
     """
-    data= sumo.makefile_scan.scan(filename, 
+    data= sumo.makefile_scan.scan(filename,
                              external_definitions,
                              makefile_scan_pre,
                              verbose, dry_run)
@@ -102,7 +102,7 @@ def scan_release_file(filename, external_definitions= None,
         dependencies[k]= v
     return dependencies
 
-def scan_support_release(support_path, 
+def scan_support_release(support_path,
                          verbose= False, dry_run= False):
     """scan the RELEASE file of a support.
     """
@@ -114,22 +114,22 @@ def scan_support_release(support_path,
 # pylint: disable=R0912
 #                          Too many branches
 
-def dependency_data(support_tree, 
+def dependency_data(support_tree,
                     buildtag,
-                    progress= False, 
+                    progress= False,
                     verbose= False, dry_run= False):
     """scan a whole file-tree.
     """
     def slicer(l, val):
         """changes a list to a single element list.
-        
+
         This function *directly* modifies the list instead of creating a new
         one. This is needed for the os.walk function.
         """
         try:
             i= l.index(val)
         except ValueError, _:
-            return 
+            return
         l[i+1:]= []
         l[0:i]= []
     def slice_buildtag(l, buildtag):
@@ -152,7 +152,7 @@ def dependency_data(support_tree,
     if progress:
         utils.show_progress(cnt, cnt_max, "directories searched for RELEASE")
     # not possible on python 2.5:
-    #for (dirpath, dirnames, filenames) in os.walk(support_tree, 
+    #for (dirpath, dirnames, filenames) in os.walk(support_tree,
     #                                              topdown= True):
     for (dirpath, dirnames, filenames) in utils.dirwalk(support_tree):
         if progress:
@@ -268,7 +268,7 @@ def darcs_dir_test(darcs_url, verbose, dry_run):
     if not m:
         # a pure path
         return os.path.exists(os.path.join(darcs_url, "_darcs"))
-    cmd= "ssh %s@%s 'ls %s'" % (m.group(1), m.group(2), 
+    cmd= "ssh %s@%s 'ls %s'" % (m.group(1), m.group(2),
                                 os.path.join(m.group(3), "_darcs"))
     try:
         utils.system(cmd,
@@ -294,12 +294,12 @@ def darcs_source_repo(directory, use_dir_test, verbose, dry_run):
     """get the darcs source repository.
 
     This function calls "darcs show repo". If there is a "Default
-    repository" it is returned. 
+    repository" it is returned.
     """
     if not os.path.exists(os.path.join(directory,"_darcs")):
         return
     try:
-        reply= utils.system("cd %s && darcs show repo" % directory, 
+        reply= utils.system("cd %s && darcs show repo" % directory,
                              True, verbose, dry_run)
     except IOError, _:
         # probably no darcs repo found
@@ -318,7 +318,7 @@ def darcs_last_tag(directory, verbose, dry_run):
     """Returns the topmost darcs tag.
     """
     try:
-        reply= utils.system("cd %s && darcs show tags" % directory, True, 
+        reply= utils.system("cd %s && darcs show tags" % directory, True,
                              verbose, dry_run)
     except IOError, _:
         # probably no darcs repo found
@@ -482,84 +482,84 @@ def main():
                               "to the screen",
                          )
 
-    parser.add_option("--summary",  
-                      action="store_true", 
+    parser.add_option("--summary",
+                      action="store_true",
                       help="print a summary of the function of the program",
                       )
-    parser.add_option("--doc",  
-                      action="store_true", 
+    parser.add_option("--doc",
+                      action="store_true",
                       help="print a longer description of the program",
                       )
-    parser.add_option("--test",  
+    parser.add_option("--test",
                       action="store_true",
-                      help="perform simple self-test", 
+                      help="perform simple self-test",
                       )
     parser.add_option("-d", "--dir",
-                      action="store", 
-                      type="string",  
+                      action="store",
+                      type="string",
                       help="parse all RELEASE files in directory DIR",
-                      metavar="DIR"  
+                      metavar="DIR"
                       )
     parser.add_option("-i","--info-file",
-                      action="store", 
-                      type="string",  
+                      action="store",
+                      type="string",
                       help="read information from INFOFILE. This is a "+ \
                            "file generated by this script in a prevous run.",
-                      metavar="INFOFILE"  
+                      metavar="INFOFILE"
                       )
     parser.add_option("-g", "--group-basedir",
-                      action="append", 
+                      action="append",
                       help="Try to group directories by their name. The "+ \
                            "BASEDIR is taken as directory base to "+ \
                            "calculate group names from directory names." + \
                            "You can specify more than one of these."
                       )
     parser.add_option("--exclude-paths",
-                      action="store", 
-                      type="string",  
+                      action="store",
+                      type="string",
                       help="exclude all paths that match REGEXP "+ \
                            "from dependencies",
-                      metavar="REGEXP"  
+                      metavar="REGEXP"
                       )
     parser.add_option("--exclude-deps",
-                      action="store", 
-                      type="string",  
+                      action="store",
+                      type="string",
                       help="exclude all paths whose dependencies "+ \
                            "match REGEXP",
-                      metavar="REGEXP"  
+                      metavar="REGEXP"
                       )
     parser.add_option("--darcs-dirtest",
-                      action="store_true", 
+                      action="store_true",
                       help="Test if a found remote darcs repository " +\
                            "has a '_darcs' directory in it. This may " +\
                            "help detect invalid default repository " +\
                            "entries.",
                       )
     parser.add_option("--missing-tag",
-                      action="store_true", 
+                      action="store_true",
                       help="show directories where a repository was "+ \
                            "found but no tag",
                       )
     parser.add_option("--missing-repo",
-                      action="store_true", 
+                      action="store_true",
                       help="show directories where no repository was found",
                       )
     parser.add_option("-t", "--buildtag",
-                      action="store", 
-                      type="string",  
+                      action="store",
+                      type="string",
                       help="scan only directories of the given buildtag",
-                      metavar="BUILDTAG"  
+                      metavar="BUILDTAG"
                       )
-    parser.add_option("-p", "--progress", 
-                      action="store_true", 
+    parser.add_option("-p", "--progress",
+                      action="store_true",
                       help="show progress on stderr",
                       )
-    parser.add_option("-v", "--verbose",   
-                      action="store_true", 
+    parser.add_option("-v", "--verbose",
+                      action="store_true",
                       help="show command calls ",
                       )
-    parser.add_option("-n", "--dry-run",   
-                      action="store_true", 
+    parser.add_option("-n", "--dry-run",
+                      action="store_true",
                       help="just show what the program would do",
                       )
 
