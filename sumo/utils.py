@@ -13,11 +13,16 @@ import os.path
 import pprint
 import copy
 
+_pyver= (sys.version_info[0], sys.version_info[1])
+
+if _pyver < (2,5):
+    sys.exit("ERROR: SUMO requires at least Python 2.5, your version is %d.%d" % _pyver)
+
 try:
     import lockfile
     use_lockfile= True
 except ImportError, _lockfile_err:
-    if _lockfile_err.message != 'No module named lockfile':
+    if str(_lockfile_err) != 'No module named lockfile':
         raise
     else:
         sys.stderr.write("module 'lockfile' not found - " +\
@@ -28,12 +33,20 @@ except ImportError, _lockfile_err:
 # JSON support
 # -----------------------------------------------
 
-if sys.version_info[0]>2 or (sys.version_info[0]==2 and sys.version_info[1]>5):
+if _pyver > (2,5):
     import json
     _JSON_TYPE= 1
-else:
-    import simplejson as json
+elif _pyver == (2,5):
+    # python 2.5 has no standard json module, assume that simplejson is
+    # installed:
+    try:
+        import simplejson as json
+    except ImportError, _json_err:
+        sys.exit("ERROR: If SUMO is run with Python %d.%d you need to have module 'simplejson' installed." % (sys.version_info[0],sys.version_info[1]))
     _JSON_TYPE= 0
+else:
+    # older python versions are already detected further above
+    raise AssertionError, "this shouldn't happen"
 
 def json_dump_file(filename, var):
     """Dump a variable to a file in JSON format.
