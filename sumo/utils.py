@@ -13,6 +13,7 @@ import os
 import os.path
 import pprint
 import copy
+import re
 
 _pyver= (sys.version_info[0], sys.version_info[1])
 
@@ -546,6 +547,33 @@ def list_update(list1, list2):
 # classes
 # -----------------------------------------------
 
+class RegexpPatcher(object):
+    """apply one or more regexes on strings."""
+    def __init__(self, tuples=None):
+        r"""initialize from a list of tuples.
+
+        Here is a simple example:
+        >>> rx= RegexpPatcher(((r"a(\w+)",r"a(\1)"),(r"x+",r"x")))
+        >>> rx.apply("ab xx")
+        'a(b) x'
+        """
+        self._list= []
+        if tuples is not None:
+            for regexp_pair in tuples:
+                self.add(regexp_pair)
+    def add(self, regexp_pair):
+        """add a from-regexp to-regexp pair."""
+        #print "RX: ",repr(regexp_pair)
+        rx= re.compile(regexp_pair[0])
+        self._list.append((rx, regexp_pair[1]))
+    def apply(self, str_):
+        """apply the regular expressions to a string"""
+        if not self._list:
+            return str_
+        for (rx, repl) in self._list:
+            str_= rx.sub(repl, str_)
+        return str_
+
 class JSONstruct(object):
     """an object that is a python structure.
 
@@ -645,9 +673,9 @@ class PathSource(JSONstruct):
     def __init__(self, dict_= None):
         """create the object."""
         super(PathSource, self).__init__(dict_)
-    def add_path(self, path):
+    def add_path(self, path, source):
         """add a simple path."""
-        self.datadict()[path]= ["path", path]
+        self.datadict()[path]= ["path", source]
     def add_darcs(self, path, url, tag= None):
         """add darcs repository information."""
         if tag is None:
