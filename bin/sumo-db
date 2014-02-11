@@ -152,16 +152,18 @@ def script_shortname():
     """return the name of this script without a path component."""
     return os.path.basename(sys.argv[0])
 
-# pylint: disable=R0914
-#                          Too many local variables
-# pylint: disable=R0912
-#                          Too many branches
-# pylint: disable=R0915
-#                          Too many statements
 
-def create_database(deps, repoinfo, groups, state, source_patches):
+def create_database(deps, repoinfo, groups, archs, state, source_patches):
     """join the information of the three sources.
     """
+    # pylint: disable=R0914
+    #                          Too many local variables
+    # pylint: disable=R0912
+    #                          Too many branches
+    # pylint: disable=R0915
+    #                          Too many statements
+    # pylint: disable=R0913
+    #                          Too many arguments
     def errmsg(msg):
         """print something on stderr."""
         sys.stderr.write(msg+"\n")
@@ -231,8 +233,9 @@ def create_database(deps, repoinfo, groups, state, source_patches):
                         # the tag as unique versionname:
                         versionname= source_tag
                 url= patcher.apply(url)
-                db.set_source(module_name, versionname, state, source_type,
-                              url, source_tag)
+                module_archs= archs.get(versionedmodule_path, [])
+                db.set_source(module_name, versionname, module_archs, state,
+                              source_type, url, source_tag)
 
                 _path2namevname[versionedmodule_path]= \
                         (module_name,versionname)
@@ -278,10 +281,6 @@ def create_database(deps, repoinfo, groups, state, source_patches):
                     db.add_dependency(modulename, versionname,
                                       _dep_name, _dep_version, state)
     return db
-
-# pylint: enable=R0914
-# pylint: enable=R0912
-# pylint: enable=R0915
 
 def _distribution_add(db, dist, modulename, versionname, maxstate):
     """add a module to the set."""
@@ -386,7 +385,8 @@ def process(options, commands):
         deps= scandata["dependencies"]
         repoinfo= utils.PathSource(scandata["repos"])
         groups= scandata["groups"]
-        db= create_database(deps, repoinfo, groups, state,
+        archs= scandata["archs"]
+        db= create_database(deps, repoinfo, groups, archs, state,
                             options.source_patch)
         db.json_print()
         return

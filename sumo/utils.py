@@ -884,15 +884,18 @@ class Dependencies(JSONstruct):
         m= self.datadict().setdefault(module_name,{})
         m[versionname]= copy.deepcopy(
                             other.datadict()[module_name][versionname])
-    def set_source(self, module_name, versionname, state,
+    def set_source(self, module_name, versionname, archs, state,
                    source_type, url, tag):
-        """add a module with source specification."""
+        """add a module with source spec, state and archs."""
         if not self.__class__.states_dict.has_key(state):
             raise ValueError("invalid state: %s" % state)
         version_dict= self.datadict().setdefault(module_name,{})
         version= version_dict.setdefault(versionname, {})
         if not version.has_key("state"):
             version["state"]= state
+        arch_dict= version.setdefault("archs", {})
+        for arch in archs:
+            arch_dict[arch]= True
         l= [source_type, url]
         if tag:
             l.append(tag)
