@@ -1,7 +1,8 @@
-"""Utilities for the pysupport scripts.
-"""
 # pylint: disable=C0302
 #                          Too many lines in module
+"""Utilities for the SUMO scripts.
+"""
+
 # pylint: disable=C0322
 #                          Operator not preceded by a space
 # pylint: disable=C0103
@@ -16,7 +17,8 @@ import copy
 _pyver= (sys.version_info[0], sys.version_info[1])
 
 if _pyver < (2,5):
-    sys.exit("ERROR: SUMO requires at least Python 2.5, your version is %d.%d" % _pyver)
+    sys.exit("ERROR: SUMO requires at least Python 2.5, "
+             "your version is %d.%d" % _pyver)
 
 try:
     import lockfile
@@ -42,11 +44,13 @@ elif _pyver == (2,5):
     try:
         import simplejson as json
     except ImportError, _json_err:
-        sys.exit("ERROR: If SUMO is run with Python %d.%d you need to have module 'simplejson' installed." % (sys.version_info[0],sys.version_info[1]))
+        sys.exit("ERROR: If SUMO is run with Python %d.%d "
+                 "you need to have module 'simplejson' installed." % \
+                 (sys.version_info[0],sys.version_info[1]))
     _JSON_TYPE= 0
 else:
     # older python versions are already detected further above
-    raise AssertionError, "this shouldn't happen"
+    raise AssertionError("this shouldn't happen")
 
 def json_dump_file(filename, var):
     """Dump a variable to a file in JSON format.
@@ -57,6 +61,9 @@ def json_dump_file(filename, var):
     else:
         json.dump(var, fh, sort_keys= True, indent= 4)
     fh.close()
+
+# pylint: disable=C0303
+#                          Trailing whitespace
 
 def json_str(var):
     """convert a variable to JSON format.
@@ -102,6 +109,9 @@ def json_dump(var):
     }
     """
     print json_str(var)
+
+# pylint: enable=C0303
+#                          Trailing whitespace
 
 def json_load(data):
     """decode a JSON string.
@@ -228,7 +238,7 @@ def lock_a_file(filename, timeout=20):
               "error %s. If you know that the file shouldn't be locked "
               "you may try to remove the lockfile.") % \
              (filename, timeout, str(e))
-        raise AssertionError, txt
+        raise AssertionError(txt)
     return lock
 
 def unlock_a_file(lock):
@@ -237,7 +247,7 @@ def unlock_a_file(lock):
     if not use_lockfile:
         return
     if lock is None:
-        raise AssertionError, "unexpected: lock is None"
+        raise AssertionError("unexpected: lock is None")
     lock.release()
 
 # -----------------------------------------------
@@ -395,7 +405,7 @@ def version2tag(tag):
 
 def is_standardpath(path, darcs_tag):
     """checks if path is complient to Bessy convention for support paths.
-    
+
     Here are some examples:
     >>> is_standardpath("support/mcan/2-3", "R2-3")
     True
@@ -420,8 +430,8 @@ def scan_modulespec(spec):
       modulename:-versionname   : this version or older
 
     returns a tuple:
-      (modulename,flag,versionname) 
-      
+      (modulename,flag,versionname)
+
     which flag: "any", "this", "this_or_newer", "this_or_older"
 
     Here are some examples:
@@ -478,7 +488,7 @@ def compare_versions_flag(flag, version1, version2):
         return (k1<=k2)
     if flag=="this_or_newer":
         return (k1>=k2)
-    raise AssertionError, "unknown flag: %s" % flag
+    raise AssertionError("unknown flag: %s" % flag)
 
 # -----------------------------------------------
 # string utilities
@@ -518,8 +528,8 @@ def dict_update(dict_, other, keylist= None):
             continue
         if old_v==v:
             continue
-        raise ValueError, "key %s: contradicting values: %s %s" % \
-                          (k,repr(old_v),repr(v))
+        raise ValueError("key %s: contradicting values: %s %s" % \
+                          (k,repr(old_v),repr(v)))
 
 def list_update(list1, list2):
     """update a list with another.
@@ -538,7 +548,7 @@ def list_update(list1, list2):
 
 class JSONstruct(object):
     """an object that is a python structure.
-    
+
     This is a dict that contains other dicts or lists or strings or floats or
     integers.
     """
@@ -591,7 +601,7 @@ class JSONstruct(object):
         if filename=="-":
             return cls(json_loadfile(filename))
         if not os.path.exists(filename):
-            raise IOError, "file \"%s\" not found" % filename
+            raise IOError("file \"%s\" not found" % filename)
         l= lock_a_file(filename)
         result= cls(json_loadfile(filename))
         if keep_locked:
@@ -609,9 +619,9 @@ class JSONstruct(object):
     def json_save(self, filename, verbose, dry_run):
         """save as a JSON file."""
         if not filename:
-            raise ValueError, "filename is empty"
+            raise ValueError("filename is empty")
         if filename=="-":
-            raise ValueError, "filename must not be \"-\""
+            raise ValueError("filename must not be \"-\"")
         backup= "%s.bak" % filename
         if not dry_run:
             self.lock_file(filename)
@@ -672,7 +682,7 @@ class PathSource(JSONstruct):
         Returns:
           (type, url, tag)
 
-        type: "path" or "darcs" 
+        type: "path" or "darcs"
         url : the url where to get
         tag : the repository tag, may be empty ("").
 
@@ -704,10 +714,10 @@ class Dependencies(JSONstruct):
         """
         idx= cls.states_dict.get(max_state)
         if idx is None:
-            raise ValueError, "invalid max_state: %s" % max_state
+            raise ValueError("invalid max_state: %s" % max_state)
         return set( [x for x in cls.states_list if cls.states_dict[x]<=idx])
     @classmethod
-    def _dependency_merge(cls, src_deps, dest_deps, 
+    def _dependency_merge(cls, src_deps, dest_deps,
                           constant_src_state= None):
         """intelligent merge of dependency dicts.
 
@@ -752,20 +762,20 @@ class Dependencies(JSONstruct):
                         continue
                     if dictname=="aliases":
                         try:
-                            dict_update(vdict.setdefault(dictname,{}), 
+                            dict_update(vdict.setdefault(dictname,{}),
                                         dictval)
                         except ValueError, e:
-                            raise ValueError, \
+                            raise ValueError(
                               "module %s version %s aliases: %s" % \
-                              (modulename, versionname, str(e))
+                              (modulename, versionname, str(e)))
                         continue
                     if dictname=="source":
                         try:
                             dict_update(vdict, vdict2, [dictname])
                         except ValueError, e:
-                            raise ValueError, \
+                            raise ValueError(
                               "module %s version %s source: %s" % \
-                              (modulename, versionname, str(e))
+                              (modulename, versionname, str(e)))
                         continue
                     if dictname=="dependencies":
                         # pylint: disable=W0212
@@ -773,10 +783,10 @@ class Dependencies(JSONstruct):
                         self.__class__._dependency_merge(
                                 dictval,
                                 vdict.setdefault(dictname,{}),
-                                constant_src_state) 
+                                constant_src_state)
                         # pylint: enable=W0212
                         continue
-                    raise AssertionError, "unexpected dictname %s" % dictname
+                    raise AssertionError("unexpected dictname %s" % dictname)
     def import_module(self, other, module_name, versionname):
         """copy the module data from another Dependencies object.
 
@@ -785,11 +795,11 @@ class Dependencies(JSONstruct):
         m= self.datadict().setdefault(module_name,{})
         m[versionname]= copy.deepcopy(
                             other.datadict()[module_name][versionname])
-    def set_source(self, module_name, versionname, state, 
+    def set_source(self, module_name, versionname, state,
                    source_type, url, tag):
         """add a module with source specification."""
         if not self.__class__.states_dict.has_key(state):
-            raise ValueError, "invalid state: %s" % state
+            raise ValueError("invalid state: %s" % state)
         version_dict= self.datadict().setdefault(module_name,{})
         version= version_dict.setdefault(versionname, {})
         if not version.has_key("state"):
@@ -798,17 +808,17 @@ class Dependencies(JSONstruct):
         if tag:
             l.append(tag)
         version["source"]= l
-    def add_dependency(self, modulename, versionname, 
+    def add_dependency(self, modulename, versionname,
                        dep_modulename, dep_versionname, state):
         """add dependency for a module:version.
         """
         if not self.__class__.states_dict.has_key(state):
-            raise ValueError, "invalid state: %s" % state
+            raise ValueError("invalid state: %s" % state)
         m_dict= self.datadict()[modulename]
         dep_dict= m_dict[versionname].setdefault("dependencies",{})
         dep_module_dict= dep_dict.setdefault(dep_modulename, {})
         dep_module_dict[dep_versionname]= state
-    def del_dependency(self, modulename, versionname, 
+    def del_dependency(self, modulename, versionname,
                        dep_modulename, dep_versionname):
         """delete dependency for a module:version if it exists.
         """
@@ -821,7 +831,7 @@ class Dependencies(JSONstruct):
             return
         if dep_module_dict.has_key(dep_versionname):
             del dep_module_dict[dep_versionname]
-    def add_alias(self, modulename, versionname, 
+    def add_alias(self, modulename, versionname,
                   alias_name, real_name):
         """add an alias for modulename:versionname."""
         m_dict= self.datadict()[modulename]
@@ -829,8 +839,8 @@ class Dependencies(JSONstruct):
         if alias_dict.has_key(real_name):
             if alias_dict[real_name]==alias_name:
                 return
-            raise ValueError, \
-                  "alias \"%s\" defined with two different names" % alias_name
+            raise ValueError(
+                  "alias \"%s\" defined with two different names" % alias_name)
         alias_dict[real_name]= alias_name
     def get_alias(self, modulename, versionname,
                   dep_modulename):
@@ -844,11 +854,11 @@ class Dependencies(JSONstruct):
         """
         d= self.datadict().get(modulename)
         if d is None:
-            raise KeyError, "no data for module %s" % modulename
+            raise KeyError("no data for module %s" % modulename)
         v= d.get(versionname)
         if v is None:
-            raise KeyError, "version %s not found for module %s" % \
-                    (versionname, modulename)
+            raise KeyError("version %s not found for module %s" % \
+                    (versionname, modulename))
     def dependencies_found(self, modulename, versionname):
         """returns True if dependencies are found for modulename:versionname.
         """
@@ -869,7 +879,7 @@ class Dependencies(JSONstruct):
         if deps is None:
             return iter([])
         return deps.iterkeys()
-    def depends_on(self, modulename, versionname, 
+    def depends_on(self, modulename, versionname,
                    dependencyname, dependencyversion):
         """returns True if given dependency is found.
         """
@@ -884,14 +894,14 @@ class Dependencies(JSONstruct):
     def iter_dependency_versions(self, modulename, versionname,
                                  dependencyname, max_state):
         """return an iterator on dependency versions.
-        
+
         max_state is the maximum allowed state:
           "stable"  : return just stable
           "testing" : return stable and testing
           "unstable": return stable, testing and unstable
         """
         # pylint: disable=W0212
-        #                          Access to a protected member of a 
+        #                          Access to a protected member of a
         #                          client class
         _states= self.__class__._allowed_states(max_state)
         # pylint: enable=W0212
@@ -909,7 +919,7 @@ class Dependencies(JSONstruct):
     def sorted_dependency_versions(self, modulename, versionname,
                                    dependencyname, max_state):
         """return sorted dependency versions.
-        
+
         max_state is the maximum allowed state:
           "stable"  : return just stable
           "testing" : return stable and testing
@@ -924,14 +934,14 @@ class Dependencies(JSONstruct):
         return self.datadict().iterkeys()
     def iter_versions(self, modulename, max_state):
         """return an iterator on versionnames of a module.
-        
+
         max_state is the maximum allowed state:
           "stable"  : return just stable
           "testing" : return stable and testing
           "unstable": return stable, testing and unstable
         """
         # pylint: disable=W0212
-        #                          Access to a protected member of a 
+        #                          Access to a protected member of a
         #                          client class
         _states= self.__class__._allowed_states(max_state)
         # pylint: enable=W0212
@@ -953,8 +963,8 @@ class Dependencies(JSONstruct):
         """
         moduledata= self.datadict()[modulename]
         if moduledata.has_key(newversionname):
-            raise ValueError, "module %s: version %s already exists" % \
-                    (modulename, newversionname)
+            raise ValueError("module %s: version %s already exists" % \
+                    (modulename, newversionname))
         d= copy.deepcopy(self.datadict()[modulename][versionname])
         src= d.get("source")
         if src:
@@ -984,7 +994,7 @@ class Dependencies(JSONstruct):
 
     def partial_copy(self, elements):
         """take items from the Dependencies object and create a new one.
-        
+
         elements must be a dict { modulename: versionname }. If versionname is
         None, take all versions of the module.
 
@@ -1016,8 +1026,8 @@ class Dependencies(JSONstruct):
             elif flag=="this":
                 d[modulename]= versionname
             else:
-                raise ValueError, "\"-version\" and \"+version\" not "+ \
-                                  "supported here"
+                raise ValueError("\"-version\" and \"+version\" not "
+                                  "supported here")
         return self.partial_copy(d)
 
 # pylint: enable=R0904
@@ -1036,7 +1046,7 @@ class Builddb(JSONstruct):
         match= guess_string(st, cls.states)
         if match is None:
             errst= "error: cannot determine what state is meant by %s" % st
-            raise ValueError, errst
+            raise ValueError(errst)
         return match
     def __init__(self, dict_= None):
         """create the object."""
@@ -1064,11 +1074,11 @@ class Builddb(JSONstruct):
         """create a new build with the given state.
         """
         if state not in self.__class__.states:
-            raise ValueError, "not an allowed state: %s" % state
+            raise ValueError("not an allowed state: %s" % state)
         d= self.datadict()
         if d.has_key(build_tag):
-            raise ValueError, "cannot create, build %s already exists" % \
-                               build_tag
+            raise ValueError("cannot create, build %s already exists" % \
+                               build_tag)
         d[build_tag]= { "state": state }
     def is_stable(self, build_tag):
         """returns True if the build is marked stable.
@@ -1078,11 +1088,11 @@ class Builddb(JSONstruct):
     def state(self, build_tag):
         """return the state of the build."""
         d= self.datadict()
-        return d[build_tag]["state"] 
+        return d[build_tag]["state"]
     def change_state(self, build_tag, new_state):
         """sets the state to a new value."""
         if new_state not in self.__class__.states:
-            raise ValueError, "not an allowed state: %s" % new_state
+            raise ValueError("not an allowed state: %s" % new_state)
         d= self.datadict()
         d[build_tag]["state"]= new_state
     def add_build(self, other, build_tag):
@@ -1092,9 +1102,9 @@ class Builddb(JSONstruct):
         """
         d= self.datadict()
         if d.has_key(build_tag):
-            raise ValueError, "cannot add, build %s already exists" % build_tag
+            raise ValueError("cannot add, build %s already exists" % build_tag)
         d[build_tag]= other.datadict()[build_tag]
-    def add_module(self, build_tag, 
+    def add_module(self, build_tag,
                    module_build_tag,
                    modulename, versionname):
         """add a module definition."""
@@ -1115,13 +1125,13 @@ class Builddb(JSONstruct):
         module_dict= build_["modules"]
         return module_dict.get(modulename)
 
-    def module_link(self, build_tag, 
+    def module_link(self, build_tag,
                     modulename):
         """return linked build_tag if the module is linked or None."""
         build_= self.datadict()[build_tag]
         linked_ = build_.get("linked")
         if linked_ is None:
-            return 
+            return
         return linked_.get(modulename)
     def is_linked_to(self, build_tag, other_build_tag):
         """returns True if there are links to other_build_tag."""
@@ -1165,14 +1175,14 @@ class Builddb(JSONstruct):
             yield (module, module_dict[module])
     def modules(self, build_tag):
         """return all modules of a build.
-        
+
         The returned structure is a dictionary mapping modulenames to
         versionnames.
         """
         build_ = self.datadict()[build_tag]
         return build_["modules"]
 
-# pylint: enable=R0904 
+# pylint: enable=R0904
 
 def _test():
     """perform internal tests."""
