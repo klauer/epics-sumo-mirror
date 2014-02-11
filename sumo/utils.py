@@ -1228,6 +1228,15 @@ class Builddb(JSONstruct):
             errst= "error: cannot determine what state is meant by %s" % st
             raise ValueError(errst)
         return match
+    @staticmethod
+    def _check_arch(arch_dict, arch_list):
+        """check if all arch_list elements are keys in arch_dict."""
+        if arch_list is None:
+            return True
+        for a in arch_list:
+            if not arch_dict.get(a):
+                return False
+        return True
     def __init__(self, dict_= None):
         """create the object."""
         super(Builddb, self).__init__(dict_)
@@ -1250,8 +1259,8 @@ class Builddb(JSONstruct):
     def has_build_tag(self, build_tag):
         """returns if build_tag is contained."""
         return self.datadict().has_key(build_tag)
-    def new_build(self, build_tag, state):
-        """create a new build with the given state.
+    def new_build(self, build_tag, state, archs):
+        """create a new build with the given state and archs.
         """
         if state not in self.__class__.states:
             raise ValueError("not an allowed state: %s" % state)
@@ -1259,7 +1268,9 @@ class Builddb(JSONstruct):
         if d.has_key(build_tag):
             raise ValueError("cannot create, build %s already exists" % \
                                build_tag)
-        d[build_tag]= { "state": state }
+        d[build_tag]= { "state": state,
+                        "archs": dict([(a,True) for a in archs])
+                      }
     def is_stable(self, build_tag):
         """returns True if the build is marked stable.
         """
@@ -1269,6 +1280,13 @@ class Builddb(JSONstruct):
         """return the state of the build."""
         d= self.datadict()
         return d[build_tag]["state"]
+    def check_build_archs(self, build_tag, archs):
+        """check if all given archs are supported in the build."""
+        d= self.datadict()
+        # pylint: disable=W0212
+        #                          Access to a protected member of a
+        #                          client class
+        return self.__class__._check_arch(d[build_tag]["archs"], archs)
     def change_state(self, build_tag, new_state):
         """sets the state to a new value."""
         if new_state not in self.__class__.states:
@@ -1344,7 +1362,8 @@ class Builddb(JSONstruct):
         return new
 
     def iter_builds(self):
-        """return a build iterator."""
+        """return a build iterator.
+        """
         for t in sorted(self.datadict().keys()):
             yield t
     def iter_modules(self, build_tag):

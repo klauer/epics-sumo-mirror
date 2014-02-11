@@ -12576,6 +12576,10 @@ content of DB:
 content of BUILDS
 {
     "001": {
+        "archs": {
+            "vxWorks-68040": true, 
+            "vxWorks-ppc603": true
+        }, 
         "modules": {
             "ALARM": "R3-5", 
             "ASYN": "R4-15-bessy2", 

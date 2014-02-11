@@ -30,7 +30,7 @@ if [ ! -d $MYTESTDIR ]; then
     # sed is used to add spaces after each "," at the end of the line. The old JSON
     # library for python 2.5 doesn't do this.
 
-    $PYTHON ../../bin/sumo-build --db DB -P ../DB_IDCP-04.tmp --builddb BUILDS newtree 002 1>&2 
+    $PYTHON ../../bin/sumo-build --arch vxWorks-ppc603 --db DB -P ../DB_IDCP-04.tmp --builddb BUILDS newtree 002 1>&2 
 else
     echo -e "\t$MYTESTDIR already exists, effectively skipping this test..." 1>&2
     cd $MYTESTDIR > /dev/null

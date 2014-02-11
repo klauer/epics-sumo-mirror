@@ -111,7 +111,7 @@ def get_dependencies(module_dict, db, builddb, buildtag):
         _add_dependencies(module_dict, db,
                           build_module_dict, modulename, versionname)
 
-def builddb_match(db, builddb, modulename, versionname):
+def builddb_match(db, builddb, modulename, versionname, archs):
     """try to find matching deps in builddb.
     """
     deps= gather_dependencies(db, modulename, versionname, None)
@@ -122,6 +122,8 @@ def builddb_match(db, builddb, modulename, versionname):
         # try to find modules that were already built, ignore builds that are
         # not marked "stable":
         if not builddb.is_stable(build_tag):
+            continue
+        if not builddb.check_build_archs(build_tag, archs):
             continue
         if not builddb.has_module(build_tag, modulename):
             continue
@@ -136,7 +138,6 @@ def builddb_match(db, builddb, modulename, versionname):
         # from here: check if all dependencies match:
         match= True
         for module_name, versionname in deps.items():
-            # we would have to check arch here too!!
             other= modules.get(module_name)
             if versionname!= other:
                 match= False
@@ -145,26 +146,34 @@ def builddb_match(db, builddb, modulename, versionname):
             return build_tag
     return
 
-# pylint: disable=R0913
-#                          Too many arguments
-# pylint: disable=R0914
-#                          Too many local variables
-
-def gen_RELEASE(db, builddb, buildtag, modulename, versionname,
-                extra_lines,
-                verbose, dry_run):
-    """generate a RELEASE file."""
-    def myprint(st):
-        if verbose:
-            print st,
-        if not dry_run:
-            fh.write(st)
-    dir_= module_dir_string(buildtag, modulename, versionname)
+def _config_dir(build_tag, module_name, versionname, dry_run):
+    """get the config dir name."""
+    dir_= module_dir_string(build_tag, module_name, versionname)
     config_dir= os.path.join(dir_, "configure")
     if not dry_run:
         if not os.path.exists(config_dir):
             errmsg("no configure directory found in %s" % dir_)
             return
+    return config_dir
+
+def _fwrite(fh, st, verbose, dry_run):
+    """write a line to a file."""
+    if verbose:
+        print st,
+    if not dry_run:
+        fh.write(st)
+
+def gen_RELEASE(db, builddb, buildtag, modulename, versionname,
+                extra_lines,
+                verbose, dry_run):
+    """generate a RELEASE file."""
+    # pylint: disable=R0913
+    #                          Too many arguments
+    # pylint: disable=R0914
+    #                          Too many local variables
+    config_dir= _config_dir(buildtag, modulename, versionname, dry_run)
+    if config_dir is None:
+        return
     filename= os.path.join(config_dir, "RELEASE")
     if verbose:
         print "creating %s" % filename
@@ -172,7 +181,7 @@ def gen_RELEASE(db, builddb, buildtag, modulename, versionname,
         fh= open(filename, "w")
 
     basedir= os.path.abspath(".")
-    myprint("SUPPORT=%s\n" % basedir)
+    _fwrite(fh, "SUPPORT=%s\n" % basedir, verbose, dry_run)
     for dep_name in db.iter_dependencies(modulename, versionname):
         # get all depdendencies, even ones marked "unstable":
         # archs==None:
@@ -191,22 +200,36 @@ def gen_RELEASE(db, builddb, buildtag, modulename, versionname,
                            module_dir_string(buildtag_here, dep_name,
                                              dep_versionname)
                           )
-        myprint("%s=%s\n" % (name_here,path))
+        _fwrite(fh, "%s=%s\n" % (name_here,path), verbose, dry_run)
     for l in extra_lines:
-        myprint("%s\n" % l.rstrip())
+        _fwrite(fh, "%s\n" % l.rstrip(), verbose, dry_run)
     if not dry_run:
         fh.close()
 
-# pylint: enable=R0913
-# pylint: enable=R0914
-
-# pylint: disable=R0913
-#                          Too many arguments
+def append_CONFIG(buildtag, modulename, versionname, archs, verbose, dry_run):
+    """append setting of CROSS_COMPILER_TARGET_ARCHS to config."""
+    # pylint: disable=R0913
+    #                          Too many arguments
+    config_dir= _config_dir(buildtag, modulename, versionname, dry_run)
+    if config_dir is None:
+        return
+    filename= os.path.join(config_dir, "CONFIG")
+    if verbose:
+        print "appending %s" % filename
+    if not dry_run:
+        fh= open(filename, "a")
+    archstr= " ".join(sorted(archs))
+    _fwrite(fh, "CROSS_COMPILER_TARGET_ARCHS = %s" % archstr,
+            verbose, dry_run)
+    if not dry_run:
+        fh.close()
 
 def create_source(db, modulename, versionname,
                   destdir, verbose, dry_run):
     """create directory by given source spec.
     """
+    # pylint: disable=R0913
+    #                          Too many arguments
     (type_, url, tag)= db.module_source(modulename, versionname)
     if type_=="path":
         #cmd= "scp -r -p \"%s\" %s" % (url, destdir)
@@ -224,8 +247,6 @@ def create_source(db, modulename, versionname,
         utils.system(cmd, False, verbose, dry_run)
     else:
         raise AssertionError("unsupported source type %s" % type_)
-
-# pylint: enable=R0913
 
 def delete_module(build_tag, modulename, versionname,
                   verbose, dry_run):
@@ -256,12 +277,17 @@ def delete_modules(builddb, build_tag, verbose, dry_run):
 def create_module(db, builddb, build_tag,
                   modulename, versionname,
                   extra_defs,
+                  archs,
                   verbose, dry_run):
     """check out a module.
 
     returns the build_tag that was used. If the module was found in another
     build, return that built-tag.
     """
+    if not db.check_archs(modulename, versionname, archs):
+
+        sys.exit("error: archs %s\nnot supportted by module %s:%s\n" % \
+                 (repr(archs), modulename, versionname))
     basedir= module_basedir_string(modulename)
     ensure_dir(basedir, dry_run) # creates basedir if it doesn't exist
     dirname= module_dir_string(build_tag, modulename, versionname)
@@ -272,10 +298,12 @@ def create_module(db, builddb, build_tag,
     gen_RELEASE(db, builddb, build_tag, modulename, versionname,
                 extra_defs,
                 verbose, dry_run)
+    append_CONFIG(build_tag, modulename, versionname, archs,
+                  verbose, dry_run)
 
 # pylint: enable=R0913
 
-def add_modules(db, builddb, build_tag):
+def add_modules(db, builddb, build_tag, archs):
     """add modules to the builddb object.
 
     This function looks for compatible modules in all already existing builds.
@@ -292,7 +320,8 @@ def add_modules(db, builddb, build_tag):
             raise ValueError("more than one version for %s" % modulename)
         versionname= moduleversions[0]
 
-        compatible_build= builddb_match(db, builddb, modulename, versionname)
+        compatible_build= builddb_match(db, builddb, modulename,
+                                        versionname, archs)
         if compatible_build is None:
             # no existing build of the module was found, we have to build the
             # module ourselbves:
@@ -307,11 +336,12 @@ def add_modules(db, builddb, build_tag):
 #                          Too many arguments
 
 def create_modules(partialdb, builddb, build_tag, extra_lines,
+                   archs,
                    verbose, dry_run):
     """create all modules.
     """
     # add all modules specified by partialdb to builddb under tag build_tag:
-    add_modules(partialdb, builddb, build_tag)
+    add_modules(partialdb, builddb, build_tag, archs)
 
     for modulename in partialdb.iter_modulenames():
         versionname= builddb.module_version(build_tag, modulename)
@@ -321,6 +351,7 @@ def create_modules(partialdb, builddb, build_tag, extra_lines,
         create_module(partialdb, builddb, build_tag,
                       modulename, versionname,
                       extra_lines,
+                      archs,
                       verbose, dry_run)
 
 # pylint: enable=R0913
@@ -391,7 +422,6 @@ def create_partialdb(db, builddb, buildtag):
     new= utils.Dependencies()
     for modulename, versionname in builddb.iter_modules(buildtag):
         new.import_module(db, modulename, versionname)
-        sys.stderr.write("NEW-DUMP:\n%s\n" % new.json_string()) #@@@
         for dep_module in new.iter_dependencies(modulename, versionname):
             # archs==None:
             #   ignore architecture
@@ -399,7 +429,6 @@ def create_partialdb(db, builddb, buildtag):
             # object "new" is beeing built bit by bit. When we iterate over the
             # dependencies of a module the dependency modules are not yet part
             # of the Dependencies object, so we cannot know their architecture.
-            sys.stderr.write("M:V %s:%s\n" % (modulename,versionname)) #@@@
             dep_versions= list(new.iter_dependency_versions(modulename,
                                                             versionname,
                                                             dep_module,
@@ -559,6 +588,8 @@ def process(options, commands):
             sys.exit("--partialdb is mandatory")
         if not options.builddb:
             sys.exit("--builddb is mandatory")
+        if not options.arch:
+            sys.exit("--arch is mandatory")
         buildtag= commands[1]
         db= utils.Dependencies.from_json_file(options.db,
                     keep_locked= not options.dry_run)
@@ -572,10 +603,11 @@ def process(options, commands):
             # db and builddb __del__ method should remove lockfiles
             sys.exit("error, buildtag \"%s\" already taken" % buildtag)
         # create a new build in builddb, initial state is "unstable":
-        builddb.new_build(buildtag, "unstable")
+        builddb.new_build(buildtag, "unstable", options.arch)
         # modifies builddb:
         create_modules(partialdb, builddb, buildtag,
                        options.extra,
+                       options.arch,
                        options.verbose, options.dry_run)
         create_makefile(partialdb, builddb, buildtag,
                         options.verbose, options.dry_run)
