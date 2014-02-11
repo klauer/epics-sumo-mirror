@@ -71,6 +71,8 @@ KNOWN_COMMANDS=set(("deps", "name2paths", "path2names",
 IGNORE_NAMES= set(["TOP", "EPICS_SUPPORT",
                    "SUPPORT", "TEMPLATE_TOP"]) #, "EPICS_BASE"])
 
+CONFIG_NAME="sumo-scan.config"
+
 import sumo.makefile_scan
 
 makefile_scan_pre= {}
@@ -328,9 +330,13 @@ def darcs_last_tag(directory, verbose, dry_run):
         return
     return reply.splitlines()[0].strip()
 
-def repo_info(deps, progress, use_dir_test, 
+def repo_info(deps, progress, use_dir_test,
               source_patches,
               verbose, dry_run):
+    # pylint: disable=R0913
+    #                          Too many arguments
+    # pylint: disable=R0914
+    #                          Too many local variables
     """return a PathSource object with repository informations.
     """
     patcher= utils.RegexpPatcher()
@@ -503,6 +509,22 @@ def main():
                       action="store_true",
                       help="perform simple self-test",
                       )
+    parser.add_option("-c", "--config",
+                      action="store",
+                      type="string",
+                      help="load options from config file FILE, "
+                           "default: %s" % CONFIG_NAME,
+                      metavar="FILE"
+                      )
+    parser.add_option("--make-config",
+                      action="store",
+                      type="string",
+                      help="Create a new config file FILE from the given "
+                           "options. If the filename is '-' dump "
+                           "to the console, if it is an empty string, "
+                           "rewrite the config file that was read before.",
+                      metavar="FILE"
+                      )
     parser.add_option("-d", "--dir",
                       action="store",
                       type="string",
@@ -538,7 +560,7 @@ def main():
                       metavar="REGEXP"
                       )
     parser.add_option("-P", "--source-patch",
-                      action="append", 
+                      action="append",
                       help="Specify a source PATCHEXPRESSION. Such an "
                            "expression consists of a tuple of 2 python "
                            "strings. The first is the match expression, "
@@ -546,7 +568,7 @@ def main():
                            "regular expression is applied to every source "
                            "url generated. You can specify more than one "
                            "PATCHEXPRESSION.",
-                      metavar="PATCHEXPRESSION"  
+                      metavar="PATCHEXPRESSION"
                       )
     parser.add_option("--darcs-dirtest",
                       action="store_true",
@@ -588,6 +610,13 @@ def main():
     # options: the options-object
     # args: list of left-over args
 
+    config= utils.ConfigFile(("dir", "info_file", "group_basedir",
+                              "exclude_paths", "exclude_deps",
+                              "source_patch", "darcs_dirtest",
+                              "missing_tag", "missing_repo", "buildtag",
+                              "progress", "verbose"),
+                              CONFIG_NAME)
+
     if options.summary:
         print_summary()
         sys.exit(0)
@@ -598,6 +627,15 @@ def main():
 
     if options.test:
         _test()
+        sys.exit(0)
+
+    config.load_file(options.config)
+    # Note: options that are "None" are not changed in the config object:
+    config.update_from_options(options)
+    config.fill_options(options, overwrite= False)
+
+    if options.make_config is not None:
+        config.save_file(options.make_config)
         sys.exit(0)
 
     # we could pass "args" as an additional parameter to process here if it

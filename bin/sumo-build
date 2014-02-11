@@ -22,6 +22,8 @@ my_version= "1.0"
 KNOWN_COMMANDS=set(("show", "state", "newtree", "partialdb", "findtree",
                     "apprelease", "fullapprelease", "delete"))
 
+CONFIG_NAME="sumo-build.config"
+
 # -----------------------------------------------
 # main
 # -----------------------------------------------
@@ -671,6 +673,22 @@ def main():
                       action="store_true",
                       help="perform simple self-test",
                       )
+    parser.add_option("-c", "--config",
+                      action="store",
+                      type="string",
+                      help="load options from config file FILE, "
+                           "default: %s" % CONFIG_NAME,
+                      metavar="FILE"
+                      )
+    parser.add_option("--make-config",
+                      action="store",
+                      type="string",
+                      help="Create a new config file FILE from the given "
+                           "options. If the filename is '-' dump "
+                           "to the console, if it is an empty string, "
+                           "rewrite the config file that was read before.",
+                      metavar="FILE"
+                      )
     parser.add_option("--db",
                       action="store",
                       type="string",
@@ -719,12 +737,24 @@ def main():
     # options: the options-object
     # args: list of left-over args
 
+    config= utils.ConfigFile(("db","builddb","extra","progress","verbose"),
+                              CONFIG_NAME)
+
     if options.summary:
         print_summary()
         sys.exit(0)
 
     if options.test:
         _test()
+        sys.exit(0)
+
+    config.load_file(options.config)
+    # Note: options that are "None" are not changed in the config object:
+    config.update_from_options(options)
+    config.fill_options(options, overwrite= False)
+
+    if options.make_config is not None:
+        config.save_file(options.make_config)
         sys.exit(0)
 
     # we could pass "args" as an additional parameter to process here if it

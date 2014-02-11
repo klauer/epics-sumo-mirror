@@ -134,6 +134,67 @@ def json_loadfile(filename):
     return results
 
 # -----------------------------------------------
+# config file support
+# -----------------------------------------------
+
+class ConfigFile(object):
+    """store options in a JSON file."""
+    def __init__(self, optionlist, filename):
+        self._filename= filename
+        self._dict= {}
+        for opt in optionlist:
+            self._dict[opt]= None
+    def __str__(self):
+        """print in human readable form."""
+        lines= ["filename: %s\n" % self._filename,
+                "dict:",
+                str(self._dict)]
+        return "\n".join(lines)
+
+    def update_from_options(self, option_obj):
+        """create from an option object."""
+        for opt in self._dict.keys():
+            if not hasattr(option_obj, opt):
+                raise AssertionError(
+                        "ERROR: key '%s' not in the option object" % opt)
+            val= getattr(option_obj, opt)
+            if val is not None:
+                self._dict[opt]= getattr(option_obj, opt)
+    def load_file(self, filename= None):
+        """create from a file."""
+        if filename is None:
+            filename= self._filename
+        if not os.path.exists(filename):
+            # do nothing, do not print an error message
+            return
+        data= json_loadfile(filename)
+        # pylint: disable=E1103
+        for (opt, val) in data.items():
+            if not self._dict.has_key(opt):
+                sys.stderr.write(
+                    "warning: unexpected key '%s' in file '%s'\n" % \
+                    (opt, filename))
+            self._dict[opt]= val
+    def save_file(self, filename= None):
+        """dump in json format"""
+        if filename=="-":
+            json_dump(self._dict)
+            return
+        if not filename:
+            filename= self._filename
+        json_dump_file(filename, self._dict)
+    def fill_options(self, option_obj, overwrite):
+        """set option attributes."""
+        for (opt, val) in self._dict.items():
+            if not hasattr(option_obj, opt):
+                raise AssertionError(
+                        "ERROR: key '%s' not in the option object" % opt)
+            if not overwrite:
+                if getattr(option_obj, opt) is not None:
+                    continue
+            setattr(option_obj, opt, val)
+
+# -----------------------------------------------
 # tracing support
 # -----------------------------------------------
 
