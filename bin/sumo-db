@@ -252,7 +252,8 @@ def create_database(deps, repoinfo, groups, archs, state, source_patches):
     # here we populate the versiondata with the dependency specifications:
     for modulename in db.iter_modulenames():
         # loop on stable, testing and unstable versions:
-        for versionname in db.iter_versions(modulename, "unstable"):
+        for versionname in db.iter_versions(modulename, "unstable",
+                                            None, False):
             versionedmodule_paths= _namevname2path[(modulename, versionname)]
 
             for versionedmodule_path in versionedmodule_paths:
@@ -282,8 +283,10 @@ def create_database(deps, repoinfo, groups, archs, state, source_patches):
                                       _dep_name, _dep_version, state)
     return db
 
-def _distribution_add(db, dist, modulename, versionname, maxstate):
+def _distribution_add(db, dist, modulename, versionname, maxstate, archs):
     """add a module to the set."""
+    # pylint: disable=R0913
+    #                          Too many arguments
     #print "_distribution_add(..,..,",modulename,",",versionname,")"
     existing_versionname= dist.get(modulename)
     if existing_versionname is not None:
@@ -291,6 +294,9 @@ def _distribution_add(db, dist, modulename, versionname, maxstate):
             raise ValueError("conflict: %s %s %s" % \
                       (modulename, existing_versionname, versionname))
         return dist
+    if not db.check_archs(modulename, versionname, archs):
+        raise ValueError("no support for archs %s in module %s:%s" % \
+                         (repr(archs),modulename,versionname))
     new_dist= dict(dist)
     new_dist[modulename]= versionname
     try:
@@ -302,22 +308,23 @@ def _distribution_add(db, dist, modulename, versionname, maxstate):
 
     for dep_modulename in db.iter_dependencies(modulename, versionname):
         for dep_version in db.sorted_dependency_versions(
-                modulename, versionname, dep_modulename, maxstate):
+                modulename, versionname, dep_modulename, maxstate, archs):
             errst= None
             try:
                 new_dist= _distribution_add(db,
                                             new_dist,
                                             dep_modulename,
-                                            dep_version, maxstate)
+                                            dep_version, maxstate, archs)
                 errst= None
                 break
             except ValueError, e:
                 errst= str(e)
         if errst:
-            raise ValueError("last found %s" % errst)
+            raise ValueError("no module found, last error message: %s" % \
+                             errst)
     return new_dist
 
-def distribution(db, modulespec_list, maxstate):
+def distribution(db, modulespec_list, maxstate, archs):
     """create a distribution.
     """
     versioned_modules= []
@@ -335,43 +342,48 @@ def distribution(db, modulespec_list, maxstate):
     for (modulename, versionname) in versioned_modules:
         try:
             dist= _distribution_add(db, dist, modulename, versionname,
-                                    maxstate)
+                                    maxstate, archs)
         except ValueError, e:
             sys.exit(str(e))
 
     for modulename in versionless_modules:
         try:
-            versionlist= db.sorted_moduleversions(modulename, maxstate)
+            versionlist= db.sorted_moduleversions(modulename, maxstate,
+                                                  archs, True)
         except KeyError, e:
             sys.exit("no data for module %s" % modulename)
+        except ValueError, e:
+            sys.exit("Error: %s" % str(e))
 
         found= False
         for versionname in versionlist:
             try:
                 dist= _distribution_add(db, dist, modulename, versionname,
-                                        maxstate)
+                                        maxstate, archs)
                 found= True
                 break
             except ValueError, e:
-                pass
+                sys.stderr.write("_DA exc '%s': %s:%s st:%s a:%s\n" % \
+                         (str(e),modulename,versionname,maxstate,repr(archs)))
+                #pass
         if not found:
             sys.exit("no non conflicting versions found for %s" % modulename)
 
-    new= db.partial_copy(dist)
+    new= db.partial_copy(dist, archs)
     return (dist,new)
 
-# pylint: disable=R0914
-#                          Too many local variables
-# pylint: disable=R0912
-#                          Too many branches
-# pylint: disable=R0911
-#                          Too many return statements
-# pylint: disable=R0915
-#                          Too many statements
 
 def process(options, commands):
     """do all the work.
     """
+    # pylint: disable=R0914
+    #                          Too many local variables
+    # pylint: disable=R0912
+    #                          Too many branches
+    # pylint: disable=R0911
+    #                          Too many return statements
+    # pylint: disable=R0915
+    #                          Too many statements
     if not commands:
         sys.exit("command missing")
     if commands[0] not in KNOWN_COMMANDS:
@@ -398,10 +410,13 @@ def process(options, commands):
             sys.exit("error: no modules specified")
         if not options.db:
             sys.exit("error, --db is mandatory here")
+        if not options.arch:
+            sys.exit("error, --arch is mandatory here")
         db= utils.Dependencies.from_json_file(options.db)
         maxstate= commands[1]
         modulespecs= commands[2:]
-        (dist_dict, dist_obj)= distribution(db, modulespecs, maxstate)
+        (dist_dict, dist_obj)= distribution(db, modulespecs,
+                                            maxstate, options.arch)
         if options.brief:
             utils.json_dump(dist_dict)
         else:
@@ -471,6 +486,8 @@ def process(options, commands):
             sys.exit("error: MAXSTATE missing")
         if not options.db:
             sys.exit("error, --db is mandatory here")
+        if not options.arch:
+            sys.exit("error, --arch is mandatory here")
         db= utils.Dependencies.from_json_file(options.db)
         maxstate= commands[1]
         if len(commands)>2:
@@ -479,7 +496,8 @@ def process(options, commands):
             modulenames= list(db.iter_modulenames())
         result= {}
         for modulename in modulenames:
-            versions= db.sorted_moduleversions(modulename, maxstate)
+            versions= db.sorted_moduleversions(modulename, maxstate,
+                                               options.arch, False)
             if not versions: # no versions match maxstate criteria
                 continue
             if not showall:
@@ -488,11 +506,6 @@ def process(options, commands):
                 result[modulename]= versions
         utils.json_dump(result)
         return
-
-# pylint: enable=R0914
-# pylint: enable=R0912
-# pylint: enable=R0911
-# pylint: enable=R0915
 
 def print_doc():
     """print a short summary of the scripts function."""
@@ -523,11 +536,13 @@ where command is:
               stable:   take only dependencies marked stable
               testing:  take dependencies marked stable or testing
               unstable: take dependencies marked stable, testing or unstable
+          Note that option "--arch" is mandatory for this command.
   show:   show the names of all modules
   shownewest [MAXSTATE] {modules}: 
           Show newest version for each module. If {modules} is missing, take
           all modules of the database. MAXSTATE is the "maximum" state as
           described above.
+          Note that option "--arch" is mandatory for these commands.
   showall [MAXSTATE] {modules}: 
           Show all versions for each module. If {modules} is missing, take all
           modules of the database. MAXSTATE is the "maximum" state as described
@@ -602,6 +617,12 @@ def main():
                            (" ".join(("merge","filter",
                                       "cloneversion", "replaceversion")))
                       )
+    parser.add_option("--arch",
+                      action="append",
+                      help="define the name of a TARGETARCHITECTURE. You "
+                           "can specify more than one target architecture.",
+                      metavar="TARGETARCHITECTURE"
+                      )
     parser.add_option("-b", "--brief",
                       action="store_true",
                       help="create a more brief output",
@@ -635,7 +656,8 @@ def main():
     # options: the options-object
     # args: list of left-over args
 
-    config= utils.ConfigFile(("db", "source_patch", "progress", "verbose"),
+    config= utils.ConfigFile(("db", "source_patch",
+                              "arch", "progress", "verbose"),
                               CONFIG_NAME)
 
     if options.summary:

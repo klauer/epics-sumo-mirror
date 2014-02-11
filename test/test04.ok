@@ -5,6 +5,10 @@
                 "BASE": "EPICS_BASE", 
                 "BSPDEP_TIMER": "TIMER"
             }, 
+            "archs": {
+                "vxWorks-68040": true, 
+                "vxWorks-ppc603": true
+            }, 
             "dependencies": {
                 "BASE": {
                     "R3-14-8-2-0": "stable"
@@ -29,6 +33,10 @@
             "aliases": {
                 "BASE": "EPICS_BASE"
             }, 
+            "archs": {
+                "vxWorks-68040": true, 
+                "vxWorks-ppc603": true
+            }, 
             "dependencies": {
                 "BASE": {
                     "R3-14-8-2-0": "stable"
@@ -36,7 +44,7 @@
             }, 
             "source": [
                 "darcs", 
-                "rcsadm@aragon.acc.bessy.de:/opt/csr/repositories/controls/darcs/epics/support/asyn/4-15", 
+                "rcsadm@aragon.acc.bessy.de:/opt/repositories/controls/darcs/epics/support/asyn/4-15", 
                 "R4-15-bessy2"
             ], 
             "state": "stable"
@@ -44,6 +52,10 @@
     }, 
     "BASE": {
         "R3-14-8-2-0": {
+            "archs": {
+                "vxWorks-68040": true, 
+                "vxWorks-ppc603": true
+            }, 
             "source": [
                 "darcs", 
                 "rcsadm@aragon.acc.bessy.de:/opt/repositories/controls/darcs/epics/base/3-14-8-2", 
@@ -56,6 +68,10 @@
         "R4-0": {
             "aliases": {
                 "BASE": "EPICS_BASE"
+            }, 
+            "archs": {
+                "vxWorks-68040": true, 
+                "vxWorks-ppc603": true
             }, 
             "dependencies": {
                 "BASE": {
@@ -75,6 +91,10 @@
             "aliases": {
                 "BASE": "EPICS_BASE"
             }, 
+            "archs": {
+                "vxWorks-68040": true, 
+                "vxWorks-ppc603": true
+            }, 
             "dependencies": {
                 "BASE": {
                     "R3-14-8-2-0": "stable"
@@ -93,6 +113,10 @@
             "aliases": {
                 "BASE": "EPICS_BASE"
             }, 
+            "archs": {
+                "vxWorks-68040": true, 
+                "vxWorks-ppc603": true
+            }, 
             "dependencies": {
                 "BASE": {
                     "R3-14-8-2-0": "stable"
@@ -100,7 +124,7 @@
             }, 
             "source": [
                 "darcs", 
-                "rcsadm@aragon.acc.bessy.de:/opt/csr/repositories/controls/darcs/epics/support/csm/base-3-14-8", 
+                "rcsadm@aragon.acc.bessy.de:/opt/repositories/controls/darcs/epics/support/csm/base-3-14-8", 
                 "R3-8"
             ], 
             "state": "stable"
@@ -110,6 +134,10 @@
         "R2-1": {
             "aliases": {
                 "BASE": "EPICS_BASE"
+            }, 
+            "archs": {
+                "vxWorks-68040": true, 
+                "vxWorks-ppc603": true
             }, 
             "dependencies": {
                 "BASE": {
@@ -121,7 +149,7 @@
             }, 
             "source": [
                 "darcs", 
-                "rcsadm@aragon.acc.bessy.de:/opt/csr/repositories/controls/darcs/epics/support/ek/base-3-14", 
+                "rcsadm@aragon.acc.bessy.de:/opt/repositories/controls/darcs/epics/support/ek/base-3-14", 
                 "R2-1"
             ], 
             "state": "stable"
@@ -132,6 +160,10 @@
             "aliases": {
                 "BASE": "EPICS_BASE"
             }, 
+            "archs": {
+                "vxWorks-68040": true, 
+                "vxWorks-ppc603": true
+            }, 
             "dependencies": {
                 "BASE": {
                     "R3-14-8-2-0": "stable"
@@ -139,7 +171,7 @@
             }, 
             "source": [
                 "path", 
-                "rcsadm@aragon.acc.bessy.de:/opt/csr/Epics/R3.14.8/support/genSub/1-6-1"
+                "rcsadm@aragon.acc.bessy.de:/opt/Epics/R3.14.8/support/genSub/1-6-1"
             ], 
             "state": "stable"
         }
@@ -148,6 +180,10 @@
         "R2-3-18": {
             "aliases": {
                 "BASE": "EPICS_BASE"
+            }, 
+            "archs": {
+                "vxWorks-68040": true, 
+                "vxWorks-ppc603": true
             }, 
             "dependencies": {
                 "ALARM": {
@@ -165,7 +201,7 @@
             }, 
             "source": [
                 "darcs", 
-                "rcsadm@aragon.acc.bessy.de:/opt/csr/repositories/controls/darcs/epics/support/mcan/base-3-14-8", 
+                "rcsadm@aragon.acc.bessy.de:/opt/repositories/controls/darcs/epics/support/mcan/base-3-14-8", 
                 "R2-3-18"
             ], 
             "state": "stable"
@@ -175,6 +211,10 @@
         "R2-4": {
             "aliases": {
                 "BASE": "EPICS_BASE"
+            }, 
+            "archs": {
+                "vxWorks-68040": true, 
+                "vxWorks-ppc603": true
             }, 
             "dependencies": {
                 "BASE": {
@@ -194,6 +234,10 @@
             "aliases": {
                 "BASE": "EPICS_BASE"
             }, 
+            "archs": {
+                "vxWorks-68040": true, 
+                "vxWorks-ppc603": true
+            }, 
             "dependencies": {
                 "BASE": {
                     "R3-14-8-2-0": "stable"
@@ -201,7 +245,7 @@
             }, 
             "source": [
                 "darcs", 
-                "rcsadm@aragon.acc.bessy.de:/opt/csr/Epics/R3.14.8/support/seq/2-0-12-1", 
+                "rcsadm@aragon.acc.bessy.de:/opt/Epics/R3.14.8/support/seq/2-0-12-1", 
                 "R2-0-12-1"
             ], 
             "state": "stable"
@@ -211,6 +255,10 @@
         "R2-5": {
             "aliases": {
                 "BASE": "EPICS_BASE"
+            }, 
+            "archs": {
+                "vxWorks-68040": true, 
+                "vxWorks-ppc603": true
             }, 
             "dependencies": {
                 "BASE": {
@@ -229,6 +277,10 @@
         "R2-0": {
             "aliases": {
                 "BASE": "EPICS_BASE"
+            }, 
+            "archs": {
+                "vxWorks-68040": true, 
+                "vxWorks-ppc603": true
             }, 
             "dependencies": {
                 "BASE": {

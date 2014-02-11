@@ -1,5 +1,21 @@
 {
     "archs": {
+        "/srv/csr/Epics/R3.14.10/base/3-14-10-0-1": [
+            "RTEMS-mvme2100",
+            "RTEMS-mvme5500",
+            "vxWorks-68040",
+            "vxWorks-ppc603"
+        ],
+        "/srv/csr/Epics/R3.14.12/base/3-14-12-2-1": [
+            "RTEMS-mvme2100",
+            "RTEMS-mvme5500",
+            "vxWorks-68040",
+            "vxWorks-ppc603"
+        ],
+        "/srv/csr/Epics/R3.14.8/base/3-14-8-2-0": [
+            "vxWorks-68040",
+            "vxWorks-ppc603"
+        ],
         "/srv/csr/Epics/R3.14.8/support/BIIcsem/1-0": [
             "vxWorks-68040",
             "vxWorks-ppc603"
@@ -1816,6 +1832,9 @@
         ]
     },
     "dependencies": {
+        "/srv/csr/Epics/R3.14.10/base/3-14-10-0-1": {},
+        "/srv/csr/Epics/R3.14.12/base/3-14-12-2-1": {},
+        "/srv/csr/Epics/R3.14.8/base/3-14-8-2-0": {},
         "/srv/csr/Epics/R3.14.8/support/BIIcsem/1-0": {
             "EPICS_BASE": "/srv/csr/Epics/R3.14.8/base/3-14-8-2-0"
         },

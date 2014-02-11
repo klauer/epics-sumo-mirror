@@ -169,6 +169,7 @@ class ConfigFile(object):
             return
         data= json_loadfile(filename)
         # pylint: disable=E1103
+        #                          Instance of 'bool' has no 'items' member
         for (opt, val) in data.items():
             if not self._dict.has_key(opt):
                 sys.stderr.write(
@@ -783,13 +784,13 @@ class PathSource(JSONstruct):
         else:
             return (d[0], d[1], "")
 
-# pylint: disable=R0904
-#                          Too many public methods
-# pylint: disable=R0913
-#                          Too many arguments
 
 class Dependencies(JSONstruct):
     """the dependency database."""
+    # pylint: disable=R0904
+    #                          Too many public methods
+    # pylint: disable=R0913
+    #                          Too many arguments
     states_list= ["stable", "testing", "unstable"]
     states_dict= dict(zip(states_list,range(len(states_list))))
     @classmethod
@@ -811,7 +812,7 @@ class Dependencies(JSONstruct):
         if arch_list is None:
             return True
         for a in arch_list:
-            if not arch_dict.has_key(a):
+            if not arch_dict.get(a):
                 return False
         return True
     @classmethod
@@ -843,7 +844,8 @@ class Dependencies(JSONstruct):
         for modulename in other.iter_modulenames():
             m= self.datadict().setdefault(modulename,{})
             # iterate on stable, testing and unstable versions:
-            for versionname in other.iter_versions(modulename, "unstable"):
+            for versionname in other.iter_versions(modulename, "unstable",
+                                                   None, False):
                 vdict = m.setdefault(versionname,{})
                 vdict2= other.datadict()[modulename][versionname]
                 for dictname, dictval in vdict2.items():
@@ -939,6 +941,13 @@ class Dependencies(JSONstruct):
         """get archs for modulename:versionname."""
         m_dict= self.datadict()[modulename]
         return m_dict[versionname]["archs"]
+    def check_archs(self, modulename, versionname, archs):
+        """return True if all archs are supported in the module."""
+        # pylint: disable=W0212
+        #                          Access to a protected member of a
+        #                          client class
+        return self.__class__._check_arch(
+                   self.get_archs(modulename, versionname), archs)
     def add_alias(self, modulename, versionname,
                   alias_name, real_name):
         """add an alias for modulename:versionname."""
@@ -1004,16 +1013,18 @@ class Dependencies(JSONstruct):
                                  archs):
         """return an iterator on dependency versions.
 
-        max_state is the maximum allowed state:
-          "stable"  : return just stable
-          "testing" : return stable and testing
-          "unstable": return stable, testing and unstable
+        max_state :
+          This is the maximum allowed state:
+            "stable"  : return just stable
+            "testing" : return stable and testing
+            "unstable": return stable, testing and unstable
 
-        archs is the desired architecture. Only dependencies with that
+        archs:
+          This is the desired architecture. Only dependencies with that
           architecture are listed. If the architecture doesn't exist on at
           least one of the dependencies or the module itself, a ValueError
           exception is raised.
-          If arch is None, take the architectures from the module.
+          If arch is None do not check architectures.
         """
         # pylint: disable=W0212
         #                          Access to a protected member of a
@@ -1022,9 +1033,7 @@ class Dependencies(JSONstruct):
         _states= self.__class__._allowed_states(max_state)
         # pylint: enable=W0212
         d= self.datadict()[modulename][versionname]
-        if archs is None:
-            archs= d["archs"].keys()
-        else:
+        if archs is not None:
             if not _check_arch(d["archs"], archs):
                 raise ValueError("archs %s not supported in %s:%s" % \
                                  (repr(archs),modulename, versionname))
@@ -1038,9 +1047,12 @@ class Dependencies(JSONstruct):
         for (dep_version, dep_state) in dep_dict.iteritems():
             if dep_state not in _states:
                 continue
-            if not _check_arch(self.get_archs(dependencyname, dep_version),
-                               archs):
-                continue
+            if archs is not None:
+                if not self.check_archs(dependencyname, dep_version, archs):
+                    sys.stderr.write("check_archs(%s,%s,%s)==FALSE\n" % \
+                            (repr(dependencyname),repr(dep_version),
+                             repr(archs)))
+                    continue
             found= True
             yield dep_version
         if not found:
@@ -1057,11 +1069,12 @@ class Dependencies(JSONstruct):
           "testing" : return stable and testing
           "unstable": return stable, testing and unstable
 
-        archs is the desired architecture. Only dependencies with that
+        archs:
+          This is the desired architecture. Only dependencies with that
           architecture are listed. If the architecture doesn't exist on at
           least one of the dependencies or the module itself, a ValueError
           exception is raised.
-          If arch is None, take the architectures from the module.
+          If arch is None do not check architectures.
         """
         dep_list= list(self.iter_dependency_versions(modulename, versionname,
                                                      dependencyname,
@@ -1071,18 +1084,24 @@ class Dependencies(JSONstruct):
     def iter_modulenames(self):
         """return an iterator on module names."""
         return self.datadict().iterkeys()
-    def iter_versions(self, modulename, max_state, archs):
+    def iter_versions(self, modulename, max_state, archs, must_exist):
         """return an iterator on versionnames of a module.
 
-        max_state is the maximum allowed state:
+        max_state:
+          This is the maximum allowed state:
           "stable"  : return just stable
           "testing" : return stable and testing
           "unstable": return stable, testing and unstable
 
-        archs is the desired architecture. Only versions with that
+        archs:
+          This is the desired architecture. Only versions with that
           architecture are listed. If the architecture doesn't exist on at
           least one of the versions, a ValueError exception is raised.
           If arch is None, take any architectures.
+
+        must_exist:
+          If True if no versions are found raise a ValueError exception,
+          otherwise just return.
         """
         # pylint: disable=W0212
         #                          Access to a protected member of a
@@ -1099,14 +1118,15 @@ class Dependencies(JSONstruct):
                 continue
             found= True
             yield versionname
-        if not found:
-            raise ValueError("all versions excluded because of state "
-                             "or arch in module %s. With given state "
-                             "and archs the module cannot be built." % \
+        if must_exist and (not found):
+            raise ValueError("All possible versions of module %s are "
+                             "excluded because of the required state or "
+                             "set of archs" % \
                                      modulename)
-    def sorted_moduleversions(self, modulename, max_state, archs):
+    def sorted_moduleversions(self, modulename, max_state, archs, must_exist):
         """return an iterator on sorted versionnames of a module."""
-        return sorted(self.iter_versions(modulename, max_state, archs),
+        return sorted(self.iter_versions(modulename, max_state,
+                                         archs, must_exist),
                       key= rev2key,
                       reverse= True)
     def patch_version(self, modulename, versionname, newversionname,
@@ -1133,7 +1153,7 @@ class Dependencies(JSONstruct):
         for l_modulename in self.iter_modulenames():
             # scan stable, testing and unstable versions:
             for l_versionname in self.iter_versions(l_modulename,
-                                                    "unstable", None):
+                                                    "unstable", None, False):
                 vd= self.datadict()[l_modulename][l_versionname]
                 dep_dict= vd.get("dependencies")
                 if dep_dict is None:
@@ -1154,17 +1174,24 @@ class Dependencies(JSONstruct):
         elements must be a dict { modulename: versionname }. If versionname is
         None, take all versions of the module.
 
+        If archs is given, take only moduleversions where these archs are
+        supported, if archs is None take all. When archs is given and not one
+        moduleversion for the given archs is found, a ValueError exception is
+        raised.
+
         Note that the new Dependencies object only contains references of the
         data. This DOES NOT do a deep copy.
         """
         new= self.__class__()
+        must_exist= (archs is not None)
         for modulename, versionname in elements.items():
             d= new.datadict().setdefault(modulename, {})
             if versionname:
                 versions= [versionname]
             else:
                 # scan stable, testing and unstable versions:
-                versions= self.iter_versions(modulename, "unstable", archs)
+                versions= self.iter_versions(modulename, "unstable",
+                                             archs, must_exist)
             for version in versions:
                 d[version]= self.datadict()[modulename][version]
         return new
@@ -1186,14 +1213,11 @@ class Dependencies(JSONstruct):
                                   "supported here")
         return self.partial_copy(d, archs)
 
-# pylint: enable=R0904
-# pylint: enable=R0913
-
-# pylint: disable=R0904
-#                          Too many public methods
 
 class Builddb(JSONstruct):
     """the buildtree database."""
+    # pylint: disable=R0904
+    #                          Too many public methods
     states= set(("stable","testing","unstable"))
     @classmethod
     def guess_state(cls,st):
@@ -1337,8 +1361,6 @@ class Builddb(JSONstruct):
         """
         build_ = self.datadict()[build_tag]
         return build_["modules"]
-
-# pylint: enable=R0904
 
 def _test():
     """perform internal tests."""

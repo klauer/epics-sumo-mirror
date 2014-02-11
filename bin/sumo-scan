@@ -154,7 +154,7 @@ def scan_support_deps(support_path,
                              verbose= verbose, dry_run= dry_run)
 
 
-def support_configure_data(support_tree,
+def support_configure_data(support_trees,
                     buildtag,
                     rx_exclude_path,
                     progress= False,
@@ -210,25 +210,28 @@ def support_configure_data(support_tree,
     # not possible on python 2.5:
     #for (dirpath, dirnames, filenames) in os.walk(support_tree,
     #                                              topdown= True):
-    for (dirpath, dirnames, filenames) in utils.dirwalk(support_tree):
-        if progress:
-            cnt= utils.show_progress(cnt, cnt_max)
-        if exclude(dirpath):
-            purge(dirnames)
-        slicer(dirnames, "configure")
-        if buildtag is not None:
-            slice_buildtag(dirnames, buildtag)
-        if os.path.basename(dirpath)=="configure":
-            # get the path of the versioned support:
-            versioned_path= os.path.realpath(os.path.dirname(dirpath))
-            if "RELEASE" in filenames:
-                data= scan_support_deps(versioned_path,
-                                           verbose= verbose, dry_run= dry_run)
-                release_dict[versioned_path]= data
-            if "CONFIG" in filenames:
-                archs= scan_support_arch(versioned_path,
-                                         verbose= verbose, dry_run= dry_run)
-                arch_dict[versioned_path]= archs
+    for support_tree in support_trees:
+        for (dirpath, dirnames, filenames) in utils.dirwalk(support_tree):
+            if progress:
+                cnt= utils.show_progress(cnt, cnt_max)
+            if exclude(dirpath):
+                purge(dirnames)
+            slicer(dirnames, "configure")
+            if buildtag is not None:
+                slice_buildtag(dirnames, buildtag)
+            if os.path.basename(dirpath)=="configure":
+                # get the path of the versioned support:
+                versioned_path= os.path.realpath(os.path.dirname(dirpath))
+                if "RELEASE" in filenames:
+                    data= scan_support_deps(versioned_path,
+                                            verbose= verbose,
+                                            dry_run= dry_run)
+                    release_dict[versioned_path]= data
+                if "CONFIG" in filenames:
+                    archs= scan_support_arch(versioned_path,
+                                             verbose= verbose,
+                                             dry_run= dry_run)
+                    arch_dict[versioned_path]= archs
     if progress:
         sys.stderr.write("\n")
     return (release_dict, arch_dict)
@@ -445,8 +448,9 @@ def get_configuration(options):
     """
     if not options.dir:
         sys.exit("--dir is mandatory")
-    if not os.path.exists(options.dir):
-        sys.exit("error, directory \"%s\" doesn't exist" % options.dir)
+    for d in options.dir:
+        if not os.path.exists(d):
+            sys.exit("error, directory \"%s\" doesn't exist" % options.dir)
     rx_exclude= None
     if options.exclude_paths:
         rx_exclude= re.compile(options.exclude_paths)
@@ -589,9 +593,10 @@ def main():
                       metavar="FILE"
                       )
     parser.add_option("-d", "--dir",
-                      action="store",
+                      action="append",
                       type="string",
-                      help="parse all RELEASE files in directory DIR",
+                      help="Parse all RELEASE files in directory DIR, you "
+                           "can specify more than one DIR.",
                       metavar="DIR"
                       )
     parser.add_option("-i","--info-file",

@@ -2687,7 +2687,12 @@
     }, 
     "BASE": {
         "R3-14-10-0-1": {
-            "archs": {}, 
+            "archs": {
+                "RTEMS-mvme2100": true, 
+                "RTEMS-mvme5500": true, 
+                "vxWorks-68040": true, 
+                "vxWorks-ppc603": true
+            }, 
             "source": [
                 "darcs", 
                 "rcsadm@aragon.acc.bessy.de:/opt/repositories/controls/darcs/epics/base/3-14-10", 
@@ -2696,7 +2701,10 @@
             "state": "stable"
         }, 
         "R3-14-8-2-0": {
-            "archs": {}, 
+            "archs": {
+                "vxWorks-68040": true, 
+                "vxWorks-ppc603": true
+            }, 
             "source": [
                 "darcs", 
                 "rcsadm@aragon.acc.bessy.de:/opt/repositories/controls/darcs/epics/base/3-14-8-2", 
@@ -2705,7 +2713,12 @@
             "state": "stable"
         }, 
         "TAGLESS-3-14-12-2-1": {
-            "archs": {}, 
+            "archs": {
+                "RTEMS-mvme2100": true, 
+                "RTEMS-mvme5500": true, 
+                "vxWorks-68040": true, 
+                "vxWorks-ppc603": true
+            }, 
             "source": [
                 "darcs", 
                 "rcsadm@aragon.acc.bessy.de:/opt/Epics/R3.14.12/base/3-14-12-2-1"
