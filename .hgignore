@@ -16,6 +16,13 @@
 ^test/.*\.tmp
 ^test/.*\.bak
 
+# samples directory:
+^samples/IDCP.DB
+^samples/R3-14-12-supports.SCAN
+^samples/R3-14-12.DB
+^samples/R3-14-8-supports.SCAN
+^samples/R3-14-8.DB
+
 # doc directories:
 ^doc/
 
