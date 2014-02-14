@@ -1003,6 +1003,28 @@ class Dependencies(JSONstruct):
             return
         if dep_module_dict.has_key(dep_versionname):
             del dep_module_dict[dep_versionname]
+    def check(self):
+        """do a consistency check on the db."""
+        msg= []
+        for modulename in self.iter_modulenames():
+            for versionname in self.iter_versions(modulename, "unstable",
+                                                  None, True):
+                archs= self.get_archs(modulename, versionname).keys()
+                if len(archs)==0:
+                    msg.append("%s:%s: no target architectures" % \
+                               (modulename, versionname))
+                for dep_modulename in self.iter_dependencies(modulename,
+                                                             versionname):
+                    for dep_version in self.sorted_dependency_versions(
+                            modulename, versionname, dep_modulename,
+                            "unstable", None):
+                        try:
+                            self.assert_module(dep_modulename, dep_version)
+                        except KeyError, e:
+                            msg.append("%s:%s: dependencies: %s" % \
+                                    (modulename, versionname, str(e)))
+        return msg
+
     def get_archs(self, modulename, versionname):
         """get archs for modulename:versionname."""
         m_dict= self.datadict()[modulename]

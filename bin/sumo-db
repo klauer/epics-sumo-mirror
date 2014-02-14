@@ -139,7 +139,7 @@ my_version= "1.0"
 
 KNOWN_COMMANDS=set(("convert", "distribution",
                     "show", "shownewest", "showall",
-                    "merge", "filter",
+                    "merge", "check", "filter",
                     "cloneversion", "replaceversion"))
 
 CONFIG_NAME="sumo-db.config"
@@ -438,6 +438,17 @@ def process(options, commands):
             db.json_print()
         return
 
+    if commands[0]=="check":
+        if len(commands)>1:
+            sys.exit("error: extra arguments following \"check\"")
+        if not options.db:
+            sys.exit("error, --db is mandatory here")
+        db = utils.Dependencies.from_json_file(options.db,
+                                               keep_locked= False)
+        msg= db.check()
+        print "\n".join(msg)
+        return
+
     if commands[0]=="merge":
         if len(commands)!=2:
             sys.exit("exactly one filename must follow \"merge\"")
@@ -547,6 +558,8 @@ where command is:
           Show all versions for each module. If {modules} is missing, take all
           modules of the database. MAXSTATE is the "maximum" state as described
           above.
+  check 
+          do some consistency checks on the db specifed by --db
   merge [db]
           Merge the given db with the one specified by --db
   filter [modules]
