@@ -377,18 +377,24 @@ def darcs_last_tag(directory, verbose, dry_run):
 
 def repo_info(deps, progress, use_dir_test,
               source_patches,
+              accept_paths,
               verbose, dry_run):
     # pylint: disable=R0913
     #                          Too many arguments
     # pylint: disable=R0914
     #                          Too many local variables
+    # pylint: disable=R0912
+    #                          Too many branches
     """return a PathSource object with repository informations.
     """
     patcher= utils.RegexpPatcher()
     if source_patches:
         for p in source_patches:
             patcher.add(eval(p))
-    #sys.exit("ABORT")
+    if accept_paths:
+        accept_paths= set(accept_paths)
+    else:
+        accept_paths= set()
     path_set= all_paths_from_deps(deps)
     new= utils.PathSource()
     cnt_max= 50
@@ -412,8 +418,9 @@ def repo_info(deps, progress, use_dir_test,
             new.add_darcs(path, src_patched)
             continue
         if not utils.is_standardpath(path, tag):
-            new.add_darcs(path, src_patched)
-            continue
+            if not path in accept_paths:
+                new.add_darcs(path, src_patched)
+                continue
         new.add_darcs(path, src_patched, tag)
     if progress:
         sys.stderr.write("\n")
@@ -494,6 +501,7 @@ def process(options, commands):
                              options.progress,
                              options.darcs_dirtest,
                              options.source_patch,
+                             options.accept_path,
                              options.verbose, options.dry_run)
         bag["repos"]= repo_data.to_dict()
         if options.missing_repo:
@@ -619,6 +627,17 @@ def main():
                            "PATCHEXPRESSION.",
                       metavar="PATCHEXPRESSION"
                       )
+    parser.add_option( "--accept-path",
+                      action="append",
+                      help="Accept a path that is not standard conform. "
+                           "Usually a path should have a basename derived "
+                           "from the repository tag, e.g. 'tdu/3-3' and "
+                           "tag 'R3-3'. If this is not the case, the "
+                           "module's tag is ignored. Paths that match "
+                           "--accept-path are treated as standard conform. "
+                           "You can specify more than one ACCEPTPATH.",
+                      metavar="ACCEPTPATH"
+                      )
     parser.add_option("--darcs-dirtest",
                       action="store_true",
                       help="Test if a found remote darcs repository " +\
@@ -662,6 +681,7 @@ def main():
     config= utils.ConfigFile(("dir", "info_file", "group_basedir",
                               "exclude_path", "exclude_deps",
                               "source_patch", "darcs_dirtest",
+                              "accept_path",
                               "missing_tag", "missing_repo", "buildtag",
                               "progress", "verbose"),
                               CONFIG_NAME)
