@@ -896,6 +896,8 @@ class Dependencies(JSONstruct):
         super(Dependencies, self).__init__(dict_)
     def merge(self, other, constant_src_state= None):
         """merge another Dependencies object to self."""
+        # pylint: disable=R0912
+        #                          Too many branches
         for modulename in other.iter_modulenames():
             m= self.datadict().setdefault(modulename,{})
             # iterate on stable, testing and unstable versions:
@@ -911,12 +913,21 @@ class Dependencies(JSONstruct):
                             src_state= constant_src_state
                         else:
                             src_state= vdict2[dictname]
-                        vdict[dictname]= self.__class__._min_state(
-                                (vdict[dictname], src_state))
+                        if vdict.has_key(dictname):
+                            vdict[dictname]= self.__class__._min_state(
+                                    (vdict[dictname], src_state))
+                        else:
+                            vdict[dictname]= src_state
                         # pylint: enable=W0212
                         continue
                     if dictname=="archs":
-                        vdict[dictname].update(dictval)
+                        try:
+                            dict_update(vdict.setdefault(dictname,{}),
+                                        dictval)
+                        except ValueError, e:
+                            raise ValueError(
+                              "module %s version %s archs: %s" % \
+                              (modulename, versionname, str(e)))
                         continue
                     if dictname=="aliases":
                         try:
