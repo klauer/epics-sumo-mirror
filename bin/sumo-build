@@ -230,23 +230,24 @@ def create_source(db, modulename, versionname,
     """
     # pylint: disable=R0913
     #                          Too many arguments
-    (type_, url, tag)= db.module_source(modulename, versionname)
-    if type_=="path":
+    (sourcetype, sourcedata)= db.module_source_dict(modulename, versionname)
+    if sourcetype=="path":
         #cmd= "scp -r -p \"%s\" %s" % (url, destdir)
         # join(url,"") effectively adds a "/" at the end of the path. This is
         # needed in order for rsync to work as intended here.
-        cmd= "rsync -a -u -L \"%s\" %s" % (os.path.join(url,""), destdir)
+        cmd= "rsync -a -u -L \"%s\" %s" % \
+             (os.path.join(sourcedata,""), destdir)
         utils.system(cmd, False, verbose, dry_run)
-    elif type_=="darcs":
+    elif sourcetype=="darcs":
         cmd_l= ["darcs", "get"]
-        if tag:
-            cmd_l.extend(["-t", tag])
-        cmd_l.append(url)
+        if sourcedata.has_key("tag"):
+            cmd_l.extend(["-t", sourcedata["tag"]])
+        cmd_l.append(sourcedata["url"])
         cmd_l.append(destdir)
         cmd= " ".join(cmd_l)
         utils.system(cmd, False, verbose, dry_run)
     else:
-        raise AssertionError("unsupported source type %s" % type_)
+        raise AssertionError("unsupported source type %s" % sourcetype)
 
 def delete_module(build_tag, modulename, versionname,
                   verbose, dry_run):

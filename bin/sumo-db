@@ -193,14 +193,17 @@ def create_database(deps, repoinfo, groups, archs, state, source_patches):
                 versionedmodule_path= os.path.join(root_path, subdir)
                 # get the repository data:
                 try:
-                    (source_type, url, source_tag) = \
-                        repoinfo.get(versionedmodule_path)
+                    (repotype, repodata)= repoinfo.get_data(
+                                                   versionedmodule_path)
+                    #(source_type, url, source_tag) = \
+                    #    repoinfo.get(versionedmodule_path)
                 except KeyError, _:
                     # shouldn't happen, but we just print a warning in this
                     # case:
                     errmsg("no source data: %s" % versionedmodule_path)
                     continue
-                if source_type=="path":
+
+                if repotype=="path":
                     # the source is a directory path, not a repository. We
                     # generate the unique versionname:
                     if subdir.startswith("PATH-"):
@@ -211,8 +214,10 @@ def create_database(deps, repoinfo, groups, archs, state, source_patches):
                         versionname= utils.split_treetag(subdir)[0]
                     else:
                         versionname= "PATH-%s" % subdir
-                elif source_type=="darcs":
-                    if not source_tag:
+                    # repodata is just the path in this case:
+                    repodata= patcher.apply(repodata)
+                elif repotype=="darcs":
+                    if not repodata.has_key("tag"):
                         # the source is a darcs repository but has no tag. We
                         # generate a unique versionname:
                         if subdir.startswith("TAGLESS-"):
@@ -227,15 +232,17 @@ def create_database(deps, repoinfo, groups, archs, state, source_patches):
                         # know in what state the working copy repository is, we
                         # have to take this as a source instead of the central
                         # repository:
-                        url= versionedmodule_path
+                        repodata= {"url": patcher.apply(versionedmodule_path)}
                     else:
+                        # make a copy of repodata so we can modify it:
+                        repodata= dict(repodata)
+                        repodata["url"]= patcher.apply(repodata["url"])
                         # the source is a darcs repository with a tag. We use
                         # the tag as unique versionname:
-                        versionname= source_tag
-                url= patcher.apply(url)
+                        versionname= repodata["tag"]
                 module_archs= archs.get(versionedmodule_path, [])
                 db.set_source(module_name, versionname, module_archs, state,
-                              source_type, url, source_tag)
+                              {repotype: repodata})
 
                 _path2namevname[versionedmodule_path]= \
                         (module_name,versionname)

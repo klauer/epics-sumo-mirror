@@ -595,6 +595,24 @@ def guess_string(st, allowed):
 # generic datastructure utilities
 # -----------------------------------------------
 
+def single_key(dict_):
+    """dict must have exactly one key, return it.
+
+    Raises ValueError if the dict has more than one key.
+    """
+    keys= dict_.keys()
+    if len(keys)!=1:
+        raise ValueError("dict hasn't exactly one key: %s" % repr(keys))
+    return keys[0]
+
+def single_key_item(dict_):
+    """dict must have exactly one key, return it and it's value.
+
+    Raises ValueError if the dict has more than one key.
+    """
+    k= single_key(dict_)
+    return (k, dict_[k])
+
 def dict_update(dict_, other, keylist= None):
     """update dict_ with other but do not change existing values.
 
@@ -602,6 +620,34 @@ def dict_update(dict_, other, keylist= None):
     """
     if keylist is None:
         keylist= other.keys()
+    for k in keylist:
+        v= other[k]
+        old_v= dict_.get(k)
+        if old_v is None:
+            dict_[k]= v
+            continue
+        if old_v==v:
+            continue
+        raise ValueError("key %s: contradicting values: %s %s" % \
+                          (k,repr(old_v),repr(v)))
+
+def uniq_dict_update(dict_, other):
+    """update dict_ with other but do not change existing values.
+
+    The dict must have a single key.
+
+    """
+    keys= dict_.keys()
+    if len(keys)>1:
+        raise ValueError("dict has more than one key: %s" % repr(dict_))
+    okeys= other.keys()
+    if len(okeys)>1:
+        raise ValueError("other dict has more than one key: %s" % repr(other))
+    if keys[0]!=okeys[0]:
+        raise ValueError("dicts have different keys: %s %s" % \
+                         (keys[0], okeys[0]))
+
+    keylist= other.keys()
     for k in keylist:
         v= other[k]
         old_v= dict_.get(k)
@@ -792,13 +838,13 @@ class PathSource(JSONstruct):
         super(PathSource, self).__init__(dict_)
     def add_path(self, path, source):
         """add a simple path."""
-        self.datadict()[path]= ["path", source]
+        self.datadict()[path]= {"path": source}
     def add_darcs(self, path, url, tag= None):
         """add darcs repository information."""
         if tag is None:
-            self.datadict()[path]= ["darcs", url]
+            self.datadict()[path]= {"darcs": {"url": url}}
         else:
-            self.datadict()[path]= ["darcs", url, tag]
+            self.datadict()[path]= {"darcs": {"url": url, "tag": tag}}
     def iterate(self):
         """iterate on all items."""
         return self.datadict().iteritems()
@@ -806,39 +852,44 @@ class PathSource(JSONstruct):
         """return a new object where "path" enities are removed."""
         new= self.__class__()
         for path, data in self.iterate():
-            if data[0]!="path":
+            k= single_key(data)
+            if k!="path":
                 new.datadict()[path]= data
         return new
     def filter_no_tags(self):
         """return a new object containing repos without tags."""
         new= self.__class__()
         for path, data in self.iterate():
-            if data[0]=="path":
+            k= single_key(data)
+            if k=="path":
                 continue
-            if len(data)<3:
+            dict_= data[k]
+            if not dict_.has_key("tag"):
                 new.datadict()[path]= data
         return new
     def get_struct(self, path):
         """return data as a structure."""
         return self.datadict()[path]
-    def get(self, path):
+    def get_data(self, path):
         """return data for a given path.
 
-        Returns:
-          (type, url, tag)
+        Returns a tuple:
+          (type, data)
 
-        type: "path" or "darcs"
+        For type=="darcs" the data is:
+          { "url": url, "tag": tag }
+
+        for type=="path" the data is:
+          path
+
+        type: repository type, e.g. "darcs"
         url : the url where to get
-        tag : the repository tag, may be empty ("").
+        tag : the repository tag, may be omitted
 
         Note: raises KeyError if path doesn't exist
         """
-        d= self.datadict()[path]
-        if len(d)>2:
-            return tuple(d)
-        else:
-            return (d[0], d[1], "")
-
+        data= self.datadict()[path]
+        return single_key_item(data)
 
 class Dependencies(JSONstruct):
     """the dependency database."""
@@ -939,12 +990,16 @@ class Dependencies(JSONstruct):
                               (modulename, versionname, str(e)))
                         continue
                     if dictname=="source":
-                        try:
-                            dict_update(vdict, vdict2, [dictname])
-                        except ValueError, e:
+                        if not vdict.has_key(dictname):
+                            vdict[dictname]= vdict2[dictname]
+                            continue
+                        if vdict[dictname]!=vdict2[dictname]:
                             raise ValueError(
-                              "module %s version %s source: %s" % \
-                              (modulename, versionname, str(e)))
+                                "module %s version %s source: "
+                                "contradiction %s %s" % \
+                                (modulename, versionname,
+                                 repr(vdict[dictname]),
+                                 repr(vdict2[dictname])))
                         continue
                     if dictname=="dependencies":
                         # pylint: disable=W0212
@@ -965,7 +1020,7 @@ class Dependencies(JSONstruct):
         m[versionname]= copy.deepcopy(
                             other.datadict()[module_name][versionname])
     def set_source(self, module_name, versionname, archs, state,
-                   source_type, url, tag):
+                   repo_dict):
         """add a module with source spec, state and archs."""
         if not self.__class__.states_dict.has_key(state):
             raise ValueError("invalid state: %s" % state)
@@ -976,10 +1031,7 @@ class Dependencies(JSONstruct):
         arch_dict= version.setdefault("archs", {})
         for arch in archs:
             arch_dict[arch]= True
-        l= [source_type, url]
-        if tag:
-            l.append(tag)
-        version["source"]= l
+        version["source"]= repo_dict
     def add_dependency(self, modulename, versionname,
                        dep_modulename, dep_versionname, state):
         """add dependency for a module:version.
@@ -1070,13 +1122,10 @@ class Dependencies(JSONstruct):
         # may raise KeyError exception in this line:
         d= self.datadict()[modulename][versionname]
         return d.has_key("dependencies")
-    def module_source(self, modulename, versionname):
-        """return a tuple (type,url,tag) for the module source."""
+    def module_source_dict(self, modulename, versionname):
+        """return a tuple (type,dict) for the module source."""
         l= self.datadict()[modulename][versionname]["source"]
-        if len(l)<3:
-            return (l[0], l[1], "")
-        else:
-            return tuple(l)
+        return single_key_item(l)
     def iter_dependencies(self, modulename, versionname):
         """return an iterator on dependency modulenames of a module."""
         d= self.datadict()[modulename][versionname]
@@ -1229,10 +1278,11 @@ class Dependencies(JSONstruct):
             raise ValueError("module %s: version %s already exists" % \
                     (modulename, newversionname))
         d= copy.deepcopy(self.datadict()[modulename][versionname])
-        src= d.get("source")
-        if src:
-            if len(src)>2: # a tag is defined
-                src[2]= src[2].replace(versionname, newversionname)
+        (_, sourcedata)= single_key_item(d["source"])
+        if isinstance(sourcedata, dict):
+            if sourcedata.has_key("tag"):
+                sourcedata["tag"]= \
+                    sourcedata["tag"].replace(versionname, newversionname)
         d["state"]= "unstable"
         moduledata[newversionname]= d
         if do_replace:
