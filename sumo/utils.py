@@ -448,11 +448,30 @@ def tag2version(tag):
     """convert a darcs tag to a version.
 
     (according to BESSY conventions)
+    Here are some examples:
+
+    >>> tag2version("R2-3")
+    '2-3'
+    >>> tag2version("seq-2-3")
+    '2-3'
+    >>> tag2version("xx-2-3")
+    'xx-2-3'
     """
-    if len(tag)<2:
-        return tag
-    if tag[0]=="R" and tag[1].isdigit():
-        return tag[1:]
+    def splitter(start, st):
+        """split a string into a start and a rest."""
+        if not st.startswith(start):
+            return
+        rest= st[len(start):]
+        if rest=="":
+            return
+        if not rest[0].isdigit():
+            return
+        return rest
+    starts=["R", "seq-"]
+    for s in starts:
+        r= splitter(s, tag)
+        if r is not None:
+            return r
     return tag
 
 def version2tag(tag):
