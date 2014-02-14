@@ -609,6 +609,42 @@ def list_update(list1, list2):
 # classes
 # -----------------------------------------------
 
+class RegexpMatcher(object):
+    """apply one or more regexes on strings."""
+    def __init__(self, regexes=None):
+        r"""initialize from a list of regexes.
+
+        Here is a simple example:
+        >>> rx= RegexpPatcher(((r"a(\w+)",r"a(\1)"),(r"x+",r"x")))
+        >>> rx.apply("ab xx")
+        'a(b) x'
+        """
+        self._list= []
+        if regexes is not None:
+            for rx in regexes:
+                self.add(rx)
+    def add(self, regexp):
+        """add a regexp."""
+        #print "RX: ",repr(regexp_pair)
+        rx= re.compile(regexp)
+        self._list.append(rx)
+    def match(self, str_):
+        """match the regular expression to a string"""
+        if not self._list:
+            return False
+        for rx in self._list:
+            if rx.match(str_):
+                return True
+        return False
+    def search(self, str_):
+        """search the regular expression in a string"""
+        if not self._list:
+            return False
+        for rx in self._list:
+            if rx.search(str_):
+                return True
+        return False
+
 class RegexpPatcher(object):
     """apply one or more regexes on strings."""
     def __init__(self, tuples=None):

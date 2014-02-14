@@ -156,7 +156,7 @@ def scan_support_deps(support_path,
 
 def support_configure_data(support_trees,
                     buildtag,
-                    rx_exclude_path,
+                    exclude_matcher,
                     progress= False,
                     verbose= False, dry_run= False):
     """scan EPICS configuration files a whole file-tree of EPICS supports.
@@ -195,11 +195,6 @@ def support_configure_data(support_trees,
             return
         l[i+1:]= []
         l[0:i]= []
-    def exclude(path):
-        """test if the exclude expression matches"""
-        if rx_exclude_path is None:
-            return False
-        return bool(rx_exclude_path.search(path))
 
     release_dict= {}
     arch_dict= {}
@@ -214,7 +209,7 @@ def support_configure_data(support_trees,
         for (dirpath, dirnames, filenames) in utils.dirwalk(support_tree):
             if progress:
                 cnt= utils.show_progress(cnt, cnt_max)
-            if exclude(dirpath):
+            if exclude_matcher.search(dirpath):
                 purge(dirnames)
             slicer(dirnames, "configure")
             if buildtag is not None:
@@ -292,17 +287,6 @@ def groups_from_deps(deps, basedirs):
     # sys.exit("exit-ABORTED")
     return new
 
-
-def filter_exclude_paths(deps, regexp):
-    """remove all paths that match regexp.
-    """
-    rx= re.compile(regexp)
-    new= {}
-    for path, dependency_dict in deps.items():
-        if rx.search(path):
-            continue
-        new[path]= dependency_dict
-    return new
 
 def filter_exclude_deps(deps, regexp):
     """remove all paths whose dependencies match regexp.
@@ -451,13 +435,11 @@ def get_configuration(options):
     for d in options.dir:
         if not os.path.exists(d):
             sys.exit("error, directory \"%s\" doesn't exist" % options.dir)
-    rx_exclude= None
-    if options.exclude_paths:
-        rx_exclude= re.compile(options.exclude_paths)
+    exclude_matcher= utils.RegexpMatcher(options.exclude_path)
     (deps, archs)= \
        support_configure_data(options.dir,
                        options.buildtag,
-                       rx_exclude,
+                       exclude_matcher,
                        options.progress,
                        options.verbose,
                        options.dry_run
@@ -492,8 +474,6 @@ def process(options, commands):
     else:
         sys.exit("error: -d or -i required for command")
 
-    #if options.exclude_paths:
-    #    deps= filter_exclude_paths(deps, options.exclude_paths)
     if options.exclude_deps:
         deps= filter_exclude_deps(deps, options.exclude_deps)
 
@@ -613,11 +593,12 @@ def main():
                            "calculate group names from directory names." + \
                            "You can specify more than one of these."
                       )
-    parser.add_option("--exclude-paths",
-                      action="store",
+    parser.add_option("--exclude-path",
+                      action="append",
                       type="string",
-                      help="exclude all paths that match REGEXP "+ \
-                           "from dependencies",
+                      help="exclude all paths that match REGEXP from "
+                           "dependencies. You can specify more than one "
+                           "of these.",
                       metavar="REGEXP"
                       )
     parser.add_option("--exclude-deps",
@@ -679,7 +660,7 @@ def main():
     # args: list of left-over args
 
     config= utils.ConfigFile(("dir", "info_file", "group_basedir",
-                              "exclude_paths", "exclude_deps",
+                              "exclude_path", "exclude_deps",
                               "source_patch", "darcs_dirtest",
                               "missing_tag", "missing_repo", "buildtag",
                               "progress", "verbose"),
