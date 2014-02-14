@@ -19,8 +19,8 @@ import sumo.utils as utils
 # version of the program:
 my_version= "1.0"
 
-KNOWN_COMMANDS=set(("show", "state", "newtree", "partialdb", "findtree",
-                    "apprelease", "fullapprelease", "delete"))
+KNOWN_COMMANDS=set(("show", "state", "edit", "newtree", "partialdb", 
+                    "findtree", "apprelease", "fullapprelease", "delete"))
 
 CONFIG_NAME="sumo-build.config"
 
@@ -237,7 +237,7 @@ def create_source(db, modulename, versionname,
         # needed in order for rsync to work as intended here.
         cmd= "rsync -a -u -L \"%s\" %s" % \
              (os.path.join(sourcedata,""), destdir)
-        utils.system(cmd, False, verbose, dry_run)
+        utils.system(cmd, False, False, verbose, dry_run)
     elif sourcetype=="darcs":
         cmd_l= ["darcs", "get"]
         if sourcedata.has_key("tag"):
@@ -245,7 +245,7 @@ def create_source(db, modulename, versionname,
         cmd_l.append(sourcedata["url"])
         cmd_l.append(destdir)
         cmd= " ".join(cmd_l)
-        utils.system(cmd, False, verbose, dry_run)
+        utils.system(cmd, False, False, verbose, dry_run)
     else:
         raise AssertionError("unsupported source type %s" % sourcetype)
 
@@ -500,6 +500,12 @@ def process(options, commands):
     if not options.extra:
         options.extra= []
 
+    if commands[0]=="edit":
+        if len(commands)!=2:
+            sys.exit("exactly one filename must follow \"edit\"")
+        utils.edit_with_lock(commands[1], options.verbose, options.dry_run)
+        return
+
     if commands[0]=="show":
         if len(commands)>2:
             sys.exit("error: extra arguments following \"show\"")
@@ -700,6 +706,13 @@ def _test():
 
 usage = """usage: %prog [options] command
 where command is:
+  edit [FILE]
+          Start the editor specified by the environment variable "VISUAL" or
+          "EDITOR" with that file. This command first aquires a file-lock on
+          the file that is only released when the editor program is terminated.
+          If you want to edit a DB or BUILDDB file directly, you should always
+          do this with this command. The file locking prevents other users to
+          use the file at the same time you modify it.
   newtree [buildtag]  :
           create a new buildtree
   partialdb [buildtag]:

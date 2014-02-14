@@ -252,7 +252,7 @@ def dict_sets_to_lists(dict_):
 # basic system utilities
 # -----------------------------------------------
 
-def system(cmd, catch_stdout, verbose, dry_run):
+def system(cmd, catch_stdout, catch_stderr, verbose, dry_run):
     """execute a command.
 
     execute a command and return the programs output
@@ -270,17 +270,26 @@ def system(cmd, catch_stdout, verbose, dry_run):
     else:
         stdout_par=None
 
+    if catch_stderr:
+        stderr_par=subprocess.PIPE
+    else:
+        stderr_par=None
+
     p= subprocess.Popen(cmd, shell=True,
-                        stdout=stdout_par, stderr=subprocess.PIPE,
+                        stdout=stdout_par, stderr=stderr_par,
                         close_fds=True)
     (child_stdout, child_stderr) = p.communicate()
     # pylint: disable=E1101
     # "Instance 'Popen'has no 'returncode' member
     if p.returncode!=0:
-        raise IOError(p.returncode,
-                      "cmd \"%s\", errmsg \"%s\"" % (cmd,child_stderr))
+        if stderr_par is not None:
+            raise IOError(p.returncode,
+                          "cmd \"%s\", errmsg \"%s\"" % (cmd,child_stderr))
+        else:
+            raise IOError(p.returncode,
+                          "cmd \"%s\", rc %d" % (cmd, p.returncode))
     # pylint: enable=E1101
-    return(child_stdout)
+    return (child_stdout, child_stderr)
 
 # -----------------------------------------------
 # file locking
@@ -289,20 +298,36 @@ def system(cmd, catch_stdout, verbose, dry_run):
 def lock_a_file(filename, timeout=20):
     """lock a file.
     """
+    timedelta= 5
+    tries= timeout / timedelta
+    if timeout % timedelta > 0:
+        tries+= 1
     if not use_lockfile:
         return None
     lock= lockfile.LockFile(filename)
     # patch for not working lockfile module:
     lock.unique_name= "%s-%s" % (lock.unique_name, os.path.basename(filename))
-    try:
-        lock.acquire(timeout)
-    except lockfile.Error,e:
-        txt= ("File locking of file %s failed after % seconds with "
-              "error %s. If you know that the file shouldn't be locked "
-              "you may try to remove the lockfile.") % \
-             (filename, timeout, str(e))
-        raise AssertionError(txt)
-    return lock
+    try_= 1
+    while True:
+        try_+= 1
+        try:
+            lock.acquire(timedelta)
+            return lock
+        except lockfile.Error,e:
+            timeout-= timedelta
+            if timeout>0:
+                sys.stderr.write("waiting to aquire lock on "
+                                 "file '%s' (%2d of %2d tries)...\n" % \
+                                 (filename, try_, tries))
+                continue
+            extra= str(e)
+            if extra:
+                extra= " (%s)" % extra
+            txt= ("File locking of file %s failed after %d seconds%s. "
+                  "If you know that the file shouldn't be locked "
+                  "you may try to remove the lockfiles.") % \
+                 (filename, timeout, extra)
+            raise AssertionError(txt)
 
 def unlock_a_file(lock):
     """unlock a file.
@@ -312,6 +337,19 @@ def unlock_a_file(lock):
     if lock is None:
         raise AssertionError("unexpected: lock is None")
     lock.release()
+
+def edit_with_lock(filename, verbose, dry_run):
+    """lock a file, edit it, then unlock the file."""
+    if not os.path.exists(filename):
+        raise IOError("error: file \"%s\" doesn't exist" % filename)
+    l= lock_a_file(filename)
+    try:
+        system("%s %s" % (os.environ["VISUAL"], filename),
+               False, False, verbose, dry_run)
+    except IOError, _:
+        system("%s %s" % (os.environ["EDITOR"], filename),
+               False, False, verbose, dry_run)
+    unlock_a_file(l)
 
 # -----------------------------------------------
 # directory utilities

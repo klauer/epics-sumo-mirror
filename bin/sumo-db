@@ -137,7 +137,7 @@ import sumo.utils as utils
 # version of the program:
 my_version= "1.0"
 
-KNOWN_COMMANDS=set(("convert", "distribution",
+KNOWN_COMMANDS=set(("edit", "convert", "distribution",
                     "show", "shownewest", "showall",
                     "merge", "check", "filter",
                     "cloneversion", "replaceversion"))
@@ -396,6 +396,12 @@ def process(options, commands):
     if commands[0] not in KNOWN_COMMANDS:
         sys.exit("unknown command: %s" % commands[0])
 
+    if commands[0]=="edit":
+        if len(commands)!=2:
+            sys.exit("exactly one filename must follow \"edit\"")
+        utils.edit_with_lock(commands[1], options.verbose, options.dry_run)
+        return
+
     if commands[0]=="convert":
         if len(commands)!=3:
             sys.exit("a state and a filename must follow \"convert\"")
@@ -543,6 +549,13 @@ def _test():
 
 usage = """usage: %prog [options] command
 where command is:
+  edit [FILE]
+          Start the editor specified by the environment variable "VISUAL" or
+          "EDITOR" with that file. This command first aquires a file-lock on
+          the file that is only released when the editor program is terminated.
+          If you want to edit a DB or BUILDDB file directly, you should always
+          do this with this command. The file locking prevents other users to
+          use the file at the same time you modify it.
   convert [STATE] [SCANFILE]: 
           Convert SCANFILE to a new DB. All dependencies are marked with state
           STATE. STATE may be "stable", "testing" or "unstable".

@@ -318,8 +318,10 @@ def darcs_dir_test(darcs_url, verbose, dry_run):
     cmd= "ssh %s@%s 'ls %s'" % (m.group(1), m.group(2),
                                 os.path.join(m.group(3), "_darcs"))
     try:
+        # catch_stdout= True : do not show stdout,
+        # catch_stderr= True : do not show stderr:
         utils.system(cmd,
-                     True, verbose, dry_run)
+                     True, True, verbose, dry_run)
     except IOError, _:
         # probably no darcs repo found
         return False
@@ -346,8 +348,8 @@ def darcs_source_repo(directory, use_dir_test, verbose, dry_run):
     if not os.path.exists(os.path.join(directory,"_darcs")):
         return
     try:
-        reply= utils.system("cd %s && darcs show repo" % directory,
-                             True, verbose, dry_run)
+        (reply,_)= utils.system("cd %s && darcs show repo" % directory,
+                                True, False, verbose, dry_run)
     except IOError, _:
         # probably no darcs repo found
         return
@@ -365,8 +367,9 @@ def darcs_last_tag(directory, verbose, dry_run):
     """Returns the topmost darcs tag.
     """
     try:
-        reply= utils.system("cd %s && darcs show tags" % directory, True,
-                             verbose, dry_run)
+        (reply,_)= utils.system("cd %s && darcs show tags" % directory,
+                                True, False,
+                                verbose, dry_run)
     except IOError, _:
         # probably no darcs repo found
         return
