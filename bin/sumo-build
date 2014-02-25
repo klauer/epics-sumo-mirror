@@ -441,14 +441,20 @@ def create_partialdb(db, builddb, buildtag):
                     new.del_dependency(modulename, versionname, dep_module, d)
     return new
 
-def fullapprelease(build_path, build_tag, module_dict, extra_lines):
+def fullapprelease(build_path, build_tag, builddb, modules, extra_lines):
     """create entries for an release file.
     """
     lines= ["SUPPORT=%s" % os.path.abspath(build_path)]
-    for m in sorted(module_dict.keys()):
-        basename= module_dir_string(build_tag, m, module_dict[m])
+    if modules is None:
+        modules= builddb.modules(build_tag).keys()
+    for modulename in sorted(modules):
+        tag= builddb.module_link(build_tag, modulename)
+        if tag is None:
+            tag= build_tag
+        version= builddb.module_version(tag, modulename)
+        basename= module_dir_string(tag, modulename, version)
         lines.append("%s=%s" % \
-                (m,
+                (modulename,
                  os.path.join("$(SUPPORT)", basename)
                 ))
     lines.extend(extra_lines)
@@ -474,7 +480,8 @@ def apprelease(build_path, build_tag, module_spec, builddb, db, extra_lines):
                           "found in build %s") % (m, build_tag))
         module_dict[modulename]= v
     get_dependencies(module_dict, db, builddb, build_tag)
-    return fullapprelease(build_path, build_tag, module_dict, extra_lines)
+    return fullapprelease(build_path, build_tag, builddb,
+                          module_dict.keys(), extra_lines)
 
 # pylint: enable=R0913
 
@@ -667,7 +674,8 @@ def process(options, commands):
         builddb= utils.Builddb.from_json_file(options.builddb)
         print fullapprelease(os.path.dirname(options.builddb),
                              buildtag,
-                             builddb.modules(buildtag),
+                             builddb,
+                             None,
                              options.extra)
         return
 
