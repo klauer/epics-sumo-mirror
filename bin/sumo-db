@@ -289,7 +289,8 @@ def create_database(deps, repoinfo, groups, archs, state, source_patches):
                             db.add_alias(modulename, versionname,
                                          alias, _dep_name)
                         except ValueError, e:
-                            errmsg("alias error in module %s: %s" % str(e))
+                            errmsg("alias error in module %s: %s" % \
+                                   (modulename, str(e)))
                     db.add_dependency(modulename, versionname,
                                       _dep_name, _dep_version, state)
     return db
