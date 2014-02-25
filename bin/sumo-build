@@ -19,7 +19,7 @@ import sumo.utils as utils
 # version of the program:
 my_version= "1.0"
 
-KNOWN_COMMANDS=set(("show", "state", "edit", "newtree", "partialdb", 
+KNOWN_COMMANDS=set(("show", "state", "edit", "newtree", "partialdb",
                     "findtree", "apprelease", "fullapprelease", "delete"))
 
 CONFIG_NAME="sumo-build.config"
@@ -67,8 +67,8 @@ def gather_dependencies(db, modulename, versionname,
                                                        None))
         # Here we expect a unique version for each dependency of the module.
         if len(dep_versions)>1:
-            raise AssertionError("m:%s v:%s d:%s" % \
-                    (modulename, versionname, dep_name))
+            raise AssertionError("m:%s v:%s d:%s dv:%s" % \
+                    (modulename, versionname, dep_name, repr(dep_versions)))
         dep_version= dep_versions[0]
         existing= gathered_deps.get(dep_name)
         if existing is not None:
@@ -715,6 +715,8 @@ where command is:
           use the file at the same time you modify it.
   newtree [buildtag]  :
           create a new buildtree
+          options --db, --partialdb, --builddb and --arch are mandatory for
+          this command.
   partialdb [buildtag]:
           recreate a partial db from a complete db and an buildtree
   findtree [modules] :

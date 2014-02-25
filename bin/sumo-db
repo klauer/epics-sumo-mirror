@@ -305,6 +305,7 @@ def _distribution_add(db, dist, modulename, versionname, maxstate, archs):
         raise ValueError("no support for archs %s in module %s:%s" % \
                          (repr(archs),modulename,versionname))
     new_dist= dict(dist)
+    # ^^^ caution, not a deep copy
     new_dist[modulename]= versionname
     try:
         if not db.dependencies_found(modulename, versionname):
