@@ -272,7 +272,7 @@ def create_source(db, modulename, versionname,
         #cmd= "scp -r -p \"%s\" %s" % (url, destdir)
         # join(url,"") effectively adds a "/" at the end of the path. This is
         # needed in order for rsync to work as intended here.
-        cmd= "rsync -a -u -L \"%s\" %s" % \
+        cmd= "rsync -a -u -L --chmod=Fu+w \"%s\" %s" % \
              (os.path.join(sourcedata,""), destdir)
         utils.system(cmd, False, False, verbose, dry_run)
     elif sourcetype=="darcs":
