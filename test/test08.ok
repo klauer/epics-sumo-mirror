@@ -3186,8 +3186,7 @@ content of DB:
                 "BASE": "EPICS_BASE"
             }, 
             "archs": {
-                "vxWorks-68040": true, 
-                "vxWorks-ppc603": true
+                "ANY": true
             }, 
             "dependencies": {
                 "BASE": {
@@ -3407,14 +3406,11 @@ content of DB:
                 "SUPPORT_RULES": "RULES"
             }, 
             "archs": {
-                "RTEMS-mvme2100": true, 
-                "RTEMS-mvme5500": true, 
-                "vxWorks-68040": true, 
-                "vxWorks-ppc603": true
+                "ANY": true
             }, 
             "dependencies": {
                 "BASE": {
-                    "TAGLESS-3-14-12-2-1": "stable"
+                    "R3-14-12-2-1": "stable"
                 }, 
                 "SUPPORT_RULES": {
                     "R2-1": "stable"
@@ -3433,8 +3429,7 @@ content of DB:
                 "BASE": "EPICS_BASE"
             }, 
             "archs": {
-                "vxWorks-68040": true, 
-                "vxWorks-ppc603": true
+                "ANY": true
             }, 
             "dependencies": {
                 "BASE": {
@@ -3454,15 +3449,14 @@ content of DB:
                 "BASE": "EPICS_BASE"
             }, 
             "archs": {
-                "vxWorks-68040": true, 
-                "vxWorks-ppc603": true
+                "ANY": true
             }, 
             "dependencies": {
                 "BASE": {
                     "R3-14-8-2-0": "stable"
                 }, 
                 "RULES": {
-                    "TAGLESS-1-1": "stable"
+                    "R1-1": "stable"
                 }
             }, 
             "source": {
@@ -3478,15 +3472,14 @@ content of DB:
                 "BASE": "EPICS_BASE"
             }, 
             "archs": {
-                "vxWorks-68040": true, 
-                "vxWorks-ppc603": true
+                "ANY": true
             }, 
             "dependencies": {
                 "BASE": {
                     "R3-14-8-2-0": "stable"
                 }, 
                 "RULES": {
-                    "TAGLESS-1-1": "stable"
+                    "R1-1": "stable"
                 }
             }, 
             "source": {
@@ -3502,8 +3495,7 @@ content of DB:
                 "BASE": "EPICS_BASE"
             }, 
             "archs": {
-                "vxWorks-68040": true, 
-                "vxWorks-ppc603": true
+                "ANY": true
             }, 
             "dependencies": {
                 "BASE": {
@@ -3523,15 +3515,14 @@ content of DB:
                 "BASE": "EPICS_BASE"
             }, 
             "archs": {
-                "vxWorks-68040": true, 
-                "vxWorks-ppc603": true
+                "ANY": true
             }, 
             "dependencies": {
                 "BASE": {
                     "R3-14-8-2-0": "stable"
                 }, 
                 "RULES": {
-                    "TAGLESS-1-1": "stable"
+                    "R1-1": "stable"
                 }
             }, 
             "source": {
@@ -3541,20 +3532,41 @@ content of DB:
             }, 
             "state": "stable"
         }, 
+        "TAGLESS-3-0": {
+            "archs": {
+                "ANY": true
+            }, 
+            "source": {
+                "darcs": {
+                    "url": "rcsadm@aragon.acc.bessy.de:/opt/Epics/R3.14.8/support/apps/crateCtrl/3-0"
+                }
+            }, 
+            "state": "stable"
+        }, 
+        "TAGLESS-3-1": {
+            "archs": {
+                "ANY": true
+            }, 
+            "source": {
+                "darcs": {
+                    "url": "rcsadm@aragon.acc.bessy.de:/opt/Epics/R3.14.8/support/apps/crateCtrl/3-1"
+                }
+            }, 
+            "state": "stable"
+        }, 
         "TAGLESS-head": {
             "aliases": {
                 "BASE": "EPICS_BASE"
             }, 
             "archs": {
-                "vxWorks-68040": true, 
-                "vxWorks-ppc603": true
+                "ANY": true
             }, 
             "dependencies": {
                 "BASE": {
                     "R3-14-8-2-0": "stable"
                 }, 
                 "RULES": {
-                    "TAGLESS-1-1": "stable"
+                    "R1-1": "stable"
                 }
             }, 
             "source": {
@@ -3571,8 +3583,7 @@ content of DB:
                 "BASE": "EPICS_BASE"
             }, 
             "archs": {
-                "vxWorks-68040": true, 
-                "vxWorks-ppc603": true
+                "ANY": true
             }, 
             "dependencies": {
                 "BASE": {
@@ -3592,8 +3603,7 @@ content of DB:
                 "BASE": "EPICS_BASE"
             }, 
             "archs": {
-                "vxWorks-68040": true, 
-                "vxWorks-ppc603": true
+                "ANY": true
             }, 
             "dependencies": {
                 "BASE": {
@@ -3613,8 +3623,7 @@ content of DB:
                 "BASE": "EPICS_BASE"
             }, 
             "archs": {
-                "vxWorks-68040": true, 
-                "vxWorks-ppc603": true
+                "ANY": true
             }, 
             "dependencies": {
                 "BASE": {
@@ -3634,8 +3643,7 @@ content of DB:
                 "BASE": "EPICS_BASE"
             }, 
             "archs": {
-                "vxWorks-68040": true, 
-                "vxWorks-ppc603": true
+                "ANY": true
             }, 
             "dependencies": {
                 "BASE": {
@@ -3655,8 +3663,7 @@ content of DB:
                 "BASE": "EPICS_BASE"
             }, 
             "archs": {
-                "vxWorks-68040": true, 
-                "vxWorks-ppc603": true
+                "ANY": true
             }, 
             "dependencies": {
                 "BASE": {
@@ -3676,8 +3683,7 @@ content of DB:
                 "BASE": "EPICS_BASE"
             }, 
             "archs": {
-                "vxWorks-68040": true, 
-                "vxWorks-ppc603": true
+                "ANY": true
             }, 
             "dependencies": {
                 "BASE": {
@@ -3697,8 +3703,7 @@ content of DB:
                 "BASE": "EPICS_BASE"
             }, 
             "archs": {
-                "vxWorks-68040": true, 
-                "vxWorks-ppc603": true
+                "ANY": true
             }, 
             "dependencies": {
                 "BASE": {
@@ -3718,8 +3723,7 @@ content of DB:
                 "BASE": "EPICS_BASE"
             }, 
             "archs": {
-                "vxWorks-68040": true, 
-                "vxWorks-ppc603": true
+                "ANY": true
             }, 
             "dependencies": {
                 "BASE": {
@@ -3741,15 +3745,14 @@ content of DB:
                 "BASE": "EPICS_BASE"
             }, 
             "archs": {
-                "vxWorks-68040": true, 
-                "vxWorks-ppc603": true
+                "ANY": true
             }, 
             "dependencies": {
                 "BASE": {
                     "R3-14-8-2-0": "stable"
                 }, 
                 "RULES": {
-                    "TAGLESS-1-1": "stable"
+                    "R1-1": "stable"
                 }
             }, 
             "source": {
@@ -3765,15 +3768,14 @@ content of DB:
                 "BASE": "EPICS_BASE"
             }, 
             "archs": {
-                "vxWorks-68040": true, 
-                "vxWorks-ppc603": true
+                "ANY": true
             }, 
             "dependencies": {
                 "BASE": {
                     "R3-14-8-2-0": "stable"
                 }, 
                 "RULES": {
-                    "TAGLESS-1-1": "stable"
+                    "R1-1": "stable"
                 }
             }, 
             "source": {
@@ -3789,15 +3791,14 @@ content of DB:
                 "BASE": "EPICS_BASE"
             }, 
             "archs": {
-                "vxWorks-68040": true, 
-                "vxWorks-ppc603": true
+                "ANY": true
             }, 
             "dependencies": {
                 "BASE": {
                     "R3-14-8-2-0": "stable"
                 }, 
                 "RULES": {
-                    "TAGLESS-1-1": "stable"
+                    "R1-1": "stable"
                 }
             }, 
             "source": {
@@ -3813,15 +3814,14 @@ content of DB:
                 "BASE": "EPICS_BASE"
             }, 
             "archs": {
-                "vxWorks-68040": true, 
-                "vxWorks-ppc603": true
+                "ANY": true
             }, 
             "dependencies": {
                 "BASE": {
                     "R3-14-8-2-0": "stable"
                 }, 
                 "RULES": {
-                    "TAGLESS-1-1": "stable"
+                    "R1-1": "stable"
                 }
             }, 
             "source": {
@@ -3837,15 +3837,14 @@ content of DB:
                 "BASE": "EPICS_BASE"
             }, 
             "archs": {
-                "vxWorks-68040": true, 
-                "vxWorks-ppc603": true
+                "ANY": true
             }, 
             "dependencies": {
                 "BASE": {
                     "R3-14-8-2-0": "stable"
                 }, 
                 "RULES": {
-                    "TAGLESS-1-1": "stable"
+                    "R1-1": "stable"
                 }
             }, 
             "source": {
@@ -3861,15 +3860,14 @@ content of DB:
                 "BASE": "EPICS_BASE"
             }, 
             "archs": {
-                "vxWorks-68040": true, 
-                "vxWorks-ppc603": true
+                "ANY": true
             }, 
             "dependencies": {
                 "BASE": {
                     "R3-14-8-2-0": "stable"
                 }, 
                 "RULES": {
-                    "TAGLESS-1-1": "stable"
+                    "R1-1": "stable"
                 }
             }, 
             "source": {
@@ -3885,15 +3883,14 @@ content of DB:
                 "BASE": "EPICS_BASE"
             }, 
             "archs": {
-                "vxWorks-68040": true, 
-                "vxWorks-ppc603": true
+                "ANY": true
             }, 
             "dependencies": {
                 "BASE": {
                     "R3-14-8-2-0": "stable"
                 }, 
                 "RULES": {
-                    "TAGLESS-1-1": "stable"
+                    "R1-1": "stable"
                 }
             }, 
             "source": {
@@ -3909,15 +3906,14 @@ content of DB:
                 "BASE": "EPICS_BASE"
             }, 
             "archs": {
-                "vxWorks-68040": true, 
-                "vxWorks-ppc603": true
+                "ANY": true
             }, 
             "dependencies": {
                 "BASE": {
                     "R3-14-8-2-0": "stable"
                 }, 
                 "RULES": {
-                    "TAGLESS-1-1": "stable"
+                    "R1-1": "stable"
                 }
             }, 
             "source": {
@@ -3933,15 +3929,14 @@ content of DB:
                 "BASE": "EPICS_BASE"
             }, 
             "archs": {
-                "vxWorks-68040": true, 
-                "vxWorks-ppc603": true
+                "ANY": true
             }, 
             "dependencies": {
                 "BASE": {
                     "R3-14-8-2-0": "stable"
                 }, 
                 "RULES": {
-                    "TAGLESS-1-1": "stable"
+                    "R1-1": "stable"
                 }
             }, 
             "source": {
@@ -3957,15 +3952,14 @@ content of DB:
                 "BASE": "EPICS_BASE"
             }, 
             "archs": {
-                "vxWorks-68040": true, 
-                "vxWorks-ppc603": true
+                "ANY": true
             }, 
             "dependencies": {
                 "BASE": {
                     "R3-14-8-2-0": "stable"
                 }, 
                 "RULES": {
-                    "TAGLESS-1-1": "stable"
+                    "R1-1": "stable"
                 }
             }, 
             "source": {
@@ -3981,15 +3975,14 @@ content of DB:
                 "BASE": "EPICS_BASE"
             }, 
             "archs": {
-                "vxWorks-68040": true, 
-                "vxWorks-ppc603": true
+                "ANY": true
             }, 
             "dependencies": {
                 "BASE": {
                     "R3-14-8-2-0": "stable"
                 }, 
                 "RULES": {
-                    "TAGLESS-1-1": "stable"
+                    "R1-1": "stable"
                 }
             }, 
             "source": {
@@ -4005,15 +3998,14 @@ content of DB:
                 "BASE": "EPICS_BASE"
             }, 
             "archs": {
-                "vxWorks-68040": true, 
-                "vxWorks-ppc603": true
+                "ANY": true
             }, 
             "dependencies": {
                 "BASE": {
                     "R3-14-8-2-0": "stable"
                 }, 
                 "RULES": {
-                    "TAGLESS-1-1": "stable"
+                    "R1-1": "stable"
                 }
             }, 
             "source": {
@@ -4029,15 +4021,14 @@ content of DB:
                 "BASE": "EPICS_BASE"
             }, 
             "archs": {
-                "vxWorks-68040": true, 
-                "vxWorks-ppc603": true
+                "ANY": true
             }, 
             "dependencies": {
                 "BASE": {
                     "R3-14-8-2-0": "stable"
                 }, 
                 "RULES": {
-                    "TAGLESS-1-1": "stable"
+                    "R1-1": "stable"
                 }
             }, 
             "source": {
@@ -4053,15 +4044,14 @@ content of DB:
                 "BASE": "EPICS_BASE"
             }, 
             "archs": {
-                "vxWorks-68040": true, 
-                "vxWorks-ppc603": true
+                "ANY": true
             }, 
             "dependencies": {
                 "BASE": {
                     "R3-14-8-2-0": "stable"
                 }, 
                 "RULES": {
-                    "TAGLESS-1-1": "stable"
+                    "R1-1": "stable"
                 }
             }, 
             "source": {
@@ -4077,15 +4067,14 @@ content of DB:
                 "BASE": "EPICS_BASE"
             }, 
             "archs": {
-                "vxWorks-68040": true, 
-                "vxWorks-ppc603": true
+                "ANY": true
             }, 
             "dependencies": {
                 "BASE": {
                     "R3-14-8-2-0": "stable"
                 }, 
                 "RULES": {
-                    "TAGLESS-1-1": "stable"
+                    "R1-1": "stable"
                 }
             }, 
             "source": {
@@ -4101,15 +4090,14 @@ content of DB:
                 "BASE": "EPICS_BASE"
             }, 
             "archs": {
-                "vxWorks-68040": true, 
-                "vxWorks-ppc603": true
+                "ANY": true
             }, 
             "dependencies": {
                 "BASE": {
                     "R3-14-8-2-0": "stable"
                 }, 
                 "RULES": {
-                    "TAGLESS-1-1": "stable"
+                    "R1-1": "stable"
                 }
             }, 
             "source": {
@@ -4124,15 +4112,14 @@ content of DB:
                 "BASE": "EPICS_BASE"
             }, 
             "archs": {
-                "vxWorks-68040": true, 
-                "vxWorks-ppc603": true
+                "ANY": true
             }, 
             "dependencies": {
                 "BASE": {
                     "R3-14-8-2-0": "stable"
                 }, 
                 "RULES": {
-                    "TAGLESS-1-1": "stable"
+                    "R1-1": "stable"
                 }
             }, 
             "source": {
@@ -4149,15 +4136,14 @@ content of DB:
                 "BASE": "EPICS_BASE"
             }, 
             "archs": {
-                "vxWorks-68040": true, 
-                "vxWorks-ppc603": true
+                "ANY": true
             }, 
             "dependencies": {
                 "BASE": {
                     "R3-14-8-2-0": "stable"
                 }, 
                 "RULES": {
-                    "TAGLESS-1-1": "stable"
+                    "R1-1": "stable"
                 }
             }, 
             "source": {
@@ -4173,6 +4159,7 @@ content of DB:
                 "BASE": "EPICS_BASE"
             }, 
             "archs": {
+                "linux-x86": true, 
                 "vxWorks-68040": true, 
                 "vxWorks-ppc603": true
             }, 
@@ -4181,7 +4168,7 @@ content of DB:
                     "R3-14-8-2-0": "stable"
                 }, 
                 "RULES": {
-                    "TAGLESS-1-1": "stable"
+                    "R1-1": "stable"
                 }
             }, 
             "source": {
@@ -4197,6 +4184,7 @@ content of DB:
                 "BASE": "EPICS_BASE"
             }, 
             "archs": {
+                "linux-x86": true, 
                 "vxWorks-68040": true, 
                 "vxWorks-ppc603": true
             }, 
@@ -4205,7 +4193,7 @@ content of DB:
                     "R3-14-8-2-0": "stable"
                 }, 
                 "RULES": {
-                    "TAGLESS-1-1": "stable"
+                    "R1-1": "stable"
                 }
             }, 
             "source": {
@@ -4221,6 +4209,7 @@ content of DB:
                 "BASE": "EPICS_BASE"
             }, 
             "archs": {
+                "linux-x86": true, 
                 "vxWorks-68040": true, 
                 "vxWorks-ppc603": true
             }, 
@@ -4229,7 +4218,7 @@ content of DB:
                     "R3-14-8-2-0": "stable"
                 }, 
                 "RULES": {
-                    "TAGLESS-1-1": "stable"
+                    "R1-1": "stable"
                 }
             }, 
             "source": {
@@ -4245,6 +4234,7 @@ content of DB:
                 "BASE": "EPICS_BASE"
             }, 
             "archs": {
+                "linux-x86": true, 
                 "vxWorks-68040": true, 
                 "vxWorks-ppc603": true
             }, 
@@ -4253,7 +4243,7 @@ content of DB:
                     "R3-14-8-2-0": "stable"
                 }, 
                 "RULES": {
-                    "TAGLESS-1-1": "stable"
+                    "R1-1": "stable"
                 }
             }, 
             "source": {
@@ -4269,6 +4259,7 @@ content of DB:
                 "BASE": "EPICS_BASE"
             }, 
             "archs": {
+                "linux-x86": true, 
                 "vxWorks-68040": true, 
                 "vxWorks-ppc603": true
             }, 
@@ -4277,7 +4268,7 @@ content of DB:
                     "R3-14-8-2-0": "stable"
                 }, 
                 "RULES": {
-                    "TAGLESS-1-1": "stable"
+                    "R1-1": "stable"
                 }
             }, 
             "source": {
@@ -4293,6 +4284,7 @@ content of DB:
                 "BASE": "EPICS_BASE"
             }, 
             "archs": {
+                "linux-x86": true, 
                 "vxWorks-68040": true, 
                 "vxWorks-ppc603": true
             }, 
@@ -4301,7 +4293,7 @@ content of DB:
                     "R3-14-8-2-0": "stable"
                 }, 
                 "RULES": {
-                    "TAGLESS-1-1": "stable"
+                    "R1-1": "stable"
                 }
             }, 
             "source": {
@@ -4316,6 +4308,7 @@ content of DB:
                 "BASE": "EPICS_BASE"
             }, 
             "archs": {
+                "linux-x86": true, 
                 "vxWorks-68040": true, 
                 "vxWorks-ppc603": true
             }, 
@@ -4324,7 +4317,7 @@ content of DB:
                     "R3-14-8-2-0": "stable"
                 }, 
                 "RULES": {
-                    "TAGLESS-1-1": "stable"
+                    "R1-1": "stable"
                 }
             }, 
             "source": {
@@ -4344,6 +4337,7 @@ content of DB:
                 "SEQ": "SNCSEQ"
             }, 
             "archs": {
+                "linux-x86": true, 
                 "vxWorks-68040": true, 
                 "vxWorks-ppc603": true
             }, 
@@ -4388,6 +4382,7 @@ content of DB:
                 "SEQ": "SNCSEQ"
             }, 
             "archs": {
+                "linux-x86": true, 
                 "vxWorks-68040": true, 
                 "vxWorks-ppc603": true
             }, 
@@ -4429,6 +4424,7 @@ content of DB:
                 "SEQ": "SNCSEQ"
             }, 
             "archs": {
+                "linux-x86": true, 
                 "vxWorks-68040": true, 
                 "vxWorks-ppc603": true
             }, 
@@ -4470,6 +4466,7 @@ content of DB:
                 "SEQ": "SNCSEQ"
             }, 
             "archs": {
+                "linux-x86": true, 
                 "vxWorks-68040": true, 
                 "vxWorks-ppc603": true
             }, 
@@ -4511,6 +4508,7 @@ content of DB:
                 "SEQ": "SNCSEQ"
             }, 
             "archs": {
+                "linux-x86": true, 
                 "vxWorks-68040": true, 
                 "vxWorks-ppc603": true
             }, 
@@ -4552,6 +4550,7 @@ content of DB:
                 "SEQ": "SNCSEQ"
             }, 
             "archs": {
+                "linux-x86": true, 
                 "vxWorks-68040": true, 
                 "vxWorks-ppc603": true
             }, 
@@ -4593,6 +4592,7 @@ content of DB:
                 "SEQ": "SNCSEQ"
             }, 
             "archs": {
+                "linux-x86": true, 
                 "vxWorks-68040": true, 
                 "vxWorks-ppc603": true
             }, 
@@ -4636,6 +4636,7 @@ content of DB:
                 "SEQ": "SNCSEQ"
             }, 
             "archs": {
+                "linux-x86": true, 
                 "vxWorks-68040": true, 
                 "vxWorks-ppc603": true
             }, 
@@ -4655,37 +4656,13 @@ content of DB:
             }, 
             "state": "stable"
         }, 
-        "R2-6-2-2": {
-            "aliases": {
-                "BASE": "EPICS_BASE", 
-                "SEQ": "SNCSEQ"
-            }, 
-            "archs": {
-                "vxWorks-68040": true, 
-                "vxWorks-ppc603": true
-            }, 
-            "dependencies": {
-                "BASE": {
-                    "R3-14-8-2-0": "stable"
-                }, 
-                "SEQ": {
-                    "seq-2-1-13": "stable"
-                }
-            }, 
-            "source": {
-                "darcs": {
-                    "tag": "R2-6-2-2", 
-                    "url": "rcsadm@aragon.acc.bessy.de:/opt/repositories/controls/darcs/epics/support/apps/motor/base-3-14-8"
-                }
-            }, 
-            "state": "stable"
-        }, 
         "R2-6-3": {
             "aliases": {
                 "BASE": "EPICS_BASE", 
                 "SEQ": "SNCSEQ"
             }, 
             "archs": {
+                "linux-x86": true, 
                 "vxWorks-68040": true, 
                 "vxWorks-ppc603": true
             }, 
@@ -4711,6 +4688,7 @@ content of DB:
                 "SEQ": "SNCSEQ"
             }, 
             "archs": {
+                "linux-x86": true, 
                 "vxWorks-68040": true, 
                 "vxWorks-ppc603": true
             }, 
@@ -4737,8 +4715,7 @@ content of DB:
                 "SEQ": "SNCSEQ"
             }, 
             "archs": {
-                "vxWorks-68040": true, 
-                "vxWorks-ppc603": true
+                "ANY": true
             }, 
             "dependencies": {
                 "ASYN": {
@@ -4777,6 +4754,7 @@ content of DB:
                 "SEQ": "SNCSEQ"
             }, 
             "archs": {
+                "linux-x86": true, 
                 "vxWorks-68040": true, 
                 "vxWorks-ppc603": true
             }, 
@@ -4817,6 +4795,7 @@ content of DB:
                 "SEQ": "SNCSEQ"
             }, 
             "archs": {
+                "linux-x86": true, 
                 "vxWorks-68040": true, 
                 "vxWorks-ppc603": true
             }, 
@@ -4856,6 +4835,7 @@ content of DB:
                 "SEQ": "SNCSEQ"
             }, 
             "archs": {
+                "linux-x86": true, 
                 "vxWorks-68040": true, 
                 "vxWorks-ppc603": true
             }, 
@@ -4874,12 +4854,38 @@ content of DB:
             }, 
             "state": "stable"
         }, 
+        "TAGLESS-2-6-2-2": {
+            "aliases": {
+                "BASE": "EPICS_BASE", 
+                "SEQ": "SNCSEQ"
+            }, 
+            "archs": {
+                "linux-x86": true, 
+                "vxWorks-68040": true, 
+                "vxWorks-ppc603": true
+            }, 
+            "dependencies": {
+                "BASE": {
+                    "R3-14-8-2-0": "stable"
+                }, 
+                "SEQ": {
+                    "seq-2-1-13": "stable"
+                }
+            }, 
+            "source": {
+                "darcs": {
+                    "url": "rcsadm@aragon.acc.bessy.de:/opt/Epics/R3.14.8/support/apps/motor/2-6-2-2"
+                }
+            }, 
+            "state": "stable"
+        }, 
         "TAGLESS-2-7-beta": {
             "aliases": {
                 "BASE": "EPICS_BASE", 
                 "SEQ": "SNCSEQ"
             }, 
             "archs": {
+                "linux-x86": true, 
                 "vxWorks-68040": true, 
                 "vxWorks-ppc603": true
             }, 
@@ -4905,8 +4911,7 @@ content of DB:
                 "BASE": "EPICS_BASE"
             }, 
             "archs": {
-                "vxWorks-68040": true, 
-                "vxWorks-ppc603": true
+                "ANY": true
             }, 
             "dependencies": {
                 "BASE": {
@@ -4987,8 +4992,7 @@ content of DB:
                 "BASE": "EPICS_BASE"
             }, 
             "archs": {
-                "vxWorks-68040": true, 
-                "vxWorks-ppc603": true
+                "ANY": true
             }, 
             "dependencies": {
                 "BASE": {
@@ -5009,8 +5013,7 @@ content of DB:
                 "BASE": "EPICS_BASE"
             }, 
             "archs": {
-                "vxWorks-68040": true, 
-                "vxWorks-ppc603": true
+                "ANY": true
             }, 
             "dependencies": {
                 "APPS_STREAMTEMPLATESANDPROTOCOLS": {
@@ -5033,8 +5036,7 @@ content of DB:
                 "BASE": "EPICS_BASE"
             }, 
             "archs": {
-                "vxWorks-68040": true, 
-                "vxWorks-ppc603": true
+                "ANY": true
             }, 
             "dependencies": {
                 "BASE": {
@@ -5054,8 +5056,7 @@ content of DB:
                 "BASE": "EPICS_BASE"
             }, 
             "archs": {
-                "vxWorks-68040": true, 
-                "vxWorks-ppc603": true
+                "ANY": true
             }, 
             "dependencies": {
                 "BASE": {
@@ -5075,8 +5076,7 @@ content of DB:
                 "BASE": "EPICS_BASE"
             }, 
             "archs": {
-                "vxWorks-68040": true, 
-                "vxWorks-ppc603": true
+                "ANY": true
             }, 
             "dependencies": {
                 "BASE": {
@@ -5096,8 +5096,7 @@ content of DB:
                 "BASE": "EPICS_BASE"
             }, 
             "archs": {
-                "vxWorks-68040": true, 
-                "vxWorks-ppc603": true
+                "ANY": true
             }, 
             "dependencies": {
                 "BASE": {
@@ -5117,8 +5116,7 @@ content of DB:
                 "BASE": "EPICS_BASE"
             }, 
             "archs": {
-                "vxWorks-68040": true, 
-                "vxWorks-ppc603": true
+                "ANY": true
             }, 
             "dependencies": {
                 "BASE": {
@@ -5138,8 +5136,7 @@ content of DB:
                 "BASE": "EPICS_BASE"
             }, 
             "archs": {
-                "vxWorks-68040": true, 
-                "vxWorks-ppc603": true
+                "ANY": true
             }, 
             "dependencies": {
                 "BASE": {
@@ -5159,8 +5156,7 @@ content of DB:
                 "BASE": "EPICS_BASE"
             }, 
             "archs": {
-                "vxWorks-68040": true, 
-                "vxWorks-ppc603": true
+                "ANY": true
             }, 
             "dependencies": {
                 "BASE": {
@@ -5180,8 +5176,7 @@ content of DB:
                 "BASE": "EPICS_BASE"
             }, 
             "archs": {
-                "vxWorks-68040": true, 
-                "vxWorks-ppc603": true
+                "ANY": true
             }, 
             "dependencies": {
                 "BASE": {
@@ -5201,8 +5196,7 @@ content of DB:
                 "BASE": "EPICS_BASE"
             }, 
             "archs": {
-                "vxWorks-68040": true, 
-                "vxWorks-ppc603": true
+                "ANY": true
             }, 
             "dependencies": {
                 "BASE": {
@@ -5222,8 +5216,7 @@ content of DB:
                 "BASE": "EPICS_BASE"
             }, 
             "archs": {
-                "vxWorks-68040": true, 
-                "vxWorks-ppc603": true
+                "ANY": true
             }, 
             "dependencies": {
                 "BASE": {
@@ -5243,8 +5236,7 @@ content of DB:
                 "BASE": "EPICS_BASE"
             }, 
             "archs": {
-                "vxWorks-68040": true, 
-                "vxWorks-ppc603": true
+                "ANY": true
             }, 
             "dependencies": {
                 "BASE": {
@@ -5264,8 +5256,7 @@ content of DB:
                 "BASE": "EPICS_BASE"
             }, 
             "archs": {
-                "vxWorks-68040": true, 
-                "vxWorks-ppc603": true
+                "ANY": true
             }, 
             "dependencies": {
                 "BASE": {
@@ -5280,13 +5271,51 @@ content of DB:
             "state": "stable"
         }
     }, 
+    "APPS_TRASH_STREAMTEMPLATESANDPROTOCOLS": {
+        "PATH-1-0": {
+            "archs": {
+                "ANY": true
+            }, 
+            "source": {
+                "path": "rcsadm@aragon.acc.bessy.de:/opt/Epics/R3.14.8/support/apps/trash/streamTemplatesAndProtocols/1-0"
+            }, 
+            "state": "stable"
+        }, 
+        "PATH-1-1": {
+            "archs": {
+                "ANY": true
+            }, 
+            "source": {
+                "path": "rcsadm@aragon.acc.bessy.de:/opt/Epics/R3.14.8/support/apps/trash/streamTemplatesAndProtocols/1-1"
+            }, 
+            "state": "stable"
+        }, 
+        "PATH-1-2": {
+            "archs": {
+                "ANY": true
+            }, 
+            "source": {
+                "path": "rcsadm@aragon.acc.bessy.de:/opt/Epics/R3.14.8/support/apps/trash/streamTemplatesAndProtocols/1-2"
+            }, 
+            "state": "stable"
+        }, 
+        "PATH-TEST": {
+            "archs": {
+                "ANY": true
+            }, 
+            "source": {
+                "path": "rcsadm@aragon.acc.bessy.de:/opt/Epics/R3.14.8/support/apps/trash/streamTemplatesAndProtocols/TEST"
+            }, 
+            "state": "stable"
+        }
+    }, 
     "APPS_VACUUM": {
         "R1-1": {
             "aliases": {
-                "BASE": "EPICS_BASE", 
-                "STREAMDEVICE": "STREAM"
+                "BASE": "EPICS_BASE"
             }, 
             "archs": {
+                "linux-x86": true, 
                 "vxWorks-68040": true, 
                 "vxWorks-ppc603": true
             }, 
@@ -5296,9 +5325,6 @@ content of DB:
                 }, 
                 "BASE": {
                     "R3-14-8-2-0": "stable"
-                }, 
-                "STREAMDEVICE": {
-                    "PATH-2-6": "stable"
                 }
             }, 
             "source": {
@@ -5315,6 +5341,7 @@ content of DB:
                 "STREAMDEVICE": "STREAM"
             }, 
             "archs": {
+                "linux-x86": true, 
                 "vxWorks-68040": true, 
                 "vxWorks-ppc603": true
             }, 
@@ -5342,6 +5369,7 @@ content of DB:
                 "STREAMDEVICE": "STREAM"
             }, 
             "archs": {
+                "linux-x86": true, 
                 "vxWorks-68040": true, 
                 "vxWorks-ppc603": true
             }, 
@@ -5369,8 +5397,7 @@ content of DB:
                 "STREAMDEVICE": "STREAM"
             }, 
             "archs": {
-                "vxWorks-68040": true, 
-                "vxWorks-ppc603": true
+                "ANY": true
             }, 
             "dependencies": {
                 "ASYN": {
@@ -5397,8 +5424,7 @@ content of DB:
                 "BASE": "EPICS_BASE"
             }, 
             "archs": {
-                "vxWorks-68040": true, 
-                "vxWorks-ppc603": true
+                "ANY": true
             }, 
             "dependencies": {
                 "BASE": {
@@ -5437,6 +5463,7 @@ content of DB:
                 "BASE": "EPICS_BASE"
             }, 
             "archs": {
+                "linux-x86": true, 
                 "vxWorks-68040": true, 
                 "vxWorks-ppc603": true
             }, 
@@ -5459,6 +5486,7 @@ content of DB:
                 "BASE": "EPICS_BASE"
             }, 
             "archs": {
+                "linux-x86": true, 
                 "vxWorks-68040": true, 
                 "vxWorks-ppc603": true
             }, 
@@ -5478,6 +5506,7 @@ content of DB:
                 "SEQ": "SNCSEQ"
             }, 
             "archs": {
+                "linux-x86": true, 
                 "vxWorks-68040": true, 
                 "vxWorks-ppc603": true
             }, 
@@ -5500,6 +5529,7 @@ content of DB:
                 "SEQ": "SNCSEQ"
             }, 
             "archs": {
+                "linux-x86": true, 
                 "vxWorks-68040": true, 
                 "vxWorks-ppc603": true
             }, 
@@ -5522,6 +5552,7 @@ content of DB:
                 "SEQ": "SNCSEQ"
             }, 
             "archs": {
+                "linux-x86": true, 
                 "vxWorks-68040": true, 
                 "vxWorks-ppc603": true
             }, 
@@ -5544,6 +5575,7 @@ content of DB:
                 "SEQ": "SNCSEQ"
             }, 
             "archs": {
+                "linux-x86": true, 
                 "vxWorks-68040": true, 
                 "vxWorks-ppc603": true
             }, 
@@ -5566,6 +5598,7 @@ content of DB:
                 "SEQ": "SNCSEQ"
             }, 
             "archs": {
+                "linux-x86": true, 
                 "vxWorks-68040": true, 
                 "vxWorks-ppc603": true
             }, 
@@ -5587,6 +5620,7 @@ content of DB:
                 "BASE": "EPICS_BASE"
             }, 
             "archs": {
+                "linux-x86": true, 
                 "vxWorks-68040": true, 
                 "vxWorks-ppc603": true
             }, 
@@ -5605,6 +5639,7 @@ content of DB:
                 "BASE": "EPICS_BASE"
             }, 
             "archs": {
+                "linux-x86": true, 
                 "vxWorks-68040": true, 
                 "vxWorks-ppc603": true
             }, 
@@ -5620,6 +5655,7 @@ content of DB:
         }, 
         "PATH-4-8": {
             "archs": {
+                "linux-x86": true, 
                 "vxWorks-68040": true, 
                 "vxWorks-ppc603": true
             }, 
@@ -5630,6 +5666,7 @@ content of DB:
         }, 
         "PATH-4-9": {
             "archs": {
+                "linux-x86": true, 
                 "vxWorks-68040": true, 
                 "vxWorks-ppc603": true
             }, 
@@ -5640,6 +5677,7 @@ content of DB:
         }, 
         "PATH-4-9-1": {
             "archs": {
+                "linux-x86": true, 
                 "vxWorks-68040": true, 
                 "vxWorks-ppc603": true
             }, 
@@ -5654,6 +5692,7 @@ content of DB:
                 "SEQ": "SNCSEQ"
             }, 
             "archs": {
+                "linux-x86": true, 
                 "vxWorks-68040": true, 
                 "vxWorks-ppc603": true
             }, 
@@ -5676,6 +5715,7 @@ content of DB:
                 "SEQ": "SNCSEQ"
             }, 
             "archs": {
+                "linux-x86": true, 
                 "vxWorks-68040": true, 
                 "vxWorks-ppc603": true
             }, 
@@ -5700,6 +5740,7 @@ content of DB:
                 "BASE": "EPICS_BASE"
             }, 
             "archs": {
+                "linux-x86": true, 
                 "vxWorks-68040": true, 
                 "vxWorks-ppc603": true
             }, 
@@ -5722,6 +5763,7 @@ content of DB:
                 "SEQ": "SNCSEQ"
             }, 
             "archs": {
+                "linux-x86": true, 
                 "vxWorks-68040": true, 
                 "vxWorks-ppc603": true
             }, 
@@ -5746,6 +5788,7 @@ content of DB:
                 "BASE": "EPICS_BASE"
             }, 
             "archs": {
+                "linux-x86": true, 
                 "vxWorks-68040": true, 
                 "vxWorks-ppc603": true
             }, 
@@ -5768,6 +5811,7 @@ content of DB:
                 "BASE": "EPICS_BASE"
             }, 
             "archs": {
+                "linux-x86": true, 
                 "vxWorks-68040": true, 
                 "vxWorks-ppc603": true
             }, 
@@ -5786,6 +5830,7 @@ content of DB:
                 "BASE": "EPICS_BASE"
             }, 
             "archs": {
+                "linux-x86": true, 
                 "vxWorks-68040": true, 
                 "vxWorks-ppc603": true
             }, 
@@ -5804,6 +5849,7 @@ content of DB:
                 "BASE": "EPICS_BASE"
             }, 
             "archs": {
+                "linux-x86": true, 
                 "vxWorks-68040": true, 
                 "vxWorks-ppc603": true
             }, 
@@ -5825,6 +5871,7 @@ content of DB:
                 "BASE": "EPICS_BASE"
             }, 
             "archs": {
+                "linux-x86": true, 
                 "vxWorks-68040": true, 
                 "vxWorks-ppc603": true
             }, 
@@ -5846,6 +5893,7 @@ content of DB:
                 "BASE": "EPICS_BASE"
             }, 
             "archs": {
+                "linux-x86": true, 
                 "vxWorks-68040": true, 
                 "vxWorks-ppc603": true
             }, 
@@ -5867,6 +5915,7 @@ content of DB:
             "archs": {
                 "RTEMS-mvme2100": true, 
                 "RTEMS-mvme5500": true, 
+                "linux-x86": true, 
                 "vxWorks-68040": true, 
                 "vxWorks-ppc603": true
             }, 
@@ -5878,8 +5927,26 @@ content of DB:
             }, 
             "state": "stable"
         }, 
+        "R3-14-12-2-1": {
+            "archs": {
+                "RTEMS-mvme2100": true, 
+                "RTEMS-mvme5500": true, 
+                "linux-x86": true, 
+                "vxWorks-68040": true, 
+                "vxWorks-ppc603": true
+            }, 
+            "source": {
+                "darcs": {
+                    "tag": "R3-14-12-2-1", 
+                    "url": "rcsadm@aragon.acc.bessy.de:/opt/repositories/controls/darcs/epics/base/3-14-12-2"
+                }
+            }, 
+            "state": "stable"
+        }, 
         "R3-14-8-2-0": {
             "archs": {
+                "hpux-parisc": true, 
+                "linux-x86": true, 
                 "vxWorks-68040": true, 
                 "vxWorks-ppc603": true
             }, 
@@ -5887,20 +5954,6 @@ content of DB:
                 "darcs": {
                     "tag": "R3-14-8-2-0", 
                     "url": "rcsadm@aragon.acc.bessy.de:/opt/repositories/controls/darcs/epics/base/3-14-8-2"
-                }
-            }, 
-            "state": "stable"
-        }, 
-        "TAGLESS-3-14-12-2-1": {
-            "archs": {
-                "RTEMS-mvme2100": true, 
-                "RTEMS-mvme5500": true, 
-                "vxWorks-68040": true, 
-                "vxWorks-ppc603": true
-            }, 
-            "source": {
-                "darcs": {
-                    "url": "rcsadm@aragon.acc.bessy.de:/opt/Epics/R3.14.12/base/3-14-12-2-1"
                 }
             }, 
             "state": "stable"
@@ -6044,8 +6097,7 @@ content of DB:
                 "BASE": "EPICS_BASE"
             }, 
             "archs": {
-                "vxWorks-68040": true, 
-                "vxWorks-ppc603": true
+                "ANY": true
             }, 
             "dependencies": {
                 "ALARM": {
@@ -6068,8 +6120,7 @@ content of DB:
                 "BASE": "EPICS_BASE"
             }, 
             "archs": {
-                "vxWorks-68040": true, 
-                "vxWorks-ppc603": true
+                "ANY": true
             }, 
             "dependencies": {
                 "ALARM": {
@@ -6274,6 +6325,7 @@ content of DB:
             "archs": {
                 "RTEMS-mvme2100": true, 
                 "RTEMS-mvme5500": true, 
+                "linux-x86": true, 
                 "vxWorks-68040": true, 
                 "vxWorks-ppc603": true
             }, 
@@ -6336,8 +6388,7 @@ content of DB:
                 "BASE": "EPICS_BASE"
             }, 
             "archs": {
-                "vxWorks-68040": true, 
-                "vxWorks-ppc603": true
+                "ANY": true
             }, 
             "dependencies": {
                 "BASE": {
@@ -6357,8 +6408,7 @@ content of DB:
                 "BASE": "EPICS_BASE"
             }, 
             "archs": {
-                "vxWorks-68040": true, 
-                "vxWorks-ppc603": true
+                "ANY": true
             }, 
             "dependencies": {
                 "BASE": {
@@ -6378,8 +6428,7 @@ content of DB:
                 "BASE": "EPICS_BASE"
             }, 
             "archs": {
-                "vxWorks-68040": true, 
-                "vxWorks-ppc603": true
+                "ANY": true
             }, 
             "dependencies": {
                 "BASE": {
@@ -6399,8 +6448,7 @@ content of DB:
                 "BASE": "EPICS_BASE"
             }, 
             "archs": {
-                "vxWorks-68040": true, 
-                "vxWorks-ppc603": true
+                "ANY": true
             }, 
             "dependencies": {
                 "BASE": {
@@ -6440,8 +6488,7 @@ content of DB:
                 "BASE": "EPICS_BASE"
             }, 
             "archs": {
-                "vxWorks-68040": true, 
-                "vxWorks-ppc603": true
+                "ANY": true
             }, 
             "dependencies": {
                 "BASE": {
@@ -6460,8 +6507,7 @@ content of DB:
                 "BASE": "EPICS_BASE"
             }, 
             "archs": {
-                "vxWorks-68040": true, 
-                "vxWorks-ppc603": true
+                "ANY": true
             }, 
             "dependencies": {
                 "BASE": {
@@ -6587,6 +6633,7 @@ content of DB:
                 "BASE": "EPICS_BASE"
             }, 
             "archs": {
+                "linux-x86": true, 
                 "vxWorks-68040": true, 
                 "vxWorks-ppc603": true
             }, 
@@ -6609,6 +6656,7 @@ content of DB:
                 "BASE": "EPICS_BASE"
             }, 
             "archs": {
+                "linux-x86": true, 
                 "vxWorks-68040": true, 
                 "vxWorks-ppc603": true
             }, 
@@ -6633,6 +6681,7 @@ content of DB:
                 "BASE": "EPICS_BASE"
             }, 
             "archs": {
+                "linux-x86": true, 
                 "vxWorks-68040": true, 
                 "vxWorks-ppc603": true
             }, 
@@ -6657,6 +6706,7 @@ content of DB:
                 "BASE": "EPICS_BASE"
             }, 
             "archs": {
+                "linux-x86": true, 
                 "vxWorks-68040": true, 
                 "vxWorks-ppc603": true
             }, 
@@ -6681,6 +6731,7 @@ content of DB:
                 "BASE": "EPICS_BASE"
             }, 
             "archs": {
+                "linux-x86": true, 
                 "vxWorks-68040": true, 
                 "vxWorks-ppc603": true
             }, 
@@ -6705,6 +6756,7 @@ content of DB:
                 "BASE": "EPICS_BASE"
             }, 
             "archs": {
+                "linux-x86": true, 
                 "vxWorks-68040": true, 
                 "vxWorks-ppc603": true
             }, 
@@ -6729,6 +6781,7 @@ content of DB:
                 "BASE": "EPICS_BASE"
             }, 
             "archs": {
+                "linux-x86": true, 
                 "vxWorks-68040": true, 
                 "vxWorks-ppc603": true
             }, 
@@ -6753,6 +6806,7 @@ content of DB:
                 "BASE": "EPICS_BASE"
             }, 
             "archs": {
+                "linux-x86": true, 
                 "vxWorks-68040": true, 
                 "vxWorks-ppc603": true
             }, 
@@ -6774,6 +6828,7 @@ content of DB:
                 "BASE": "EPICS_BASE"
             }, 
             "archs": {
+                "linux-x86": true, 
                 "vxWorks-68040": true, 
                 "vxWorks-ppc603": true
             }, 
@@ -6799,6 +6854,7 @@ content of DB:
                 "BASE": "EPICS_BASE"
             }, 
             "archs": {
+                "linux-x86": true, 
                 "vxWorks-68040": true, 
                 "vxWorks-ppc603": true
             }, 
@@ -6820,6 +6876,7 @@ content of DB:
                 "BASE": "EPICS_BASE"
             }, 
             "archs": {
+                "linux-x86": true, 
                 "vxWorks-68040": true, 
                 "vxWorks-ppc603": true
             }, 
@@ -6841,6 +6898,7 @@ content of DB:
                 "BASE": "EPICS_BASE"
             }, 
             "archs": {
+                "linux-x86": true, 
                 "vxWorks-68040": true, 
                 "vxWorks-ppc603": true
             }, 
@@ -6862,6 +6920,7 @@ content of DB:
                 "BASE": "EPICS_BASE"
             }, 
             "archs": {
+                "linux-x86": true, 
                 "vxWorks-68040": true, 
                 "vxWorks-ppc603": true
             }, 
@@ -6882,8 +6941,7 @@ content of DB:
                 "BASE": "EPICS_BASE"
             }, 
             "archs": {
-                "vxWorks-68040": true, 
-                "vxWorks-ppc603": true
+                "ANY": true
             }, 
             "dependencies": {
                 "BASE": {
@@ -6904,6 +6962,7 @@ content of DB:
                 "BASE": "EPICS_BASE"
             }, 
             "archs": {
+                "linux-x86": true, 
                 "vxWorks-68040": true, 
                 "vxWorks-ppc603": true
             }, 
@@ -6925,6 +6984,7 @@ content of DB:
                 "BASE": "EPICS_BASE"
             }, 
             "archs": {
+                "linux-x86": true, 
                 "vxWorks-68040": true, 
                 "vxWorks-ppc603": true
             }, 
@@ -6946,6 +7006,7 @@ content of DB:
                 "BASE": "EPICS_BASE"
             }, 
             "archs": {
+                "linux-x86": true, 
                 "vxWorks-68040": true, 
                 "vxWorks-ppc603": true
             }, 
@@ -6967,6 +7028,7 @@ content of DB:
                 "BASE": "EPICS_BASE"
             }, 
             "archs": {
+                "linux-x86": true, 
                 "vxWorks-68040": true, 
                 "vxWorks-ppc603": true
             }, 
@@ -6988,6 +7050,7 @@ content of DB:
                 "BASE": "EPICS_BASE"
             }, 
             "archs": {
+                "linux-x86": true, 
                 "vxWorks-68040": true, 
                 "vxWorks-ppc603": true
             }, 
@@ -7009,6 +7072,7 @@ content of DB:
                 "BASE": "EPICS_BASE"
             }, 
             "archs": {
+                "linux-x86": true, 
                 "vxWorks-68040": true, 
                 "vxWorks-ppc603": true
             }, 
@@ -7030,6 +7094,7 @@ content of DB:
                 "BASE": "EPICS_BASE"
             }, 
             "archs": {
+                "linux-x86": true, 
                 "vxWorks-68040": true, 
                 "vxWorks-ppc603": true
             }, 
@@ -7051,6 +7116,7 @@ content of DB:
                 "BASE": "EPICS_BASE"
             }, 
             "archs": {
+                "linux-x86": true, 
                 "vxWorks-68040": true, 
                 "vxWorks-ppc603": true
             }, 
@@ -7071,6 +7137,7 @@ content of DB:
                 "BASE": "EPICS_BASE"
             }, 
             "archs": {
+                "linux-x86": true, 
                 "vxWorks-68040": true, 
                 "vxWorks-ppc603": true
             }, 
@@ -7093,6 +7160,7 @@ content of DB:
                 "BASE": "EPICS_BASE"
             }, 
             "archs": {
+                "linux-x86": true, 
                 "vxWorks-68040": true, 
                 "vxWorks-ppc603": true
             }, 
@@ -7120,6 +7188,7 @@ content of DB:
                 "BASE": "EPICS_BASE"
             }, 
             "archs": {
+                "linux-x86": true, 
                 "vxWorks-68040": true, 
                 "vxWorks-ppc603": true
             }, 
@@ -7147,6 +7216,7 @@ content of DB:
                 "BASE": "EPICS_BASE"
             }, 
             "archs": {
+                "linux-x86": true, 
                 "vxWorks-68040": true, 
                 "vxWorks-ppc603": true
             }, 
@@ -7174,6 +7244,7 @@ content of DB:
                 "BASE": "EPICS_BASE"
             }, 
             "archs": {
+                "linux-x86": true, 
                 "vxWorks-68040": true, 
                 "vxWorks-ppc603": true
             }, 
@@ -7201,6 +7272,7 @@ content of DB:
                 "BASE": "EPICS_BASE"
             }, 
             "archs": {
+                "linux-x86": true, 
                 "vxWorks-68040": true, 
                 "vxWorks-ppc603": true
             }, 
@@ -7228,6 +7300,7 @@ content of DB:
                 "BASE": "EPICS_BASE"
             }, 
             "archs": {
+                "linux-x86": true, 
                 "vxWorks-68040": true, 
                 "vxWorks-ppc603": true
             }, 
@@ -7255,6 +7328,7 @@ content of DB:
                 "BASE": "EPICS_BASE"
             }, 
             "archs": {
+                "linux-x86": true, 
                 "vxWorks-68040": true, 
                 "vxWorks-ppc603": true
             }, 
@@ -7282,6 +7356,7 @@ content of DB:
                 "BASE": "EPICS_BASE"
             }, 
             "archs": {
+                "linux-x86": true, 
                 "vxWorks-68040": true, 
                 "vxWorks-ppc603": true
             }, 
@@ -7309,6 +7384,7 @@ content of DB:
                 "BASE": "EPICS_BASE"
             }, 
             "archs": {
+                "linux-x86": true, 
                 "vxWorks-68040": true, 
                 "vxWorks-ppc603": true
             }, 
@@ -7336,6 +7412,7 @@ content of DB:
                 "BASE": "EPICS_BASE"
             }, 
             "archs": {
+                "linux-x86": true, 
                 "vxWorks-68040": true, 
                 "vxWorks-ppc603": true
             }, 
@@ -7363,6 +7440,7 @@ content of DB:
                 "BASE": "EPICS_BASE"
             }, 
             "archs": {
+                "linux-x86": true, 
                 "vxWorks-68040": true, 
                 "vxWorks-ppc603": true
             }, 
@@ -7390,6 +7468,7 @@ content of DB:
                 "BASE": "EPICS_BASE"
             }, 
             "archs": {
+                "linux-x86": true, 
                 "vxWorks-68040": true, 
                 "vxWorks-ppc603": true
             }, 
@@ -7417,6 +7496,7 @@ content of DB:
                 "BASE": "EPICS_BASE"
             }, 
             "archs": {
+                "linux-x86": true, 
                 "vxWorks-68040": true, 
                 "vxWorks-ppc603": true
             }, 
@@ -7441,6 +7521,7 @@ content of DB:
                 "BASE": "EPICS_BASE"
             }, 
             "archs": {
+                "linux-x86": true, 
                 "vxWorks-68040": true, 
                 "vxWorks-ppc603": true
             }, 
@@ -7471,6 +7552,7 @@ content of DB:
                 "SRV_CSR_EPICS_EXTENSIONS_BIN_LINUX-X86": "MSI"
             }, 
             "archs": {
+                "linux-x86": true, 
                 "vxWorks-68040": true, 
                 "vxWorks-ppc603": true
             }, 
@@ -7496,6 +7578,7 @@ content of DB:
                 "SEQ": "SNCSEQ"
             }, 
             "archs": {
+                "linux-x86": true, 
                 "vxWorks-68040": true, 
                 "vxWorks-ppc603": true
             }, 
@@ -7518,6 +7601,7 @@ content of DB:
                 "SRV_CSR_EPICS": "EPICS_SITE_TOP"
             }, 
             "archs": {
+                "linux-x86": true, 
                 "vxWorks-68040": true, 
                 "vxWorks-ppc603": true
             }, 
@@ -7542,6 +7626,7 @@ content of DB:
                 "BASE": "EPICS_BASE"
             }, 
             "archs": {
+                "linux-x86": true, 
                 "vxWorks-68040": true, 
                 "vxWorks-ppc603": true
             }, 
@@ -7566,6 +7651,7 @@ content of DB:
                 "SRV_CSR_EPICS_R3.14.8": "EPICS_MODULES"
             }, 
             "archs": {
+                "linux-x86": true, 
                 "vxWorks-68040": true, 
                 "vxWorks-ppc603": true
             }, 
@@ -7597,6 +7683,7 @@ content of DB:
                 "BASE": "EPICS_BASE"
             }, 
             "archs": {
+                "linux-x86": true, 
                 "vxWorks-68040": true, 
                 "vxWorks-ppc603": true
             }, 
@@ -7620,6 +7707,7 @@ content of DB:
                 "BASE": "EPICS_BASE"
             }, 
             "archs": {
+                "linux-x86": true, 
                 "vxWorks-68040": true, 
                 "vxWorks-ppc603": true
             }, 
@@ -7641,6 +7729,7 @@ content of DB:
                 "BASE": "EPICS_BASE"
             }, 
             "archs": {
+                "linux-x86": true, 
                 "vxWorks-68040": true, 
                 "vxWorks-ppc603": true
             }, 
@@ -7662,6 +7751,7 @@ content of DB:
                 "BASE": "EPICS_BASE"
             }, 
             "archs": {
+                "linux-x86": true, 
                 "vxWorks-68040": true, 
                 "vxWorks-ppc603": true
             }, 
@@ -7682,6 +7772,7 @@ content of DB:
                 "BASE": "EPICS_BASE"
             }, 
             "archs": {
+                "linux-x86": true, 
                 "vxWorks-68040": true, 
                 "vxWorks-ppc603": true
             }, 
@@ -7931,8 +8022,7 @@ content of DB:
                 "BASE": "EPICS_BASE"
             }, 
             "archs": {
-                "vxWorks-68040": true, 
-                "vxWorks-ppc603": true
+                "ANY": true
             }, 
             "dependencies": {
                 "BASE": {
@@ -7953,6 +8043,7 @@ content of DB:
                 "BASE": "EPICS_BASE"
             }, 
             "archs": {
+                "linux-x86": true, 
                 "vxWorks-68040": true, 
                 "vxWorks-ppc603": true
             }, 
@@ -7974,6 +8065,7 @@ content of DB:
                 "BASE": "EPICS_BASE"
             }, 
             "archs": {
+                "linux-x86": true, 
                 "vxWorks-68040": true, 
                 "vxWorks-ppc603": true
             }, 
@@ -7995,6 +8087,7 @@ content of DB:
                 "BASE": "EPICS_BASE"
             }, 
             "archs": {
+                "linux-x86": true, 
                 "vxWorks-68040": true, 
                 "vxWorks-ppc603": true
             }, 
@@ -8016,6 +8109,7 @@ content of DB:
                 "BASE": "EPICS_BASE"
             }, 
             "archs": {
+                "linux-x86": true, 
                 "vxWorks-68040": true, 
                 "vxWorks-ppc603": true
             }, 
@@ -8037,6 +8131,7 @@ content of DB:
                 "BASE": "EPICS_BASE"
             }, 
             "archs": {
+                "linux-x86": true, 
                 "vxWorks-68040": true, 
                 "vxWorks-ppc603": true
             }, 
@@ -8058,6 +8153,7 @@ content of DB:
                 "BASE": "EPICS_BASE"
             }, 
             "archs": {
+                "linux-x86": true, 
                 "vxWorks-68040": true, 
                 "vxWorks-ppc603": true
             }, 
@@ -8079,6 +8175,7 @@ content of DB:
                 "BASE": "EPICS_BASE"
             }, 
             "archs": {
+                "linux-x86": true, 
                 "vxWorks-68040": true, 
                 "vxWorks-ppc603": true
             }, 
@@ -8099,6 +8196,7 @@ content of DB:
                 "BASE": "EPICS_BASE"
             }, 
             "archs": {
+                "linux-x86": true, 
                 "vxWorks-68040": true, 
                 "vxWorks-ppc603": true
             }, 
@@ -8121,6 +8219,7 @@ content of DB:
                 "BASE": "EPICS_BASE"
             }, 
             "archs": {
+                "linux-x86": true, 
                 "vxWorks-68040": true, 
                 "vxWorks-ppc603": true
             }, 
@@ -8141,6 +8240,7 @@ content of DB:
                 "BASE": "EPICS_BASE"
             }, 
             "archs": {
+                "linux-x86": true, 
                 "vxWorks-68040": true, 
                 "vxWorks-ppc603": true
             }, 
@@ -8162,6 +8262,7 @@ content of DB:
                 "BASE": "EPICS_BASE"
             }, 
             "archs": {
+                "linux-x86": true, 
                 "vxWorks-68040": true, 
                 "vxWorks-ppc603": true
             }, 
@@ -8183,6 +8284,7 @@ content of DB:
                 "BASE": "EPICS_BASE"
             }, 
             "archs": {
+                "linux-x86": true, 
                 "vxWorks-68040": true, 
                 "vxWorks-ppc603": true
             }, 
@@ -8203,6 +8305,7 @@ content of DB:
                 "BASE": "EPICS_BASE"
             }, 
             "archs": {
+                "linux-x86": true, 
                 "vxWorks-68040": true, 
                 "vxWorks-ppc603": true
             }, 
@@ -8223,8 +8326,7 @@ content of DB:
                 "BASE": "EPICS_BASE"
             }, 
             "archs": {
-                "vxWorks-68040": true, 
-                "vxWorks-ppc603": true
+                "ANY": true
             }, 
             "dependencies": {
                 "BASE": {
@@ -8243,6 +8345,7 @@ content of DB:
                 "BASE": "EPICS_BASE"
             }, 
             "archs": {
+                "linux-x86": true, 
                 "vxWorks-68040": true, 
                 "vxWorks-ppc603": true
             }, 
@@ -8265,6 +8368,7 @@ content of DB:
                 "BASE": "EPICS_BASE"
             }, 
             "archs": {
+                "linux-x86": true, 
                 "vxWorks-68040": true, 
                 "vxWorks-ppc603": true
             }, 
@@ -8288,6 +8392,7 @@ content of DB:
                 "BASE": "EPICS_BASE"
             }, 
             "archs": {
+                "linux-x86": true, 
                 "vxWorks-68040": true, 
                 "vxWorks-ppc603": true
             }, 
@@ -8314,6 +8419,7 @@ content of DB:
                 "BASE": "EPICS_BASE"
             }, 
             "archs": {
+                "linux-x86": true, 
                 "vxWorks-68040": true, 
                 "vxWorks-ppc603": true
             }, 
@@ -9267,8 +9373,7 @@ content of DB:
                 "BASE": "EPICS_BASE"
             }, 
             "archs": {
-                "vxWorks-68040": true, 
-                "vxWorks-ppc603": true
+                "ANY": true
             }, 
             "dependencies": {
                 "ALARM": {
@@ -9414,6 +9519,7 @@ content of DB:
                 "BASE": "EPICS_BASE"
             }, 
             "archs": {
+                "linux-x86": true, 
                 "vxWorks-68040": true, 
                 "vxWorks-ppc603": true
             }, 
@@ -9435,6 +9541,7 @@ content of DB:
                 "BASE": "EPICS_BASE"
             }, 
             "archs": {
+                "linux-x86": true, 
                 "vxWorks-68040": true, 
                 "vxWorks-ppc603": true
             }, 
@@ -9456,6 +9563,7 @@ content of DB:
                 "BASE": "EPICS_BASE"
             }, 
             "archs": {
+                "linux-x86": true, 
                 "vxWorks-68040": true, 
                 "vxWorks-ppc603": true
             }, 
@@ -9477,8 +9585,7 @@ content of DB:
                 "BASE": "EPICS_BASE"
             }, 
             "archs": {
-                "vxWorks-68040": true, 
-                "vxWorks-ppc603": true
+                "ANY": true
             }, 
             "dependencies": {
                 "BASE": {
@@ -9498,6 +9605,7 @@ content of DB:
                 "BASE": "EPICS_BASE"
             }, 
             "archs": {
+                "linux-x86": true, 
                 "vxWorks-68040": true, 
                 "vxWorks-ppc603": true
             }, 
@@ -9518,8 +9626,7 @@ content of DB:
                 "BASE": "EPICS_BASE"
             }, 
             "archs": {
-                "vxWorks-68040": true, 
-                "vxWorks-ppc603": true
+                "ANY": true
             }, 
             "dependencies": {
                 "BASE": {
@@ -9540,6 +9647,7 @@ content of DB:
                 "BASE": "EPICS_BASE"
             }, 
             "archs": {
+                "linux-x86": true, 
                 "vxWorks-68040": true, 
                 "vxWorks-ppc603": true
             }, 
@@ -9558,6 +9666,7 @@ content of DB:
                 "BASE": "EPICS_BASE"
             }, 
             "archs": {
+                "linux-x86": true, 
                 "vxWorks-68040": true, 
                 "vxWorks-ppc603": true
             }, 
@@ -9576,6 +9685,7 @@ content of DB:
                 "BASE": "EPICS_BASE"
             }, 
             "archs": {
+                "linux-x86": true, 
                 "vxWorks-68040": true, 
                 "vxWorks-ppc603": true
             }, 
@@ -9594,8 +9704,7 @@ content of DB:
                 "BASE": "EPICS_BASE"
             }, 
             "archs": {
-                "vxWorks-68040": true, 
-                "vxWorks-ppc603": true
+                "ANY": true
             }, 
             "dependencies": {
                 "BASE": {
@@ -9652,6 +9761,7 @@ content of DB:
                 "BASE": "EPICS_BASE"
             }, 
             "archs": {
+                "linux-x86": true, 
                 "vxWorks-68040": true, 
                 "vxWorks-ppc603": true
             }, 
@@ -9670,6 +9780,7 @@ content of DB:
                 "BASE": "EPICS_BASE"
             }, 
             "archs": {
+                "linux-x86": true, 
                 "vxWorks-68040": true, 
                 "vxWorks-ppc603": true
             }, 
@@ -9688,6 +9799,7 @@ content of DB:
                 "BASE": "EPICS_BASE"
             }, 
             "archs": {
+                "linux-x86": true, 
                 "vxWorks-68040": true, 
                 "vxWorks-ppc603": true
             }, 
@@ -9710,6 +9822,7 @@ content of DB:
                 "SEQ": "SNCSEQ"
             }, 
             "archs": {
+                "linux-x86": true, 
                 "vxWorks-68040": true, 
                 "vxWorks-ppc603": true
             }, 
@@ -9738,6 +9851,7 @@ content of DB:
                 "SEQ": "SNCSEQ"
             }, 
             "archs": {
+                "linux-x86": true, 
                 "vxWorks-68040": true, 
                 "vxWorks-ppc603": true
             }, 
@@ -9765,6 +9879,7 @@ content of DB:
                 "BASE": "EPICS_BASE"
             }, 
             "archs": {
+                "linux-x86": true, 
                 "vxWorks-68040": true, 
                 "vxWorks-ppc603": true
             }, 
@@ -9790,6 +9905,7 @@ content of DB:
                 "SEQ": "SNCSEQ"
             }, 
             "archs": {
+                "linux-x86": true, 
                 "vxWorks-68040": true, 
                 "vxWorks-ppc603": true
             }, 
@@ -9816,6 +9932,7 @@ content of DB:
                 "BASE": "EPICS_BASE"
             }, 
             "archs": {
+                "linux-x86": true, 
                 "vxWorks-68040": true, 
                 "vxWorks-ppc603": true
             }, 
@@ -9927,6 +10044,7 @@ content of DB:
                 "HIGHLAND-V375": "V375"
             }, 
             "archs": {
+                "linux-x86": true, 
                 "vxWorks-68040": true, 
                 "vxWorks-ppc603": true
             }, 
@@ -9955,6 +10073,7 @@ content of DB:
                 "HIGHLAND-V375": "V375"
             }, 
             "archs": {
+                "linux-x86": true, 
                 "vxWorks-68040": true, 
                 "vxWorks-ppc603": true
             }, 
@@ -9984,6 +10103,7 @@ content of DB:
                 "BASE": "EPICS_BASE"
             }, 
             "archs": {
+                "linux-x86": true, 
                 "vxWorks-68040": true, 
                 "vxWorks-ppc603": true
             }, 
@@ -10006,6 +10126,7 @@ content of DB:
                 "BASE": "EPICS_BASE"
             }, 
             "archs": {
+                "linux-x86": true, 
                 "vxWorks-68040": true, 
                 "vxWorks-ppc603": true
             }, 
@@ -10030,6 +10151,7 @@ content of DB:
                 "BASE": "EPICS_BASE"
             }, 
             "archs": {
+                "linux-x86": true, 
                 "vxWorks-68040": true, 
                 "vxWorks-ppc603": true
             }, 
@@ -10052,6 +10174,7 @@ content of DB:
                 "BASE": "EPICS_BASE"
             }, 
             "archs": {
+                "linux-x86": true, 
                 "vxWorks-68040": true, 
                 "vxWorks-ppc603": true
             }, 
@@ -10077,6 +10200,7 @@ content of DB:
                 "BASE": "EPICS_BASE"
             }, 
             "archs": {
+                "linux-x86": true, 
                 "vxWorks-68040": true, 
                 "vxWorks-ppc603": true
             }, 
@@ -10102,6 +10226,7 @@ content of DB:
                 "BASE": "EPICS_BASE"
             }, 
             "archs": {
+                "linux-x86": true, 
                 "vxWorks-68040": true, 
                 "vxWorks-ppc603": true
             }, 
@@ -10127,6 +10252,7 @@ content of DB:
                 "BASE": "EPICS_BASE"
             }, 
             "archs": {
+                "linux-x86": true, 
                 "vxWorks-68040": true, 
                 "vxWorks-ppc603": true
             }, 
@@ -10152,6 +10278,7 @@ content of DB:
                 "BASE": "EPICS_BASE"
             }, 
             "archs": {
+                "linux-x86": true, 
                 "vxWorks-68040": true, 
                 "vxWorks-ppc603": true
             }, 
@@ -10177,6 +10304,7 @@ content of DB:
                 "BASE": "EPICS_BASE"
             }, 
             "archs": {
+                "linux-x86": true, 
                 "vxWorks-68040": true, 
                 "vxWorks-ppc603": true
             }, 
@@ -10201,6 +10329,7 @@ content of DB:
                 "BASE": "EPICS_BASE"
             }, 
             "archs": {
+                "linux-x86": true, 
                 "vxWorks-68040": true, 
                 "vxWorks-ppc603": true
             }, 
@@ -10221,6 +10350,7 @@ content of DB:
                 "BASE": "EPICS_BASE"
             }, 
             "archs": {
+                "linux-x86": true, 
                 "vxWorks-68040": true, 
                 "vxWorks-ppc603": true
             }, 
@@ -10241,6 +10371,7 @@ content of DB:
                 "BASE": "EPICS_BASE"
             }, 
             "archs": {
+                "linux-x86": true, 
                 "vxWorks-68040": true, 
                 "vxWorks-ppc603": true
             }, 
@@ -10262,6 +10393,7 @@ content of DB:
                 "BASE": "EPICS_BASE"
             }, 
             "archs": {
+                "linux-x86": true, 
                 "vxWorks-68040": true, 
                 "vxWorks-ppc603": true
             }, 
@@ -10286,8 +10418,7 @@ content of DB:
                 "BASE": "EPICS_BASE"
             }, 
             "archs": {
-                "vxWorks-68040": true, 
-                "vxWorks-ppc603": true
+                "ANY": true
             }, 
             "dependencies": {
                 "APPS_GENERICTEMPLATE": {
@@ -10394,8 +10525,7 @@ content of DB:
                 "BASE": "EPICS_BASE"
             }, 
             "archs": {
-                "vxWorks-68040": true, 
-                "vxWorks-ppc603": true
+                "ANY": true
             }, 
             "dependencies": {
                 "BASE": {
@@ -10417,6 +10547,7 @@ content of DB:
                 "BASE": "EPICS_BASE"
             }, 
             "archs": {
+                "linux-x86": true, 
                 "vxWorks-68040": true, 
                 "vxWorks-ppc603": true
             }, 
@@ -10441,6 +10572,7 @@ content of DB:
                 "BASE": "EPICS_BASE"
             }, 
             "archs": {
+                "linux-x86": true, 
                 "vxWorks-68040": true, 
                 "vxWorks-ppc603": true
             }, 
@@ -10465,6 +10597,7 @@ content of DB:
                 "BASE": "EPICS_BASE"
             }, 
             "archs": {
+                "vxWorks-68040": true, 
                 "vxWorks-ppc603": true
             }, 
             "dependencies": {
@@ -10484,6 +10617,7 @@ content of DB:
                 "BASE": "EPICS_BASE"
             }, 
             "archs": {
+                "linux-x86": true, 
                 "vxWorks-68040": true, 
                 "vxWorks-ppc603": true
             }, 
@@ -10505,7 +10639,9 @@ content of DB:
             "aliases": {
                 "BASE": "EPICS_BASE"
             }, 
-            "archs": {}, 
+            "archs": {
+                "ANY": true
+            }, 
             "dependencies": {
                 "BASE": {
                     "R3-14-8-2-0": "stable"
@@ -10519,13 +10655,32 @@ content of DB:
             }, 
             "state": "stable"
         }, 
+        "R1-1": {
+            "aliases": {
+                "BASE": "EPICS_BASE"
+            }, 
+            "archs": {
+                "ANY": true
+            }, 
+            "dependencies": {
+                "BASE": {
+                    "R3-14-8-2-0": "stable"
+                }
+            }, 
+            "source": {
+                "darcs": {
+                    "tag": "R1-1", 
+                    "url": "rcsadm@aragon.acc.bessy.de:/opt/repositories/controls/darcs/epics/support/rules/base-3-14"
+                }
+            }, 
+            "state": "stable"
+        }, 
         "R1-10": {
             "aliases": {
                 "BASE": "EPICS_BASE"
             }, 
             "archs": {
-                "vxWorks-68040": true, 
-                "vxWorks-ppc603": true
+                "ANY": true
             }, 
             "dependencies": {
                 "BASE": {
@@ -10545,8 +10700,7 @@ content of DB:
                 "BASE": "EPICS_BASE"
             }, 
             "archs": {
-                "vxWorks-68040": true, 
-                "vxWorks-ppc603": true
+                "ANY": true
             }, 
             "dependencies": {
                 "BASE": {
@@ -10566,8 +10720,7 @@ content of DB:
                 "BASE": "EPICS_BASE"
             }, 
             "archs": {
-                "vxWorks-68040": true, 
-                "vxWorks-ppc603": true
+                "ANY": true
             }, 
             "dependencies": {
                 "BASE": {
@@ -10587,8 +10740,7 @@ content of DB:
                 "BASE": "EPICS_BASE"
             }, 
             "archs": {
-                "vxWorks-68040": true, 
-                "vxWorks-ppc603": true
+                "ANY": true
             }, 
             "dependencies": {
                 "BASE": {
@@ -10608,8 +10760,7 @@ content of DB:
                 "BASE": "EPICS_BASE"
             }, 
             "archs": {
-                "vxWorks-68040": true, 
-                "vxWorks-ppc603": true
+                "ANY": true
             }, 
             "dependencies": {
                 "BASE": {
@@ -10629,8 +10780,7 @@ content of DB:
                 "BASE": "EPICS_BASE"
             }, 
             "archs": {
-                "vxWorks-68040": true, 
-                "vxWorks-ppc603": true
+                "ANY": true
             }, 
             "dependencies": {
                 "BASE": {
@@ -10650,8 +10800,7 @@ content of DB:
                 "BASE": "EPICS_BASE"
             }, 
             "archs": {
-                "vxWorks-68040": true, 
-                "vxWorks-ppc603": true
+                "ANY": true
             }, 
             "dependencies": {
                 "BASE": {
@@ -10671,8 +10820,7 @@ content of DB:
                 "BASE": "EPICS_BASE"
             }, 
             "archs": {
-                "vxWorks-68040": true, 
-                "vxWorks-ppc603": true
+                "ANY": true
             }, 
             "dependencies": {
                 "BASE": {
@@ -10692,8 +10840,7 @@ content of DB:
                 "BASE": "EPICS_BASE"
             }, 
             "archs": {
-                "vxWorks-68040": true, 
-                "vxWorks-ppc603": true
+                "ANY": true
             }, 
             "dependencies": {
                 "BASE": {
@@ -10713,8 +10860,7 @@ content of DB:
                 "BASE": "EPICS_BASE"
             }, 
             "archs": {
-                "vxWorks-68040": true, 
-                "vxWorks-ppc603": true
+                "ANY": true
             }, 
             "dependencies": {
                 "BASE": {
@@ -10734,8 +10880,7 @@ content of DB:
                 "BASE": "EPICS_BASE"
             }, 
             "archs": {
-                "vxWorks-68040": true, 
-                "vxWorks-ppc603": true
+                "ANY": true
             }, 
             "dependencies": {
                 "BASE": {
@@ -10755,8 +10900,7 @@ content of DB:
                 "BASE": "EPICS_BASE"
             }, 
             "archs": {
-                "vxWorks-68040": true, 
-                "vxWorks-ppc603": true
+                "ANY": true
             }, 
             "dependencies": {
                 "BASE": {
@@ -10776,8 +10920,7 @@ content of DB:
                 "BASE": "EPICS_BASE"
             }, 
             "archs": {
-                "vxWorks-68040": true, 
-                "vxWorks-ppc603": true
+                "ANY": true
             }, 
             "dependencies": {
                 "BASE": {
@@ -10797,8 +10940,7 @@ content of DB:
                 "BASE": "EPICS_BASE"
             }, 
             "archs": {
-                "vxWorks-68040": true, 
-                "vxWorks-ppc603": true
+                "ANY": true
             }, 
             "dependencies": {
                 "BASE": {
@@ -10818,8 +10960,7 @@ content of DB:
                 "BASE": "EPICS_BASE"
             }, 
             "archs": {
-                "vxWorks-68040": true, 
-                "vxWorks-ppc603": true
+                "ANY": true
             }, 
             "dependencies": {
                 "BASE": {
@@ -10839,8 +10980,7 @@ content of DB:
                 "BASE": "EPICS_BASE"
             }, 
             "archs": {
-                "vxWorks-68040": true, 
-                "vxWorks-ppc603": true
+                "ANY": true
             }, 
             "dependencies": {
                 "BASE": {
@@ -10860,8 +11000,7 @@ content of DB:
                 "BASE": "EPICS_BASE"
             }, 
             "archs": {
-                "vxWorks-68040": true, 
-                "vxWorks-ppc603": true
+                "ANY": true
             }, 
             "dependencies": {
                 "BASE": {
@@ -10881,8 +11020,7 @@ content of DB:
                 "BASE": "EPICS_BASE"
             }, 
             "archs": {
-                "vxWorks-68040": true, 
-                "vxWorks-ppc603": true
+                "ANY": true
             }, 
             "dependencies": {
                 "BASE": {
@@ -10902,8 +11040,7 @@ content of DB:
                 "BASE": "EPICS_BASE"
             }, 
             "archs": {
-                "vxWorks-68040": true, 
-                "vxWorks-ppc603": true
+                "ANY": true
             }, 
             "dependencies": {
                 "BASE": {
@@ -10923,8 +11060,7 @@ content of DB:
                 "BASE": "EPICS_BASE"
             }, 
             "archs": {
-                "vxWorks-68040": true, 
-                "vxWorks-ppc603": true
+                "ANY": true
             }, 
             "dependencies": {
                 "BASE": {
@@ -10944,8 +11080,7 @@ content of DB:
                 "BASE": "EPICS_BASE"
             }, 
             "archs": {
-                "vxWorks-68040": true, 
-                "vxWorks-ppc603": true
+                "ANY": true
             }, 
             "dependencies": {
                 "BASE": {
@@ -10965,8 +11100,7 @@ content of DB:
                 "BASE": "EPICS_BASE"
             }, 
             "archs": {
-                "vxWorks-68040": true, 
-                "vxWorks-ppc603": true
+                "ANY": true
             }, 
             "dependencies": {
                 "BASE": {
@@ -10986,8 +11120,7 @@ content of DB:
                 "BASE": "EPICS_BASE"
             }, 
             "archs": {
-                "vxWorks-68040": true, 
-                "vxWorks-ppc603": true
+                "ANY": true
             }, 
             "dependencies": {
                 "BASE": {
@@ -11007,8 +11140,7 @@ content of DB:
                 "BASE": "EPICS_BASE"
             }, 
             "archs": {
-                "vxWorks-68040": true, 
-                "vxWorks-ppc603": true
+                "ANY": true
             }, 
             "dependencies": {
                 "BASE": {
@@ -11028,8 +11160,7 @@ content of DB:
                 "BASE": "EPICS_BASE"
             }, 
             "archs": {
-                "vxWorks-68040": true, 
-                "vxWorks-ppc603": true
+                "ANY": true
             }, 
             "dependencies": {
                 "BASE": {
@@ -11043,23 +11174,6 @@ content of DB:
                 }
             }, 
             "state": "stable"
-        }, 
-        "TAGLESS-1-1": {
-            "aliases": {
-                "BASE": "EPICS_BASE"
-            }, 
-            "archs": {}, 
-            "dependencies": {
-                "BASE": {
-                    "R3-14-8-2-0": "stable"
-                }
-            }, 
-            "source": {
-                "darcs": {
-                    "url": "rcsadm@aragon.acc.bessy.de:/opt/Epics/R3.14.8/support/rules/1-1"
-                }
-            }, 
-            "state": "stable"
         }
     }, 
     "S7PLC": {
@@ -11068,8 +11182,8 @@ content of DB:
                 "BASE": "EPICS_BASE"
             }, 
             "archs": {
-                "vxWorks-68040": true, 
-                "vxWorks-ppc603": true
+                "linux-x86": true, 
+                "vxWorks-68040": true
             }, 
             "dependencies": {
                 "BASE": {
@@ -11105,6 +11219,7 @@ content of DB:
                 "BASE": "EPICS_BASE"
             }, 
             "archs": {
+                "linux-x86": true, 
                 "vxWorks-68040": true, 
                 "vxWorks-ppc603": true
             }, 
@@ -11126,6 +11241,7 @@ content of DB:
                 "BASE": "EPICS_BASE"
             }, 
             "archs": {
+                "linux-x86": true, 
                 "vxWorks-68040": true, 
                 "vxWorks-ppc603": true
             }, 
@@ -11146,6 +11262,7 @@ content of DB:
                 "BASE": "EPICS_BASE"
             }, 
             "archs": {
+                "linux-x86": true, 
                 "vxWorks-68040": true, 
                 "vxWorks-ppc603": true
             }, 
@@ -11166,6 +11283,7 @@ content of DB:
                 "BASE": "EPICS_BASE"
             }, 
             "archs": {
+                "linux-x86": true, 
                 "vxWorks-68040": true, 
                 "vxWorks-ppc603": true
             }, 
@@ -11186,6 +11304,7 @@ content of DB:
                 "BASE": "EPICS_BASE"
             }, 
             "archs": {
+                "linux-x86": true, 
                 "vxWorks-68040": true, 
                 "vxWorks-ppc603": true
             }, 
@@ -11207,6 +11326,7 @@ content of DB:
                 "BASE": "EPICS_BASE"
             }, 
             "archs": {
+                "linux-x86": true, 
                 "vxWorks-68040": true, 
                 "vxWorks-ppc603": true
             }, 
@@ -11228,6 +11348,7 @@ content of DB:
                 "BASE": "EPICS_BASE"
             }, 
             "archs": {
+                "linux-x86": true, 
                 "vxWorks-68040": true, 
                 "vxWorks-ppc603": true
             }, 
@@ -11249,6 +11370,7 @@ content of DB:
                 "BASE": "EPICS_BASE"
             }, 
             "archs": {
+                "linux-x86": true, 
                 "vxWorks-68040": true, 
                 "vxWorks-ppc603": true
             }, 
@@ -11270,6 +11392,7 @@ content of DB:
                 "BASE": "EPICS_BASE"
             }, 
             "archs": {
+                "linux-x86": true, 
                 "vxWorks-68040": true, 
                 "vxWorks-ppc603": true
             }, 
@@ -11291,6 +11414,7 @@ content of DB:
                 "BASE": "EPICS_BASE"
             }, 
             "archs": {
+                "linux-x86": true, 
                 "vxWorks-68040": true, 
                 "vxWorks-ppc603": true
             }, 
@@ -11312,6 +11436,7 @@ content of DB:
                 "BASE": "EPICS_BASE"
             }, 
             "archs": {
+                "linux-x86": true, 
                 "vxWorks-68040": true, 
                 "vxWorks-ppc603": true
             }, 
@@ -11333,6 +11458,7 @@ content of DB:
                 "BASE": "EPICS_BASE"
             }, 
             "archs": {
+                "linux-x86": true, 
                 "vxWorks-68040": true, 
                 "vxWorks-ppc603": true
             }, 
@@ -11356,6 +11482,7 @@ content of DB:
                 "BASE": "EPICS_BASE"
             }, 
             "archs": {
+                "linux-x86": true, 
                 "vxWorks-68040": true, 
                 "vxWorks-ppc603": true
             }, 
@@ -11376,8 +11503,7 @@ content of DB:
                 "BASE": "EPICS_BASE"
             }, 
             "archs": {
-                "vxWorks-68040": true, 
-                "vxWorks-ppc603": true
+                "ANY": true
             }, 
             "dependencies": {
                 "BASE": {
@@ -11396,6 +11522,7 @@ content of DB:
                 "BASE": "EPICS_BASE"
             }, 
             "archs": {
+                "linux-x86": true, 
                 "vxWorks-68040": true, 
                 "vxWorks-ppc603": true
             }, 
@@ -11418,6 +11545,7 @@ content of DB:
                 "BASE": "EPICS_BASE"
             }, 
             "archs": {
+                "linux-x86": true, 
                 "vxWorks-68040": true, 
                 "vxWorks-ppc603": true
             }, 
@@ -11439,6 +11567,7 @@ content of DB:
                 "BASE": "EPICS_BASE"
             }, 
             "archs": {
+                "linux-x86": true, 
                 "vxWorks-68040": true, 
                 "vxWorks-ppc603": true
             }, 
@@ -11468,6 +11597,7 @@ content of DB:
                 "BASE": "EPICS_BASE"
             }, 
             "archs": {
+                "linux-x86": true, 
                 "vxWorks-68040": true, 
                 "vxWorks-ppc603": true
             }, 
@@ -11492,6 +11622,7 @@ content of DB:
                 "BASE": "EPICS_BASE"
             }, 
             "archs": {
+                "linux-x86": true, 
                 "vxWorks-68040": true, 
                 "vxWorks-ppc603": true
             }, 
@@ -11516,6 +11647,7 @@ content of DB:
                 "BASE": "EPICS_BASE"
             }, 
             "archs": {
+                "linux-x86": true, 
                 "vxWorks-68040": true, 
                 "vxWorks-ppc603": true
             }, 
@@ -11540,6 +11672,7 @@ content of DB:
                 "BASE": "EPICS_BASE"
             }, 
             "archs": {
+                "linux-x86": true, 
                 "vxWorks-68040": true, 
                 "vxWorks-ppc603": true
             }, 
@@ -11564,6 +11697,7 @@ content of DB:
                 "BASE": "EPICS_BASE"
             }, 
             "archs": {
+                "linux-x86": true, 
                 "vxWorks-68040": true, 
                 "vxWorks-ppc603": true
             }, 
@@ -11588,6 +11722,7 @@ content of DB:
                 "BASE": "EPICS_BASE"
             }, 
             "archs": {
+                "linux-x86": true, 
                 "vxWorks-68040": true, 
                 "vxWorks-ppc603": true
             }, 
@@ -11612,6 +11747,7 @@ content of DB:
                 "BASE": "EPICS_BASE"
             }, 
             "archs": {
+                "linux-x86": true, 
                 "vxWorks-68040": true, 
                 "vxWorks-ppc603": true
             }, 
@@ -11633,6 +11769,7 @@ content of DB:
                 "BASE": "EPICS_BASE"
             }, 
             "archs": {
+                "linux-x86": true, 
                 "vxWorks-68040": true, 
                 "vxWorks-ppc603": true
             }, 
@@ -11656,6 +11793,7 @@ content of DB:
                 "BASE": "EPICS_BASE"
             }, 
             "archs": {
+                "linux-x86": true, 
                 "vxWorks-68040": true, 
                 "vxWorks-ppc603": true
             }, 
@@ -11676,6 +11814,7 @@ content of DB:
                 "BASE": "EPICS_BASE"
             }, 
             "archs": {
+                "linux-x86": true, 
                 "vxWorks-68040": true, 
                 "vxWorks-ppc603": true
             }, 
@@ -11728,6 +11867,7 @@ content of DB:
                 "BASE": "EPICS_BASE"
             }, 
             "archs": {
+                "linux-x86": true, 
                 "vxWorks-68040": true, 
                 "vxWorks-ppc603": true
             }, 
@@ -11751,6 +11891,7 @@ content of DB:
                 "BASE": "EPICS_BASE"
             }, 
             "archs": {
+                "linux-x86": true, 
                 "vxWorks-68040": true, 
                 "vxWorks-ppc603": true
             }, 
@@ -11772,6 +11913,7 @@ content of DB:
                 "BASE": "EPICS_BASE"
             }, 
             "archs": {
+                "linux-x86": true, 
                 "vxWorks-68040": true, 
                 "vxWorks-ppc603": true
             }, 
@@ -11793,6 +11935,7 @@ content of DB:
                 "BASE": "EPICS_BASE"
             }, 
             "archs": {
+                "linux-x86": true, 
                 "vxWorks-68040": true, 
                 "vxWorks-ppc603": true
             }, 
@@ -11814,6 +11957,7 @@ content of DB:
                 "BASE": "EPICS_BASE"
             }, 
             "archs": {
+                "linux-x86": true, 
                 "vxWorks-68040": true, 
                 "vxWorks-ppc603": true
             }, 
@@ -11835,6 +11979,7 @@ content of DB:
                 "BASE": "EPICS_BASE"
             }, 
             "archs": {
+                "linux-x86": true, 
                 "vxWorks-68040": true, 
                 "vxWorks-ppc603": true
             }, 
@@ -11856,6 +12001,7 @@ content of DB:
                 "BASE": "EPICS_BASE"
             }, 
             "archs": {
+                "linux-x86": true, 
                 "vxWorks-68040": true, 
                 "vxWorks-ppc603": true
             }, 
@@ -11876,7 +12022,9 @@ content of DB:
             "aliases": {
                 "BASE": "EPICS_BASE"
             }, 
-            "archs": {}, 
+            "archs": {
+                "linux-x86": true
+            }, 
             "dependencies": {
                 "ASYN": {
                     "TAGLESS-4-15-bessy1": "stable"
@@ -11895,6 +12043,7 @@ content of DB:
                 "BASE": "EPICS_BASE"
             }, 
             "archs": {
+                "linux-x86": true, 
                 "vxWorks-68040": true, 
                 "vxWorks-ppc603": true
             }, 
@@ -11916,6 +12065,7 @@ content of DB:
                 "BASE": "EPICS_BASE"
             }, 
             "archs": {
+                "linux-x86": true, 
                 "vxWorks-68040": true, 
                 "vxWorks-ppc603": true
             }, 
@@ -11937,6 +12087,7 @@ content of DB:
                 "BASE": "EPICS_BASE"
             }, 
             "archs": {
+                "linux-x86": true, 
                 "vxWorks-68040": true, 
                 "vxWorks-ppc603": true
             }, 
@@ -11958,6 +12109,7 @@ content of DB:
                 "BASE": "EPICS_BASE"
             }, 
             "archs": {
+                "linux-x86": true, 
                 "vxWorks-68040": true, 
                 "vxWorks-ppc603": true
             }, 
@@ -11993,6 +12145,7 @@ content of DB:
                 "BASE": "EPICS_BASE"
             }, 
             "archs": {
+                "linux-x86": true, 
                 "vxWorks-68040": true, 
                 "vxWorks-ppc603": true
             }, 
@@ -12013,6 +12166,7 @@ content of DB:
                 "BASE": "EPICS_BASE"
             }, 
             "archs": {
+                "linux-x86": true, 
                 "vxWorks-68040": true, 
                 "vxWorks-ppc603": true
             }, 
@@ -12033,6 +12187,7 @@ content of DB:
                 "BASE": "EPICS_BASE"
             }, 
             "archs": {
+                "linux-x86": true, 
                 "vxWorks-68040": true, 
                 "vxWorks-ppc603": true
             }, 
@@ -12053,6 +12208,7 @@ content of DB:
                 "BASE": "EPICS_BASE"
             }, 
             "archs": {
+                "linux-x86": true, 
                 "vxWorks-68040": true, 
                 "vxWorks-ppc603": true
             }, 
@@ -12073,6 +12229,7 @@ content of DB:
                 "BASE": "EPICS_BASE"
             }, 
             "archs": {
+                "linux-x86": true, 
                 "vxWorks-68040": true, 
                 "vxWorks-ppc603": true
             }, 
@@ -12094,6 +12251,7 @@ content of DB:
                 "SEQ": "SNCSEQ"
             }, 
             "archs": {
+                "linux-x86": true, 
                 "vxWorks-68040": true, 
                 "vxWorks-ppc603": true
             }, 
@@ -12118,6 +12276,7 @@ content of DB:
                 "BASE": "EPICS_BASE"
             }, 
             "archs": {
+                "linux-x86": true, 
                 "vxWorks-68040": true, 
                 "vxWorks-ppc603": true
             }, 
@@ -12140,6 +12299,7 @@ content of DB:
                 "SEQ": "SNCSEQ"
             }, 
             "archs": {
+                "linux-x86": true, 
                 "vxWorks-68040": true, 
                 "vxWorks-ppc603": true
             }, 
@@ -12165,6 +12325,7 @@ content of DB:
                 "SEQ": "SNCSEQ"
             }, 
             "archs": {
+                "linux-x86": true, 
                 "vxWorks-68040": true, 
                 "vxWorks-ppc603": true
             }, 
@@ -12189,6 +12350,7 @@ content of DB:
                 "BASE": "EPICS_BASE"
             }, 
             "archs": {
+                "linux-x86": true, 
                 "vxWorks-68040": true, 
                 "vxWorks-ppc603": true
             }, 
@@ -12210,6 +12372,7 @@ content of DB:
                 "SEQ": "SNCSEQ"
             }, 
             "archs": {
+                "linux-x86": true, 
                 "vxWorks-68040": true, 
                 "vxWorks-ppc603": true
             }, 
@@ -12233,6 +12396,7 @@ content of DB:
                 "BASE": "EPICS_BASE"
             }, 
             "archs": {
+                "linux-x86": true, 
                 "vxWorks-68040": true, 
                 "vxWorks-ppc603": true
             }, 
@@ -12253,6 +12417,7 @@ content of DB:
                 "BASE": "EPICS_BASE"
             }, 
             "archs": {
+                "linux-x86": true, 
                 "vxWorks-68040": true, 
                 "vxWorks-ppc603": true
             }, 
@@ -12597,6 +12762,17 @@ content of DB:
                 }
             }, 
             "state": "stable"
+        }, 
+        "TAGLESS-2-2": {
+            "archs": {
+                "ANY": true
+            }, 
+            "source": {
+                "darcs": {
+                    "url": "rcsadm@aragon.acc.bessy.de:/opt/Epics/R3.14.8/support/vhq/2-2"
+                }
+            }, 
+            "state": "stable"
         }
     }, 
     "VMEACCESS": {
@@ -12606,8 +12782,7 @@ content of DB:
                 "BSPDEP": "BSP_DEP"
             }, 
             "archs": {
-                "vxWorks-68040": true, 
-                "vxWorks-ppc603": true
+                "ANY": true
             }, 
             "dependencies": {
                 "BASE": {
@@ -12857,6 +13032,7 @@ content of DB:
                 "BASE": "EPICS_BASE"
             }, 
             "archs": {
+                "linux-x86": true, 
                 "vxWorks-68040": true, 
                 "vxWorks-ppc603": true
             }, 
@@ -12875,6 +13051,7 @@ content of DB:
                 "BASE": "EPICS_BASE"
             }, 
             "archs": {
+                "linux-x86": true, 
                 "vxWorks-68040": true, 
                 "vxWorks-ppc603": true
             }, 
@@ -12893,6 +13070,7 @@ content of DB:
                 "BASE": "EPICS_BASE"
             }, 
             "archs": {
+                "linux-x86": true, 
                 "vxWorks-68040": true, 
                 "vxWorks-ppc603": true
             }, 

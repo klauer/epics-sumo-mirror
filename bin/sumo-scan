@@ -98,28 +98,6 @@ def scan_config_file(filename, external_definitions= None,
         wanted[k]= data[k]
     return wanted
 
-def scan_support_arch(support_path,
-                      verbose= False, dry_run= False):
-    """scan the CONFIG file of a support.
-    """
-    external_definitions= { "TOP": support_path }
-    dict_= None
-    for n in ("Makefile", "CONFIG"):
-        fn= os.path.join(support_path, n)
-        if not os.path.exists(fn):
-            continue
-        dict_= scan_config_file(fn,
-                                external_definitions,
-                                verbose= verbose, dry_run= dry_run)
-        break
-    if dict_ is None:
-        sys.stderr.write("\nwarning: %s: CROSS_COMPILER_TARGET_ARCHS "
-                         "not found\n" % support_path)
-        return []
-    arch_str= dict_["CROSS_COMPILER_TARGET_ARCHS"]
-    return sorted(arch_str.strip().split())
-
-
 def scan_release_file(filename, external_definitions= None,
                       verbose= False, dry_run= False):
     """scan a release file.
@@ -161,24 +139,25 @@ def support_configure_data(support_trees,
                     verbose= False, dry_run= False):
     """scan EPICS configuration files a whole file-tree of EPICS supports.
     """
+    # pylint: disable=R0915
+    #                          Too many statements
     # pylint: disable=R0912
     #                          Too many branches
     # pylint: disable=R0914
     #                          Too many local variables
     # pylint: disable=R0913
     #                          Too many arguments
-    def slicer(l, val):
-        """changes a list to a single element list.
+    def slicer(l, values):
+        """changes a list to a list with certain elements.
 
         This function *directly* modifies the list instead of creating a new
         one. This is needed for the os.walk function.
         """
-        try:
-            i= l.index(val)
-        except ValueError, _:
-            return
-        l[i+1:]= []
-        l[0:i]= []
+        new= []
+        for v in values:
+            if v in l:
+                new.append(v)
+        l[:]= new
     def purge(l):
         """empties a list by *directly* changing it."""
         l[:]= []
@@ -202,20 +181,6 @@ def support_configure_data(support_trees,
         if "db" in dirnames:
             return True
         return False
-    def module_dir_type(dirnames, filenames):
-        """return the module directory type.
-
-        returns (scan_release, scan_arch)
-        """
-        if "configure" in dirnames:
-            for l in ["bin","include","lib"]:
-                if l in dirnames:
-                    return (True, True)
-            if "Makefile" in filenames:
-                return (True, True)
-            return (True, False)
-        else:
-            return (False,False)
 
     release_dict= {}
     arch_dict= {}
@@ -226,6 +191,7 @@ def support_configure_data(support_trees,
     # not possible on python 2.5:
     #for (dirpath, dirnames, filenames) in os.walk(support_tree,
     #                                              topdown= True):
+    modpath= None
     for support_tree in support_trees:
         for (dirpath, dirnames, filenames) in utils.dirwalk(support_tree):
             if progress:
@@ -235,35 +201,54 @@ def support_configure_data(support_trees,
             if buildtag is not None:
                 slice_buildtag(dirnames, buildtag)
             if module_dir_reached(dirnames):
-                (scan_release, scan_arch)= module_dir_type(dirnames, filenames)
-                # if "configure" is one of the subdirs, do only descend further
-                # into "configure" directory:
-                slicer(dirnames, "configure")
+                modpath= dirpath
+                # only descend into "configure", "lib" and "bin":
+                slicer(dirnames, ["configure","lib","bin"])
                 versioned_path= os.path.realpath(dirpath)
-                if not scan_release:
-                    release_dict[versioned_path]= {}
-                if not scan_arch:
-                    arch_dict[versioned_path]= ["ANY"]
-                #if not scan_arch:
-                #    raise AssertionError("dir: %s, dirnames:%s filenames:%s\n" %
-                #            (repr(dirpath),repr(dirnames),repr(filenames)))
-
-            if os.path.basename(dirpath)=="configure":
+                release_dict[versioned_path]= {}
+                arch_dict[versioned_path]= set()
+                continue
+            if modpath is None:
+                continue
+            if dirpath.startswith(modpath):
                 # get the path of the versioned support:
                 versioned_path= os.path.realpath(os.path.dirname(dirpath))
-                if "RELEASE" in filenames:
-                    data= scan_support_deps(versioned_path,
-                                            verbose= verbose,
-                                            dry_run= dry_run)
-                    release_dict[versioned_path]= data
-                if "CONFIG" in filenames:
-                    if not arch_dict.has_key(versioned_path):
-                        archs= scan_support_arch(versioned_path,
-                                                 verbose= verbose,
-                                                 dry_run= dry_run)
-                        arch_dict[versioned_path]= archs
+                last= os.path.basename(dirpath)
+                if last=="configure":
+                    if "RELEASE" in filenames:
+                        data= scan_support_deps(versioned_path,
+                                                verbose= verbose,
+                                                dry_run= dry_run)
+                        release_dict[versioned_path]= data
+                    purge(dirnames)
+                    continue
+                elif last=="bin":
+                    if dirnames==["perl"]:
+                        purge(dirnames)
+                        continue
+                    if "ANY" in arch_dict[versioned_path]:
+                        arch_dict[versioned_path].discard("ANY")
+                    arch_dict[versioned_path].update(dirnames)
+                    purge(dirnames)
+                    continue
+                elif last=="lib":
+                    if dirnames==["perl"]:
+                        purge(dirnames)
+                        continue
+                    if "ANY" in arch_dict[versioned_path]:
+                        arch_dict[versioned_path].discard("ANY")
+                    arch_dict[versioned_path].update(dirnames)
+                    purge(dirnames)
+                    continue
     if progress:
         sys.stderr.write("\n")
+    for (k,v) in arch_dict.items():
+        if "perl" in v:
+            v.discard("perl")
+        if not v:
+            # set is empty:
+            v= set(["ANY"])
+        arch_dict[k]= sorted(list(v))
     return (release_dict, arch_dict)
 
 def name2path_from_deps(deps):

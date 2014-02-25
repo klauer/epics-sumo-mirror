@@ -35,6 +35,7 @@
                 "BASE": "EPICS_BASE"
             },
             "archs": {
+                "linux-x86": true,
                 "vxWorks-68040": true,
                 "vxWorks-ppc603": true
             },
@@ -55,6 +56,8 @@
     "BASE": {
         "R3-14-8-2-0": {
             "archs": {
+                "hpux-parisc": true,
+                "linux-x86": true,
                 "vxWorks-68040": true,
                 "vxWorks-ppc603": true
             },
@@ -119,6 +122,7 @@
                 "BASE": "EPICS_BASE"
             },
             "archs": {
+                "linux-x86": true,
                 "vxWorks-68040": true,
                 "vxWorks-ppc603": true
             },
@@ -168,6 +172,7 @@
                 "BASE": "EPICS_BASE"
             },
             "archs": {
+                "linux-x86": true,
                 "vxWorks-68040": true,
                 "vxWorks-ppc603": true
             },
@@ -220,8 +225,7 @@
                 "BASE": "EPICS_BASE"
             },
             "archs": {
-                "vxWorks-68040": true,
-                "vxWorks-ppc603": true
+                "ANY": true
             },
             "dependencies": {
                 "BASE": {
@@ -243,6 +247,7 @@
                 "BASE": "EPICS_BASE"
             },
             "archs": {
+                "linux-x86": true,
                 "vxWorks-68040": true,
                 "vxWorks-ppc603": true
             },
@@ -266,6 +271,7 @@
                 "BASE": "EPICS_BASE"
             },
             "archs": {
+                "linux-x86": true,
                 "vxWorks-68040": true,
                 "vxWorks-ppc603": true
             },

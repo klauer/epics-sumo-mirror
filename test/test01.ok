@@ -1,322 +1,328 @@
 {
     "archs": {
-        "/tmp-test01/ALARM/3-0": [
+        "/tmp-test01/alarm/3-0": [
             "vxWorks-68040", 
             "vxWorks-ppc603"
         ], 
-        "/tmp-test01/ALARM/3-5": [
+        "/tmp-test01/alarm/3-5": [
             "vxWorks-68040", 
             "vxWorks-ppc603"
         ], 
-        "/tmp-test01/ASYN/4-15": [
+        "/tmp-test01/asyn/4-15-bessy2": [
+            "linux-x86", 
             "vxWorks-68040", 
             "vxWorks-ppc603"
         ], 
-        "/tmp-test01/BASE/R3-14-8-2-0": [
+        "/tmp-test01/base/3-14-8-2-0": [
+            "linux-x86", 
             "vxWorks-68040", 
             "vxWorks-ppc603"
         ], 
-        "/tmp-test01/BSPDEP/3-0": [
+        "/tmp-test01/bspDep/3-0": [
             "vxWorks-68040", 
             "vxWorks-ppc603"
         ], 
-        "/tmp-test01/BSPDEP/CPUBOARDINIT/4-0": [
+        "/tmp-test01/bspDep/cpuBoardInit/4-0": [
             "vxWorks-68040", 
             "vxWorks-ppc603"
         ], 
-        "/tmp-test01/BSPDEP/TIMER/5-1": [
+        "/tmp-test01/bspDep/timer/5-1": [
             "vxWorks-68040", 
             "vxWorks-ppc603"
         ], 
-        "/tmp-test01/CSM/3-8": [
+        "/tmp-test01/csm/3-8": [
+            "linux-x86", 
             "vxWorks-68040", 
             "vxWorks-ppc603"
         ], 
-        "/tmp-test01/EK/2-0": [
+        "/tmp-test01/ek/2-0": [
             "vxWorks-68040", 
             "vxWorks-ppc603"
         ], 
-        "/tmp-test01/EK/2-1": [
+        "/tmp-test01/ek/2-1": [
             "vxWorks-68040", 
             "vxWorks-ppc603"
         ], 
-        "/tmp-test01/GENSUB/1-6-1": [
+        "/tmp-test01/genSub/1-6-1": [
+            "linux-x86", 
             "vxWorks-68040", 
             "vxWorks-ppc603"
         ], 
-        "/tmp-test01/MCAN/2-0": [
+        "/tmp-test01/mcan/2-3-18": [
             "vxWorks-68040", 
             "vxWorks-ppc603"
         ], 
-        "/tmp-test01/MCAN/2-3-18": [
+        "/tmp-test01/misc/2-0": [
+            "linux-x86", 
             "vxWorks-68040", 
             "vxWorks-ppc603"
         ], 
-        "/tmp-test01/MISC/2-0": [
+        "/tmp-test01/misc/2-4": [
+            "ANY"
+        ], 
+        "/tmp-test01/seq/2-0-12-1": [
+            "linux-x86", 
             "vxWorks-68040", 
             "vxWorks-ppc603"
         ], 
-        "/tmp-test01/MISC/2-4": [
+        "/tmp-test01/soft/2-0": [
+            "linux-x86", 
             "vxWorks-68040", 
             "vxWorks-ppc603"
         ], 
-        "/tmp-test01/SEQ/2-0-12-1": [
+        "/tmp-test01/soft/2-5": [
+            "linux-x86", 
             "vxWorks-68040", 
             "vxWorks-ppc603"
         ], 
-        "/tmp-test01/SOFT/2-0": [
-            "vxWorks-68040", 
-            "vxWorks-ppc603"
-        ], 
-        "/tmp-test01/SOFT/2-5": [
-            "vxWorks-68040", 
-            "vxWorks-ppc603"
-        ], 
-        "/tmp-test01/VXSTATS/2-0": [
+        "/tmp-test01/vxStats/2-0": [
             "vxWorks-68040", 
             "vxWorks-ppc603"
         ]
     }, 
     "dependencies": {
-        "/tmp-test01/ALARM/3-0": {
-            "EPICS_BASE": "/tmp-test01/BASE/R3-14-8-2-0"
+        "/tmp-test01/alarm/3-0": {
+            "BSP_DEP": "/tmp-test01/bspDep/3-0", 
+            "EPICS_BASE": "/tmp-test01/base/3-14-8-2-0", 
+            "MISC": "/tmp-test01/misc/2-0"
         }, 
-        "/tmp-test01/ALARM/3-5": {
-            "EPICS_BASE": "/tmp-test01/BASE/R3-14-8-2-0"
+        "/tmp-test01/alarm/3-5": {
+            "EPICS_BASE": "/tmp-test01/base/3-14-8-2-0", 
+            "MISC": "/tmp-test01/misc/2-4", 
+            "TIMER": "/tmp-test01/bspDep/timer/5-1"
         }, 
-        "/tmp-test01/ASYN/4-15": {
-            "EPICS_BASE": "/tmp-test01/BASE/R3-14-8-2-0"
+        "/tmp-test01/asyn/4-15-bessy2": {
+            "EPICS_BASE": "/tmp-test01/base/3-14-8-2-0"
         }, 
-        "/tmp-test01/BASE/R3-14-8-2-0": {}, 
-        "/tmp-test01/BSPDEP/3-0": {
-            "EPICS_BASE": "/tmp-test01/BASE/R3-14-8-2-0"
+        "/tmp-test01/base/3-14-8-2-0": {}, 
+        "/tmp-test01/bspDep/3-0": {
+            "EPICS_BASE": "/tmp-test01/base/3-14-8-2-0"
         }, 
-        "/tmp-test01/BSPDEP/CPUBOARDINIT/4-0": {
-            "EPICS_BASE": "/tmp-test01/BASE/R3-14-8-2-0"
+        "/tmp-test01/bspDep/cpuBoardInit/4-0": {
+            "EPICS_BASE": "/tmp-test01/base/3-14-8-2-0"
         }, 
-        "/tmp-test01/BSPDEP/TIMER/5-1": {
-            "EPICS_BASE": "/tmp-test01/BASE/R3-14-8-2-0"
+        "/tmp-test01/bspDep/timer/5-1": {
+            "EPICS_BASE": "/tmp-test01/base/3-14-8-2-0"
         }, 
-        "/tmp-test01/CSM/3-8": {
-            "EPICS_BASE": "/tmp-test01/BASE/R3-14-8-2-0"
+        "/tmp-test01/csm/3-8": {
+            "EPICS_BASE": "/tmp-test01/base/3-14-8-2-0"
         }, 
-        "/tmp-test01/EK/2-0": {
-            "EPICS_BASE": "/tmp-test01/BASE/R3-14-8-2-0"
+        "/tmp-test01/ek/2-0": {
+            "EPICS_BASE": "/tmp-test01/base/3-14-8-2-0", 
+            "MISC": "/tmp-test01/misc/2-0"
         }, 
-        "/tmp-test01/EK/2-1": {
-            "EPICS_BASE": "/tmp-test01/BASE/R3-14-8-2-0"
+        "/tmp-test01/ek/2-1": {
+            "EPICS_BASE": "/tmp-test01/base/3-14-8-2-0", 
+            "MISC": "/tmp-test01/misc/2-4"
         }, 
-        "/tmp-test01/GENSUB/1-6-1": {
-            "EPICS_BASE": "/tmp-test01/BASE/R3-14-8-2-0"
+        "/tmp-test01/genSub/1-6-1": {
+            "EPICS_BASE": "/tmp-test01/base/3-14-8-2-0"
         }, 
-        "/tmp-test01/MCAN/2-0": {
-            "EPICS_BASE": "/tmp-test01/BASE/R3-14-8-2-0"
+        "/tmp-test01/mcan/2-3-18": {
+            "ALARM": "/tmp-test01/alarm/3-5", 
+            "EPICS_BASE": "/tmp-test01/base/3-14-8-2-0", 
+            "MISC": "/tmp-test01/misc/2-4", 
+            "SOFT": "/tmp-test01/soft/2-5"
         }, 
-        "/tmp-test01/MCAN/2-3-18": {
-            "EPICS_BASE": "/tmp-test01/BASE/R3-14-8-2-0"
+        "/tmp-test01/misc/2-0": {
+            "EPICS_BASE": "/tmp-test01/base/3-14-8-2-0"
         }, 
-        "/tmp-test01/MISC/2-0": {
-            "EPICS_BASE": "/tmp-test01/BASE/R3-14-8-2-0"
+        "/tmp-test01/misc/2-4": {
+            "EPICS_BASE": "/tmp-test01/base/3-14-8-2-0"
         }, 
-        "/tmp-test01/MISC/2-4": {
-            "EPICS_BASE": "/tmp-test01/BASE/R3-14-8-2-0"
+        "/tmp-test01/seq/2-0-12-1": {
+            "EPICS_BASE": "/tmp-test01/base/3-14-8-2-0"
         }, 
-        "/tmp-test01/SEQ/2-0-12-1": {
-            "EPICS_BASE": "/tmp-test01/BASE/R3-14-8-2-0"
+        "/tmp-test01/soft/2-0": {
+            "EPICS_BASE": "/tmp-test01/base/3-14-8-2-0", 
+            "MISC": "/tmp-test01/misc/2-0"
         }, 
-        "/tmp-test01/SOFT/2-0": {
-            "EPICS_BASE": "/tmp-test01/BASE/R3-14-8-2-0"
+        "/tmp-test01/soft/2-5": {
+            "EPICS_BASE": "/tmp-test01/base/3-14-8-2-0"
         }, 
-        "/tmp-test01/SOFT/2-5": {
-            "EPICS_BASE": "/tmp-test01/BASE/R3-14-8-2-0"
-        }, 
-        "/tmp-test01/VXSTATS/2-0": {
-            "EPICS_BASE": "/tmp-test01/BASE/R3-14-8-2-0"
+        "/tmp-test01/vxStats/2-0": {
+            "EPICS_BASE": "/tmp-test01/base/3-14-8-2-0"
         }
     }, 
     "groups": {
         "ALARM": {
-            "/tmp-test01/ALARM": [
+            "/tmp-test01/alarm": [
                 "3-0", 
                 "3-5"
             ]
         }, 
         "ASYN": {
-            "/tmp-test01/ASYN": [
-                "4-15"
+            "/tmp-test01/asyn": [
+                "4-15-bessy2"
             ]
         }, 
         "BASE": {
-            "/tmp-test01/BASE": [
-                "R3-14-8-2-0"
+            "/tmp-test01/base": [
+                "3-14-8-2-0"
             ]
         }, 
         "BSPDEP": {
-            "/tmp-test01/BSPDEP": [
+            "/tmp-test01/bspDep": [
                 "3-0"
             ]
         }, 
         "BSPDEP_CPUBOARDINIT": {
-            "/tmp-test01/BSPDEP/CPUBOARDINIT": [
+            "/tmp-test01/bspDep/cpuBoardInit": [
                 "4-0"
             ]
         }, 
         "BSPDEP_TIMER": {
-            "/tmp-test01/BSPDEP/TIMER": [
+            "/tmp-test01/bspDep/timer": [
                 "5-1"
             ]
         }, 
         "CSM": {
-            "/tmp-test01/CSM": [
+            "/tmp-test01/csm": [
                 "3-8"
             ]
         }, 
         "EK": {
-            "/tmp-test01/EK": [
+            "/tmp-test01/ek": [
                 "2-0", 
                 "2-1"
             ]
         }, 
         "GENSUB": {
-            "/tmp-test01/GENSUB": [
+            "/tmp-test01/genSub": [
                 "1-6-1"
             ]
         }, 
         "MCAN": {
-            "/tmp-test01/MCAN": [
-                "2-0", 
+            "/tmp-test01/mcan": [
                 "2-3-18"
             ]
         }, 
         "MISC": {
-            "/tmp-test01/MISC": [
+            "/tmp-test01/misc": [
                 "2-0", 
                 "2-4"
             ]
         }, 
         "SEQ": {
-            "/tmp-test01/SEQ": [
+            "/tmp-test01/seq": [
                 "2-0-12-1"
             ]
         }, 
         "SOFT": {
-            "/tmp-test01/SOFT": [
+            "/tmp-test01/soft": [
                 "2-0", 
                 "2-5"
             ]
         }, 
         "VXSTATS": {
-            "/tmp-test01/VXSTATS": [
+            "/tmp-test01/vxStats": [
                 "2-0"
             ]
         }
     }, 
     "repos": {
-        "/tmp-test01/ALARM/3-0": {
+        "/tmp-test01/alarm/3-0": {
             "darcs": {
                 "tag": "R3-0", 
-                "url": "rcsadm@aragon.acc.bessy.de:/opt/repositories/controls/darcs/epics/support/alarm/base-3-14"
+                "url": "rcsadm@aragon.acc:darcs-repos/epics/support/alarm/base-3-14"
             }
         }, 
-        "/tmp-test01/ALARM/3-5": {
+        "/tmp-test01/alarm/3-5": {
             "darcs": {
                 "tag": "R3-5", 
-                "url": "rcsadm@aragon.acc.bessy.de:/opt/repositories/controls/darcs/epics/support/alarm/base-3-14"
+                "url": "rcsadm@aragon.acc:darcs-repos/epics/support/alarm/base-3-14"
             }
         }, 
-        "/tmp-test01/ASYN/4-15": {
-            "path": "/tmp-test01/ASYN/4-15"
+        "/tmp-test01/asyn/4-15-bessy2": {
+            "darcs": {
+                "tag": "R4-15-bessy2", 
+                "url": "/srv/csr/repositories/controls/darcs/epics/support/asyn/4-15"
+            }
         }, 
-        "/tmp-test01/BASE/R3-14-8-2-0": {
+        "/tmp-test01/base/3-14-8-2-0": {
             "darcs": {
                 "tag": "R3-14-8-2-0", 
-                "url": "rcsadm@aragon.acc.bessy.de:/opt/csr/Epics/R3.14.8/base/3-14-8-2-0"
+                "url": "rcsadm@aragon.acc.bessy.de:darcs-repos/epics/base/3-14-8-2"
             }
         }, 
-        "/tmp-test01/BSPDEP/3-0": {
+        "/tmp-test01/bspDep/3-0": {
             "darcs": {
                 "tag": "R3-0", 
-                "url": "rcsadm@aragon.acc.bessy.de:/opt/repositories/controls/darcs/epics/support/bspDep/base-3-14"
+                "url": "rcsadm@aragon.acc:darcs-repos/epics/support/bspDep/base-3-14"
             }
         }, 
-        "/tmp-test01/BSPDEP/CPUBOARDINIT/4-0": {
+        "/tmp-test01/bspDep/cpuBoardInit/4-0": {
             "darcs": {
                 "tag": "R4-0", 
-                "url": "rcsadm@aragon.acc.bessy.de:/opt/repositories/controls/darcs/epics/support/bspDep/cpuBoardInit"
+                "url": "rcsadm@aragon.acc:darcs-repos/epics/support/bspDep/cpuBoardInit"
             }
         }, 
-        "/tmp-test01/BSPDEP/TIMER/5-1": {
+        "/tmp-test01/bspDep/timer/5-1": {
             "darcs": {
                 "tag": "R5-1", 
-                "url": "rcsadm@aragon.acc.bessy.de:/opt/repositories/controls/darcs/epics/support/bspDep/timer"
+                "url": "rcsadm@aragon.acc:darcs-repos/epics/support/bspDep/timer"
             }
         }, 
-        "/tmp-test01/CSM/3-8": {
+        "/tmp-test01/csm/3-8": {
             "darcs": {
                 "tag": "R3-8", 
-                "url": "rcsadm@aragon.acc.bessy.de:/opt/repositories/controls/darcs/epics/support/csm/base-3-14-8"
+                "url": "/srv/csr/repositories/controls/darcs/epics/support/csm/base-3-14-8"
             }
         }, 
-        "/tmp-test01/EK/2-0": {
+        "/tmp-test01/ek/2-0": {
             "darcs": {
                 "tag": "R2-0", 
-                "url": "rcsadm@aragon.acc.bessy.de:/opt/repositories/controls/darcs/epics/support/ek/base-3-14"
+                "url": "/opt/csr/repositories/controls/darcs/epics/support/ek/base-3-14"
             }
         }, 
-        "/tmp-test01/EK/2-1": {
+        "/tmp-test01/ek/2-1": {
             "darcs": {
                 "tag": "R2-1", 
-                "url": "rcsadm@aragon.acc.bessy.de:/opt/repositories/controls/darcs/epics/support/ek/base-3-14"
+                "url": "rcsadm@aragon.acc:/opt/csr/repositories/controls/darcs/epics/support/ek/base-3-14"
             }
         }, 
-        "/tmp-test01/GENSUB/1-6-1": {
-            "path": "/tmp-test01/GENSUB/1-6-1"
+        "/tmp-test01/genSub/1-6-1": {
+            "path": "/tmp-test01/genSub/1-6-1"
         }, 
-        "/tmp-test01/MCAN/2-0": {
-            "darcs": {
-                "tag": "R2-0", 
-                "url": "rcsadm@aragon.acc.bessy.de:/opt/repositories/controls/darcs/epics/support/mcan/base-3-14-8"
-            }
-        }, 
-        "/tmp-test01/MCAN/2-3-18": {
+        "/tmp-test01/mcan/2-3-18": {
             "darcs": {
                 "tag": "R2-3-18", 
-                "url": "rcsadm@aragon.acc.bessy.de:/opt/repositories/controls/darcs/epics/support/mcan/base-3-14-8"
+                "url": "/srv/csr/repositories/controls/darcs/epics/support/mcan/base-3-14-8"
             }
         }, 
-        "/tmp-test01/MISC/2-0": {
+        "/tmp-test01/misc/2-0": {
             "darcs": {
-                "url": "rcsadm@aragon.acc.bessy.de:/opt/csr/Epics/R3.14.8/support/misc/2-0"
+                "url": "rcsadm@aragon.acc:/opt/repositories/controls/darcs/epics/support/misc/base-3-14"
             }
         }, 
-        "/tmp-test01/MISC/2-4": {
+        "/tmp-test01/misc/2-4": {
             "darcs": {
                 "tag": "R2-4", 
-                "url": "rcsadm@aragon.acc.bessy.de:/opt/repositories/controls/darcs/epics/support/misc/base-3-14"
+                "url": "rcsadm@localhost:/opt/repositories/controls/darcs/epics/support/misc/base-3-14"
             }
         }, 
-        "/tmp-test01/SEQ/2-0-12-1": {
+        "/tmp-test01/seq/2-0-12-1": {
             "darcs": {
                 "tag": "R2-0-12-1", 
-                "url": "rcsadm@aragon.acc.bessy.de:/opt/csr/Epics/R3.14.8/support/seq/2-0-12-1"
+                "url": "rcsadm@aragon:darcs-repos/epics/support/seq"
             }
         }, 
-        "/tmp-test01/SOFT/2-0": {
+        "/tmp-test01/soft/2-0": {
             "darcs": {
                 "tag": "R2-0", 
-                "url": "rcsadm@aragon.acc.bessy.de:/opt/repositories/controls/darcs/epics/support/soft/base-3-14"
+                "url": "rcsadm@aragon.acc:/opt/repositories/controls/darcs/epics/support/soft/base-3-14"
             }
         }, 
-        "/tmp-test01/SOFT/2-5": {
+        "/tmp-test01/soft/2-5": {
             "darcs": {
                 "tag": "R2-5", 
-                "url": "rcsadm@aragon.acc.bessy.de:/opt/repositories/controls/darcs/epics/support/soft/base-3-14"
+                "url": "rcsadm@aragon:darcs-repos/epics/support/soft/base-3-14"
             }
         }, 
-        "/tmp-test01/VXSTATS/2-0": {
+        "/tmp-test01/vxStats/2-0": {
             "darcs": {
                 "tag": "R2-0", 
-                "url": "rcsadm@aragon.acc.bessy.de:/opt/repositories/controls/darcs/epics/support/vxStats/base-3-14"
+                "url": "rcsadm@aragon.acc:darcs-repos/epics/support/vxStats/base-3-14"
             }
         }
     }
