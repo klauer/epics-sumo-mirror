@@ -370,9 +370,9 @@ def distribution(db, modulespec_list, maxstate, archs):
                 found= True
                 break
             except ValueError, e:
-                sys.stderr.write("_DA exc '%s': %s:%s st:%s a:%s\n" % \
-                         (str(e),modulename,versionname,maxstate,repr(archs)))
-                #pass
+                #sys.stderr.write("_DA exc '%s': %s:%s st:%s a:%s\n" % \
+                #      (str(e),modulename,versionname,maxstate,repr(archs)))
+                pass
         if not found:
             sys.exit("no non conflicting versions found for %s" % modulename)
 

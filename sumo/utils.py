@@ -1224,9 +1224,9 @@ class Dependencies(JSONstruct):
                 continue
             if archs is not None:
                 if not self.check_archs(dependencyname, dep_version, archs):
-                    sys.stderr.write("check_archs(%s,%s,%s)==FALSE\n" % \
-                            (repr(dependencyname),repr(dep_version),
-                             repr(archs)))
+                    #sys.stderr.write("check_archs(%s,%s,%s)==FALSE\n" % \
+                    #        (repr(dependencyname),repr(dep_version),
+                    #         repr(archs)))
                     continue
             found= True
             yield dep_version
