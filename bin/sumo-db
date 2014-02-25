@@ -336,9 +336,17 @@ def _distribution_add(db, dist, modulename, versionname, maxstate, archs):
                              errst)
     return new_dist
 
-def distribution(db, modulespec_list, maxstate, archs):
+def distribution(db, modulespec_list, maxstate, archs, trace):
     """create a distribution.
     """
+    # pylint: disable=R0914
+    #                          Too many local variables
+    # pylint: disable=R0912
+    #                          Too many branches
+    if trace:
+        sys.stderr.write("looking for modules, archs: %s maxstate: %s\n\n" % \
+                         (" ".join(archs), maxstate))
+
     versioned_modules= []
     versionless_modules= []
     for m in modulespec_list:
@@ -359,6 +367,8 @@ def distribution(db, modulespec_list, maxstate, archs):
             sys.exit(str(e))
 
     for modulename in versionless_modules:
+        if trace:
+            sys.stderr.write("module %s\n" % modulename)
         try:
             versionlist= db.sorted_moduleversions(modulename, maxstate,
                                                   archs, True)
@@ -375,11 +385,14 @@ def distribution(db, modulespec_list, maxstate, archs):
                 found= True
                 break
             except ValueError, e:
-                #sys.stderr.write("_DA exc '%s': %s:%s st:%s a:%s\n" % \
-                #      (str(e),modulename,versionname,maxstate,repr(archs)))
-                pass
+                if trace:
+                    sys.stderr.write("\t%-15s: %s\n" % \
+                                     (versionname, str(e)))
         if not found:
             sys.exit("no non conflicting versions found for %s" % modulename)
+        else:
+            if trace:
+                sys.stderr.write("\t%-15s --> found\n" % versionname)
 
     new= db.partial_copy(dist, archs)
     new.remove_missing_deps()
@@ -435,7 +448,8 @@ def process(options, commands):
         maxstate= commands[1]
         modulespecs= commands[2:]
         (dist_dict, dist_obj)= distribution(db, modulespecs,
-                                            maxstate, options.arch)
+                                            maxstate, options.arch,
+                                            options.trace)
         if options.brief:
             utils.json_dump(dist_dict)
         else:
@@ -680,6 +694,10 @@ def main():
     parser.add_option("-p", "--progress",
                       action="store_true",
                       help="show progress on stderr",
+                      )
+    parser.add_option("-t", "--trace",
+                      action="store_true",
+                      help="switch on some trace messages",
                       )
     parser.add_option("-v", "--verbose",
                       action="store_true",
