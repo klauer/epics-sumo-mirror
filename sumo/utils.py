@@ -955,6 +955,9 @@ class Dependencies(JSONstruct):
         """check if all arch_list elements are keys in arch_dict."""
         if arch_list is None:
             return True
+        # special architecture "ANY" means than any architecture is supported.
+        if arch_dict.get("ANY"):
+            return True
         for a in arch_list:
             if not arch_dict.get(a):
                 return False

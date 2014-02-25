@@ -195,6 +195,27 @@ def support_configure_data(support_trees,
             return
         l[i+1:]= []
         l[0:i]= []
+    def module_dir_reached(dirnames):
+        """return True when we are within a module directory."""
+        if "configure" in dirnames:
+            return True
+        if "db" in dirnames:
+            return True
+        return False
+    def module_dir_type(dirnames, filenames):
+        """return the module directory type.
+
+        returns (scan_release, scan_arch)
+        """
+        if "configure" in dirnames:
+            for l in ["bin","include","lib"]:
+                if l in dirnames:
+                    return (True, True)
+            if "Makefile" in filenames:
+                return (True, True)
+            return (True, False)
+        else:
+            return (False,False)
 
     release_dict= {}
     arch_dict= {}
@@ -211,9 +232,22 @@ def support_configure_data(support_trees,
                 cnt= utils.show_progress(cnt, cnt_max)
             if exclude_matcher.search(dirpath):
                 purge(dirnames)
-            slicer(dirnames, "configure")
             if buildtag is not None:
                 slice_buildtag(dirnames, buildtag)
+            if module_dir_reached(dirnames):
+                (scan_release, scan_arch)= module_dir_type(dirnames, filenames)
+                # if "configure" is one of the subdirs, do only descend further
+                # into "configure" directory:
+                slicer(dirnames, "configure")
+                versioned_path= os.path.realpath(dirpath)
+                if not scan_release:
+                    release_dict[versioned_path]= {}
+                if not scan_arch:
+                    arch_dict[versioned_path]= ["ANY"]
+                #if not scan_arch:
+                #    raise AssertionError("dir: %s, dirnames:%s filenames:%s\n" %
+                #            (repr(dirpath),repr(dirnames),repr(filenames)))
+
             if os.path.basename(dirpath)=="configure":
                 # get the path of the versioned support:
                 versioned_path= os.path.realpath(os.path.dirname(dirpath))
@@ -223,10 +257,11 @@ def support_configure_data(support_trees,
                                             dry_run= dry_run)
                     release_dict[versioned_path]= data
                 if "CONFIG" in filenames:
-                    archs= scan_support_arch(versioned_path,
-                                             verbose= verbose,
-                                             dry_run= dry_run)
-                    arch_dict[versioned_path]= archs
+                    if not arch_dict.has_key(versioned_path):
+                        archs= scan_support_arch(versioned_path,
+                                                 verbose= verbose,
+                                                 dry_run= dry_run)
+                        arch_dict[versioned_path]= archs
     if progress:
         sys.stderr.write("\n")
     return (release_dict, arch_dict)
