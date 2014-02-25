@@ -12,6 +12,7 @@ from optparse import OptionParser
 import sys
 import os.path
 import os
+import errno
 import shutil
 
 import sumo.utils as utils
@@ -34,6 +35,21 @@ def ensure_dir(dir_, dry_run):
     if not dry_run:
         if not os.path.exists(dir_):
             os.makedirs(dir_)
+
+def rm_empty_dir(dirname, verbose, dry_run):
+    """remove a directory.
+
+    If the directory is not empty, return without an error message.
+    """
+    if verbose:
+        print "remove dir %s if it is empty" % dirname
+    if dry_run:
+        return
+    try:
+        os.rmdir(dirname)
+    except OSError, ex:
+        if ex.errno == errno.ENOTEMPTY:
+            pass
 
 def module_dir_string(buildtag, modulename, versionname):
     """create a module directory string."""
@@ -64,6 +80,10 @@ def alias(alias_dict, modulename):
 def errmsg(msg):
     """print something on stderr."""
     sys.stderr.write(msg+"\n")
+
+def makefilename(build_tag):
+    """create a makefile name from a build_tag."""
+    return("Makefile-%s" % build_tag)
 
 def gather_dependencies(db, modulename, versionname,
                         gathered_deps):
@@ -274,6 +294,8 @@ def delete_module(build_tag, modulename, versionname,
         print "removing %s" % dirname
     if not dry_run:
         shutil.rmtree(dirname)
+        # remove the parent directory if it is empty:
+    rm_empty_dir(modulename, verbose, dry_run)
 
 def delete_modules(builddb, build_tag, verbose, dry_run):
     """delete modules of a build.
@@ -286,6 +308,8 @@ def delete_modules(builddb, build_tag, verbose, dry_run):
         if builddb.module_link(build_tag, modulename):
             continue
         delete_module(build_tag, modulename, versionname, verbose, dry_run)
+
+    os.remove(makefilename(build_tag))
 
     builddb.delete(build_tag)
 
@@ -393,7 +417,7 @@ def create_makefile(db, builddb, build_tag, verbose, dry_run):
                          module_dir_string(build_tag,
                                            modulename,
                                            versionname)
-    filename= "Makefile-%s" % build_tag
+    filename= makefilename(build_tag)
     stamps= sorted([os.path.join(p,"stamp") for p in paths.values()])
     fh= None
     if not dry_run:
