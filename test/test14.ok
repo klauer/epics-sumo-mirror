@@ -1,10 +1,6 @@
 sumo-build findtree MCAN -b:
 {
     "001": {
-        "archs": {
-            "vxWorks-68040": true, 
-            "vxWorks-ppc603": true
-        }, 
         "modules": {
             "ALARM": "R3-5", 
             "ASYN": "R4-15-bessy2", 
@@ -23,9 +19,6 @@ sumo-build findtree MCAN -b:
         "state": "stable"
     }, 
     "002": {
-        "archs": {
-            "vxWorks-ppc603": true
-        }, 
         "linked": {
             "ASYN": "001", 
             "BASE": "001", 
@@ -61,10 +54,6 @@ sumo-build findtree MCAN -b:
 sumo-build findtree MCAN BSPDEP_TIMER:R5-1
 {
     "001": {
-        "archs": {
-            "vxWorks-68040": true, 
-            "vxWorks-ppc603": true
-        }, 
         "modules": {
             "ALARM": "R3-5", 
             "ASYN": "R4-15-bessy2", 
@@ -83,9 +72,6 @@ sumo-build findtree MCAN BSPDEP_TIMER:R5-1
         "state": "stable"
     }, 
     "002": {
-        "archs": {
-            "vxWorks-ppc603": true
-        }, 
         "linked": {
             "ASYN": "001", 
             "BASE": "001", 
@@ -121,9 +107,6 @@ sumo-build findtree MCAN BSPDEP_TIMER:R5-1
 sumo-build findtree MCAN ALARM:-R3-4:
 {
     "002": {
-        "archs": {
-            "vxWorks-ppc603": true
-        }, 
         "linked": {
             "ASYN": "001", 
             "BASE": "001", 
@@ -159,10 +142,6 @@ sumo-build findtree MCAN ALARM:-R3-4:
 sumo-build findtree MCAN ALARM:+R3-5:
 {
     "001": {
-        "archs": {
-            "vxWorks-68040": true, 
-            "vxWorks-ppc603": true
-        }, 
         "modules": {
             "ALARM": "R3-5", 
             "ASYN": "R4-15-bessy2", 

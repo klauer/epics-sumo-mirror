@@ -2,10 +2,6 @@
 BUILDS before:
 {
     "001": {
-        "archs": {
-            "vxWorks-68040": true, 
-            "vxWorks-ppc603": true
-        }, 
         "modules": {
             "ALARM": "R3-5", 
             "ASYN": "R4-15-bessy2", 
@@ -27,10 +23,6 @@ BUILDS before:
 BUILDS after:
 {
     "001": {
-        "archs": {
-            "vxWorks-68040": true, 
-            "vxWorks-ppc603": true
-        }, 
         "modules": {
             "ALARM": "R3-5", 
             "ASYN": "R4-15-bessy2", 

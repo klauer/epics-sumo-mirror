@@ -532,74 +532,148 @@ def is_standardpath(path, darcs_tag):
     l= split_path(path)
     return tag2version(l[1])==tag2version(darcs_tag)
 
-def scan_modulespec(spec):
+# pylint: disable=C0301
+#                          Line too long
+
+def scan_module_arch_spec(spec, default_archs=None):
     """parse a module specification.
 
-    A module specification has the form:
+    A module specification has one of these forms:
+      modulename
+      modulename:version
+      modulename::archs
+      modulename:version:archs
 
-      modulename                : any version
-      modulename:versionname    : exactly this version
-      modulename:+versionname   : this version or newer
-      modulename:-versionname   : this version or older
+    version may be:
+      versionname        : exactly this version
+      +versionname       : this version or newer
+      -versionname       : this version or older
 
-    returns a tuple:
-      (modulename,flag,versionname)
+    archs may be:
+      archspec{:archspec}
 
-    which flag: "any", "this", "this_or_newer", "this_or_older"
+    archspec may be:
+      +arch              : add this to the list of archs
+      -arch              : remove this from the list of archs
+       arch              : set exactly these archs
+
+    returns a tuple (modulename, moduledict) where moduledict is:
+      {
+        "version"     : <version>
+        "version_flag": "==" or ">=" or "<="
+        "archs"       : <set of archs>
+      }
 
     Here are some examples:
-    >>> scan_modulespec("ALARM")
-    ('ALARM', 'any', '')
-    >>> scan_modulespec("ALARM:R3-5")
-    ('ALARM', 'this', 'R3-5')
-    >>> scan_modulespec("ALARM:-R3-5")
-    ('ALARM', 'this_or_older', 'R3-5')
-    >>> scan_modulespec("ALARM:+R3-5")
-    ('ALARM', 'this_or_newer', 'R3-5')
+
+    >>> import pprint
+    >>> pprint.pprint(scan_module_arch_spec("ALARM"))
+    ('ALARM', {})
+    >>> pprint.pprint(scan_module_arch_spec("ALARM:R3-5"))
+    ('ALARM', {'version': 'R3-5', 'version_flag': '=='})
+    >>> pprint.pprint(scan_module_arch_spec("ALARM:+R3-5"))
+    ('ALARM', {'version': 'R3-5', 'version_flag': '>='})
+    >>> pprint.pprint(scan_module_arch_spec("ALARM:-R3-5"))
+    ('ALARM', {'version': 'R3-5', 'version_flag': '<='})
+    >>> pprint.pprint(scan_module_arch_spec("ALARM:-R3-5:linux-x86"))
+    ('ALARM',
+     {'archs': set(['linux-x86']), 'version': 'R3-5', 'version_flag': '<='})
+    >>> pprint.pprint(scan_module_arch_spec("ALARM::linux-x86"))
+    ('ALARM', {'archs': set(['linux-x86'])})
+    >>> pprint.pprint(scan_module_arch_spec("ALARM:-R3-5:+linux-x86",
+    ...                                     ["vxWorks-ppc603"]))
+    ('ALARM',
+     {'archs': set(['linux-x86', 'vxWorks-ppc603']),
+      'version': 'R3-5',
+      'version_flag': '<='})
+    >>> pprint.pprint(scan_module_arch_spec(
+    ...        "ALARM:-R3-5:-vxWorks-mv162:+vxWorks-ppc603",
+    ...        ["linux-x86","vxWorks-mv162"]))
+    ('ALARM',
+     {'archs': set(['linux-x86', 'vxWorks-ppc603']),
+      'version': 'R3-5',
+      'version_flag': '<='})
     """
-    l= spec.split(":")
-    if len(l)<=1:
-        return (spec, "any", "")
-    if l[1][0]=="-":
-        return (l[0], "this_or_older", l[1][1:])
-    if l[1][0]=="+":
-        return (l[0], "this_or_newer", l[1][1:])
-    return (l[0], "this", l[1])
+    # pylint: disable=R0912
+    #                          Too many branches
+    modulename= None
+    version= None
+    if default_archs is None:
+        archs= set()
+    else:
+        archs= set(default_archs)
+    for l in spec.split(":"):
+        if modulename is None:
+            modulename= l
+            continue
+        if version is None:
+            if l=="":
+                version= ()
+                continue
+            if l[0]=="-":
+                version= (l[1:], "<=")
+            elif l[0]=="+":
+                version= (l[1:], ">=")
+            else:
+                version= (l, "==")
+            continue
+        if l[0]=="+":
+            archs.add(l[1:])
+            continue
+        elif l[0]=="-":
+            archs.discard(l[1:])
+            continue
+        else:
+            archs= set([l])
+            continue
+    d= {}
+    if version:
+        d["version"]= version[0]
+        d["version_flag"]= version[1]
+    if archs:
+        d["archs"]= archs
+    return (modulename,d)
+
+# pylint: enable=C0301
 
 def compare_versions_flag(flag, version1, version2):
     """compare versions according to given flag.
 
     Here are some examples:
-    >>> compare_versions_flag("any", "R1-2", "R1-3")
+    >>> compare_versions_flag("this", None, "R1-3")
+    True
+    >>> compare_versions_flag("this", "R1-2", None)
     True
     >>> compare_versions_flag("this", "R1-2", "R1-3")
     False
     >>> compare_versions_flag("this", "R1-2", "R1-2")
     True
-    >>> compare_versions_flag("this", "R1-2", "1-2")
+    >>> compare_versions_flag("==", "R1-2", "1-2")
     True
-    >>> compare_versions_flag("this_or_older", "R1-2", "1-2")
+    >>> compare_versions_flag("<=", "R1-2", "1-2")
     True
-    >>> compare_versions_flag("this_or_older", "R1-1", "R1-2")
+    >>> compare_versions_flag("<=", "R1-1", "R1-2")
     True
-    >>> compare_versions_flag("this_or_older", "R1-3", "R1-2")
+    >>> compare_versions_flag("<=", "R1-3", "R1-2")
     False
-    >>> compare_versions_flag("this_or_newer", "R1-1", "R1-2")
+    >>> compare_versions_flag(">=", "R1-1", "R1-2")
     False
-    >>> compare_versions_flag("this_or_newer", "R1-2", "R1-2")
+    >>> compare_versions_flag(">=", "R1-2", "R1-2")
     True
-    >>> compare_versions_flag("this_or_newer", "R1-3", "R1-2")
+    >>> compare_versions_flag(">=", "R1-3", "R1-2")
     True
     """
-    if flag=="any":
+    if version1 is None:
+        return True
+    if version2 is None:
         return True
     k1= rev2key(version1)
     k2= rev2key(version2)
-    if flag=="this":
+    if flag=="==":
         return (k1==k2)
-    if flag=="this_or_older":
+    if flag=="<=":
         return (k1<=k2)
-    if flag=="this_or_newer":
+    if flag==">=":
         return (k1>=k2)
     raise AssertionError("unknown flag: %s" % flag)
 
@@ -944,7 +1018,7 @@ class Dependencies(JSONstruct):
             raise ValueError("invalid max_state: %s" % max_state)
         return set( [x for x in cls.states_list if cls.states_dict[x]<=idx])
     @staticmethod
-    def _check_arch(arch_dict, arch_list):
+    def check_arch(arch_dict, arch_list):
         """check if all arch_list elements are keys in arch_dict."""
         if arch_list is None:
             return True
@@ -1120,7 +1194,7 @@ class Dependencies(JSONstruct):
         # pylint: disable=W0212
         #                          Access to a protected member of a
         #                          client class
-        return self.__class__._check_arch(
+        return self.__class__.check_arch(
                    self.get_archs(modulename, versionname), archs)
     def add_alias(self, modulename, versionname,
                   alias_name, real_name):
@@ -1200,12 +1274,11 @@ class Dependencies(JSONstruct):
         # pylint: disable=W0212
         #                          Access to a protected member of a
         #                          client class
-        _check_arch= self.__class__._check_arch
         _states= self.__class__._allowed_states(max_state)
         # pylint: enable=W0212
         d= self.datadict()[modulename][versionname]
         if archs is not None:
-            if not _check_arch(d["archs"], archs):
+            if not self.__class__.check_arch(d["archs"], archs):
                 raise ValueError("archs %s not supported in %s:%s" % \
                                  (repr(archs),modulename, versionname))
         deps= d.get("dependencies")
@@ -1277,7 +1350,6 @@ class Dependencies(JSONstruct):
         # pylint: disable=W0212
         #                          Access to a protected member of a
         #                          client class
-        _check_arch= self.__class__._check_arch
         _states= self.__class__._allowed_states(max_state)
         # pylint: enable=W0212
         found= False
@@ -1285,7 +1357,7 @@ class Dependencies(JSONstruct):
                 self.datadict()[modulename].iteritems():
             if versiondata["state"] not in _states:
                 continue
-            if not _check_arch(versiondata["archs"], archs):
+            if not self.__class__.check_arch(versiondata["archs"], archs):
                 continue
             found= True
             yield versionname
@@ -1340,50 +1412,46 @@ class Dependencies(JSONstruct):
                 # set the new dependency always to "unstable":
                 dep_module_dict[newversionname]= "unstable"
 
-    def partial_copy(self, elements, archs):
+    def partial_copy_by_specdict(self, specdict):
         """take items from the Dependencies object and create a new one.
 
-        elements must be a dict { modulename: versionname }. If versionname is
-        None, take all versions of the module.
+        specdict must be a dict mapping modulenames to a dict as returned by
+        scan_module_arch_spec.
 
-        If archs is given, take only moduleversions where these archs are
-        supported, if archs is None take all. When archs is given and not one
-        moduleversion for the given archs is found, a ValueError exception is
-        raised.
+        If no versions are defined for a module, take all versions.
+        If no archs are defined, take all archs.
+
+        When no moduleversions are found, rause a ValueError exception.
 
         Note that the new Dependencies object only contains references of the
         data. This DOES NOT do a deep copy.
         """
         new= self.__class__()
-        must_exist= (archs is not None)
-        for modulename, versionname in elements.items():
+        for modulename, spec_dict in specdict.items():
             d= new.datadict().setdefault(modulename, {})
-            if versionname:
-                versions= [versionname]
-            else:
-                # scan stable, testing and unstable versions:
-                versions= self.iter_versions(modulename, "unstable",
-                                             archs, must_exist)
-            for version in versions:
+            archs= spec_dict.get("archs")
+            match_version= spec_dict.get("version")
+            match_flag   = spec_dict.get("version_flag")
+            # scan stable, testing and unstable versions:
+            for version in self.iter_versions(modulename, "unstable",
+                                              archs, must_exist= True):
+                if not compare_versions_flag(match_flag,version,
+                                             match_version):
+                    continue
+                if not self.check_archs(modulename, version, archs):
+                    continue
                 d[version]= self.datadict()[modulename][version]
         return new
-    def partial_copy_by_specs(self, specs, archs):
+    def partial_copy_by_specstrings(self, specstrings, archs):
         """similar to partial_copy.
 
-        specs is a list of strings of the form "modulename" or
-        "modulename:versionname".
+        specs is a string as defined in function scan_module_arch_spec.
         """
         d= {}
-        for s in specs:
-            (modulename,flag,versionname)= scan_modulespec(s)
-            if flag=="any":
-                d[modulename]= None
-            elif flag=="this":
-                d[modulename]= versionname
-            else:
-                raise ValueError("\"-version\" and \"+version\" not "
-                                  "supported here")
-        return self.partial_copy(d, archs)
+        for s in specstrings:
+            (modulename,modulespec)= scan_module_arch_spec(s, archs)
+            d[modulename]= modulespec
+        return self.partial_copy_by_specdict(d)
     def remove_missing_deps(self):
         """remove dependencies that are not part of the database."""
         modules= set()
@@ -1430,15 +1498,6 @@ class Builddb(JSONstruct):
             errst= "error: cannot determine what state is meant by %s" % st
             raise ValueError(errst)
         return match
-    @staticmethod
-    def _check_arch(arch_dict, arch_list):
-        """check if all arch_list elements are keys in arch_dict."""
-        if arch_list is None:
-            return True
-        for a in arch_list:
-            if not arch_dict.get(a):
-                return False
-        return True
     def __init__(self, dict_= None):
         """create the object."""
         super(Builddb, self).__init__(dict_)
@@ -1461,8 +1520,8 @@ class Builddb(JSONstruct):
     def has_build_tag(self, build_tag):
         """returns if build_tag is contained."""
         return self.datadict().has_key(build_tag)
-    def new_build(self, build_tag, state, archs):
-        """create a new build with the given state and archs.
+    def new_build(self, build_tag, state):
+        """create a new build with the given state.
         """
         if state not in self.__class__.states:
             raise ValueError("not an allowed state: %s" % state)
@@ -1470,9 +1529,7 @@ class Builddb(JSONstruct):
         if d.has_key(build_tag):
             raise ValueError("cannot create, build %s already exists" % \
                                build_tag)
-        d[build_tag]= { "state": state,
-                        "archs": dict([(a,True) for a in archs])
-                      }
+        d[build_tag]= { "state": state }
     def is_stable(self, build_tag):
         """returns True if the build is marked stable.
         """
@@ -1482,13 +1539,6 @@ class Builddb(JSONstruct):
         """return the state of the build."""
         d= self.datadict()
         return d[build_tag]["state"]
-    def check_build_archs(self, build_tag, archs):
-        """check if all given archs are supported in the build."""
-        d= self.datadict()
-        # pylint: disable=W0212
-        #                          Access to a protected member of a
-        #                          client class
-        return self.__class__._check_arch(d[build_tag]["archs"], archs)
     def change_state(self, build_tag, new_state):
         """sets the state to a new value."""
         if new_state not in self.__class__.states:
@@ -1543,20 +1593,28 @@ class Builddb(JSONstruct):
             if v== other_build_tag:
                 return True
         return False
-    def filter_by_spec(self, string_specs):
+    def filter_by_specs(self, specstrings, archs, db):
         """return a new Builddb that satisfies the given list of specs.
         """
-        specs= [scan_modulespec(s) for s in string_specs]
+        specs= {}
+        for s in specstrings:
+            (modulename,modulespec)= scan_module_arch_spec(s, archs)
+            specs[modulename]= modulespec
+
         new= self.__class__()
         for build_tag in self.iter_builds():
             found= True
             m= self.modules(build_tag)
-            for (module,flag,version) in specs:
-                v= m.get(module)
+            for (modulename,modulespec) in specs.items():
+                v= m.get(modulename)
                 if v is None:
                     found= False
                     break
-                if not compare_versions_flag(flag,v,version):
+                if not compare_versions_flag(modulespec.get("version_flag"),
+                                             v,modulespec.get("version")):
+                    found= False
+                    break
+                if not db.check_archs(modulename, v, modulespec.get("archs")):
                     found= False
                     break
             if found:

@@ -148,7 +148,7 @@ def get_dependencies(module_dict, db, builddb, buildtag):
         _add_dependencies(module_dict, db,
                           build_module_dict, modulename, versionname)
 
-def builddb_match(db, builddb, modulename, versionname, archs):
+def builddb_match(db, builddb, modulename, versionname):
     """try to find matching deps in builddb.
     """
     deps= gather_dependencies(db, modulename, versionname, None)
@@ -159,8 +159,6 @@ def builddb_match(db, builddb, modulename, versionname, archs):
         # try to find modules that were already built, ignore builds that are
         # not marked "stable":
         if not builddb.is_stable(build_tag):
-            continue
-        if not builddb.check_build_archs(build_tag, archs):
             continue
         if not builddb.has_module(build_tag, modulename):
             continue
@@ -240,24 +238,6 @@ def gen_RELEASE(db, builddb, buildtag, modulename, versionname,
         _fwrite(fh, "%s=%s\n" % (name_here,path), verbose, dry_run)
     for l in extra_lines:
         _fwrite(fh, "%s\n" % l.rstrip(), verbose, dry_run)
-    if not dry_run:
-        fh.close()
-
-def append_CONFIG(buildtag, modulename, versionname, archs, verbose, dry_run):
-    """append setting of CROSS_COMPILER_TARGET_ARCHS to config."""
-    # pylint: disable=R0913
-    #                          Too many arguments
-    config_dir= _config_dir(buildtag, modulename, versionname, dry_run)
-    if config_dir is None:
-        return
-    filename= os.path.join(config_dir, "CONFIG")
-    if verbose:
-        print "appending %s" % filename
-    if not dry_run:
-        fh= open(filename, "a")
-    archstr= " ".join(sorted(archs))
-    _fwrite(fh, "CROSS_COMPILER_TARGET_ARCHS = %s" % archstr,
-            verbose, dry_run)
     if not dry_run:
         fh.close()
 
@@ -341,12 +321,9 @@ def create_module(db, builddb, build_tag,
     gen_RELEASE(db, builddb, build_tag, modulename, versionname,
                 extra_defs,
                 verbose, dry_run)
-    append_CONFIG(build_tag, modulename, versionname, archs,
-                  verbose, dry_run)
-
 # pylint: enable=R0913
 
-def add_modules(db, builddb, build_tag, archs):
+def add_modules(db, builddb, build_tag):
     """add modules to the builddb object.
 
     This function looks for compatible modules in all already existing builds.
@@ -364,7 +341,7 @@ def add_modules(db, builddb, build_tag, archs):
         versionname= moduleversions[0]
 
         compatible_build= builddb_match(db, builddb, modulename,
-                                        versionname, archs)
+                                        versionname)
         if compatible_build is None:
             # no existing build of the module was found, we have to build the
             # module ourselbves:
@@ -384,7 +361,7 @@ def create_modules(partialdb, builddb, build_tag, extra_lines,
     """create all modules.
     """
     # add all modules specified by partialdb to builddb under tag build_tag:
-    add_modules(partialdb, builddb, build_tag, archs)
+    add_modules(partialdb, builddb, build_tag)
 
     for modulename in partialdb.iter_modulenames():
         versionname= builddb.module_version(build_tag, modulename)
@@ -509,21 +486,21 @@ def fullapprelease(build_path, build_tag, builddb, modules,
 #                          Too many arguments
 
 def apprelease(build_path, build_tag, module_spec, builddb, db,
-               aliases, extra_lines):
+               archs, aliases, extra_lines):
     """create entries for an release file.
     """
     build_modules= builddb.modules(build_tag)
     module_dict= {}
     for m in module_spec:
-        (modulename,flag,versionname)= utils.scan_modulespec(m)
+        (modulename,modulespec)= utils.scan_module_arch_spec(m, archs)
         v= build_modules.get(modulename)
         if v is None:
             sys.exit("error: module %s not found in build %s" % \
                      (modulename, build_tag))
-        if versionname: # if versionname is given
-            if not utils.compare_versions_flag(flag, v, versionname):
-                sys.exit(("error: no module matching %s "+ \
-                          "found in build %s") % (m, build_tag))
+        if not utils.compare_versions_flag(modulespec.get("version_flag"),
+                                           v, modulespec.get("version")):
+            sys.exit(("error: no module matching %s "+ \
+                      "found in build %s") % (m, build_tag))
         module_dict[modulename]= v
     get_dependencies(module_dict, db, builddb, build_tag)
     return fullapprelease(build_path, build_tag, builddb,
@@ -663,7 +640,7 @@ def process(options, commands):
             # db and builddb __del__ method should remove lockfiles
             sys.exit("error, buildtag \"%s\" already taken" % buildtag)
         # create a new build in builddb, initial state is "unstable":
-        builddb.new_build(buildtag, "unstable", options.arch)
+        builddb.new_build(buildtag, "unstable")
         # modifies builddb:
         create_modules(partialdb, builddb, buildtag,
                        options.extra,
@@ -697,8 +674,11 @@ def process(options, commands):
             sys.exit("error: module specs missing")
         if not options.builddb:
             sys.exit("--builddb is mandatory")
+        if not options.db:
+            sys.exit("--db is mandatory")
+        db= utils.Dependencies.from_json_file(options.db)
         builddb= utils.Builddb.from_json_file(options.builddb)
-        new_builddb= builddb.filter_by_spec(commands[1:])
+        new_builddb= builddb.filter_by_specs(commands[1:], options.arch, db)
         if not options.brief:
             new_builddb.json_print()
         else:
@@ -740,6 +720,7 @@ def process(options, commands):
                          modules,
                          builddb,
                          db,
+                         options.arch,
                          scan_aliases(options.alias),
                          options.extra)
         return

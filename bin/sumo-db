@@ -302,7 +302,7 @@ def _distribution_add(db, dist, modulename, versionname, maxstate, archs):
     #print "_distribution_add(..,..,",modulename,",",versionname,")"
     existing_versionname= dist.get(modulename)
     if existing_versionname is not None:
-        if existing_versionname != versionname:
+        if existing_versionname!= versionname:
             raise ValueError("conflict: %s %s %s" % \
                       (modulename, existing_versionname, versionname))
         return dist
@@ -351,23 +351,25 @@ def distribution(db, modulespec_list, maxstate, archs, trace):
     versioned_modules= []
     versionless_modules= []
     for m in modulespec_list:
-        (modulename,flag,versionname)= utils.scan_modulespec(m)
-        if flag=="any":
-            versionless_modules.append(modulename)
-        elif flag=="this":
-            versioned_modules.append((modulename, versionname))
+        (modulename, modulespec)= utils.scan_module_arch_spec(m, archs)
+        versionname= modulespec.get("version")
+        if not versionname:
+            versionless_modules.append((modulename, modulespec.get("archs")))
+        elif modulespec["version_flag"]=="==":
+            versioned_modules.append((modulename, versionname,
+                                      modulespec.get("archs")))
         else:
             raise ValueError("\"-version\" and \"+version\" not "
                              "supported here")
     dist= {}
-    for (modulename, versionname) in versioned_modules:
+    for (modulename, versionname, archs) in versioned_modules:
         try:
             dist= _distribution_add(db, dist, modulename, versionname,
                                     maxstate, archs)
         except ValueError, e:
             sys.exit(str(e))
 
-    for modulename in versionless_modules:
+    for (modulename, archs) in versionless_modules:
         if trace:
             sys.stderr.write("module %s\n" % modulename)
         try:
@@ -395,7 +397,10 @@ def distribution(db, modulespec_list, maxstate, archs, trace):
             if trace:
                 sys.stderr.write("\t%-15s --> found\n" % versionname)
 
-    new= db.partial_copy(dist, archs)
+    spec_dict= {}
+    for (m,v) in dist.items():
+        spec_dict[m]= {"version":v, "version_flag":"=="}
+    new= db.partial_copy_by_specdict(spec_dict)
     new.remove_missing_deps()
     return (dist,new)
 
@@ -464,7 +469,7 @@ def process(options, commands):
             sys.exit("error, --db is mandatory here")
         db= utils.Dependencies.from_json_file(options.db,
                 keep_locked= options.savedb and (not options.dry_run))
-        db= db.partial_copy_by_specs(commands[1:])
+        db= db.partial_copy_by_specstrings(commands[1:], options.arch)
         if options.savedb:
             db.json_save(options.db, options.verbose, options.dry_run)
             # ^^^ does also unlock the file
