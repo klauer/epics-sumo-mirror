@@ -44,6 +44,23 @@ def module_basedir_string(modulename):
     """create a module base directory string."""
     return modulename
 
+def scan_aliases(aliases):
+    """scan aliases given on the command line."""
+    d= {}
+    if not aliases:
+        return d
+    for a in aliases:
+        (from_, to)= a.split(":")
+        d[from_]= to
+    return d
+
+def alias(alias_dict, modulename):
+    """return a module alias."""
+    n= alias_dict.get(modulename)
+    if n is None:
+        return modulename
+    return n
+
 def errmsg(msg):
     """print something on stderr."""
     sys.stderr.write(msg+"\n")
@@ -441,9 +458,12 @@ def create_partialdb(db, builddb, buildtag):
                     new.del_dependency(modulename, versionname, dep_module, d)
     return new
 
-def fullapprelease(build_path, build_tag, builddb, modules, extra_lines):
+def fullapprelease(build_path, build_tag, builddb, modules,
+                   aliases, extra_lines):
     """create entries for an release file.
     """
+    # pylint: disable=R0913
+    #                          Too many arguments
     lines= ["SUPPORT=%s" % os.path.abspath(build_path)]
     if modules is None:
         modules= builddb.modules(build_tag).keys()
@@ -454,7 +474,7 @@ def fullapprelease(build_path, build_tag, builddb, modules, extra_lines):
         version= builddb.module_version(tag, modulename)
         basename= module_dir_string(tag, modulename, version)
         lines.append("%s=%s" % \
-                (modulename,
+                (alias(aliases, modulename),
                  os.path.join("$(SUPPORT)", basename)
                 ))
     lines.extend(extra_lines)
@@ -463,7 +483,8 @@ def fullapprelease(build_path, build_tag, builddb, modules, extra_lines):
 # pylint: disable=R0913
 #                          Too many arguments
 
-def apprelease(build_path, build_tag, module_spec, builddb, db, extra_lines):
+def apprelease(build_path, build_tag, module_spec, builddb, db,
+               aliases, extra_lines):
     """create entries for an release file.
     """
     build_modules= builddb.modules(build_tag)
@@ -481,7 +502,7 @@ def apprelease(build_path, build_tag, module_spec, builddb, db, extra_lines):
         module_dict[modulename]= v
     get_dependencies(module_dict, db, builddb, build_tag)
     return fullapprelease(build_path, build_tag, builddb,
-                          module_dict.keys(), extra_lines)
+                          module_dict.keys(), aliases, extra_lines)
 
 # pylint: enable=R0913
 
@@ -676,6 +697,7 @@ def process(options, commands):
                              buildtag,
                              builddb,
                              None,
+                             scan_aliases(options.alias),
                              options.extra)
         return
 
@@ -693,6 +715,7 @@ def process(options, commands):
                          modules,
                          builddb,
                          db,
+                         scan_aliases(options.alias),
                          options.extra)
         return
 
@@ -807,6 +830,16 @@ def main():
                       help="Extra lines that are added to the RELEASE "+ \
                            "file. A LINE may be an arbitrary string or "+ \
                            "definition.",
+                      metavar="LINE"
+                      )
+    parser.add_option("-a", "--alias",
+                      action="append",
+                      type="string",
+                      help="Define an ALIAS for the commands 'apprelease' "
+                           "and 'fullapprelease'. An ALIAS must have the "
+                           "form FROM:TO. A module named 'FROM' is then "
+                           "put to the generated RELEASE file as 'TO'. You "
+                           "can define more than one alias.",
                       metavar="LINE"
                       )
     parser.add_option("--arch",
