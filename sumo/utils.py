@@ -1388,7 +1388,37 @@ class Dependencies(JSONstruct):
                 raise ValueError("\"-version\" and \"+version\" not "
                                   "supported here")
         return self.partial_copy(d, archs)
-
+    def remove_missing_deps(self):
+        """remove dependencies that are not part of the database."""
+        modules= set()
+        for modulename in self.iter_modulenames():
+            for versionname in self.iter_versions(modulename, "unstable",
+                                                  None, False):
+                modules.add((modulename, versionname))
+        for modulename in self.iter_modulenames():
+            for versionname in self.iter_versions(modulename, "unstable",
+                                                  None, False):
+                if not self.dependencies_found(modulename, versionname):
+                    continue
+                deletions= []
+                dep_no= 0
+                for dep_name in self.iter_dependencies(modulename,
+                                                       versionname):
+                    for dep_ver in self.iter_dependency_versions(modulename,
+                                                                 versionname,
+                                                                 dep_name,
+                                                                 "unstable",
+                                                                 None):
+                        dep_no+= 1
+                        if not (dep_name,dep_ver) in modules:
+                            deletions.append((dep_name, dep_ver))
+                if len(deletions)>= dep_no:
+                    raise ValueError("error: dependencies for %s:%s are "
+                                     "not part of the DB file" % \
+                                     (modulename, versionname))
+                for (dep_name, dep_ver) in deletions:
+                    self.del_dependency(modulename, versionname,
+                                        dep_name, dep_ver)
 
 class Builddb(JSONstruct):
     """the buildtree database."""

@@ -378,6 +378,7 @@ def distribution(db, modulespec_list, maxstate, archs):
             sys.exit("no non conflicting versions found for %s" % modulename)
 
     new= db.partial_copy(dist, archs)
+    new.remove_missing_deps()
     return (dist,new)
 
 
