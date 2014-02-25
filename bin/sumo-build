@@ -328,8 +328,9 @@ def create_module(db, builddb, build_tag,
     """
     if not db.check_archs(modulename, versionname, archs):
 
-        sys.exit("error: archs %s\nnot supportted by module %s:%s\n" % \
-                 (repr(archs), modulename, versionname))
+        sys.stderr.write("error: archs %s\nnot supportted by "
+                         "module %s:%s\n" % \
+                         (repr(archs), modulename, versionname))
     basedir= module_basedir_string(modulename)
     ensure_dir(basedir, dry_run) # creates basedir if it doesn't exist
     dirname= module_dir_string(build_tag, modulename, versionname)
