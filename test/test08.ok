@@ -94,6 +94,7 @@ directory tree (without darcs)
 ./BASE/R3-14-8-2-0+001/startup/Site.profile
 ./BASE/R3-14-8-2-0+001/startup/EpicsHostArch
 ./BASE/R3-14-8-2-0+001/startup/win32.bat
+./BASE/R3-14-8-2-0+001/startup/Makefile
 ./BASE/R3-14-8-2-0+001/README
 ./BASE/R3-14-8-2-0+001/configure
 ./BASE/R3-14-8-2-0+001/configure/CONFIG_ADDONS
