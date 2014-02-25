@@ -207,6 +207,7 @@ def support_configure_data(support_trees,
                 if trace:
                     sys.stderr.write("\texclude!\n")
                 purge(dirnames)
+                continue
             if buildtag is not None:
                 slice_buildtag(dirnames, buildtag)
             if module_dir_reached(dirnames):
