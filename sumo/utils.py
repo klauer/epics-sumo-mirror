@@ -408,8 +408,7 @@ def rev2key(rev):
       2.3.4
       2-3-4
       R2-3-4
-      ,2-3-4
-      /2-3-4
+      seq-2.3.4
       head
       trunk
 
@@ -417,10 +416,6 @@ def rev2key(rev):
     >>> rev2key("R2-3-4")
     '002.003.004'
     >>> rev2key("2-3-4")
-    '002.003.004'
-    >>> rev2key("/2-3-4")
-    '002.003.004'
-    >>> rev2key(",R2-3-4")
     '002.003.004'
     >>> rev2key("head")
     '-head'
@@ -439,22 +434,13 @@ def rev2key(rev):
     >>> rev2key("R3-3-4")<rev2key("R2-3-4")
     False
     """
-    if not rev: # empty string
+
+    if rev=="":
         return "-"
-    if (rev[0]== "/") or (rev[0]==","):
-        # remove leading "/" or ",":
-        if len(rev)<=1:
-            return "-"
-        rev= rev[1:]
-    if len(rev)>1:
-        # remove leading "R" if it is followed by a digit:
-        if rev[0]=="R" and rev[1].isdigit():
-            rev= rev[1:]
-    # if first character is not a digit, return string prepended with a "-".
-    # This ensures that revision strings with a digit will come after such a
-    # string.
-    if not rev[0].isdigit():
-        return "-"+rev
+    t= tag2version(rev)
+    if not t[0].isdigit():
+        return "-" + rev
+    rev= t
     # allow "-" and "." as separator for numbers:
     rev= rev.replace("-",".")
     l= rev.split(".")
@@ -482,35 +468,42 @@ def split_path(path):
     (version, treetag)= split_treetag(tail)
     return [head, version, treetag]
 
-def tag2version(tag):
-    """convert a darcs tag to a version.
+def tag2version(ver):
+    """convert a tag to a version.
 
-    (according to BESSY conventions)
     Here are some examples:
-
-    >>> tag2version("R2-3")
-    '2-3'
-    >>> tag2version("seq-2-3")
-    '2-3'
-    >>> tag2version("xx-2-3")
-    'xx-2-3'
+    >>> tag2version("1-2")
+    '1-2'
+    >>> tag2version("R1-2")
+    '1-2'
+    >>> tag2version("R-1-2")
+    '1-2'
+    >>> tag2version("seq-1-2")
+    '1-2'
+    >>> tag2version("head")
+    'head'
+    >>> tag2version("")
+    ''
     """
-    def splitter(start, st):
-        """split a string into a start and a rest."""
-        if not st.startswith(start):
-            return
-        rest= st[len(start):]
-        if rest=="":
-            return
-        if not rest[0].isdigit():
-            return
-        return rest
-    starts=["R", "seq-"]
-    for s in starts:
-        r= splitter(s, tag)
-        if r is not None:
-            return r
-    return tag
+    if len(ver)<1:
+        return ver
+    mode=0
+    for i in xrange(len(ver)):
+        if mode==0:
+            if ver[i].isalpha():
+                continue
+            mode=1
+        if mode==1:
+            if ver[i]=="-" or ver[i]=="_":
+                mode=2
+                continue
+            mode=2
+        if mode==2:
+            if ver[i].isdigit():
+                return ver[i:]
+            else:
+                return ver
+    return ver
 
 def version2tag(tag):
     """convert a version to a darcs tag.

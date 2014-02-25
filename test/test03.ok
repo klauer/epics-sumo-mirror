@@ -242,7 +242,7 @@
         }
     }, 
     "SEQ": {
-        "R2-0-12-1": {
+        "seq-2-1-13": {
             "aliases": {
                 "BASE": "EPICS_BASE"
             }, 
@@ -258,8 +258,8 @@
             }, 
             "source": {
                 "darcs": {
-                    "tag": "R2-0-12-1", 
-                    "url": "rcsadm@aragon.acc.bessy.de:/opt/Epics/R3.14.8/support/seq/2-0-12-1"
+                    "tag": "seq-2-1-13", 
+                    "url": "rcsadm@aragon.acc.bessy.de:/opt/repositories/controls/darcs/epics/support/seq/branch-2-1"
                 }
             }, 
             "state": "stable"
