@@ -241,6 +241,10 @@ def create_database(deps, repoinfo, groups, archs, state, source_patches):
                         # the tag as unique versionname:
                         versionname= repodata["tag"]
                 module_archs= archs.get(versionedmodule_path, [])
+                if not module_archs:
+                    #  module_archs list is empty:
+                    errmsg("no archs for path %s" % \
+                           versionedmodule_path)
                 db.set_source(module_name, versionname, module_archs, state,
                               {repotype: repodata})
 
