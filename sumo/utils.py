@@ -1380,6 +1380,71 @@ class Dependencies(JSONstruct):
         if dep_dict is None:
             return False
         return dep_dict.has_key(dependencyversion)
+    def sortby_dependency(self, moduleversions, reverse= False):
+        """sorts modules by dependencies.
+
+        Order that dependent modules come *after* the modules they depend on.
+
+        moduleversions: a list of pairs (modulename, versionname).
+        """
+        # pylint: disable=R0914
+        #                          Too many local variables
+        # pylint: disable=R0912
+        #                          Too many branches
+        dependencies= {}
+        weights= {}
+        i=0
+        for m in sorted(moduleversions):
+            weights[m]= i
+            i+= 1
+
+        # collect all direct dependencies:
+        modules_set= set(moduleversions)
+        for (modulename, versionname) in modules_set:
+            s= set()
+            dependencies[(modulename, versionname)]= s
+            for dep_name in self.iter_dependencies(modulename, versionname):
+                for dep_version in self.iter_dependency_versions(modulename,
+                                                                 versionname,
+                                                                 dep_name,
+                                                                 "unstable",
+                                                                 None):
+                    if not((dep_name,dep_version) in modules_set):
+                        continue
+                    s.add((dep_name,dep_version))
+
+        # add all indirect dependencies:
+        changes= True
+        while changes:
+            changes= False
+            for m in modules_set:
+                deps= dependencies[m]
+                for dep_m in list(deps):
+                    depdeps= dependencies[dep_m]
+                    for depdeps_m in depdeps:
+                        if depdeps_m not in deps:
+                            changes= True
+                            deps.add(depdeps_m)
+
+        # ensure that the "weight" of a module is always bigger than the
+        # biggest weight of any of it's dependencies:
+        changes= True
+        while changes:
+            changes= False
+            for m in modules_set:
+                deps= dependencies[m]
+                if not deps:
+                    continue
+                maxweight= max([weights[mod] for mod in deps])
+                if maxweight>= weights[m]:
+                    changes= True
+                    weights[m]= maxweight+1
+        # now a list of tuples (weight,moduletuple) can easily be sorted:
+        sort_list= sorted([(weights[m],m) for m in modules_set],
+                          reverse= reverse)
+        # created a list of moduletuples from the result:
+        return [m for (_,m) in sort_list]
+
     def iter_dependency_versions(self, modulename, versionname,
                                  dependencyname, max_state,
                                  archs):

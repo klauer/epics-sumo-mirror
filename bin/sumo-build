@@ -218,6 +218,7 @@ def gen_RELEASE(db, builddb, buildtag, modulename, versionname,
 
     basedir= os.path.abspath(".")
     _fwrite(fh, "SUPPORT=%s\n" % basedir, verbose, dry_run)
+    deps= []
     for dep_name in db.iter_dependencies(modulename, versionname):
         # get all depdendencies, even ones marked "unstable":
         # archs==None:
@@ -228,6 +229,9 @@ def gen_RELEASE(db, builddb, buildtag, modulename, versionname,
                                                        "unstable",
                                                        None))
         dep_versionname= dep_versions[0]
+        deps.append((dep_name, dep_versionname))
+
+    for (dep_name, dep_versionname) in db.sortby_dependency(deps, True):
         name_here= db.get_alias(modulename, versionname, dep_name)
         buildtag_here= builddb.module_link(buildtag, dep_name)
         if buildtag_here is None:
@@ -482,7 +486,7 @@ def create_partialdb(db, builddb, buildtag):
                     new.del_dependency(modulename, versionname, dep_module, d)
     return new
 
-def fullapprelease(build_path, build_tag, builddb, modules,
+def fullapprelease(build_path, build_tag, builddb, db, modules,
                    aliases, extra_lines):
     """create entries for an release file.
     """
@@ -491,15 +495,22 @@ def fullapprelease(build_path, build_tag, builddb, modules,
     lines= ["SUPPORT=%s" % os.path.abspath(build_path)]
     if modules is None:
         modules= builddb.modules(build_tag).keys()
-    for modulename in sorted(modules):
+
+    basenames= {}
+    mods= []
+    for modulename in modules:
         tag= builddb.module_link(build_tag, modulename)
         if tag is None:
             tag= build_tag
         version= builddb.module_version(tag, modulename)
-        basename= module_dir_string(tag, modulename, version)
+        basenames[(modulename, version)]= \
+                   module_dir_string(tag, modulename, version)
+        mods.append((modulename, version))
+
+    for (modulename, version) in db.sortby_dependency(mods, True):
         lines.append("%s=%s" % \
                 (alias(aliases, modulename),
-                 os.path.join("$(SUPPORT)", basename)
+                 os.path.join("$(SUPPORT)", basenames[(modulename, version)])
                 ))
     lines.extend(extra_lines)
     return "\n".join(lines)
@@ -525,7 +536,7 @@ def apprelease(build_path, build_tag, module_spec, builddb, db,
                       "found in build %s") % (m, build_tag))
         module_dict[modulename]= v
     get_dependencies(module_dict, db, builddb, build_tag)
-    return fullapprelease(build_path, build_tag, builddb,
+    return fullapprelease(build_path, build_tag, builddb, db,
                           module_dict.keys(), aliases, extra_lines)
 
 # pylint: enable=R0913
@@ -726,11 +737,15 @@ def process(options, commands):
             sys.exit("error: extra arguments following \"fullapprelease\"")
         if len(commands)<=1:
             sys.exit("error: buildtag missing")
+        if not options.db:
+            sys.exit("--db is mandatory")
         buildtag= commands[1]
         builddb= utils.Builddb.from_json_file(options.builddb)
+        db= utils.Dependencies.from_json_file(options.db)
         print fullapprelease(os.path.dirname(options.builddb),
                              buildtag,
                              builddb,
+                             db,
                              None,
                              scan_aliases(options.alias),
                              options.extra)

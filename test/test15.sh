@@ -9,8 +9,8 @@ TESTDIR=tmp-test11
 cd $TESTDIR > /dev/null
 
 echo -e "\nsumo-build fullapprelease 001:"
-$PYTHON ../../bin/sumo-build --builddb BUILDS fullapprelease 001 | sed -e "s#`pwd -P`##"
+$PYTHON ../../bin/sumo-build --builddb BUILDS --db DB fullapprelease 001 | sed -e "s#`pwd -P`##"
 
 echo -e "\nsumo-build fullapprelease 002:"
-$PYTHON ../../bin/sumo-build --builddb BUILDS fullapprelease 002 | sed -e "s#`pwd -P`##"
+$PYTHON ../../bin/sumo-build --builddb BUILDS --db DB fullapprelease 002 | sed -e "s#`pwd -P`##"
 
