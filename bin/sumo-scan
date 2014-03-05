@@ -420,7 +420,7 @@ def darcs_last_tag(directory, verbose, dry_run):
 
 def repo_info(deps, progress, use_dir_test,
               source_patches,
-              accept_paths,
+              hints,
               verbose, dry_run):
     # pylint: disable=R0913
     #                          Too many arguments
@@ -434,10 +434,6 @@ def repo_info(deps, progress, use_dir_test,
     if source_patches:
         for p in source_patches:
             patcher.add(eval(p))
-    if accept_paths:
-        accept_paths= set(accept_paths)
-    else:
-        accept_paths= set()
     path_set= all_paths_from_deps(deps)
     new= utils.PathSource()
     cnt_max= 50
@@ -447,6 +443,10 @@ def repo_info(deps, progress, use_dir_test,
     for path in path_set:
         if progress:
             cnt= utils.show_progress(cnt, cnt_max)
+        flagdict= hints.flags(path)
+        if flagdict.get("path"):
+            new.add_path(path, patcher.apply(path))
+            continue
         if not os.path.exists(os.path.join(path,"_darcs")):
             new.add_path(path, patcher.apply(path))
             continue
@@ -456,14 +456,16 @@ def repo_info(deps, progress, use_dir_test,
             new.add_path(path, patcher.apply(path))
             continue
         src_patched= patcher.apply(src)
+        if flagdict.get("tagless"):
+            new.add_darcs(path, src_patched)
+            continue
         tag= darcs_last_tag(path, verbose, dry_run)
         if not tag:
             new.add_darcs(path, src_patched)
             continue
         if not utils.is_standardpath(path, tag):
-            if not path in accept_paths:
-                new.add_darcs(path, src_patched)
-                continue
+            new.add_darcs(path, src_patched)
+            continue
         new.add_darcs(path, src_patched, tag)
     if progress:
         sys.stderr.write("\n")
@@ -510,6 +512,9 @@ def process(options, commands):
         if not c in KNOWN_COMMANDS:
             sys.exit("unknown command: %s" % c)
 
+    # evaluate the --hint command line option:
+    hints= utils.Hints(options.hint)
+
     commands= set(commands)
     if "all" in commands:
         commands.add("deps")
@@ -545,7 +550,7 @@ def process(options, commands):
                              options.progress,
                              options.darcs_dirtest,
                              options.source_patch,
-                             options.accept_path,
+                             hints,
                              options.verbose, options.dry_run)
         bag["repos"]= repo_data.to_dict()
         if options.missing_repo:
@@ -676,17 +681,15 @@ def main():
                            "This option value is stored in the CONFIGFILE.",
                       metavar="PATCHEXPRESSION"
                       )
-    parser.add_option( "--accept-path",
+    parser.add_option( "--hint",
                       action="append",
-                      help="Accept a path that is not standard conform. "
-                           "Usually a path should have a basename derived "
-                           "from the repository tag, e.g. 'tdu/3-3' and "
-                           "tag 'R3-3'. If this is not the case, the "
-                           "module's tag is ignored. Paths that match "
-                           "--accept-path are treated as standard conform. "
-                           "You can specify more than one ACCEPTPATH. "
-                           "This option value is stored in the CONFIGFILE.",
-                      metavar="ACCEPTPATH"
+                      help="Specify a HINT. A HINT has the form "
+                      "REGEXP,FLAG{,FLAG}. REGEXP is a regular expression "
+                      "that is matched with the module path. FLAG is a "
+                      "string that gives hints how to treat that module. "
+                      "You can specify more than one hint. "
+                      "This option value is stored in the CONFIGFILE.",
+                      metavar="HINT"
                       )
     parser.add_option("--darcs-dirtest",
                       action="store_true",
@@ -737,9 +740,9 @@ def main():
     # options: the options-object
     # args: list of left-over args
 
-    config= utils.ConfigFile(( "accept_path", "darcs_dirtest", "dir",
+    config= utils.ConfigFile(( "darcs_dirtest", "dir",
                                "exclude_deps", "exclude_path",
-                               "group_basedir", "missing_repo",
+                               "group_basedir", "hint", "missing_repo",
                                "missing_tag", "progress", "source_patch",
                                "verbose"), CONFIG_NAME)
 

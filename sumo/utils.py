@@ -860,6 +860,52 @@ class RegexpPatcher(object):
             str_= rx.sub(repl, str_)
         return str_
 
+class Hints(object):
+    """Combine hints for sumo-scan"""
+    _empty= {}
+    def __init__(self, specs= None):
+        r"""initialize from a list of specification strings.
+
+        Here is an example:
+        >>> h= Hints()
+        >>> h.add(r'\d,TAGLESS')
+        >>> print h.flags("ab")
+        None
+        >>> print h.flags("ab12")
+        {'tagless': True}
+        """
+        self._hints= []
+        if specs is not None:
+            for spec in specs:
+                self.add(spec)
+    def add(self, spec):
+        """add a new hint."""
+        parts= spec.split(",")
+        rx= re.compile(parts[0])
+        d= {}
+        for flag in parts[1:]:
+            # pylint: disable=W0212
+            #         Access to a protected member
+            (key,val)= self.__class__._parse_flag(flag)
+            d[key]= val
+        self._hints.append((rx, d))
+    @staticmethod
+    def _parse_flag(flag):
+        """parse a flag string."""
+        if flag=="PATH":
+            return ("path", True)
+        if flag=="TAGLESS":
+            return ("tagless", True)
+        raise ValueError("unknown flag: %s" % flag)
+    def flags(self, path):
+        """return the flags of a path."""
+        for (rx, d) in self._hints:
+            if rx.search(path):
+                return d
+        # pylint: disable=W0212
+        #         Access to a protected member
+        return self.__class__._empty
+
 class JSONstruct(object):
     """an object that is a python structure.
 
