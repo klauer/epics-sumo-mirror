@@ -912,6 +912,13 @@ class JSONstruct(object):
     This is a dict that contains other dicts or lists or strings or floats or
     integers.
     """
+    def selfcheck(self, msg):
+        """raise an exception if the object is not valid."""
+        # pylint: disable=W0613
+        #                          Unused argument
+        # pylint: disable=R0201
+        #                          Method could be a function
+        return
     def __init__(self, dict_= None):
         """create the object."""
         if dict_ is None:
@@ -954,12 +961,16 @@ class JSONstruct(object):
     @classmethod
     def from_json(cls, json_data):
         """create an object from a json string."""
-        return cls(json_load(json_data))
+        obj= cls(json_load(json_data))
+        obj.selfcheck("(created from JSON string)")
+        return obj
     @classmethod
     def from_json_file(cls, filename, keep_locked= False):
         """create an object from a json file."""
         if filename=="-":
-            return cls(json_loadfile(filename))
+            result= cls(json_loadfile(filename))
+            result.selfcheck("(created from JSON string on stdin)")
+            return result
         if not os.path.exists(filename):
             raise IOError("file \"%s\" not found" % filename)
         l= lock_a_file(filename)
@@ -969,6 +980,7 @@ class JSONstruct(object):
             result.lock_filename= filename
         else:
             unlock_a_file(l)
+        result.selfcheck("(created from JSON file %s)" % filename)
         return result
     def json_string(self):
         """return a JSON representation of the object."""
@@ -1114,6 +1126,28 @@ class Dependencies(JSONstruct):
                     dest_dep_dict[src_ver]= src_state
                     continue
                 dest_dep_dict[src_ver]= cls._min_state((src_state, dest_state))
+    def selfcheck(self, msg):
+        """raise exception if obj doesn't look like a dependency database."""
+        def _somevalue(d):
+            """return kind of arbitrary value of a dict."""
+            keys= d.keys()
+            key= keys[len(keys)/2]
+            return d[key]
+        while True:
+            d= self.datadict()
+            if not isinstance(d, dict):
+                break
+            module= _somevalue(d)
+            if not isinstance(module, dict):
+                break
+            version= _somevalue(module)
+            if not isinstance(version, dict):
+                break
+            src= version.get("source")
+            if not src:
+                break
+            return
+        raise ValueError("Error: Dependency data is invalid %s" % msg)
     def __init__(self, dict_= None):
         """create the object."""
         super(Dependencies, self).__init__(dict_)
@@ -1617,6 +1651,30 @@ class Builddb(JSONstruct):
             errst= "error: cannot determine what state is meant by %s" % st
             raise ValueError(errst)
         return match
+    def selfcheck(self, msg):
+        """raise exception if obj doesn't look like a builddb."""
+        def _somevalue(d):
+            """return kind of arbitrary value of a dict."""
+            keys= d.keys()
+            key= keys[len(keys)/2]
+            return d[key]
+        while True:
+            d= self.datadict()
+            if not isinstance(d, dict):
+                break
+            build= _somevalue(d)
+            if not isinstance(build, dict):
+                break
+            modules= build.get("modules")
+            if not modules:
+                break
+            if not isinstance(modules, dict):
+                break
+            module= _somevalue(modules)
+            if not isinstance(module, str):
+                break
+            return
+        raise ValueError("Error: Builddb data is invalid %s" % msg)
     def __init__(self, dict_= None):
         """create the object."""
         super(Builddb, self).__init__(dict_)
