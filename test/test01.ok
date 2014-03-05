@@ -292,7 +292,7 @@
         }, 
         "/tmp-test01/misc/2-0": {
             "darcs": {
-                "url": "rcsadm@aragon.acc:/opt/repositories/controls/darcs/epics/support/misc/base-3-14"
+                "url": "/tmp-test01/misc/2-0"
             }
         }, 
         "/tmp-test01/misc/2-4": {

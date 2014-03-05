@@ -64,4 +64,6 @@ else
     cd ..
 fi
 
-$PYTHON ../bin/sumo-scan -d $EXAMPLEDIR -g $EXAMPLEDIR all | sed -e "s#`pwd -P`##;s/,$/, /g"
+#echo $PYTHON ../bin/sumo-scan -d $EXAMPLEDIR -g $EXAMPLEDIR -N TOP -N SUPPORT -N EPICS_SUPPORT -N TEMPLATE_TOP -t all 
+#$PYTHON ../bin/sumo-scan -d $EXAMPLEDIR -g $EXAMPLEDIR -N TOP -N SUPPORT -N EPICS_SUPPORT -N TEMPLATE_TOP -t all 
+$PYTHON ../bin/sumo-scan -d $EXAMPLEDIR -g $EXAMPLEDIR -N TOP -N SUPPORT -N EPICS_SUPPORT -N TEMPLATE_TOP all | sed -e "s#`pwd -P`##;s/,$/, /g"
