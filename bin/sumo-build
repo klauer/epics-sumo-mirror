@@ -625,8 +625,6 @@ def process(options, commands):
             sys.exit("--partialdb is mandatory")
         if not options.builddb:
             sys.exit("--builddb is mandatory")
-        if not options.arch:
-            sys.exit("--arch is mandatory")
         buildtag= commands[1]
         db= utils.Dependencies.from_json_file(options.db,
                     keep_locked= not options.dry_run)
