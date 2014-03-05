@@ -13111,6 +13111,19 @@ content of Makefile-001
 all: ALARM/R3-5+001/stamp ASYN/R4-15-bessy2+001/stamp BASE/R3-14-8-2-0+001/stamp BSPDEP_CPUBOARDINIT/R4-0+001/stamp BSPDEP_TIMER/R5-1+001/stamp CSM/R3-8+001/stamp EK/R2-1+001/stamp GENSUB/PATH-1-6-1+001/stamp MCAN/R2-3-18+001/stamp MISC/R2-4+001/stamp SEQ/R2-0-12-1+001/stamp SOFT/R2-5+001/stamp VXSTATS/R2-0+001/stamp
 
 clean:
+	make -C ALARM/R3-5+001 clean
+	make -C ASYN/R4-15-bessy2+001 clean
+	make -C BASE/R3-14-8-2-0+001 clean
+	make -C BSPDEP_CPUBOARDINIT/R4-0+001 clean
+	make -C BSPDEP_TIMER/R5-1+001 clean
+	make -C CSM/R3-8+001 clean
+	make -C EK/R2-1+001 clean
+	make -C GENSUB/PATH-1-6-1+001 clean
+	make -C MCAN/R2-3-18+001 clean
+	make -C MISC/R2-4+001 clean
+	make -C SEQ/R2-0-12-1+001 clean
+	make -C SOFT/R2-5+001 clean
+	make -C VXSTATS/R2-0+001 clean
 	rm ALARM/R3-5+001/stamp
 	rm ASYN/R4-15-bessy2+001/stamp
 	rm BASE/R3-14-8-2-0+001/stamp

@@ -376,32 +376,47 @@ def create_modules(partialdb, builddb, build_tag, extra_lines,
 
 # pylint: enable=R0913
 
-# pylint: disable=R0914
-#                          Too many local variables
-
-def create_makefile(db, builddb, build_tag, verbose, dry_run):
+def create_makefile(partialdb, builddb, build_tag, verbose, dry_run):
     """generate a makefile.
     """
+    # pylint: disable=R0914
+    #                          Too many local variables
+    # pylint: disable=R0912
+    #                          Too many branches
     def wr(fh, st, verbose):
         """write to file."""
         if verbose:
             print st,
         if fh:
             fh.write(st)
+    def has_makefile(path):
+        """checks if there is a makefile in path."""
+        fn= os.path.join(path,"Makefile")
+        if os.path.exists(fn):
+            return True
+        fn= os.path.join(path,"makefile")
+        if os.path.exists(fn):
+            return True
+        return False
     paths= {}
     for modulename, versionname in builddb.iter_modules(build_tag):
         if not builddb.module_link(build_tag, modulename):
-            paths[(modulename, versionname)]= \
-                         module_dir_string(build_tag,
-                                           modulename,
-                                           versionname)
+            dir_= module_dir_string(build_tag,
+                                    modulename,
+                                    versionname)
+            if not has_makefile(dir_):
+                continue
+            paths[(modulename, versionname)]= dir_
     filename= makefilename(build_tag)
-    stamps= sorted([os.path.join(p,"stamp") for p in paths.values()])
+    module_dirs= sorted(paths.values())
+    stamps= [os.path.join(p,"stamp") for p in module_dirs]
     fh= None
     if not dry_run:
         fh= open(filename, "w")
     wr(fh, "all: %s\n\n" % (" ".join(stamps)), verbose)
     wr(fh, "clean:\n", verbose)
+    for d in module_dirs:
+        wr(fh, "\tmake -C %s clean\n" % d, verbose)
     for f in stamps:
         wr(fh, "\trm %s\n" % f, verbose)
     wr(fh, "\n", verbose)
@@ -409,17 +424,25 @@ def create_makefile(db, builddb, build_tag, verbose, dry_run):
         (modulename, versionname)= spec
         own_stamp= os.path.join(path, "stamp")
         dep_stamps= []
-        for dep_name in db.iter_dependencies(modulename, versionname):
+        for dep_name in partialdb.iter_dependencies(modulename, versionname):
             if builddb.module_link(build_tag, dep_name):
                 continue
-            # get all depdendencies, even ones marked "unstable":
+            # get all depdendencies, even the ones marked "unstable":
             # archs==None:
             #   ignore architecture
-            dep_versions= list(db.iter_dependency_versions(modulename,
+            dep_versions= list(partialdb.iter_dependency_versions(modulename,
                                                            versionname,
                                                            dep_name,
                                                            "unstable",
                                                            None))
+            if len(dep_versions)>1:
+                raise AssertionError("unexpected: %s:%s %s\n" % \
+                        (modulename,versionname,repr(dep_versions)))
+            dep_version= dep_versions[0]
+            # modules that have no makefile are not in the paths dictionary, do
+            # treat these as dependencies:
+            if not paths.has_key((dep_name,dep_version)):
+                continue
             dep_path= module_dir_string(build_tag, dep_name, dep_versions[0])
             dep_stamps.append(os.path.join(dep_path,"stamp"))
 
@@ -430,8 +453,6 @@ def create_makefile(db, builddb, build_tag, verbose, dry_run):
     wr(fh, "\ttouch $@\n", verbose)
     if not dry_run:
         fh.close()
-
-# pylint: enable=R0914
 
 def create_partialdb(db, builddb, buildtag):
     """create a partial database from a build.
