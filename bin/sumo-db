@@ -663,21 +663,21 @@ def main():
 
     parser.add_option("--summary",
                       action="store_true",
-                      help="print a summary of the function of the program",
+                      help="Print a summary of the function of the program.",
                       )
     parser.add_option("--doc",
                       action="store_true",
-                      help="print a longer description of the program",
+                      help="Print a longer description of the program.",
                       )
     parser.add_option("--test",
                       action="store_true",
-                      help="perform simple self-test",
+                      help="Perform simple self-test.",
                       )
     parser.add_option("-c", "--config",
                       action="store",
                       type="string",
-                      help="load options from config file FILE, "
-                           "default: %s" % CONFIG_NAME,
+                      help="Load options from config file FILE, "
+                           "default: %s." % CONFIG_NAME,
                       metavar="FILE"
                       )
     parser.add_option("--make-config",
@@ -692,25 +692,27 @@ def main():
     parser.add_option("--db",
                       action="store",
                       type="string",
-                      help="define the name of the DBFILE",
+                      help="Define the name of the DBFILE. "
+                           "This option value is stored in the CONFIGFILE.",
                       metavar="DBFILE"
                       )
     parser.add_option("--savedb",
                       action="store_true",
-                      help="resave db if it was modified, currently "+ \
-                           "only for these commands :"+ \
+                      help="Resave db if it was modified, currently "
+                           "only for these commands : %s." % \
                            (" ".join(("merge","filter",
                                       "cloneversion", "replaceversion")))
                       )
     parser.add_option("--arch",
                       action="append",
-                      help="define the name of a TARGETARCHITECTURE. You "
-                           "can specify more than one target architecture.",
+                      help="Define the name of a TARGETARCHITECTURE. You "
+                           "can specify more than one target architecture. "
+                           "This option value is stored in the CONFIGFILE.",
                       metavar="TARGETARCHITECTURE"
                       )
     parser.add_option("-b", "--brief",
                       action="store_true",
-                      help="create a more brief output",
+                      help="Create a more brief output. ",
                       )
     parser.add_option("-P", "--source-patch",
                       action="append",
@@ -720,28 +722,31 @@ def main():
                            "the second one is the replacement string. The "
                            "regular expression is applied to every source "
                            "url generated. You can specify more than one "
-                           "PATCHEXPRESSION.",
+                           "PATCHEXPRESSION. "
+                           "This option value is stored in the CONFIGFILE.",
                       metavar="PATCHEXPRESSION"
                       )
     parser.add_option("--noignorecase",
                       action="store_true",
-                      help="for command 'find', do NOT ignore case",
+                      help="For command 'find', do NOT ignore case.",
                       )
     parser.add_option("-p", "--progress",
                       action="store_true",
-                      help="show progress on stderr",
+                      help="Show progress on stderr. "
+                           "This option value is stored in the CONFIGFILE.",
                       )
     parser.add_option("-t", "--trace",
                       action="store_true",
-                      help="switch on some trace messages",
+                      help="Switch on some trace messages.",
                       )
     parser.add_option("-v", "--verbose",
                       action="store_true",
-                      help="show command calls ",
+                      help="Show command calls. "
+                           "This option value is stored in the CONFIGFILE.",
                       )
     parser.add_option("-n", "--dry-run",
                       action="store_true",
-                      help="just show what the program would do",
+                      help="Just show what the program would do.",
                       )
 
     # x= sys.argv
@@ -749,9 +754,8 @@ def main():
     # options: the options-object
     # args: list of left-over args
 
-    config= utils.ConfigFile(("db", "source_patch",
-                              "arch", "progress", "verbose"),
-                              CONFIG_NAME)
+    config= utils.ConfigFile(( "arch", "db", "progress", "source_patch",
+                               "verbose"), CONFIG_NAME)
 
     if options.summary:
         print_summary()

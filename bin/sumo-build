@@ -821,17 +821,17 @@ def main():
 
     parser.add_option("--summary",
                       action="store_true",
-                      help="print a summary of the function of the program",
+                      help="Print a summary of the function of the program.",
                       )
     parser.add_option("--test",
                       action="store_true",
-                      help="perform simple self-test",
+                      help="Perform simple self-test.",
                       )
     parser.add_option("-c", "--config",
                       action="store",
                       type="string",
-                      help="load options from config file FILE, "
-                           "default: %s" % CONFIG_NAME,
+                      help="Load options from config file FILE, "
+                           "default: %s." % CONFIG_NAME,
                       metavar="FILE"
                       )
     parser.add_option("--make-config",
@@ -846,27 +846,30 @@ def main():
     parser.add_option("--db",
                       action="store",
                       type="string",
-                      help="define the name of the DBFILE",
+                      help="Define the name of the DBFILE. "
+                           "This option value is stored in the CONFIGFILE.",
                       metavar="DBFILE"
                       )
     parser.add_option("-P", "--partialdb",
                       action="store",
                       type="string",
-                      help="define the name of the PARTIALDBFILE",
+                      help="Define the name of the PARTIALDBFILE.",
                       metavar="PARTIALDBFILE"
                       )
     parser.add_option("--builddb",
                       action="store",
                       type="string",
-                      help="specify the BUILDDATABASE",
+                      help="Specify the BUILDDATABASE. "
+                           "This option value is stored in the CONFIGFILE.",
                       metavar="BUILDDATABASE"
                       )
     parser.add_option("-x", "--extra",
                       action="append",
                       type="string",
-                      help="Extra lines that are added to the RELEASE "+ \
-                           "file. A LINE may be an arbitrary string or "+ \
-                           "definition.",
+                      help="Extra lines that are added to the RELEASE "
+                           "file. A LINE may be an arbitrary string or "
+                           "definition. "
+                           "This option value is stored in the CONFIGFILE.",
                       metavar="LINE"
                       )
     parser.add_option("-a", "--alias",
@@ -881,25 +884,28 @@ def main():
                       )
     parser.add_option("--arch",
                       action="append",
-                      help="define the name of a TARGETARCHITECTURE. You "
-                           "can specify more than one target architecture.",
+                      help="Define the name of a TARGETARCHITECTURE. You "
+                           "can specify more than one target architecture."
+                           "This option value is stored in the CONFIGFILE.",
                       metavar="TARGETARCHITECTURE"
                       )
     parser.add_option("-b", "--brief",
                       action="store_true",
-                      help="do a more brief output for some commands",
+                      help="Do a more brief output for some commands.",
                       )
     parser.add_option("-p", "--progress",
                       action="store_true",
-                      help="show progress on stderr",
+                      help="Show progress on stderr. "
+                           "This option value is stored in the CONFIGFILE.",
                       )
     parser.add_option("-v", "--verbose",
                       action="store_true",
-                      help="show command calls ",
+                      help="Show command calls. "
+                           "This option value is stored in the CONFIGFILE.",
                       )
     parser.add_option("-n", "--dry-run",
                       action="store_true",
-                      help="just show what the program would do",
+                      help="Just show what the program would do.",
                       )
 
     # x= sys.argv
@@ -907,10 +913,8 @@ def main():
     # options: the options-object
     # args: list of left-over args
 
-    config= utils.ConfigFile(("db","builddb","extra",
-                              "arch",
-                              "progress","verbose"),
-                              CONFIG_NAME)
+    config= utils.ConfigFile(( "arch", "builddb", "db", "extra", "progress",
+                               "verbose",), CONFIG_NAME)
 
     if options.summary:
         print_summary()
