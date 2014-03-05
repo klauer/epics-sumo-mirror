@@ -139,6 +139,7 @@ import sumo.utils as utils
 my_version= "1.0"
 
 KNOWN_COMMANDS=set(("edit", "convert", "distribution",
+                    "weight",
                     "show", "shownewest", "showall",
                     "find",
                     "merge", "check", "filter",
@@ -406,6 +407,29 @@ def distribution(db, modulespec_list, maxstate, archs, trace):
     new.remove_missing_deps()
     return (dist,new)
 
+def set_weight(db, weight, modulespeclist, trace):
+    """set the weight for one or more modules."""
+    for m in modulespeclist:
+        (modulename, modulespec)= utils.scan_module_arch_spec(m)
+        if trace:
+            sys.stderr.write("module %s, spec: %s\n" % \
+                             (modulename, modulespec))
+
+        versionname= modulespec.get("version")
+        versionflag= modulespec.get("version_flag")
+
+        # scan stable, testing and unstable versions:
+        for version in db.iter_versions(modulename, "unstable",
+                                        None, must_exist= False):
+            if trace:
+                sys.stderr.write("test %s:%s\n" % (modulename,version))
+            if not utils.compare_versions_flag(versionflag,version,
+                                               versionname):
+                continue
+            if trace:
+                sys.stderr.write("set weight %d on %s:%s\n" % \
+                                 (weight,modulename,version))
+            db.weight(modulename, version, weight)
 
 def process(options, commands):
     """do all the work.
@@ -460,6 +484,29 @@ def process(options, commands):
             utils.json_dump(dist_dict)
         else:
             dist_obj.json_print()
+        return
+
+    if commands[0]=="weight":
+        if len(commands)<=1:
+            sys.exit("error: WEIGHT and module missing")
+        if len(commands)<=2:
+            sys.exit("error: no modules specified")
+        if not options.db:
+            sys.exit("error, --db is mandatory here")
+        weight= commands[1]
+        modulespecs= commands[2:]
+        try:
+            weight= int(weight)
+        except ValueError, _:
+            sys.exit("error: weight must be an integer")
+        db= utils.Dependencies.from_json_file(options.db,
+                keep_locked= options.savedb and (not options.dry_run))
+        set_weight(db, weight, modulespecs, options.trace)
+        if options.savedb:
+            db.json_save(options.db, options.verbose, options.dry_run)
+            # ^^^ does also unlock the file
+        else:
+            db.json_print()
         return
 
     if commands[0]=="filter":
@@ -618,6 +665,10 @@ where command is:
               testing:  take dependencies marked stable or testing
               unstable: take dependencies marked stable, testing or unstable
           Note that option "--arch" is mandatory for this command.
+  weight [WEIGHT] [modules]
+          Get or set the weight factor for modules. Use
+          modulename:{+-}versionname to select more versions of a module.
+          Weight must be an integer.
   show:   show the names of all modules
   shownewest [MAXSTATE] {modules}: 
           Show newest version for each module. If {modules} is missing, take

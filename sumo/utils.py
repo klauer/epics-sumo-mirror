@@ -1186,6 +1186,10 @@ class Dependencies(JSONstruct):
                               "module %s version %s archs: %s" % \
                               (modulename, versionname, str(e)))
                         continue
+                    if dictname=="weight":
+                        # take the weight from the new dict if present
+                        vdict[dictname]= dictval
+                        continue
                     if dictname=="aliases":
                         try:
                             dict_update(vdict.setdefault(dictname,{}),
@@ -1331,6 +1335,13 @@ class Dependencies(JSONstruct):
         if a_dict is None:
             return dep_modulename
         return a_dict.get(dep_modulename, dep_modulename)
+    def weight(self, modulename, versionname, new_weight= None):
+        """set the weight factor."""
+        if new_weight is None:
+            return self.datadict()[modulename][versionname].get("weight", 0)
+        if not isinstance(new_weight, int):
+            raise TypeError("error: %s is not an integer" % repr(new_weight))
+        self.datadict()[modulename][versionname]["weight"]= new_weight
     def assert_module(self, modulename, versionname):
         """do nothing if the module is found, raise KeyError otherwise.
         """
@@ -1380,6 +1391,29 @@ class Dependencies(JSONstruct):
         if dep_dict is None:
             return False
         return dep_dict.has_key(dependencyversion)
+    def sortby_weight(self, moduleversions, reverse= False):
+        """sorts modules by weight.
+
+        Order in a way that smaller weights come first.
+
+        moduleversions: a list of pairs (modulename, versionname).
+        """
+        local_weights= {}
+        i=0
+        for m in moduleversions:
+            local_weights[m]= i
+            if reverse:
+                i-=1
+            else:
+                i+= 1
+        # now a list of tuples (weight,localweight,moduletuple) can easily be
+        # sorted:
+        sort_list= sorted([(self.weight(m[0],m[1]), local_weights[m], m) \
+                           for m in moduleversions],
+                          reverse= reverse)
+        # created a list of moduletuples from the result:
+        return [m for (_,_,m) in sort_list]
+
     def sortby_dependency(self, moduleversions, reverse= False):
         """sorts modules by dependencies.
 
@@ -1394,7 +1428,7 @@ class Dependencies(JSONstruct):
         dependencies= {}
         weights= {}
         i=0
-        for m in sorted(moduleversions):
+        for m in moduleversions:
             weights[m]= i
             i+= 1
 

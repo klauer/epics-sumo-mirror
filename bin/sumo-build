@@ -231,7 +231,8 @@ def gen_RELEASE(db, builddb, buildtag, modulename, versionname,
         dep_versionname= dep_versions[0]
         deps.append((dep_name, dep_versionname))
 
-    for (dep_name, dep_versionname) in db.sortby_dependency(deps, True):
+    deps= db.sortby_weight(db.sortby_dependency(sorted(deps), True))
+    for (dep_name, dep_versionname) in deps:
         name_here= db.get_alias(modulename, versionname, dep_name)
         buildtag_here= builddb.module_link(buildtag, dep_name)
         if buildtag_here is None:
@@ -507,7 +508,8 @@ def fullapprelease(build_path, build_tag, builddb, db, modules,
                    module_dir_string(tag, modulename, version)
         mods.append((modulename, version))
 
-    for (modulename, version) in db.sortby_dependency(mods, True):
+    mods= db.sortby_weight(db.sortby_dependency(sorted(mods), True))
+    for (modulename, version) in mods:
         lines.append("%s=%s" % \
                 (alias(aliases, modulename),
                  os.path.join("$(SUPPORT)", basenames[(modulename, version)])
