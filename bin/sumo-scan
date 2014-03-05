@@ -200,6 +200,7 @@ def support_configure_data(support_trees,
     #                                              topdown= True):
     modpath= None
     # progress indicatiors would interfere with trace messages:
+    ignore_archs= ["perl","python"]
     if trace:
         progress= False
     for support_tree in support_trees:
@@ -241,18 +242,12 @@ def support_configure_data(support_trees,
                     purge(dirnames)
                     continue
                 elif last=="bin":
-                    if dirnames==["perl"]:
-                        purge(dirnames)
-                        continue
                     if "ANY" in arch_dict[versioned_path]:
                         arch_dict[versioned_path].discard("ANY")
                     arch_dict[versioned_path].update(dirnames)
                     purge(dirnames)
                     continue
                 elif last=="lib":
-                    if dirnames==["perl"]:
-                        purge(dirnames)
-                        continue
                     if "ANY" in arch_dict[versioned_path]:
                         arch_dict[versioned_path].discard("ANY")
                     arch_dict[versioned_path].update(dirnames)
@@ -261,8 +256,9 @@ def support_configure_data(support_trees,
     if progress:
         sys.stderr.write("\n")
     for (k,v) in arch_dict.items():
-        if "perl" in v:
-            v.discard("perl")
+        for ign in ignore_archs:
+            if ign in v:
+                v.discard(ign)
         if not v:
             # set is empty:
             v= set(["ANY"])
