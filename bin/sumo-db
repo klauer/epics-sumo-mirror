@@ -450,8 +450,6 @@ def process(options, commands):
             sys.exit("error: no modules specified")
         if not options.db:
             sys.exit("error, --db is mandatory here")
-        if not options.arch:
-            sys.exit("error, --arch is mandatory here")
         db= utils.Dependencies.from_json_file(options.db)
         maxstate= commands[1]
         modulespecs= commands[2:]
