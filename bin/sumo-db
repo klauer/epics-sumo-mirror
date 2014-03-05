@@ -348,7 +348,7 @@ def distribution(db, modulespec_list, maxstate, archs, trace):
     #                          Too many branches
     if trace:
         sys.stderr.write("looking for modules, archs: %s maxstate: %s\n\n" % \
-                         (" ".join(archs), maxstate))
+                         (repr(archs), maxstate))
 
     versioned_modules= []
     versionless_modules= []
