@@ -20,8 +20,9 @@ import sumo.utils as utils
 # version of the program:
 my_version= "1.0"
 
-KNOWN_COMMANDS=set(("show", "state", "edit", "newtree", "partialdb",
-                    "findtree", "apprelease", "fullapprelease", "delete"))
+KNOWN_COMMANDS=set(("apprelease", "delete", "edit", "findtree",
+                    "fullapprelease", "list", "newtree", "partialdb",
+                    "show", "state"))
 
 CONFIG_NAME="sumo-build.config"
 
@@ -557,6 +558,16 @@ def process(options, commands):
         utils.edit_with_lock(commands[1], options.verbose, options.dry_run)
         return
 
+    if commands[0]=="list":
+        if len(commands)>1:
+            sys.exit("error: extra arguments following \"list\"")
+        if not options.builddb:
+            sys.exit("--builddb is mandatory")
+        builddb= utils.Builddb.from_json_file(options.builddb)
+        for buildtag in builddb.iter_builds():
+            print buildtag
+        return
+
     if commands[0]=="show":
         if len(commands)>2:
             sys.exit("error: extra arguments following \"show\"")
@@ -785,6 +796,7 @@ where command is:
   apprelease [buildtag] [modules]: create a RELEASE file for an application,
           use only the mentioned modules and the modules they depend on. Note
           that --db is mandatory for this command.
+  list    list the names of all builds
   show [buildtag]
           show the data of the build
   state [buildtag] {new state}
