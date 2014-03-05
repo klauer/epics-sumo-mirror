@@ -564,6 +564,10 @@ def scan_module_arch_spec(spec, default_archs=None):
         "archs"       : <set of archs>
       }
 
+    Note that the returned moduledict contains "==" as equality flag, not "=".
+    This means that versions must match the version string *exactly*, e.g.
+    "R1-3" and "1-3" would not match.
+
     Here are some examples:
 
     >>> import pprint
@@ -639,16 +643,28 @@ def scan_module_arch_spec(spec, default_archs=None):
 def compare_versions_flag(flag, version1, version2):
     """compare versions according to given flag.
 
+    A <None> as version matches any other version.
+
+    Note that there are two ways to test equality, one where the version
+    strings must match exactly and one where only the version numbers must
+    match. We use the flags "==" and "=" to distinguish these. Here is the
+    meaning:
+
+    ==  : match exactly, so "R1-3" is different from "1-3"
+    =   : match the version number, so "R1-3" is equal to "1-3".
+
     Here are some examples:
-    >>> compare_versions_flag("this", None, "R1-3")
+    >>> compare_versions_flag("==", None, "R1-3")
     True
-    >>> compare_versions_flag("this", "R1-2", None)
+    >>> compare_versions_flag("==", "R1-2", None)
     True
-    >>> compare_versions_flag("this", "R1-2", "R1-3")
+    >>> compare_versions_flag("==", "R1-2", "R1-3")
     False
-    >>> compare_versions_flag("this", "R1-2", "R1-2")
+    >>> compare_versions_flag("==", "R1-2", "R1-2")
     True
     >>> compare_versions_flag("==", "R1-2", "1-2")
+    False
+    >>> compare_versions_flag("=", "R1-2", "1-2")
     True
     >>> compare_versions_flag("<=", "R1-2", "1-2")
     True
@@ -667,9 +683,11 @@ def compare_versions_flag(flag, version1, version2):
         return True
     if version2 is None:
         return True
+    if flag=="==":
+        return (version1==version2)
     k1= rev2key(version1)
     k2= rev2key(version2)
-    if flag=="==":
+    if flag=="=":
         return (k1==k2)
     if flag=="<=":
         return (k1<=k2)
@@ -1470,6 +1488,9 @@ class Dependencies(JSONstruct):
         specdict must be a dict mapping modulenames to a dict as returned by
         scan_module_arch_spec.
 
+        Note that this function treats versions like "R1-3" and "1-3" to be
+        different.
+
         If no versions are defined for a module, take all versions.
         If no archs are defined, take all archs.
 
@@ -1647,6 +1668,9 @@ class Builddb(JSONstruct):
         return False
     def filter_by_specs(self, specstrings, archs, db):
         """return a new Builddb that satisfies the given list of specs.
+
+        Note that this function treats versions like "R1-3" and "1-3" to be
+        different.
         """
         specs= {}
         for s in specstrings:
