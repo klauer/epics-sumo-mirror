@@ -131,6 +131,7 @@ from optparse import OptionParser
 import sys
 import os.path
 import os
+import re
 
 import sumo.utils as utils
 
@@ -139,6 +140,7 @@ my_version= "1.0"
 
 KNOWN_COMMANDS=set(("edit", "convert", "distribution",
                     "show", "shownewest", "showall",
+                    "find",
                     "merge", "check", "filter",
                     "cloneversion", "replaceversion"))
 
@@ -557,6 +559,30 @@ def process(options, commands):
         utils.json_dump(result)
         return
 
+    if commands[0]=="find":
+        if len(commands)<=1:
+            sys.exit("error: MAXSTATE missing")
+        if len(commands)<=2:
+            sys.exit("error: REGEXP missing")
+        if not options.db:
+            sys.exit("error, --db is mandatory here")
+        db= utils.Dependencies.from_json_file(options.db)
+        maxstate= commands[1]
+        regexp= commands[2]
+        if options.noignorecase:
+            rx_flags= 0
+        else:
+            rx_flags= re.IGNORECASE
+        rx= re.compile(regexp, rx_flags)
+        results= db.search_modules(rx, maxstate, options.arch)
+        if options.brief:
+            for (module,version) in results:
+                print "%s:%s" % (module,version)
+            return
+        newdb= db.partial_copy_by_list(results)
+        newdb.json_print()
+        return
+
 def print_doc():
     """print a short summary of the scripts function."""
     print __doc__
@@ -604,6 +630,8 @@ where command is:
           Show all versions for each module. If {modules} is missing, take all
           modules of the database. MAXSTATE is the "maximum" state as described
           above.
+  find [MAXSTATE] [REGEXP]
+          Show all modules whose names or sources match regexp.
   check 
           do some consistency checks on the db specifed by --db
   merge [db]
@@ -696,6 +724,10 @@ def main():
                            "url generated. You can specify more than one "
                            "PATCHEXPRESSION.",
                       metavar="PATCHEXPRESSION"
+                      )
+    parser.add_option("--noignorecase",
+                      action="store_true",
+                      help="for command 'find', do NOT ignore case",
                       )
     parser.add_option("-p", "--progress",
                       action="store_true",

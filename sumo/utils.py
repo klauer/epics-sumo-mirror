@@ -1184,7 +1184,26 @@ class Dependencies(JSONstruct):
                             msg.append("%s:%s: dependencies: %s" % \
                                     (modulename, versionname, str(e)))
         return msg
+    def search_modules(self, rx_object, max_state, archs):
+        """search module names and source URLS for a regexp.
 
+        Returns a list of tuples (modulename, versionname).
+        """
+        results= []
+        for modulename in self.iter_modulenames():
+            if rx_object.search(modulename):
+                for versionname in self.iter_versions(modulename,
+                                                      max_state,
+                                                      archs, False):
+                    results.append((modulename, versionname))
+                continue
+            for versionname in self.iter_versions(modulename,
+                                                  max_state,
+                                                  archs, False):
+                url= self.module_source_url(modulename, versionname)
+                if rx_object.search(url):
+                    results.append((modulename, versionname))
+        return sorted(results)
     def get_archs(self, modulename, versionname):
         """get archs for modulename:versionname."""
         m_dict= self.datadict()[modulename]
@@ -1234,6 +1253,16 @@ class Dependencies(JSONstruct):
         """return a tuple (type,dict) for the module source."""
         l= self.datadict()[modulename][versionname]["source"]
         return single_key_item(l)
+    def module_source_url(self, modulename, versionname):
+        """return the source url or path for a module."""
+        (tp,val)= self.module_source_dict(modulename, versionname)
+        if tp=="path":
+            return val
+        elif tp=="darcs":
+            return val["url"]
+        else:
+            raise AssertionError("unexpected source tag %s at %s:%s" % \
+                    (tp, modulename, versionname))
     def iter_dependencies(self, modulename, versionname):
         """return an iterator on dependency modulenames of a module."""
         d= self.datadict()[modulename][versionname]
@@ -1412,6 +1441,29 @@ class Dependencies(JSONstruct):
                 # set the new dependency always to "unstable":
                 dep_module_dict[newversionname]= "unstable"
 
+    def partial_copy_by_list(self, list_):
+        """take items from the Dependencies object and create a new one.
+
+        List must be a list of tuples in the form (modulename,versionname).
+
+        This function copies modules whose versionname match *exactly* the
+        given name, so "R1-3" and "1-3" are treated to be different.
+
+        Note that the new Dependencies object only contains references of the
+        data. This DOES NOT do a deep copy.
+
+        """
+        new= self.__class__()
+        for modulename, versionname in list_:
+            d= new.datadict().setdefault(modulename, {})
+            # scan stable, testing and unstable versions:
+            for version in self.iter_versions(modulename, "unstable",
+                                              None, must_exist= True):
+                if not compare_versions_flag("==",version,
+                                             versionname):
+                    continue
+                d[version]= self.datadict()[modulename][version]
+        return new
     def partial_copy_by_specdict(self, specdict):
         """take items from the Dependencies object and create a new one.
 
