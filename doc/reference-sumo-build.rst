@@ -13,8 +13,8 @@ always start with a dash "-", commands are simple words.
 Commands
 --------
 
-newtree
-+++++++
+new
++++
 
 This command creates a new buildtree. It must be followed by a *buildtag*, a
 unique name that identifies the build.
@@ -24,8 +24,8 @@ partialdb
 
 This command is used to recreate a *partialdb* from a complete *db* and a buildtree.
 
-findtree
-++++++++
+find
+++++
 
 This command is used to find matching buildtrees for a given list of module specs which must follow this command. 
 
@@ -47,15 +47,15 @@ version
   This means that we want that version or a greater version, e.g.
   "MCAN:+2-3-13" would match version 2-3-13 and 2-3-14 but not version 2-3-12.
 
-fullapprelease
-++++++++++++++
+useall
+++++++
 
 This command creates a RELEASE file for an application. The command must be
 followed by *buildtag*. The release file is created that it includes *all*
 modules of the build.
 
-apprelease
-++++++++++
+use
++++
 
 This command creates a RELEASE file for an application. The command must be
 followed by a *buildtag* and a list of *module specs*. The RELEASE is created

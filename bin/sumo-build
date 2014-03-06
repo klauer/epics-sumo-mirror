@@ -20,8 +20,8 @@ import sumo.utils as utils
 # version of the program:
 my_version= "1.0"
 
-KNOWN_COMMANDS=set(("apprelease", "delete", "edit", "findtree",
-                    "fullapprelease", "list", "newtree", "partialdb",
+KNOWN_COMMANDS=set(("use", "delete", "edit", "find",
+                    "useall", "list", "new", "partialdb",
                     "show", "state"))
 
 CONFIG_NAME="sumo-build.config"
@@ -679,11 +679,11 @@ def process(options, commands):
                           options.verbose, options.dry_run)
         return
 
-    if commands[0]=="newtree":
+    if commands[0]=="new":
         if options.readonly:
             sys.exit("--readonly forbids creating a new build")
         if len(commands)>2:
-            sys.exit("error: extra arguments following \"newtree\"")
+            sys.exit("error: extra arguments following \"new\"")
         if len(commands)<=1:
             sys.exit("error: buildtag missing")
         if not options.db:
@@ -736,7 +736,7 @@ def process(options, commands):
         new_db= create_partialdb(db, builddb, buildtag)
         new_db.json_print()
         return
-    if commands[0]=="findtree":
+    if commands[0]=="find":
         if len(commands)>=2:
             modulespecs= commands[1:]
         else:
@@ -766,9 +766,9 @@ def process(options, commands):
                     d[b]= new_builddb.modules(b)
                 utils.json_dump(d)
         return
-    if commands[0]=="fullapprelease":
+    if commands[0]=="useall":
         if len(commands)>2:
-            sys.exit("error: extra arguments following \"fullapprelease\"")
+            sys.exit("error: extra arguments following \"useall\"")
         if len(commands)<=1:
             sys.exit("error: buildtag missing")
         if not options.db:
@@ -786,7 +786,7 @@ def process(options, commands):
                              options.extra)
         return
 
-    if commands[0]=="apprelease":
+    if commands[0]=="use":
         if len(commands)<=1:
             sys.exit("error: buildtag missing")
         if not options.db:
@@ -839,20 +839,20 @@ where command is:
           If you want to edit a DB or BUILDDB file directly, you should always
           do this with this command. The file locking prevents other users to
           use the file at the same time you modify it.
-  newtree [buildtag]  :
+  new [buildtag]  :
           create a new buildtree
           options --db, --partialdb, --builddb and --arch are mandatory for
           this command.
   partialdb [buildtag]:
           recreate a partial db from a complete db and an buildtree
-  findtree [modules] :
+  find [modules] :
           find buildtrees that have all the given modules. Modules may have the
           form modulename or modulename:version or modulename:-version or
           modulename:+version
-  fullapprelease [buildtag]:
+  useall [buildtag]:
           create a RELEASE file for an application, use all the modules from
           the buildtree
-  apprelease [buildtag] [modules]: create a RELEASE file for an application,
+  use [buildtag] [modules]: create a RELEASE file for an application,
           use only the mentioned modules and the modules they depend on. Note
           that --db is mandatory for this command.
   list    list the names of all builds
@@ -942,8 +942,8 @@ def main():
     parser.add_option("-a", "--alias",
                       action="append",
                       type="string",
-                      help="Define an ALIAS for the commands 'apprelease' "
-                           "and 'fullapprelease'. An ALIAS must have the "
+                      help="Define an ALIAS for the commands 'use' "
+                           "and 'useall'. An ALIAS must have the "
                            "form FROM:TO. A module named 'FROM' is then "
                            "put to the generated RELEASE file as 'TO'. "
                            "You can specify more than one of these by "
@@ -969,7 +969,7 @@ def main():
                            "modulename:-version or modulename:+version. If "
                            "you specify modules with this option you don't "
                            "have to put MODULESPECs after commands like "
-                           "'findtree' or 'apprelease'. "
+                           "'find' or 'use'. "
                            "You can specify more than one of these by "
                            "repeating this option or by joining values in "
                            "a single string separated by spaces. "

@@ -1,4 +1,4 @@
-sumo-build findtree MCAN -b:
+sumo-build find MCAN -b:
 {
     "001": {
         "modules": {
@@ -51,7 +51,7 @@ sumo-build findtree MCAN -b:
     }
 }
 
-sumo-build findtree MCAN BSPDEP_TIMER:R5-1
+sumo-build find MCAN BSPDEP_TIMER:R5-1
 {
     "001": {
         "modules": {
@@ -104,7 +104,7 @@ sumo-build findtree MCAN BSPDEP_TIMER:R5-1
     }
 }
 
-sumo-build findtree MCAN ALARM:-R3-4:
+sumo-build find MCAN ALARM:-R3-4:
 {
     "002": {
         "linked": {
@@ -139,7 +139,7 @@ sumo-build findtree MCAN ALARM:-R3-4:
     }
 }
 
-sumo-build findtree MCAN ALARM:+R3-5:
+sumo-build find MCAN ALARM:+R3-5:
 {
     "001": {
         "modules": {
