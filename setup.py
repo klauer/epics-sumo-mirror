@@ -119,20 +119,16 @@ doc_dir= "doc"
 
 html_build_dir= os.path.join(doc_dir,"_build","html")
 
-data_doc_dir= os.path.join("sumo","data")
-
 ## create HTML documentation if it doesn't already exist:
-#if not os.path.exists(html_build_dir):
-#    # "make -C doc html":
-#    subprocess.check_call(["make", "-C", "doc", "html"])
+if not os.path.exists(html_build_dir):
+    # "make -C doc html":
+    subprocess.check_call(["make", "-C", "doc", "html"])
 
-# create files in data directory
-# copy_files(data_doc_dir, doc_dir, ["SDshell.rst"])
 
 data_files_list= [(doc_install_dir, ["README", "LICENSE"])]
 
 # add all generated html documentation to data_files_list:
-#data_files_list.extend(data_statements(html_install_dir, html_build_dir))
+data_files_list.extend(data_statements(html_install_dir, html_build_dir))
 
 setup(name='sumo',
       version= my_version,
@@ -142,7 +138,7 @@ setup(name='sumo',
       url='http://www-csr.bessy.de/control/sumo',
       packages=['sumo'],
       #package_dir= {'': 'sumo'},
-      package_data={'sumo': ['data/*']},
+      #package_data={'sumo': ['data/*']},
       data_files= data_files_list,
       license= "HZB non commercial license, see file LICENSE",
       scripts=['bin/sumo-build','bin/sumo-db','bin/sumo-scan'],
