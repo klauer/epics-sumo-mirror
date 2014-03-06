@@ -202,7 +202,13 @@ def _fwrite(fh, st, verbose, dry_run):
 def gen_RELEASE(db, builddb, buildtag, modulename, versionname,
                 extra_lines,
                 verbose, dry_run):
-    """generate a RELEASE file."""
+    """generate a RELEASE file.
+
+    This function requires that the current working directory is the support
+    directory!
+
+    Note: the SUPPORT path is the directory of the builddb file!
+    """
     # pylint: disable=R0913
     #                          Too many arguments
     # pylint: disable=R0914
@@ -216,8 +222,8 @@ def gen_RELEASE(db, builddb, buildtag, modulename, versionname,
     if not dry_run:
         fh= open(filename, "w")
 
-    basedir= os.path.abspath(".")
-    _fwrite(fh, "SUPPORT=%s\n" % basedir, verbose, dry_run)
+    supportdir= os.getcwd()
+    _fwrite(fh, "SUPPORT=%s\n" % supportdir, verbose, dry_run)
     deps= []
     for dep_name in db.iter_dependencies(modulename, versionname):
         # get all depdendencies, even ones marked "unstable":
@@ -311,6 +317,9 @@ def create_module(db, builddb, build_tag,
 
     returns the build_tag that was used. If the module was found in another
     build, return that built-tag.
+
+    This function requires that the current working directory is the
+    support directory!
     """
     if not db.check_archs(modulename, versionname, archs):
 
@@ -365,6 +374,9 @@ def create_modules(partialdb, builddb, build_tag, extra_lines,
                    archs,
                    verbose, dry_run):
     """create all modules.
+
+    This function requires that the current working directory is the support
+    directory!
     """
     # add all modules specified by partialdb to builddb under tag build_tag:
     add_modules(partialdb, builddb, build_tag)
@@ -686,6 +698,8 @@ def process(options, commands):
             sys.exit("error, buildtag \"%s\" already taken" % buildtag)
         # create a new build in builddb, initial state is "unstable":
         builddb.new_build(buildtag, "unstable")
+        if options.supportdir:
+            os.chdir(options.supportdir)
         # modifies builddb:
         create_modules(partialdb, builddb, buildtag,
                        options.extra,
@@ -754,7 +768,8 @@ def process(options, commands):
         buildtag= commands[1]
         builddb= utils.Builddb.from_json_file(options.builddb)
         db= utils.Dependencies.from_json_file(options.db)
-        print fullapprelease(os.path.dirname(options.builddb),
+        print fullapprelease(options.supportdir \
+                                 if options.supportdir else ".",
                              buildtag,
                              builddb,
                              db,
@@ -780,7 +795,8 @@ def process(options, commands):
 
         db= utils.Dependencies.from_json_file(options.db)
         builddb= utils.Builddb.from_json_file(options.builddb)
-        print apprelease(os.path.dirname(options.builddb),
+        print apprelease(options.supportdir \
+                             if options.supportdir else ".",
                          buildtag,
                          modulespecs,
                          builddb,
@@ -897,6 +913,15 @@ def main():
                            "This option value is stored in the CONFIGFILE.",
                       metavar="BUILDDATABASE"
                       )
+    parser.add_option("--supportdir",
+                      action="store",
+                      type="string",
+                      help="Specify the SUPPORTDIRECTORY. If this option "
+                           "is not given take the current working "
+                           "directory as SUPPORTDIRECTORY. "
+                           "This option value is stored in the CONFIGFILE.",
+                      metavar="SUPPORTDIRECTORY"
+                      )
     parser.add_option("-x", "--extra",
                       action="append",
                       type="string",
@@ -973,7 +998,9 @@ def main():
 
     config= utils.ConfigFile(( "arch", "alias", "builddb", "db", "extra",
                                "module",
-                               "progress", "verbose",),
+                               "progress",
+                               "supportdir",
+                               "verbose",),
                                CONFIG_NAME)
 
     if options.summary:
