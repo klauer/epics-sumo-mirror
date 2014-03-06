@@ -689,7 +689,7 @@ def process(options, commands):
         # modifies builddb:
         create_modules(partialdb, builddb, buildtag,
                        options.extra,
-                       options.arch,
+                       utils.opt_join(options.arch),
                        options.verbose, options.dry_run)
         create_makefile(partialdb, builddb, buildtag,
                         options.verbose, options.dry_run)
@@ -723,7 +723,9 @@ def process(options, commands):
             sys.exit("--db is mandatory")
         db= utils.Dependencies.from_json_file(options.db)
         builddb= utils.Builddb.from_json_file(options.builddb)
-        new_builddb= builddb.filter_by_specs(commands[1:], options.arch, db)
+        new_builddb= builddb.filter_by_specs(modulespecs,
+                                             utils.opt_join(options.arch),
+                                             db)
         if not options.brief:
             new_builddb.json_print()
         else:
@@ -751,7 +753,7 @@ def process(options, commands):
                              builddb,
                              db,
                              None,
-                             scan_aliases(options.alias),
+                             scan_aliases(utils.opt_join(options.alias)),
                              options.extra)
         return
 
@@ -769,8 +771,8 @@ def process(options, commands):
                          modules,
                          builddb,
                          db,
-                         options.arch,
-                         scan_aliases(options.alias),
+                         utils.opt_join(options.arch),
+                         scan_aliases(utils.opt_join(options.alias)),
                          options.extra)
         return
 
@@ -822,8 +824,7 @@ where command is:
           show or change the state of the build. Allowed states are "stable"
           and "testing".
   delete [buildtag]
-          delete the build if no other builds depend on it. Note that the build
-          is kept in the build database but marked as "deleted".
+          delete the build if no other builds depend on it.
 """
 
 def main():
@@ -897,14 +898,20 @@ def main():
                       help="Define an ALIAS for the commands 'apprelease' "
                            "and 'fullapprelease'. An ALIAS must have the "
                            "form FROM:TO. A module named 'FROM' is then "
-                           "put to the generated RELEASE file as 'TO'. You "
-                           "can define more than one alias.",
+                           "put to the generated RELEASE file as 'TO'. "
+                           "You can specify more than one of these by "
+                           "repeating this option or by joining values in "
+                           "a single string separated by spaces. "
+                           "This option value is stored in the CONFIGFILE.",
                       metavar="LINE"
                       )
     parser.add_option("--arch",
                       action="append",
                       help="Define the name of a TARGETARCHITECTURE. You "
                            "can specify more than one target architecture."
+                           "You can specify more than one of these by "
+                           "repeating this option or by joining values in "
+                           "a single string separated by spaces. "
                            "This option value is stored in the CONFIGFILE.",
                       metavar="TARGETARCHITECTURE"
                       )
@@ -936,8 +943,9 @@ def main():
     # options: the options-object
     # args: list of left-over args
 
-    config= utils.ConfigFile(( "arch", "builddb", "db", "extra", "progress",
-                               "verbose",), CONFIG_NAME)
+    config= utils.ConfigFile(( "arch", "alias", "builddb", "db", "extra",
+                               "progress", "verbose",),
+                               CONFIG_NAME)
 
     if options.summary:
         print_summary()
