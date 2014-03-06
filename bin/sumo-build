@@ -715,8 +715,14 @@ def process(options, commands):
         new_db.json_print()
         return
     if commands[0]=="findtree":
-        if len(commands)<2:
-            sys.exit("error: module specs missing")
+        if len(commands)>=2:
+            modulespecs= commands[1:]
+        else:
+            # no modulespecs after the command
+            modulespecs= utils.opt_join(options.module)
+            if not modulespecs:
+                sys.exit("error: module specs missing")
+
         if not options.builddb:
             sys.exit("--builddb is mandatory")
         if not options.db:
@@ -763,12 +769,20 @@ def process(options, commands):
         if not options.db:
             sys.exit("--db is mandatory")
         buildtag= commands[1]
-        modules= commands[2:]
+
+        if len(commands)>=3:
+            modulespecs= commands[2:]
+        else:
+            # no modulespecs after the command
+            modulespecs= utils.opt_join(options.module)
+            if not modulespecs:
+                sys.exit("error: module specs missing")
+
         db= utils.Dependencies.from_json_file(options.db)
         builddb= utils.Builddb.from_json_file(options.builddb)
         print apprelease(os.path.dirname(options.builddb),
                          buildtag,
-                         modules,
+                         modulespecs,
                          builddb,
                          db,
                          utils.opt_join(options.arch),
@@ -915,6 +929,20 @@ def main():
                            "This option value is stored in the CONFIGFILE.",
                       metavar="TARGETARCHITECTURE"
                       )
+    parser.add_option("-m", "--module",
+                      action="append",
+                      help="Define a MODULESPEC. A MODULESPEC has the form "
+                           "modulename, modulename:version, "
+                           "modulename:-version or modulename:+version. If "
+                           "you specify modules with this option you don't "
+                           "have to put MODULESPECs after commands like "
+                           "'findtree' or 'apprelease'. "
+                           "You can specify more than one of these by "
+                           "repeating this option or by joining values in "
+                           "a single string separated by spaces. "
+                           "This option value is stored in the CONFIGFILE.",
+                      metavar="MODULESPEC"
+                      )
     parser.add_option("-b", "--brief",
                       action="store_true",
                       help="Do a more brief output for some commands.",
@@ -944,6 +972,7 @@ def main():
     # args: list of left-over args
 
     config= utils.ConfigFile(( "arch", "alias", "builddb", "db", "extra",
+                               "module",
                                "progress", "verbose",),
                                CONFIG_NAME)
 
