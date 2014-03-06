@@ -7,10 +7,10 @@ The problem
 When you develop an application for EPICS you usually need some of the EPICS
 support modules. 
 
-For a a small project you fetch the sources for support modules your
+For a a small project you fetch the sources for all support modules your
 application needs and build them all together with your application.
 
-For development in a large team however, you want to have support modules built
+For development in a team however, you want to have support modules built
 and installed at a central directory so all developers can just use them in their
 application without the need to build them again.
 
@@ -39,6 +39,7 @@ module A directory   module A version   built against module B version
 ==================   ================   ==============================
 support/A/R1.3       1.3                2.4
 support/A/R1.4       1.4                2.4
+support/A/R1.3-1     1.3                2.5
 support/A/R1.4-1     1.4                2.5
 ==================   ================   ==============================
 
@@ -72,47 +73,61 @@ There may be different builds of the same version of a module if one of the
 modules it depends on have changed. So modules are not only distinguished by a
 version number but also a build name (called *buildtag* here).
 
-A set of modules that are consistent with respect to their versions and
+A set of modules that is consistent with respect to versions and
 dependencies is called a *build*. They all have the same *buildtag*. A makefile
-is generated for each build to call the makefiles of all the modules in the
+is generated for each build to call the makefiles of all modules in the
 right order.
 
-The module dependency information and the information on build are kept in
-database files, which are ASCII files.
+The module specifications and dependency information is kept in a dependency
+database or DB file. Information on builds is kept in a build database or
+BUILDDB file. Both files are `JSON <http://www.json.org>`_ files.
 
-Dependencies and module versions have *states* of maturity. We distinguish three states:
+The concept of states
+---------------------
+
+In order to distinguish the maturity of modules, dependencies and builds we distinguish 3 different states:
 
 stable
-  These modules and builds can be build and do not have major errors e.g.
-  crashing the IOC. However, there may be less serious problems or bugs.
+  Stable means that the item is used in production and is not known to have
+  major faults.
 
 testing
-  These modules and dependent modules can be build but have not yet been tested
-  in an application.
+  Testing means that the item can be used on an IOC but it not yet tested. If
+  it runs on an IOC for some time without major problems, the item state should
+  be set to "stable".
 
 unstable
-  It is not guaranteed that these modules work or can even be built. If it is
-  ensured that the build process works without errors, the status should be set
+  Unstable means that the item was just created. It is not guaranteed to work
+  and is not even guaranteed that this can be booted or even compiled. It it is
+  loaded and left on an IOC to run for a longer time it's state should be set
   to "testing".
+
+The concept of architectures
+----------------------------
+
+Modules can be built for several target architectures. A list of all currently
+known and supported target architectures is held the dependency database (DB)
+file for each module. 
+
+A build is always created for a single set of target architectures which is
+stored in the build database (BUILDDB) file. This means that all modules in a
+build are compiled for the same set of target architectures although some of
+the modules may support more target architectures as it is specified in the
+dependency database (DB) file.
 
 The implementation
 ------------------
 
-The functions described above are implemented with a small set of python
-scripts. The dependency and build database files are in 
+The functions described above are implemented with a set of python
+scripts. The dependency and build database files have
 `JSON <http://www.json.org>`_ format.
 
-You can scan an existing directory with support modules to extract the
-dependency information from RELEASE files there and create a dependency
-database file. Since this file is an ASCII file it can easily be edited if
-there is the need for corrections.
-
-There are three scripts:
+Here are three scripts:
 
 :doc:`sumo-scan <reference-sumo-scan>`
   This script is used to scan an existing support module tree for module
   versions and their repository sources. It generates a *scan* file which can
-  be converted to a *DB* file withe the sumo-db script.
+  be converted to a *DB* file with the sumo-db script.
 
 :doc:`sumo-db <reference-sumo-db>`
   This script manages the *DB* files with all the module version and dependency

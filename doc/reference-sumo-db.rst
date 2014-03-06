@@ -4,16 +4,27 @@ sumo-db
 What the script does
 --------------------
 
-This script manages the depencency database or *DB* file. It is used to create
+This script manages the dependency database or *DB* file. It is used to create
 this file from the output of :doc:`sumo-scan <reference-sumo-scan>`, to change
 this file and to create a *partialdb* file that is used by the
 :doc:`sumo-build <reference-sumo-build>` script.
 
-The script takes one or mode commands and has a number of options. Options
+The script takes one or more commands and has a number of options. Options
 always start with a dash "-", commands are simple words.
 
 Commands
 --------
+
+edit
+++++
+
+Start the editor specified by the environment variable "VISUAL" or "EDITOR"
+with that file. This command first aquires a file-lock on the file that is only
+released when the editor program is terminated.  If you want to edit a DB or
+BUILDDB file directly, you should always do this with this command. The file
+locking prevents other users to use the file at the same time you modify it.
+
+This command must be followed by a *filename*.
 
 convert
 +++++++
@@ -63,7 +74,7 @@ The *partialdb* file is used by the script
 
 This command has must be followed by at least two parameters, a *maximum state*
 and at least one *module spec*. If there is more than one *module spec* they
-must be separated by whitespaces.
+must be separated by white spaces.
 
 maximum state
 :::::::::::::
@@ -92,9 +103,18 @@ version
   This means that we want that version or a smaller version, e.g.
   "MCAN:-2-3-13" would match version 2-3-12 and 2-3-13 but not version 2-3-14.
 
--version
++version
   This means that we want that version or a greater version, e.g.
   "MCAN:+2-3-13" would match version 2-3-13 and 2-3-14 but not version 2-3-12.
+
+weight
+++++++
+
+Set the weight factor for modules. Use modulename:{+-}versionname to select
+more versions of a module.  This command *does not* use the --modules option.
+Weight must be an integer.
+
+This command must be followed by a *weight factor* and a list of *modulespecs*.
 
 show
 ++++
@@ -154,6 +174,34 @@ module name
 The command may be followed by one or mode module names. If given, only
 versions for these modules are printed to the console. If this parameter is
 omitted, versions for all modules are printed to the console.
+
+find
+++++
+
+Show all modules whose names or sources match regexp.
+
+maximum state
+:::::::::::::
+
+The *maximum state* is the maximum allowed state that a module or dependency
+may have. As mentioned at other places we have three possible states, "static",
+"testing" and "unstable". These states have, per definition, this order
+relation::
+
+  stable < testing < unstable
+
+If you specify for example "testing" as *maximum state*, the states "stable"
+and "testing" are allowed for modules and dependencies. 
+
+regexp
+::::::
+
+This is a perl compatible regular expression.
+
+check
++++++
+
+This command does a consistency check of the database.
 
 merge
 +++++
