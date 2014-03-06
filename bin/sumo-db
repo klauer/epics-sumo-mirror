@@ -442,6 +442,8 @@ def process(options, commands):
     #                          Too many return statements
     # pylint: disable=R0915
     #                          Too many statements
+    if options.nolock:
+        utils.use_lockfile= False
     if not commands:
         sys.exit("command missing")
     if commands[0] not in KNOWN_COMMANDS:
@@ -777,6 +779,10 @@ def main():
     parser.add_option("--noignorecase",
                       action="store_true",
                       help="For command 'find', do NOT ignore case.",
+                      )
+    parser.add_option("--nolock",
+                      action="store_true",
+                      help="Do not use file locking."
                       )
     parser.add_option("-p", "--progress",
                       action="store_true",
