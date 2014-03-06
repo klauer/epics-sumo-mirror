@@ -471,14 +471,18 @@ def process(options, commands):
 
     if commands[0]=="distribution":
         if len(commands)<=1:
-            sys.exit("error: MAXSTATE and module missing")
-        if len(commands)<=2:
-            sys.exit("error: no modules specified")
+            sys.exit("error: MAXSTATE missing")
+        if len(commands)>2:
+            modulespecs= commands[2:]
+        else:
+            # no modulespecs after the command
+            modulespecs= options.module
+            if not modulespecs:
+                sys.exit("error: module specs missing")
         if not options.db:
             sys.exit("error, --db is mandatory here")
         db= utils.Dependencies.from_json_file(options.db)
         maxstate= commands[1]
-        modulespecs= commands[2:]
         (dist_dict, dist_obj)= distribution(db, modulespecs,
                                             maxstate, options.arch,
                                             options.trace)
@@ -512,13 +516,19 @@ def process(options, commands):
         return
 
     if commands[0]=="filter":
-        if len(commands)<=1:
-            sys.exit("error: no modules specified")
+        if len(commands)>1:
+            modulespecs= commands[1:]
+        else:
+            # no modulespecs after the command
+            modulespecs= options.module
+            if not modulespecs:
+                sys.exit("error: module specs missing")
+
         if not options.db:
             sys.exit("error, --db is mandatory here")
         db= utils.Dependencies.from_json_file(options.db,
                 keep_locked= options.savedb and (not options.dry_run))
-        db= db.partial_copy_by_specstrings(commands[1:], options.arch)
+        db= db.partial_copy_by_specstrings(modulespecs, options.arch)
         if options.savedb:
             db.json_save(options.db, options.verbose, options.dry_run)
             # ^^^ does also unlock the file
@@ -587,17 +597,31 @@ def process(options, commands):
         if not options.db:
             sys.exit("error, --db is mandatory here")
         db= utils.Dependencies.from_json_file(options.db)
-        maxstate= commands[1]
+
         if len(commands)>2:
-            modulenames= commands[2:]
+            modulespecs= commands[2:]
         else:
-            modulenames= list(db.iter_modulenames())
+            # no modulespecs after the command
+            modulespecs= options.module
+            if not modulespecs:
+                modulespecs= list(db.iter_modulenames())
+
+        maxstate= commands[1]
         result= {}
-        for modulename in modulenames:
+
+        for spec in modulespecs:
+            (modulename,spec_dict)= utils.scan_module_arch_spec(spec)
+            match_version= spec_dict.get("version")
+            match_flag   = spec_dict.get("version_flag")
+
             versions= db.sorted_moduleversions(modulename, maxstate,
                                                options.arch, False)
             if not versions: # no versions match maxstate criteria
                 continue
+            versions= [v for v in versions \
+                       if utils.compare_versions_flag(match_flag,v,
+                                                      match_version)]
+
             if not showall:
                 result[modulename]= versions[0]
             else:
@@ -666,8 +690,9 @@ where command is:
               testing:  take dependencies marked stable or testing
               unstable: take dependencies marked stable, testing or unstable
   weight [WEIGHT] [modules]
-          Get or set the weight factor for modules. Use
+          Set the weight factor for modules. Use
           modulename:{+-}versionname to select more versions of a module.
+          This command *does not* use the --modules option.
           Weight must be an integer.
   show:   show the names of all modules
   shownewest [MAXSTATE] {modules}: 
@@ -756,9 +781,26 @@ def main():
     parser.add_option("--arch",
                       action="append",
                       help="Define the name of a TARGETARCHITECTURE. You "
-                           "can specify more than one target architecture. "
+                           "can specify more than one target architecture."
+                           "You can specify more than one of these by "
+                           "repeating this option or by joining values in "
+                           "a single string separated by spaces. "
                            "This option value is stored in the CONFIGFILE.",
                       metavar="TARGETARCHITECTURE"
+                      )
+    parser.add_option("-m", "--module",
+                      action="append",
+                      help="Define a MODULESPEC. A MODULESPEC has the form "
+                           "modulename, modulename:version, "
+                           "modulename:-version or modulename:+version. If "
+                           "you specify modules with this option you don't "
+                           "have to put MODULESPECs after commands like "
+                           "'find' or 'use'. "
+                           "You can specify more than one of these by "
+                           "repeating this option or by joining values in "
+                           "a single string separated by spaces. "
+                           "This option value is stored in the CONFIGFILE.",
+                      metavar="MODULESPEC"
                       )
     parser.add_option("-b", "--brief",
                       action="store_true",
@@ -808,7 +850,13 @@ def main():
     # options: the options-object
     # args: list of left-over args
 
-    config= utils.ConfigFile(( "arch", "db", "progress", "source_patch",
+    # join some of the list options:
+    options.arch  = utils.opt_join(options.arch, do_sort= True)
+    options.module= utils.opt_join(options.module)
+
+    config= utils.ConfigFile(( "arch", "db",
+                               "module",
+                               "progress", "source_patch",
                                "verbose"), CONFIG_NAME)
 
     if options.summary:
