@@ -50,6 +50,23 @@ License
 
 This software of this project can be used unter the HZB :doc:`license`.
 
+Download
+========
+
+You can download packages of the software here:
+
+* `latest version, tar.gz file <http://www-csr.bessy.de/control/sumo/sumo-dist/sumo.tar.gz>`_
+* `latest version, zip file <http://www-csr.bessy.de/control/sumo/sumo-dist/sumo.zip>`_
+* `older versions <http://www-csr.bessy.de/control/sumo/sumo-dist>`_
+
+The source
+==========
+
+You can browse our `repository
+<http://www-csr.bessy.de/cgi-bin/hgweb.cgi/sumo>`_ or clone it
+with::
+
+  hg clone http://www-csr.bessy.de/cgi-bin/hgweb.cgi/sumo
 
 Indices and tables
 ==================
