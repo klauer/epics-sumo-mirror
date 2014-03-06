@@ -18,7 +18,7 @@ import shutil
 import sumo.utils as utils
 
 # version of the program:
-my_version= "1.0"
+my_version= "1.1"
 
 KNOWN_COMMANDS=set(("use", "delete", "edit", "find",
                     "useall", "list", "new", "partialdb",
