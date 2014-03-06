@@ -554,7 +554,8 @@ def process(options, commands):
     if commands[0]=="cloneversion" or commands[0]=="replaceversion":
         do_replace= (commands[0]=="replaceversion")
         if len(commands)!=4:
-            sys.exit("exactly three arguments must follow \"cloneversion\"")
+            sys.exit("exactly three arguments must follow \"%s\"" % \
+                     commands[0])
         if not options.db:
             sys.exit("error, --db is mandatory here")
         db = utils.Dependencies.from_json_file(options.db,
