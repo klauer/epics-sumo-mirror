@@ -215,7 +215,7 @@ def show_progress(cnt, cnt_max, message= None):
 # data structure utilities
 # -----------------------------------------------
 
-def opt_join(option):
+def opt_join(option, do_sort= False):
     """join command line option values to a single list.
 
     Here is an example:
@@ -225,7 +225,10 @@ def opt_join(option):
     """
     if option is None:
         return
-    return " ".join(option).split()
+    lst= " ".join(option).split()
+    if do_sort:
+        lst.sort()
+    return lst
 
 def dict_of_sets_add(dict_, key, val):
     """add a key, create a set if needed.

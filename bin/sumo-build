@@ -711,7 +711,7 @@ def process(options, commands):
         # modifies builddb:
         create_modules(partialdb, builddb, buildtag,
                        options.extra,
-                       utils.opt_join(options.arch),
+                       options.arch,
                        options.verbose, options.dry_run)
         create_makefile(partialdb, builddb, buildtag,
                         options.verbose, options.dry_run)
@@ -741,7 +741,7 @@ def process(options, commands):
             modulespecs= commands[1:]
         else:
             # no modulespecs after the command
-            modulespecs= utils.opt_join(options.module)
+            modulespecs= options.module
             if not modulespecs:
                 sys.exit("error: module specs missing")
 
@@ -752,7 +752,7 @@ def process(options, commands):
         db= utils.Dependencies.from_json_file(options.db)
         builddb= utils.Builddb.from_json_file(options.builddb)
         new_builddb= builddb.filter_by_specs(modulespecs,
-                                             utils.opt_join(options.arch),
+                                             options.arch,
                                              db)
         if not options.brief:
             new_builddb.json_print()
@@ -782,7 +782,7 @@ def process(options, commands):
                              builddb,
                              db,
                              None,
-                             scan_aliases(utils.opt_join(options.alias)),
+                             scan_aliases(options.alias),
                              options.extra)
         return
 
@@ -797,7 +797,7 @@ def process(options, commands):
             modulespecs= commands[2:]
         else:
             # no modulespecs after the command
-            modulespecs= utils.opt_join(options.module)
+            modulespecs= options.module
             if not modulespecs:
                 sys.exit("error: module specs missing")
 
@@ -809,8 +809,8 @@ def process(options, commands):
                          modulespecs,
                          builddb,
                          db,
-                         utils.opt_join(options.arch),
-                         scan_aliases(utils.opt_join(options.alias)),
+                         options.arch,
+                         scan_aliases(options.alias),
                          options.extra)
         return
 
@@ -1009,6 +1009,11 @@ def main():
     (options, args) = parser.parse_args()
     # options: the options-object
     # args: list of left-over args
+
+    # join some of the list options:
+    options.arch  = utils.opt_join(options.arch, do_sort= True)
+    options.alias = utils.opt_join(options.alias, do_sort= True)
+    options.module= utils.opt_join(options.module)
 
     config= utils.ConfigFile(( "arch", "alias", "builddb", "db", "extra",
                                "module",
