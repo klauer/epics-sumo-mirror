@@ -583,8 +583,6 @@ def process(options, commands):
             sys.exit("error: MAXSTATE missing")
         if not options.db:
             sys.exit("error, --db is mandatory here")
-        if not options.arch:
-            sys.exit("error, --arch is mandatory here")
         db= utils.Dependencies.from_json_file(options.db)
         maxstate= commands[1]
         if len(commands)>2:
@@ -664,7 +662,6 @@ where command is:
               stable:   take only dependencies marked stable
               testing:  take dependencies marked stable or testing
               unstable: take dependencies marked stable, testing or unstable
-          Note that option "--arch" is mandatory for this command.
   weight [WEIGHT] [modules]
           Get or set the weight factor for modules. Use
           modulename:{+-}versionname to select more versions of a module.
@@ -674,7 +671,6 @@ where command is:
           Show newest version for each module. If {modules} is missing, take
           all modules of the database. MAXSTATE is the "maximum" state as
           described above.
-          Note that option "--arch" is mandatory for these commands.
   showall [MAXSTATE] {modules}: 
           Show all versions for each module. If {modules} is missing, take all
           modules of the database. MAXSTATE is the "maximum" state as described
