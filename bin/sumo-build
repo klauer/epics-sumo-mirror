@@ -580,6 +580,8 @@ def process(options, commands):
         options.extra= []
 
     if commands[0]=="edit":
+        if options.readonly:
+            sys.exit("--readonly forbids editing a database file")
         if len(commands)!=2:
             sys.exit("exactly one filename must follow \"edit\"")
         utils.edit_with_lock(commands[1], options.verbose, options.dry_run)
@@ -612,6 +614,8 @@ def process(options, commands):
         return
 
     if commands[0]=="state":
+        if options.readonly:
+            sys.exit("--readonly forbids changing the state of a build")
         if len(commands)<=1:
             sys.exit("error: buildtag missing")
         buildtag= commands[1]
@@ -654,6 +658,8 @@ def process(options, commands):
         return
 
     if commands[0]=="delete":
+        if options.readonly:
+            sys.exit("--readonly forbids deleting a support")
         if len(commands)>2:
             sys.exit("error: extra arguments following \"delete\"")
         if len(commands)<=1:
@@ -674,6 +680,8 @@ def process(options, commands):
         return
 
     if commands[0]=="newtree":
+        if options.readonly:
+            sys.exit("--readonly forbids creating a new build")
         if len(commands)>2:
             sys.exit("error: extra arguments following \"newtree\"")
         if len(commands)<=1:
@@ -972,6 +980,12 @@ def main():
                       action="store_true",
                       help="Do a more brief output for some commands.",
                       )
+    parser.add_option("--readonly",
+                      action="store_true",
+                      help="Do not allow modifying the database files or "
+                           "the support directory. "
+                           "This option value is stored in the CONFIGFILE.",
+                      )
     parser.add_option("--nolock",
                       action="store_true",
                       help="Do not use file locking."
@@ -999,6 +1013,7 @@ def main():
     config= utils.ConfigFile(( "arch", "alias", "builddb", "db", "extra",
                                "module",
                                "progress",
+                               "readonly",
                                "supportdir",
                                "verbose",),
                                CONFIG_NAME)
