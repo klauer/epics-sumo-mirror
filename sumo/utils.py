@@ -885,7 +885,7 @@ class Hints(object):
         >>> h= Hints()
         >>> h.add(r'\d,TAGLESS')
         >>> print h.flags("ab")
-        None
+        {}
         >>> print h.flags("ab12")
         {'tagless': True}
         """
