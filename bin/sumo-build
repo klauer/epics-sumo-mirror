@@ -20,9 +20,9 @@ import sumo.utils as utils
 # version of the program:
 my_version= "1.1"
 
-KNOWN_COMMANDS=set(("use", "delete", "edit", "find",
-                    "useall", "list", "new", "partialdb",
-                    "show", "state"))
+KNOWN_COMMANDS=set(( "cleanup", "delete", "edit", "find", "list", "new",
+                     "partialdb", "show", "state", "use", "useall",
+                  ))
 
 CONFIG_NAME="sumo-build.config"
 
@@ -85,6 +85,30 @@ def errmsg(msg):
 def makefilename(build_tag):
     """create a makefile name from a build_tag."""
     return("Makefile-%s" % build_tag)
+
+def cleanupfilename(build_tag):
+    """create the name of the cleanup file."""
+    return("cleanup-%s" % build_tag)
+
+def rmcleanup(build_tag):
+    """remove the cleanup file."""
+    fn= cleanupfilename(build_tag)
+    if os.path.exists(fn):
+        return os.remove(fn)
+
+def loadcleanup(build_tag, must_exist= False):
+    """load the cleanup file."""
+    fn= cleanupfilename(build_tag)
+    if os.path.exists(fn):
+        return utils.json_loadfile(fn)
+    if must_exist:
+        raise IOError("file '%s' not found" % fn)
+    return {"modules": [] }
+
+def savecleanup(build_tag, struc):
+    """save the cleanup file."""
+    fn= cleanupfilename(build_tag)
+    utils.json_dump_file(fn, struc)
 
 def gather_dependencies(db, modulename, versionname,
                         gathered_deps):
@@ -279,13 +303,20 @@ def create_source(db, modulename, versionname,
         raise AssertionError("unsupported source type %s" % sourcetype)
 
 def delete_module(build_tag, modulename, versionname,
+                  must_exist,
                   verbose, dry_run):
     """delete a single module."""
+    # pylint: disable=R0913
+    #                          Too many arguments
     dirname= module_dir_string(build_tag, modulename, versionname)
     if verbose:
         print "removing %s" % dirname
     if not dry_run:
-        shutil.rmtree(dirname)
+        if os.path.exists(dirname):
+            shutil.rmtree(dirname)
+        else:
+            if must_exist:
+                raise IOError("error: '%s' doesn't exist" % dirname)
         # remove the parent directory if it is empty:
     rm_empty_dir(modulename, verbose, dry_run)
 
@@ -299,14 +330,37 @@ def delete_modules(builddb, build_tag, verbose, dry_run):
     for modulename, versionname in builddb.iter_modules(build_tag):
         if builddb.module_link(build_tag, modulename):
             continue
-        delete_module(build_tag, modulename, versionname, verbose, dry_run)
+        delete_module(build_tag, modulename, versionname, True,
+                      verbose, dry_run)
 
     os.remove(makefilename(build_tag))
 
     builddb.delete(build_tag)
 
-# pylint: disable=R0913
-#                          Too many arguments
+def cleanup_modules(build_tag, verbose, dry_run):
+    """cleanup remains of a failed build.
+
+    This can only happen if a "new" command was aborted due to an exception in
+    the script.
+    """
+    try:
+        cleanup_struc= loadcleanup(build_tag, must_exist= True)
+    except IOError, e:
+        sys.exit(str(e))
+
+    module_list= cleanup_struc["modules"]
+    for module_dict in module_list:
+        delete_module(build_tag,
+                      module_dict["modulename"],
+                      module_dict["versionname"],
+                      False,
+                      verbose, dry_run)
+    makefile= cleanup_struc.get("makefile")
+    if makefile:
+        if os.path.exists(makefile):
+            os.remove(makefile)
+    if not dry_run:
+        rmcleanup(build_tag)
 
 def create_module(db, builddb, build_tag,
                   modulename, versionname,
@@ -321,6 +375,8 @@ def create_module(db, builddb, build_tag,
     This function requires that the current working directory is the
     support directory!
     """
+    # pylint: disable=R0913
+    #                          Too many arguments
     if not db.check_archs(modulename, versionname, archs):
 
         sys.stderr.write("error: archs %s\nnot supportted by "
@@ -378,6 +434,14 @@ def create_modules(partialdb, builddb, build_tag, extra_lines,
     This function requires that the current working directory is the support
     directory!
     """
+    # save a list of possibly created directories in a cleanup-structure. In
+    # case the script exits with an exception, the created cleanup file can be
+    # used to clean up the support directory.
+    # Load the cleanup file in case other parts of the script have saved
+    # someting there:
+    cleanup_struc= loadcleanup(build_tag)
+    module_list  = cleanup_struc.setdefault("modules", [])
+
     # add all modules specified by partialdb to builddb under tag build_tag:
     add_modules(partialdb, builddb, build_tag)
 
@@ -386,8 +450,15 @@ def create_modules(partialdb, builddb, build_tag, extra_lines,
         # do not re-create modules that are links:
         if builddb.module_link(build_tag, modulename):
             continue
+        module_list.append({"modulename" : modulename,
+                            "versionname": versionname})
+
+    if not dry_run:
+        savecleanup(build_tag, cleanup_struc)
+    for module_dict in module_list:
         create_module(partialdb, builddb, build_tag,
-                      modulename, versionname,
+                      module_dict["modulename"],
+                      module_dict["versionname"],
                       extra_lines,
                       archs,
                       verbose, dry_run)
@@ -426,6 +497,10 @@ def create_makefile(partialdb, builddb, build_tag, verbose, dry_run):
                 continue
             paths[(modulename, versionname)]= dir_
     filename= makefilename(build_tag)
+    if not dry_run:
+        cleanup_struc= loadcleanup(build_tag)
+        cleanup_struc["makefile"]= filename
+        savecleanup(build_tag, cleanup_struc)
     module_dirs= sorted(paths.values())
     stamps= [os.path.join(p,"stamp") for p in module_dirs]
     fh= None
@@ -679,6 +754,17 @@ def process(options, commands):
                           options.verbose, options.dry_run)
         return
 
+    if commands[0]=="cleanup":
+        if options.readonly:
+            sys.exit("--readonly forbids cleaning up")
+        if len(commands)>2:
+            sys.exit("error: extra arguments following \"cleanup\"")
+        if len(commands)<=1:
+            sys.exit("error: buildtag missing")
+        buildtag= commands[1]
+        cleanup_modules(buildtag, options.verbose, options.dry_run)
+        return
+
     if commands[0]=="new":
         if options.readonly:
             sys.exit("--readonly forbids creating a new build")
@@ -715,11 +801,12 @@ def process(options, commands):
                        options.verbose, options.dry_run)
         create_makefile(partialdb, builddb, buildtag,
                         options.verbose, options.dry_run)
-        builddb.json_save(options.builddb, options.verbose, options.dry_run)
         db.merge(partialdb, "unstable")
+        builddb.json_save(options.builddb, options.verbose, options.dry_run)
         # ^^^ does also unlock the file
         db.json_save(options.db, options.verbose, options.dry_run)
         # ^^^ does also unlock the file
+        rmcleanup(buildtag)
         return
     if commands[0]=="partialdb":
         if len(commands)>2:
@@ -863,6 +950,8 @@ where command is:
           and "testing".
   delete [buildtag]
           delete the build if no other builds depend on it.
+  cleanup [buildtag]
+          remove the remains of a failed "new" command.
 """
 
 def main():
