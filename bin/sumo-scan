@@ -498,6 +498,11 @@ def process(options, commands):
         if not options.group_basedir:
             sys.exit("error, option -g is mandatory here")
 
+    options.dir= utils.opt_join(options.dir)
+    options.ignore_name= utils.opt_join(options.ignore_name)
+    options.group_basedir= utils.opt_join(options.group_basedir)
+    options.exclude_path= utils.opt_join(options.exclude_path)
+
     if options.dir:
         (deps, archs)= get_configuration(options)
     elif options.info_file:
@@ -607,8 +612,10 @@ def main():
     parser.add_option("-d", "--dir",
                       action="append",
                       type="string",
-                      help="Parse all RELEASE files in directory DIR, you "
-                           "can specify more than one DIR. "
+                      help="Parse all RELEASE files in directory DIR."
+                           "You can specify more than one of these by "
+                           "repeating this option or by joining values in "
+                           "a single string separated by spaces. "
                            "This option value is stored in the CONFIGFILE.",
                       metavar="DIR"
                       )
@@ -624,7 +631,9 @@ def main():
                       help="Define macro names in the RELEASE files that "
                            "should be ignored. You usually want to ignore "
                            "the names 'TOP' or 'SUPPORT' in RELEASE files. "
-                           "You can specify more than one of these. "
+                           "You can specify more than one of these by "
+                           "repeating this option or by joining values in "
+                           "a single string separated by spaces. "
                            "This option value is stored in the CONFIGFILE.",
                       )
     parser.add_option("-g", "--group-basedir",
@@ -634,17 +643,21 @@ def main():
                            "part of the directory path that is the same "
                            "for all support modules. This is needed in "
                            "order to generate a module name from the "
-                           "module's directory path. You can use this "
-                           "option several times in order to defined more "
-                           "than one base directory. The value of this "
+                           "module's directory path. "
+                           "You can specify more than one of these by "
+                           "repeating this option or by joining values in "
+                           "a single string separated by spaces. "
+                           "The value of this "
                            "option is stored in the configuration file.",
                       )
     parser.add_option("--exclude-path",
                       action="append",
                       type="string",
                       help="Exclude all paths that match REGEXP from "
-                           "dependencies. You can specify more than one "
-                           "of these. "
+                           "dependencies. "
+                           "You can specify more than one of these by "
+                           "repeating this option or by joining values in "
+                           "a single string separated by spaces. "
                            "This option value is stored in the CONFIGFILE.",
                       metavar="REGEXP"
                       )
