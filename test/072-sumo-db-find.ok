@@ -1,0 +1,1122 @@
+find unstable mcan:
+{
+    "MCAN": {
+        "R2-0": {
+            "aliases": {
+                "BASE": "EPICS_BASE"
+            }, 
+            "archs": {
+                "vxWorks-68040": true, 
+                "vxWorks-ppc603": true
+            }, 
+            "dependencies": {
+                "ALARM": {
+                    "R3-0": "stable"
+                }, 
+                "BASE": {
+                    "R3-14-8-2-0": "stable"
+                }, 
+                "MISC": {
+                    "TAGLESS-2-0": "stable"
+                }, 
+                "SOFT": {
+                    "R2-0": "stable"
+                }
+            }, 
+            "source": {
+                "darcs": {
+                    "tag": "R2-0", 
+                    "url": "rcsadm@aragon.acc.bessy.de:/opt/repositories/controls/darcs/epics/support/mcan/base-3-14-8"
+                }
+            }, 
+            "state": "stable"
+        }, 
+        "R2-1": {
+            "aliases": {
+                "BASE": "EPICS_BASE"
+            }, 
+            "archs": {
+                "vxWorks-68040": true, 
+                "vxWorks-ppc603": true
+            }, 
+            "dependencies": {
+                "ALARM": {
+                    "R3-1": "stable"
+                }, 
+                "BASE": {
+                    "R3-14-8-2-0": "stable"
+                }, 
+                "MISC": {
+                    "R2-4": "stable"
+                }, 
+                "SOFT": {
+                    "R2-1": "stable"
+                }
+            }, 
+            "source": {
+                "darcs": {
+                    "tag": "R2-1", 
+                    "url": "rcsadm@aragon.acc.bessy.de:/opt/repositories/controls/darcs/epics/support/mcan/base-3-14-8"
+                }
+            }, 
+            "state": "stable"
+        }, 
+        "R2-2": {
+            "aliases": {
+                "BASE": "EPICS_BASE"
+            }, 
+            "archs": {
+                "vxWorks-68040": true, 
+                "vxWorks-ppc603": true
+            }, 
+            "dependencies": {
+                "ALARM": {
+                    "R3-1": "stable"
+                }, 
+                "BASE": {
+                    "R3-14-8-2-0": "stable"
+                }, 
+                "MISC": {
+                    "R2-4": "stable"
+                }, 
+                "SOFT": {
+                    "R2-1": "stable"
+                }
+            }, 
+            "source": {
+                "darcs": {
+                    "tag": "R2-2", 
+                    "url": "rcsadm@aragon.acc.bessy.de:/opt/repositories/controls/darcs/epics/support/mcan/base-3-14-8"
+                }
+            }, 
+            "state": "stable"
+        }, 
+        "R2-2-1": {
+            "aliases": {
+                "BASE": "EPICS_BASE", 
+                "MCAN": "INSTALL_LOCATION_APP"
+            }, 
+            "archs": {
+                "vxWorks-68040": true, 
+                "vxWorks-ppc603": true
+            }, 
+            "dependencies": {
+                "ALARM": {
+                    "R3-1": "stable"
+                }, 
+                "BASE": {
+                    "R3-14-8-2-0": "stable"
+                }, 
+                "MCAN": {
+                    "R2-2-1": "stable"
+                }, 
+                "MISC": {
+                    "R2-4": "stable"
+                }, 
+                "SOFT": {
+                    "PATH-2-2-1": "stable"
+                }
+            }, 
+            "source": {
+                "darcs": {
+                    "tag": "R2-2-1", 
+                    "url": "rcsadm@aragon.acc.bessy.de:/opt/repositories/controls/darcs/epics/support/mcan/base-3-14-8"
+                }
+            }, 
+            "state": "stable"
+        }, 
+        "R2-2-2": {
+            "aliases": {
+                "BASE": "EPICS_BASE"
+            }, 
+            "archs": {
+                "vxWorks-68040": true, 
+                "vxWorks-ppc603": true
+            }, 
+            "dependencies": {
+                "ALARM": {
+                    "R3-1": "stable"
+                }, 
+                "BASE": {
+                    "R3-14-8-2-0": "stable"
+                }, 
+                "MISC": {
+                    "R2-4": "stable"
+                }, 
+                "SOFT": {
+                    "TAGLESS-2-2": "stable"
+                }
+            }, 
+            "source": {
+                "darcs": {
+                    "tag": "R2-2-2", 
+                    "url": "rcsadm@aragon.acc.bessy.de:/opt/repositories/controls/darcs/epics/support/mcan/base-3-14-8"
+                }
+            }, 
+            "state": "stable"
+        }, 
+        "R2-3": {
+            "aliases": {
+                "BASE": "EPICS_BASE"
+            }, 
+            "archs": {
+                "vxWorks-68040": true, 
+                "vxWorks-ppc603": true
+            }, 
+            "dependencies": {
+                "ALARM": {
+                    "R3-1": "stable"
+                }, 
+                "BASE": {
+                    "R3-14-8-2-0": "stable"
+                }, 
+                "MISC": {
+                    "R2-4": "stable"
+                }, 
+                "SOFT": {
+                    "TAGLESS-2-2": "stable"
+                }
+            }, 
+            "source": {
+                "darcs": {
+                    "tag": "R2-3", 
+                    "url": "rcsadm@aragon.acc.bessy.de:/opt/repositories/controls/darcs/epics/support/mcan/base-3-14-8"
+                }
+            }, 
+            "state": "stable"
+        }, 
+        "R2-3-1": {
+            "aliases": {
+                "BASE": "EPICS_BASE"
+            }, 
+            "archs": {
+                "vxWorks-68040": true, 
+                "vxWorks-ppc603": true
+            }, 
+            "dependencies": {
+                "ALARM": {
+                    "R3-1": "stable"
+                }, 
+                "BASE": {
+                    "R3-14-8-2-0": "stable"
+                }, 
+                "MISC": {
+                    "R2-4": "stable"
+                }, 
+                "SOFT": {
+                    "TAGLESS-2-2": "stable"
+                }
+            }, 
+            "source": {
+                "darcs": {
+                    "tag": "R2-3-1", 
+                    "url": "rcsadm@aragon.acc.bessy.de:/opt/repositories/controls/darcs/epics/support/mcan/base-3-14-8"
+                }
+            }, 
+            "state": "stable"
+        }, 
+        "R2-3-10": {
+            "aliases": {
+                "BASE": "EPICS_BASE"
+            }, 
+            "archs": {
+                "vxWorks-68040": true, 
+                "vxWorks-ppc603": true
+            }, 
+            "dependencies": {
+                "ALARM": {
+                    "R3-5": "stable"
+                }, 
+                "BASE": {
+                    "R3-14-8-2-0": "stable"
+                }, 
+                "MISC": {
+                    "R2-4": "stable"
+                }, 
+                "SOFT": {
+                    "R2-5": "stable"
+                }
+            }, 
+            "source": {
+                "darcs": {
+                    "tag": "R2-3-10", 
+                    "url": "rcsadm@aragon.acc.bessy.de:/opt/repositories/controls/darcs/epics/support/mcan/base-3-14-8"
+                }
+            }, 
+            "state": "stable"
+        }, 
+        "R2-3-11": {
+            "aliases": {
+                "BASE": "EPICS_BASE"
+            }, 
+            "archs": {
+                "vxWorks-68040": true, 
+                "vxWorks-ppc603": true
+            }, 
+            "dependencies": {
+                "ALARM": {
+                    "R3-5": "stable"
+                }, 
+                "BASE": {
+                    "R3-14-8-2-0": "stable"
+                }, 
+                "MISC": {
+                    "R2-4": "stable"
+                }, 
+                "SOFT": {
+                    "R2-5": "stable"
+                }
+            }, 
+            "source": {
+                "darcs": {
+                    "tag": "R2-3-11", 
+                    "url": "rcsadm@aragon.acc.bessy.de:/opt/repositories/controls/darcs/epics/support/mcan/base-3-14-8"
+                }
+            }, 
+            "state": "stable"
+        }, 
+        "R2-3-12": {
+            "aliases": {
+                "BASE": "EPICS_BASE"
+            }, 
+            "archs": {
+                "vxWorks-68040": true, 
+                "vxWorks-ppc603": true
+            }, 
+            "dependencies": {
+                "ALARM": {
+                    "R3-5": "stable"
+                }, 
+                "BASE": {
+                    "R3-14-8-2-0": "stable"
+                }, 
+                "MISC": {
+                    "R2-4": "stable"
+                }, 
+                "SOFT": {
+                    "R2-5": "stable"
+                }
+            }, 
+            "source": {
+                "darcs": {
+                    "tag": "R2-3-12", 
+                    "url": "rcsadm@aragon.acc.bessy.de:/opt/repositories/controls/darcs/epics/support/mcan/base-3-14-8"
+                }
+            }, 
+            "state": "stable"
+        }, 
+        "R2-3-12-1": {
+            "aliases": {
+                "BASE": "EPICS_BASE"
+            }, 
+            "archs": {
+                "vxWorks-68040": true, 
+                "vxWorks-ppc603": true
+            }, 
+            "dependencies": {
+                "ALARM": {
+                    "R3-5": "stable"
+                }, 
+                "BASE": {
+                    "R3-14-8-2-0": "stable"
+                }, 
+                "MISC": {
+                    "R2-4": "stable"
+                }, 
+                "SOFT": {
+                    "R2-5": "stable"
+                }
+            }, 
+            "source": {
+                "darcs": {
+                    "tag": "R2-3-12-1", 
+                    "url": "rcsadm@aragon.acc.bessy.de:/opt/repositories/controls/darcs/epics/support/mcan/base-3-14-8"
+                }
+            }, 
+            "state": "stable"
+        }, 
+        "R2-3-13": {
+            "aliases": {
+                "BASE": "EPICS_BASE"
+            }, 
+            "archs": {
+                "vxWorks-68040": true, 
+                "vxWorks-ppc603": true
+            }, 
+            "dependencies": {
+                "ALARM": {
+                    "R3-5": "stable"
+                }, 
+                "BASE": {
+                    "R3-14-8-2-0": "stable"
+                }, 
+                "MISC": {
+                    "R2-4": "stable"
+                }, 
+                "SOFT": {
+                    "R2-5": "stable"
+                }
+            }, 
+            "source": {
+                "darcs": {
+                    "tag": "R2-3-13", 
+                    "url": "rcsadm@aragon.acc.bessy.de:/opt/repositories/controls/darcs/epics/support/mcan/base-3-14-8"
+                }
+            }, 
+            "state": "stable"
+        }, 
+        "R2-3-14": {
+            "aliases": {
+                "BASE": "EPICS_BASE"
+            }, 
+            "archs": {
+                "vxWorks-68040": true, 
+                "vxWorks-ppc603": true
+            }, 
+            "dependencies": {
+                "ALARM": {
+                    "R3-5": "stable"
+                }, 
+                "BASE": {
+                    "R3-14-8-2-0": "stable"
+                }, 
+                "MISC": {
+                    "R2-4": "stable"
+                }, 
+                "SOFT": {
+                    "R2-5": "stable"
+                }
+            }, 
+            "source": {
+                "darcs": {
+                    "tag": "R2-3-14", 
+                    "url": "rcsadm@aragon.acc.bessy.de:/opt/repositories/controls/darcs/epics/support/mcan/base-3-14-8"
+                }
+            }, 
+            "state": "stable"
+        }, 
+        "R2-3-15": {
+            "aliases": {
+                "BASE": "EPICS_BASE"
+            }, 
+            "archs": {
+                "vxWorks-68040": true, 
+                "vxWorks-ppc603": true
+            }, 
+            "dependencies": {
+                "ALARM": {
+                    "R3-5": "stable"
+                }, 
+                "BASE": {
+                    "R3-14-8-2-0": "stable"
+                }, 
+                "MISC": {
+                    "R2-4": "stable"
+                }, 
+                "SOFT": {
+                    "R2-5": "stable"
+                }
+            }, 
+            "source": {
+                "darcs": {
+                    "tag": "R2-3-15", 
+                    "url": "rcsadm@aragon.acc.bessy.de:/opt/repositories/controls/darcs/epics/support/mcan/base-3-14-8"
+                }
+            }, 
+            "state": "stable"
+        }, 
+        "R2-3-16": {
+            "aliases": {
+                "BASE": "EPICS_BASE"
+            }, 
+            "archs": {
+                "vxWorks-68040": true, 
+                "vxWorks-ppc603": true
+            }, 
+            "dependencies": {
+                "ALARM": {
+                    "R3-5": "stable"
+                }, 
+                "BASE": {
+                    "R3-14-8-2-0": "stable"
+                }, 
+                "MISC": {
+                    "R2-4": "stable"
+                }, 
+                "SOFT": {
+                    "R2-5": "stable"
+                }
+            }, 
+            "source": {
+                "darcs": {
+                    "tag": "R2-3-16", 
+                    "url": "rcsadm@aragon.acc.bessy.de:/opt/repositories/controls/darcs/epics/support/mcan/base-3-14-8"
+                }
+            }, 
+            "state": "stable"
+        }, 
+        "R2-3-17": {
+            "aliases": {
+                "BASE": "EPICS_BASE"
+            }, 
+            "archs": {
+                "vxWorks-68040": true, 
+                "vxWorks-ppc603": true
+            }, 
+            "dependencies": {
+                "ALARM": {
+                    "R3-5": "stable"
+                }, 
+                "BASE": {
+                    "R3-14-8-2-0": "stable"
+                }, 
+                "MISC": {
+                    "R2-4": "stable"
+                }, 
+                "SOFT": {
+                    "R2-5": "stable"
+                }
+            }, 
+            "source": {
+                "darcs": {
+                    "tag": "R2-3-17", 
+                    "url": "rcsadm@aragon.acc.bessy.de:/opt/repositories/controls/darcs/epics/support/mcan/base-3-14-8"
+                }
+            }, 
+            "state": "stable"
+        }, 
+        "R2-3-18": {
+            "aliases": {
+                "BASE": "EPICS_BASE"
+            }, 
+            "archs": {
+                "vxWorks-68040": true, 
+                "vxWorks-ppc603": true
+            }, 
+            "dependencies": {
+                "ALARM": {
+                    "R3-5": "stable"
+                }, 
+                "BASE": {
+                    "R3-14-8-2-0": "stable"
+                }, 
+                "MISC": {
+                    "R2-4": "stable"
+                }, 
+                "SOFT": {
+                    "R2-5": "stable"
+                }
+            }, 
+            "source": {
+                "darcs": {
+                    "tag": "R2-3-18", 
+                    "url": "rcsadm@aragon.acc.bessy.de:/opt/repositories/controls/darcs/epics/support/mcan/base-3-14-8"
+                }
+            }, 
+            "state": "stable"
+        }, 
+        "R2-3-2": {
+            "aliases": {
+                "BASE": "EPICS_BASE"
+            }, 
+            "archs": {
+                "vxWorks-68040": true, 
+                "vxWorks-ppc603": true
+            }, 
+            "dependencies": {
+                "ALARM": {
+                    "R3-1": "stable"
+                }, 
+                "BASE": {
+                    "R3-14-8-2-0": "stable"
+                }, 
+                "MISC": {
+                    "R2-4": "stable"
+                }, 
+                "SOFT": {
+                    "TAGLESS-2-2": "stable"
+                }
+            }, 
+            "source": {
+                "darcs": {
+                    "tag": "R2-3-2", 
+                    "url": "rcsadm@aragon.acc.bessy.de:/opt/repositories/controls/darcs/epics/support/mcan/base-3-14-8"
+                }
+            }, 
+            "state": "stable"
+        }, 
+        "R2-3-3": {
+            "aliases": {
+                "BASE": "EPICS_BASE"
+            }, 
+            "archs": {
+                "vxWorks-68040": true, 
+                "vxWorks-ppc603": true
+            }, 
+            "dependencies": {
+                "ALARM": {
+                    "R3-1": "stable"
+                }, 
+                "BASE": {
+                    "R3-14-8-2-0": "stable"
+                }, 
+                "MISC": {
+                    "R2-4": "stable"
+                }, 
+                "SOFT": {
+                    "R2-2-2": "stable"
+                }
+            }, 
+            "source": {
+                "darcs": {
+                    "tag": "R2-3-3", 
+                    "url": "rcsadm@aragon.acc.bessy.de:/opt/repositories/controls/darcs/epics/support/mcan/base-3-14-8"
+                }
+            }, 
+            "state": "stable"
+        }, 
+        "R2-3-4": {
+            "aliases": {
+                "BASE": "EPICS_BASE"
+            }, 
+            "archs": {
+                "vxWorks-68040": true, 
+                "vxWorks-ppc603": true
+            }, 
+            "dependencies": {
+                "ALARM": {
+                    "R3-2": "stable"
+                }, 
+                "BASE": {
+                    "R3-14-8-2-0": "stable"
+                }, 
+                "MISC": {
+                    "R2-4": "stable"
+                }, 
+                "SOFT": {
+                    "R2-2-3": "stable"
+                }
+            }, 
+            "source": {
+                "darcs": {
+                    "tag": "R2-3-4", 
+                    "url": "rcsadm@aragon.acc.bessy.de:/opt/repositories/controls/darcs/epics/support/mcan/base-3-14-8"
+                }
+            }, 
+            "state": "stable"
+        }, 
+        "R2-3-5": {
+            "aliases": {
+                "BASE": "EPICS_BASE"
+            }, 
+            "archs": {
+                "vxWorks-68040": true, 
+                "vxWorks-ppc603": true
+            }, 
+            "dependencies": {
+                "ALARM": {
+                    "R3-3": "stable"
+                }, 
+                "BASE": {
+                    "R3-14-8-2-0": "stable"
+                }, 
+                "MISC": {
+                    "R2-4": "stable"
+                }, 
+                "SOFT": {
+                    "R2-2-3": "stable"
+                }
+            }, 
+            "source": {
+                "darcs": {
+                    "tag": "R2-3-5", 
+                    "url": "rcsadm@aragon.acc.bessy.de:/opt/repositories/controls/darcs/epics/support/mcan/base-3-14-8"
+                }
+            }, 
+            "state": "stable"
+        }, 
+        "R2-3-6": {
+            "aliases": {
+                "BASE": "EPICS_BASE"
+            }, 
+            "archs": {
+                "vxWorks-68040": true, 
+                "vxWorks-ppc603": true
+            }, 
+            "dependencies": {
+                "ALARM": {
+                    "R3-3": "stable"
+                }, 
+                "BASE": {
+                    "R3-14-8-2-0": "stable"
+                }, 
+                "MISC": {
+                    "R2-4": "stable"
+                }, 
+                "SOFT": {
+                    "R2-3": "stable"
+                }
+            }, 
+            "source": {
+                "darcs": {
+                    "tag": "R2-3-6", 
+                    "url": "rcsadm@aragon.acc.bessy.de:/opt/repositories/controls/darcs/epics/support/mcan/base-3-14-8"
+                }
+            }, 
+            "state": "stable"
+        }, 
+        "R2-3-7": {
+            "aliases": {
+                "BASE": "EPICS_BASE"
+            }, 
+            "archs": {
+                "vxWorks-68040": true, 
+                "vxWorks-ppc603": true
+            }, 
+            "dependencies": {
+                "ALARM": {
+                    "R3-5": "stable"
+                }, 
+                "BASE": {
+                    "R3-14-8-2-0": "stable"
+                }, 
+                "MISC": {
+                    "R2-4": "stable"
+                }, 
+                "SOFT": {
+                    "R2-3": "stable"
+                }
+            }, 
+            "source": {
+                "darcs": {
+                    "tag": "R2-3-7", 
+                    "url": "rcsadm@aragon.acc.bessy.de:/opt/repositories/controls/darcs/epics/support/mcan/base-3-14-8"
+                }
+            }, 
+            "state": "stable"
+        }, 
+        "R2-3-8": {
+            "aliases": {
+                "BASE": "EPICS_BASE"
+            }, 
+            "archs": {
+                "vxWorks-68040": true, 
+                "vxWorks-ppc603": true
+            }, 
+            "dependencies": {
+                "ALARM": {
+                    "R3-5": "stable"
+                }, 
+                "BASE": {
+                    "R3-14-8-2-0": "stable"
+                }, 
+                "MISC": {
+                    "R2-4": "stable"
+                }, 
+                "SOFT": {
+                    "R2-3": "stable"
+                }
+            }, 
+            "source": {
+                "darcs": {
+                    "tag": "R2-3-8", 
+                    "url": "rcsadm@aragon.acc.bessy.de:/opt/Epics/R3.14.8/support/mcan/2-3-8"
+                }
+            }, 
+            "state": "stable"
+        }, 
+        "R2-3-8-1": {
+            "aliases": {
+                "BASE": "EPICS_BASE"
+            }, 
+            "archs": {
+                "vxWorks-68040": true, 
+                "vxWorks-ppc603": true
+            }, 
+            "dependencies": {
+                "ALARM": {
+                    "R3-5": "stable"
+                }, 
+                "BASE": {
+                    "R3-14-8-2-0": "stable"
+                }, 
+                "MISC": {
+                    "R2-4": "stable"
+                }, 
+                "SOFT": {
+                    "R2-3": "stable"
+                }
+            }, 
+            "source": {
+                "darcs": {
+                    "tag": "R2-3-8-1", 
+                    "url": "rcsadm@aragon.acc.bessy.de:/opt/repositories/controls/darcs/epics/support/mcan/base-3-14-branches/2-3-8"
+                }
+            }, 
+            "state": "stable"
+        }, 
+        "R2-3-8-2": {
+            "aliases": {
+                "BASE": "EPICS_BASE"
+            }, 
+            "archs": {
+                "vxWorks-68040": true, 
+                "vxWorks-ppc603": true
+            }, 
+            "dependencies": {
+                "ALARM": {
+                    "R3-5": "stable"
+                }, 
+                "BASE": {
+                    "R3-14-8-2-0": "stable"
+                }, 
+                "MISC": {
+                    "R2-4": "stable"
+                }, 
+                "SOFT": {
+                    "R2-3": "stable"
+                }
+            }, 
+            "source": {
+                "darcs": {
+                    "tag": "R2-3-8-2", 
+                    "url": "rcsadm@aragon.acc.bessy.de:/opt/repositories/controls/darcs/epics/support/mcan/base-3-14-branches/2-3-8"
+                }
+            }, 
+            "state": "stable"
+        }, 
+        "R2-3-9": {
+            "aliases": {
+                "BASE": "EPICS_BASE"
+            }, 
+            "archs": {
+                "vxWorks-68040": true, 
+                "vxWorks-ppc603": true
+            }, 
+            "dependencies": {
+                "ALARM": {
+                    "R3-5": "stable"
+                }, 
+                "BASE": {
+                    "R3-14-8-2-0": "stable"
+                }, 
+                "MISC": {
+                    "R2-4": "stable"
+                }, 
+                "SOFT": {
+                    "R2-5": "stable"
+                }
+            }, 
+            "source": {
+                "darcs": {
+                    "tag": "R2-3-9", 
+                    "url": "rcsadm@aragon.acc.bessy.de:/opt/repositories/controls/darcs/epics/support/mcan/base-3-14-8"
+                }
+            }, 
+            "state": "stable"
+        }, 
+        "TAGLESS-2-3-13-patch": {
+            "aliases": {
+                "BASE": "EPICS_BASE"
+            }, 
+            "archs": {
+                "vxWorks-68040": true, 
+                "vxWorks-ppc603": true
+            }, 
+            "dependencies": {
+                "ALARM": {
+                    "R3-5": "stable"
+                }, 
+                "BASE": {
+                    "R3-14-8-2-0": "stable"
+                }, 
+                "MISC": {
+                    "R2-4": "stable"
+                }, 
+                "SOFT": {
+                    "R2-5": "stable"
+                }
+            }, 
+            "source": {
+                "darcs": {
+                    "url": "rcsadm@aragon.acc.bessy.de:/opt/Epics/R3.14.8/support/mcan/2-3-13-patch"
+                }
+            }, 
+            "state": "stable"
+        }, 
+        "TAGLESS-2-3-14-delme": {
+            "aliases": {
+                "BASE": "EPICS_BASE"
+            }, 
+            "archs": {
+                "vxWorks-68040": true, 
+                "vxWorks-ppc603": true
+            }, 
+            "dependencies": {
+                "ALARM": {
+                    "R3-5": "stable"
+                }, 
+                "BASE": {
+                    "R3-14-8-2-0": "stable"
+                }, 
+                "MISC": {
+                    "R2-4": "stable"
+                }, 
+                "SOFT": {
+                    "R2-5": "stable"
+                }
+            }, 
+            "source": {
+                "darcs": {
+                    "url": "rcsadm@aragon.acc.bessy.de:/opt/Epics/R3.14.8/support/mcan/2-3-14-delme"
+                }
+            }, 
+            "state": "stable"
+        }, 
+        "TAGLESS-2-3-9-patch": {
+            "aliases": {
+                "BASE": "EPICS_BASE"
+            }, 
+            "archs": {
+                "vxWorks-68040": true, 
+                "vxWorks-ppc603": true
+            }, 
+            "dependencies": {
+                "ALARM": {
+                    "R3-5": "stable"
+                }, 
+                "BASE": {
+                    "R3-14-8-2-0": "stable"
+                }, 
+                "MISC": {
+                    "R2-4": "stable"
+                }, 
+                "SOFT": {
+                    "R2-5": "stable"
+                }
+            }, 
+            "source": {
+                "darcs": {
+                    "url": "rcsadm@aragon.acc.bessy.de:/opt/Epics/R3.14.8/support/mcan/2-3-9-patch"
+                }
+            }, 
+            "state": "stable"
+        }, 
+        "TAGLESS-devsci": {
+            "aliases": {
+                "BASE": "EPICS_BASE"
+            }, 
+            "archs": {
+                "vxWorks-68040": true, 
+                "vxWorks-ppc603": true
+            }, 
+            "dependencies": {
+                "ALARM": {
+                    "R3-3": "stable"
+                }, 
+                "BASE": {
+                    "R3-14-8-2-0": "stable"
+                }, 
+                "MISC": {
+                    "R2-4": "stable"
+                }, 
+                "SOFT": {
+                    "R2-3": "stable"
+                }
+            }, 
+            "source": {
+                "darcs": {
+                    "url": "rcsadm@aragon.acc.bessy.de:/opt/Epics/R3.14.8/support/mcan/devsci"
+                }
+            }, 
+            "state": "stable"
+        }, 
+        "TAGLESS-gp-delme": {
+            "aliases": {
+                "BASE": "EPICS_BASE"
+            }, 
+            "archs": {
+                "ANY": true
+            }, 
+            "dependencies": {
+                "ALARM": {
+                    "R3-5": "stable"
+                }, 
+                "BASE": {
+                    "R3-14-8-2-0": "stable"
+                }, 
+                "MISC": {
+                    "R2-4": "stable"
+                }, 
+                "SOFT": {
+                    "R2-5": "stable"
+                }
+            }, 
+            "source": {
+                "darcs": {
+                    "url": "rcsadm@aragon.acc.bessy.de:/opt/Epics/R3.14.8/support/mcan/gp-delme"
+                }
+            }, 
+            "state": "stable"
+        }, 
+        "TAGLESS-gp-test-rtems": {
+            "aliases": {
+                "BASE": "EPICS_BASE"
+            }, 
+            "archs": {
+                "vxWorks-68040": true, 
+                "vxWorks-ppc603": true
+            }, 
+            "dependencies": {
+                "ALARM": {
+                    "R3-5": "stable"
+                }, 
+                "BASE": {
+                    "R3-14-8-2-0": "stable"
+                }, 
+                "MISC": {
+                    "R2-4": "stable"
+                }, 
+                "SOFT": {
+                    "R2-5": "stable"
+                }
+            }, 
+            "source": {
+                "darcs": {
+                    "url": "rcsadm@aragon.acc.bessy.de:/opt/Epics/R3.14.8/support/mcan/gp-test-rtems"
+                }
+            }, 
+            "state": "stable"
+        }, 
+        "TAGLESS-irqignore": {
+            "aliases": {
+                "BASE": "EPICS_BASE"
+            }, 
+            "archs": {
+                "vxWorks-68040": true, 
+                "vxWorks-ppc603": true
+            }, 
+            "dependencies": {
+                "ALARM": {
+                    "R3-5": "stable"
+                }, 
+                "BASE": {
+                    "R3-14-8-2-0": "stable"
+                }, 
+                "MISC": {
+                    "R2-4": "stable"
+                }, 
+                "SOFT": {
+                    "R2-5": "stable"
+                }
+            }, 
+            "source": {
+                "darcs": {
+                    "url": "rcsadm@aragon.acc.bessy.de:/opt/Epics/R3.14.8/support/mcan/irqignore"
+                }
+            }, 
+            "state": "stable"
+        }, 
+        "TAGLESS-lost-irq-patch": {
+            "aliases": {
+                "BASE": "EPICS_BASE"
+            }, 
+            "archs": {
+                "vxWorks-68040": true, 
+                "vxWorks-ppc603": true
+            }, 
+            "dependencies": {
+                "ALARM": {
+                    "R3-5": "stable"
+                }, 
+                "BASE": {
+                    "R3-14-8-2-0": "stable"
+                }, 
+                "MISC": {
+                    "R2-4": "stable"
+                }, 
+                "SOFT": {
+                    "R2-5": "stable"
+                }
+            }, 
+            "source": {
+                "darcs": {
+                    "url": "rcsadm@aragon.acc.bessy.de:/opt/Epics/R3.14.8/support/mcan/lost-irq-patch"
+                }
+            }, 
+            "state": "stable"
+        }, 
+        "TAGLESS-scratch": {
+            "aliases": {
+                "BASE": "EPICS_BASE"
+            }, 
+            "archs": {
+                "vxWorks-68040": true, 
+                "vxWorks-ppc603": true
+            }, 
+            "dependencies": {
+                "ALARM": {
+                    "R3-5": "stable"
+                }, 
+                "BASE": {
+                    "R3-14-8-2-0": "stable"
+                }, 
+                "MISC": {
+                    "R2-4": "stable"
+                }, 
+                "SOFT": {
+                    "R2-5": "stable"
+                }
+            }, 
+            "source": {
+                "darcs": {
+                    "url": "rcsadm@aragon.acc.bessy.de:/opt/Epics/R3.14.8/support/mcan/scratch"
+                }
+            }, 
+            "state": "stable"
+        }
+    }
+}
+
+find unstable mcan -b:
+MCAN:R2-0
+MCAN:R2-1
+MCAN:R2-2
+MCAN:R2-2-1
+MCAN:R2-2-2
+MCAN:R2-3
+MCAN:R2-3-1
+MCAN:R2-3-10
+MCAN:R2-3-11
+MCAN:R2-3-12
+MCAN:R2-3-12-1
+MCAN:R2-3-13
+MCAN:R2-3-14
+MCAN:R2-3-15
+MCAN:R2-3-16
+MCAN:R2-3-17
+MCAN:R2-3-18
+MCAN:R2-3-2
+MCAN:R2-3-3
+MCAN:R2-3-4
+MCAN:R2-3-5
+MCAN:R2-3-6
+MCAN:R2-3-7
+MCAN:R2-3-8
+MCAN:R2-3-8-1
+MCAN:R2-3-8-2
+MCAN:R2-3-9
+MCAN:TAGLESS-2-3-13-patch
+MCAN:TAGLESS-2-3-14-delme
+MCAN:TAGLESS-2-3-9-patch
+MCAN:TAGLESS-devsci
+MCAN:TAGLESS-gp-delme
+MCAN:TAGLESS-gp-test-rtems
+MCAN:TAGLESS-irqignore
+MCAN:TAGLESS-lost-irq-patch
+MCAN:TAGLESS-scratch
+
+find unstable mcan.*patch -b:
+MCAN:TAGLESS-2-3-13-patch
+MCAN:TAGLESS-2-3-9-patch
+MCAN:TAGLESS-lost-irq-patch

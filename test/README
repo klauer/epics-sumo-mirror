@@ -1,0 +1,25 @@
+Test coverage
+=============
+
+sumo-scan all
+sumo-db convert
+sumo-db distribution
+sumo-db replaceversion
+sumo-db cloneversion
+sumo-db weight
+sumo-db shownewest
+sumo-db showall
+sumo-db show
+sumo-db find
+sumo-db check
+sumo-build new
+sumo-build state
+sumo-build state-2
+sumo-build new-2
+sumo-build delete
+sumo-build partialdb
+sumo-scan all-2
+sumo-build find
+sumo-build show
+sumo-build useall
+sumo-build use

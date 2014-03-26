@@ -949,7 +949,7 @@ where command is:
           show or change the state of the build. Allowed states are "stable"
           and "testing".
   delete [buildtag]
-          delete the build if no other builds depend on it.
+          delete the build if no other build depends on it.
   cleanup [buildtag]
           remove the remains of a failed "new" command.
 """
