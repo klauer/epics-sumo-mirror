@@ -765,6 +765,16 @@ def main():
                            "rewrite the config file that was read before.",
                       metavar="FILE"
                       )
+    parser.add_option("--update-config",
+                      action="store",
+                      help= "Update options taken from the configuration "
+                            "file with options taken from another file "
+                            "which must be a JSON file. Options from FILE "
+                            "overwrite options taken from the configuration "
+                            "file.  Options in FILE that are unknown to the "
+                            "program are ignored.",
+                      metavar="FILE"
+                      )
     parser.add_option("--db",
                       action="store",
                       type="string",
@@ -873,6 +883,10 @@ def main():
         sys.exit(0)
 
     config.load_file(options.config)
+
+    if options.update_config:
+        config.update_from_file(options.update_config, overwrite= True)
+
     # Note: options that are "None" are not changed in the config object:
     config.update_from_options(options)
     config.fill_options(options, overwrite= False)

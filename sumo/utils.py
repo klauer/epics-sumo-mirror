@@ -151,6 +151,18 @@ class ConfigFile(object):
                 str(self._dict)]
         return "\n".join(lines)
 
+    def update_from_file(self, filename, overwrite= False):
+        """update with JSON data from a file or stdin."""
+        data= json_loadfile(filename)
+        # pylint: disable=E1103
+        #                          Instance of 'bool' has no 'items' member
+        for (key,val) in data.items():
+            if not self._dict.has_key(key):
+                continue
+            if not overwrite:
+                if self._dict[key] is not None:
+                    continue
+            self._dict[key]= val
     def update_from_options(self, option_obj):
         """create from an option object."""
         for opt in self._dict.keys():

@@ -416,6 +416,11 @@ Here is a short overview on command line options:
                       the filename is '-' dump to the console, if it is an
                       empty string, rewrite the config file that was read
                       before (see option --config).
+--update-config FILE  Update options taken from the configuration file with
+                      options taken from another file which must be a JSON
+                      file. Options from FILE overwrite options taken from the
+                      configuration file. Options in FILE that are unknown to
+                      the program are ignored.
 --db DB               Define the name of the DB file. This option value is
                       stored in the configuration file. 
 --savedb              Resave db if it was modified. This option has only a
