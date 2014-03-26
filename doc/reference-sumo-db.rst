@@ -276,6 +276,17 @@ If SCANFILE is a dash "-", the program expects the scanfile on stdin.
 
 The dependency database file is always printed to the console.
 
+appconvert [SCANFILE]
++++++++++++++++++++++
+
+Convert a :term:`scanfile` that was created by applying 
+:doc:`"sumo-scan all"<reference-sumo-scan>` to an application to a list of 
+:term:`aliases` and :term:`modulespecs` in `JSON <http://www.json.org>`_
+format. The result is printed to the console. It can be used with
+--update-config to put these in the configuration file of 
+:doc:`"sumo-db "<reference-sumo-db>` or 
+:doc:`"sumo-build "<reference-sumo-build>` 
+
 distribution [MAXSTATE] [MODULES]
 +++++++++++++++++++++++++++++++++
 

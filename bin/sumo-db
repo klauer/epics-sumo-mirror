@@ -138,7 +138,9 @@ import sumo.utils as utils
 # version of the program:
 my_version= "1.2"
 
-KNOWN_COMMANDS=set(("edit", "convert", "distribution",
+KNOWN_COMMANDS=set(("edit", "convert",
+                    "appconvert",
+                    "distribution",
                     "weight",
                     "show", "shownewest", "showall",
                     "find",
@@ -154,6 +156,67 @@ CONFIG_NAME="sumo-db.config"
 def script_shortname():
     """return the name of this script without a path component."""
     return os.path.basename(sys.argv[0])
+
+
+def create_app_data(deps, repoinfo, groups):
+    """create configuration data for an app."""
+    # pylint: disable=R0914
+    #                          Too many local variables
+    # pylint: disable=R0912
+    #                          Too many branches
+    def errmsg(msg):
+        """print something on stderr."""
+        sys.stderr.write(msg+"\n")
+    keys= deps.keys()
+    if len(keys)!=1:
+        sys.exit("error: \"dependencies\" map must have exactly one key")
+
+    modulespecs= []
+    aliases    = []
+
+    app_path= keys[0]
+    specs_by_path= {}
+
+    for module_name, groupdata in groups.items():
+        keys= groupdata.keys()
+        if len(keys)!=1:
+            sys.exit("error: groupdata \"%s\" must have exactly one key" % \
+                     module_name)
+        root_path= keys[0]
+        values= groupdata[root_path]
+        if len(values)!=1:
+            sys.exit("error: groudata \"%s\" must have exactly one "
+                     "subdir" % module_name)
+        subdir= values[0]
+        versionedmodule_path= os.path.join(root_path, subdir)
+        try:
+            (repotype, repodata)= repoinfo.get_data(
+                                           versionedmodule_path)
+        except KeyError, _:
+            # shouldn't happen, but we just print a warning in this
+            # case:
+            errmsg("no source data: %s" % versionedmodule_path)
+            continue
+        if repotype=="path":
+            versionname= "PATH-%s" % subdir
+        elif repotype=="darcs":
+            if not repodata.has_key("tag"):
+                versionname= "TAGLESS-%s" % subdir
+            else:
+                versionname= repodata["tag"]
+        else:
+            raise AssertionError("unknown repotype: "+repotype)
+        specs_by_path[versionedmodule_path]= (module_name,versionname)
+
+    for (aliasname, path) in deps[app_path].items():
+        (module_name,versionname)= specs_by_path[path]
+        modulespecs.append("%s:%s" % (module_name,versionname))
+        if aliasname!=module_name:
+            aliases.append("%s:%s" % (module_name, aliasname))
+    aliases.sort()
+    modulespecs.sort()
+
+    return {"alias": aliases, "module": modulespecs}
 
 
 def create_database(deps, repoinfo, groups, archs, state, source_patches):
@@ -198,8 +261,6 @@ def create_database(deps, repoinfo, groups, archs, state, source_patches):
                 try:
                     (repotype, repodata)= repoinfo.get_data(
                                                    versionedmodule_path)
-                    #(source_type, url, source_tag) = \
-                    #    repoinfo.get(versionedmodule_path)
                 except KeyError, _:
                     # shouldn't happen, but we just print a warning in this
                     # case:
@@ -469,6 +530,18 @@ def process(options, commands):
         db.json_print()
         return
 
+    if commands[0]=="appconvert":
+        if len(commands)!=2:
+            sys.exit("a filename must follow \"convert\"")
+        filename= commands[1]
+        scandata= utils.json_loadfile(filename)
+        deps= scandata["dependencies"]
+        repoinfo= utils.PathSource(scandata["repos"])
+        groups= scandata["groups"]
+        struc= create_app_data(deps, repoinfo, groups)
+        utils.json_dump(struc)
+        return
+
     if commands[0]=="distribution":
         if len(commands)<=1:
             sys.exit("error: MAXSTATE missing")
@@ -681,6 +754,11 @@ where command is:
   convert [STATE] [SCANFILE]: 
           Convert SCANFILE to a new DB. All dependencies are marked with state
           STATE. STATE may be "stable", "testing" or "unstable".
+  appconvert [SCANFILE] 
+          Convert a SCANFILE that was created by applying sumo-scan to an
+          application to a list of aliases and modulespecs in JSON format. The
+          result is printed to the console. It can be used with --update-config
+          to put these in the configuration file of sumo-db or sumo-build.
   distribution [MAXSTATE] [MODULES]: 
           Create distribution from DB where all specified modules are
           contained. If you want a specific version of a module use
