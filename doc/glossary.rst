@@ -1,0 +1,166 @@
+========
+Glossary
+========
+
+Here we define some of the terms used in the following text.
+
+.. glossary:: :sorted:
+
+  modules
+      See :term:`module`.
+
+  module
+      A *module* is a software package, an EPICS support module or an EPICS
+      base. Each module has a :term:`modulename` and a :term:`versionname`. 
+      
+      Usually modules that have the same :term:`modulename` share the same
+      source tree but differ in their source :term:`versions`. 
+      
+      A working copy of the source code of the module is placed in a
+      :term:`support directory`. and is usually managed by a version control
+      system. The module is compiled in this directory, the binary files are
+      installed within the directory structure.
+
+  versions
+      See :term:`version`.
+
+  version
+      A :term:`module` has several *versions*. A *version* is a state of the
+      :term:`module` source directory that can be recreated anywhere either by
+      copying a source directory or be checking out a version from the version
+      control system with parameters that identify the version.
+  
+  modulenames
+      See :term:`modulename`.
+
+  modulename
+      Each :term:`module` has a unique name, the *modulename*. Note that each
+      :term:`version` of the same :term:`module` has the same *modulename*.
+  
+  versionnames
+      See :term:`versionname`.
+
+  versionname
+      In sumo, each :term:`version` of a :term:`module` has a *versionname* that is
+      unique for that :term:`module`. The :term:`modulename` together with the
+      *versionname* identify a specific version of the :term:`module`. 
+
+  modulespecs
+      See :term:`modulespec`.
+
+  modulespec
+      This is a string that specifies a :term:`module` and a :term:`version`.
+      The :term:`version` may be *unspecified*, *specified exactly* or
+      *specified by relation*. In case of the *unspecified* :term:`version`,
+      the *modulespec* is simply the :term:`modulename`. In all other cases,
+      the :term:`modulename` is followed by a colon ":" and a
+      :term:`versionspec`.
+
+  versionspec
+      This is a string that specifies the :term:`version` of a :term:`module`.
+      It may *specify exactly*, in this case *versionspec* is simply the
+      :term:`versionname`. It may also *specify by relation*. In this case 
+      *versionspec* has the form "+versionname" or "-versionname". With
+      "+versionname" it means all :term:`versions` that are equal or newer
+      than :term:`versionname`. With "-versionname" it means all
+      :term:`versions` that are equal or older than :term:`versionname`. 
+
+  support directory
+      This is the directory where the compiled versions of :term:`modules` are
+      stored.
+
+  sources
+      See :term:`source`.
+
+  source
+      Each :term:`version` of a :term:`module` has a *source*. The *source*
+      defines how we can obtain a copy of the sources for the :term:`version`.
+      Sumo supports paths and some version control systems in the *source*
+      definitions.
+  
+  dependencies
+      This means the set of every :term:`dependency` of a :term:`module`.
+
+  dependency
+      A :term:`version` of a :term:`module` may depend on specific
+      :term:`versions` of other modules. This means that the :term:`module`
+      cannot be built and without all these other :term:`modules`.  A
+      *dependency* is the :term:`modulename` and :term:`versionname` of one of
+      these other modules.
+  
+  aliases
+      For each :term:`module` in the :term:`dependency` list there may be an
+      *alias* definition.  When a RELEASE file is created for a :term:`module`,
+      the variable names that are put into the file are the same as each
+      :term:`modulename` of each :term:`dependency` except where an *alias*
+      exists. In this case, the value of the *alias* is taken as variable name.
+  
+  tag
+      This is a string that may by part of the :term:`source` of a
+      :term:`module`. A *tag* helps to identify the :term:`version` of the
+      :term:`module` within the version control system. In sumo, a *versionname*
+      is always the same as the *tag* if the *tag* exists.
+  
+  state
+      This is a string describing the maturity of a :term:`module` or a
+      :term:`dependency`.  A *state* may be one of three strings:
+  
+      stable
+        Modules and dependencies that are known to work.
+  
+      testing
+        Modules and their dependencies than can be built.
+  
+      unstable
+        Modules and their dependencies that are just being built.
+  
+  distribution
+      A *distribution* is a set of modules where each :term:`module` has exactly
+      one :term:`version` and where for each :term:`module` every
+      :term:`dependency` is included. A *distribution* is defined by a partial
+      dependency database or :term:`partialdb`.
+
+  builds
+      See :term:`build`.
+
+  build
+      A *build* is a :term:`distribution` where all modules are compiled.
+      Information on all build is kept in the build database (:term:`BUILDDB`).
+      Each *build* has a unique :term:`buildtag`.
+
+  buildtags
+      See :term:`buildtag`.
+
+  buildtag
+      A *buildtag* is a name that identifies each :term:`build`. Information
+      for each :term:`build` can be found in the build database
+      (:term:`BUILDDB`) by looking up the *buildtag*.
+
+  regular expression
+      A regular expression is a way to specify a pattern in order to match
+      strings.  For further information on regular expressions see `re -
+      Regular expressions <http://docs.python.org/2/library/re.html>`_. For an
+      introduction to regular expressions see 
+      `Regular Expression HOWTO <http://docs.python.org/2/howto/regex.html#regex-howto>`_.
+
+  partialdb
+      This is a dependency database that does not contain all modules from the
+      main dependency database or :term:`DB`. It is used to define a
+      :term:`distribution`.
+  
+  scanfile
+      This is the file created by :doc:`"sumo-scan all"<reference-sumo-scan>`.
+      This `JSON <http://www.json.org>`_ file can be converted to a :term:`DB`
+      file with by :doc:`"sumo-db convert"<reference-sumo-db>`.
+
+  dependency database
+      See :term:`DB`.
+
+  DB
+      The dependency database is also called :term:`DB`. For further details see
+      :ref:`reference-sumo-db-The-dependency-database`.
+
+  BUILDDB
+      The build database is also called :term:`BUILDDB`. It is a file in 
+      `JSON <http://www.json.org>`_ format which contains information on which
+      versions of which modules were built.

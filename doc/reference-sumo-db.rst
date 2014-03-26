@@ -4,231 +4,449 @@ sumo-db
 What the script does
 --------------------
 
-This script manages the dependency database or *DB* file. It is used to create
+This program manages the dependency database or *DB* file. It is used to create
 this file from the output of :doc:`sumo-scan <reference-sumo-scan>`, to change
 this file and to create a *partialdb* file that is used by the
 :doc:`sumo-build <reference-sumo-build>` script.
 
-The script takes one or more commands and has a number of options. Options
-always start with a dash "-", commands are simple words.
+The script takes one or mode commands and has a number of options. Single
+character options always start with a single dash "-", long options start with
+a double dash "--", commands are simple words on the command line.
 
-Commands
---------
+How it works
+------------
 
-edit
-++++
 
-Start the editor specified by the environment variable "VISUAL" or "EDITOR"
-with that file. This command first aquires a file-lock on the file that is only
-released when the editor program is terminated.  If you want to edit a DB or
-BUILDDB file directly, you should always do this with this command. The file
-locking prevents other users to use the file at the same time you modify it.
+.. _reference-sumo-db-The-dependency-database:
 
-This command must be followed by a *filename*.
+The dependency database
++++++++++++++++++++++++
 
-convert
-+++++++
+The dependency database or :term:`DB` file is a `JSON <http://www.json.org>`_ file
+that contains information on versions of support modules and their
+dependencies. Here is an example how this file looks like::
 
-This is the command to convert the output of 
-:doc:`sumo-scan all<reference-sumo-scan>` to a DB (dependency database). The
-text in `JSON <http://www.json.org>`_ format is printed to the console. 
+  {
+      "BSPDEP_TIMER": {
+          "R6-2": {
+              "aliases": {
+                  "BASE": "EPICS_BASE"
+              },
+              "archs": {
+                  "RTEMS-mvme2100": true,
+                  "RTEMS-mvme5500": true,
+                  "vxWorks-68040": true,
+                  "vxWorks-ppc603": true
+              },
+              "dependencies": {
+                  "BASE": {
+                      "R3-14-12-2-1": "stable"
+                  }
+              },
+              "source": {
+                  "darcs": {
+                      "tag": "R6-2",
+                      "url": "rcsadm@aragon.acc.bessy.de:/opt/repositories/controls/darcs/epics/support/bspDep/timer"
+                  }
+              },
+              "state": "stable"
+          }
+      },
+      "MCAN": {
+          "R2-4-0": {
+              "aliases": {
+                  "BASE": "EPICS_BASE",
+                  "MISC_DBC": "DBC",
+                  "MISC_DEBUGMSG": "DEBUGMSG",
+                  "SOFT_DEVHWCLIENT": "DEVHWCLIENT"
+              },
+              "archs": {
+                  "vxWorks-68040": true,
+                  "vxWorks-ppc603": true
+              },
+              "dependencies": {
+                  "ALARM": {
+                      "R3-7": "stable"
+                  },
+                  "BASE": {
+                      "R3-14-12-2-1": "stable"
+                  },
+                  "MISC_DBC": {
+                      "R3-0": "stable"
+                  },
+                  "MISC_DEBUGMSG": {
+                      "R3-0": "stable"
+                  },
+                  "SOFT_DEVHWCLIENT": {
+                      "R3-0": "stable"
+                  }
+              },
+              "source": {
+                  "darcs": {
+                      "tag": "R2-4-0",
+                      "url": "rcsadm@aragon.acc.bessy.de:/opt/Epics/R3.14.12/support/mcan/2-4-0"
+                  }
+              },
+              "state": "stable"
+          },
+          "R2-4-1": {
+              "aliases": {
+                  "BASE": "EPICS_BASE",
+                  "MISC_DBC": "DBC",
+                  "MISC_DEBUGMSG": "DEBUGMSG",
+                  "SOFT_DEVHWCLIENT": "DEVHWCLIENT"
+              },
+              "archs": {
+                  "vxWorks-68040": true,
+                  "vxWorks-ppc603": true
+              },
+              "dependencies": {
+                  "ALARM": {
+                      "R3-7": "stable"
+                  },
+                  "BASE": {
+                      "R3-14-12-2-1": "stable"
+                  },
+                  "MISC_DBC": {
+                      "R3-0": "stable"
+                  },
+                  "MISC_DEBUGMSG": {
+                      "R3-0": "stable"
+                  },
+                  "SOFT_DEVHWCLIENT": {
+                      "R3-0": "stable"
+                  }
+              },
+              "source": {
+                  "darcs": {
+                      "tag": "R2-4-1",
+                      "url": "rcsadm@aragon.acc.bessy.de:/opt/Epics/R3.14.12/support/mcan/2-4-0"
+                  }
+              },
+              "state": "stable"
+          }
+      }
+  }
 
-This command has two mandatory parameters:
+The basic datastructure is this::
+
+  {
+      MODULENAME : {
+          VERSIONNAME : {
+              <versiondata>
+          },
+          VERSIONNAME : {
+              <versiondata>
+          },
+          ...
+      }
+  }
+
+The *versiondata* map has this form::
+
+  {
+      "aliases": {
+          <aliasdata>
+      },
+      "archs": {
+          <archdata>
+      },
+      "dependencies": {
+          <dependency data>
+      },
+      "source": {
+          <source data>
+      },
+      "state": STATE
+  }
+
+aliasdata
+:::::::::
+
+When the support module is to be compiled, 
+:doc:`sumo-build <reference-sumo-build>` creates a RELEASE file from the known
+dependencies of the module. The RELEASE file contains variable definitions, one
+for each dependency whose name is the module name and whose value is the path
+of the compiled module. If a module needs a variable name that is different
+from the module name, an alias must be defined. For each dependency that is
+part of the alias map, the *ALIASNAME* of the alias map is taken. The
+*aliasdata* map has this form::
+
+  {
+      MODULENAME: MODULEALIAS,
+      MODULENAME: MODULEALIAS,
+      ...
+  }
+
+archdata
+::::::::
+
+EPICS support modules may be architecture independent or they may support one
+or more target architectures. Each target architecture in EPICS has a unique
+name. The *archdata* map contains a key for each supported architecture. If a
+module is architecture independent, the *archdata* map contains the special key
+"ANY". This is the form of the *archdata* map::
+
+  {
+      ARCHNAME: true,
+      ARCHNAME: true,
+      ...
+  }
+
+dependencies
+::::::::::::
+
+This is a map that has a key for each module this module depends on. The value
+for each key is a map where keys are names of supported versions and values are
+*STATES*. A *STATE* is one of the strings "stable", "testing" or "unstable".
+This indicates how well the dependency is tested. This is the form of the
+*dependencies* map::
+
+  {
+      MODULENAME: {
+          VERSIONNAME: STATE,
+          VERSIONNAME: STATE,
+          ...
+      },
+      MODULENAME: {
+          VERSIONNAME: STATE,
+          VERSIONNAME: STATE,
+          ...
+      },
+      ...
+  }
+
+source data
+:::::::::::
+
+The *source data* describes where the sources of the module can be found. It is a map with a single key. The key either has the value "path" or "darcs". If the key is "path" the  value is a string, the path of the source. If the key is "darcs", the value is a map. This map has a key "url" whose value is the repository url. The map may also have a key "tag" which is the repository tag. Here is the structure of the *source data*::
+
+  {
+      "path": PATH
+  }
+
+or::
+
+  {
+      "darcs": {
+          "url": URL
+      }
+  }
+
+or::
+
+  {
+      "darcs": {
+          "tag": TAG,
+          "url": URL
+      }
+  }
 
 state
 :::::
 
-This specifies the state that is assigned to all modules and dependencies in
-the dependency database. These are the three allowed states:
+This defines the *STATE* of the moduleversion. A *STATE* is one of the strings "stable", "testing" or "unstable". It describes how well the moduleversion is tested.
 
-stable
-  Modules and dependencies that are known to work.
+Commands
+--------
 
-testing
-  Modules and their dependencies than can be built.
+This is a list of all commands:
 
-unstable
-  Modules and their dependencies that are just being built.
+edit [FILE]
++++++++++++
 
-scanfile
-::::::::
+Start the editor specified by the environment variable "VISUAL" or "EDITOR"
+with that file. This command first aquires a file-lock on the file that is only
+released when the editor program is terminated. If you want to edit a
+:term:`DB` or :term:`BUILDDB` file directly, you should always do it with this
+with this command. The file locking prevents other users to use the file at the
+same time you modify it.
 
-This is the filename with the output of 
-:doc:`sumo-scan all<reference-sumo-scan>`. If you put "-" here, the script
-expects the scanfile from standard input.
+This command must be followed by a *filename*.
 
-distribution
-++++++++++++
+convert [STATE] [SCANFILE]
+++++++++++++++++++++++++++
 
-This command creates a *distribution* from a dependency database file. A
-*distribution* is a set of versioned modules that are consistent according to
-the data in the dependency database. The output of this command is a 
+Convert a :term:`scanfile` that was created by by 
+:doc:`"sumo-scan all"<reference-sumo-scan>` to a new depedency database or
+:term:`DB` file. All :term:`dependencies` are marked with the specified
+:term:`state`.
+
+If SCANFILE is a dash "-", the program expects the scanfile on stdin.
+
+The dependency database file is always printed to the console.
+
+distribution [MAXSTATE] [MODULES]
++++++++++++++++++++++++++++++++++
+
+This command creates a :term:`distribution` from a dependency database or
+:term:`DB` file. Parameter MAXSTATE is the maximum :term:`state` of
+:term:`dependencies` that are taken into account. Parameter MODULES is a list
+of :term:`modulespecs` with *unspecified* or *exactly specified*
+:term:`versions`.
+
+For modules with *unspecified* version, the algorithm that selects
+:term:`versions` of :term:`modules` tries to find the newest version that is
+consistent with the modules with *exactly specified* :term:`versions`. 
+
+The algorithm selects :term:`versions` of modules in the order :term:`modules`
+are given to the command. If you have at least two :term:`modules` with an
+*unspecified* version, changing the order of :term:`modulespecs` given to the
+command may lead to different results.
+
+The output of this command is a 
 `JSON <http://www.json.org>`_ structure that has the same format as the
-dependency database. It is, in fact, a part of the dependency database where
-only one version is listed for each module that is to be included in the
-distribution. This is also called a *partialdb* since it is a partial
-database.
+:ref:`dependency database <reference-sumo-db-The-dependency-database>`.
 
-The *partialdb* file is used by the script 
-:doc:`sumo-build <reference-sumo-build>` to create a *build*.
+It is, in fact, a part of the dependency database where only one version is
+listed for each :term:`module` that is to be included in the
+:term:`distribution`. This is also called a :term:`partialdb` since it is a
+partial database.
 
-This command has must be followed by at least two parameters, a *maximum state*
-and at least one *module spec*. If there is more than one *module spec* they
-must be separated by white spaces.
+The :term:`partialdb` file is used by the script :doc:`sumo-build
+<reference-sumo-build>` to create a :term:`build`.
 
-maximum state
-:::::::::::::
+weight [WEIGHT] [MODULES]
++++++++++++++++++++++++++
 
-The *maximum state* is the maximum allowed state that a module or dependency
-may have in order to be included in the distribution. As mentioned at other
-places we have three possible states, "static", "testing" and "unstable". These
-states have, per definition, this order relation::
+Set the weight factor for modules. Parameter MODULES is a list of
+:term:`modulespecs` that specifies the :term:`modules` and :term:`versions` to
+operate on. 
 
-  stable < testing < unstable
+Note that this command *does not* use the "--modules" command line option.
 
-If you specify for example "testing" as *maximum state*, the states "stable"
-and "testing" are allowed for modules and dependencies. 
-
-module spec
-:::::::::::
-
-A *module spec* is a string "modulename" or "modulename:versionspec". A
-*modulename* is a unique name that identifies the module. *versionspec* can
-have one of three forms:
-
-version
-  This means that we want exactly that version, as in "MCAN:2-3-13".
-
--version
-  This means that we want that version or a smaller version, e.g.
-  "MCAN:-2-3-13" would match version 2-3-12 and 2-3-13 but not version 2-3-14.
-
-+version
-  This means that we want that version or a greater version, e.g.
-  "MCAN:+2-3-13" would match version 2-3-13 and 2-3-14 but not version 2-3-12.
-
-weight
-++++++
-
-Set the weight factor for modules. Use modulename:{+-}versionname to select
-more versions of a module.  This command *does not* use the --modules option.
-Weight must be an integer.
-
-This command must be followed by a *weight factor* and a list of *modulespecs*.
+Parameter WEIGHT must be an integer.
 
 show
 ++++
 
-This command shows all modules in the dependency database. 
+This command shows all :term:`modules` in the 
+:ref:`dependency database <reference-sumo-db-The-dependency-database>`.
 
-shownewest
-++++++++++
+shownewest [MAXSTATE] {MODULES}
++++++++++++++++++++++++++++++++
 
 This command shows only the newest versions of modules. It must be followed by
 the parameter *maximum state* and it may be followed by a whitespace separated
-list of module names. 
+list of :term:`modulenames`. 
 
-maximum state
-:::::::::::::
+Parameter MAXSTATE is the maximum :term:`state` a module may have. Optional
+parameter MODULES specifies which :term:`modules` are shown. If no
+:term:`modules` are given the command shows the newest :term:`versions` of all
+:term:`modules`.
 
-The *maximum state* is the maximum allowed state that a module or dependency
-may have. As mentioned at other places we have three possible states, "static",
-"testing" and "unstable". These states have, per definition, this order
-relation::
+showall [MAXSTATE] {MODULES}
+++++++++++++++++++++++++++++
 
-  stable < testing < unstable
+This command shows all versions of the given modules. It must be followed by
+the parameter *maximum state* and it may be followed by a whitespace separated
+list of :term:`modulenames`. 
 
-If you specify for example "testing" as *maximum state*, the states "stable"
-and "testing" are allowed for modules and dependencies. 
+Parameter MAXSTATE is the maximum :term:`state` a module may have. Optional
+parameter MODULES specifies which :term:`modules` are shown. If no
+:term:`modules` are given the command shows all :term:`versions` of all
+:term:`modules`.
 
-module name
-:::::::::::
+find [MAXSTATE] [REGEXP]
+++++++++++++++++++++++++
 
-The command may be followed by one or mode module names. If given, only the
-newest versions for these modules are printed to the console. If this parameter
-is omitted, the newest versions for all modules are printed to the console.
+This command shows all :term:`modules` whose names or :term:`sources` match a regexp. 
 
-showall
-+++++++
-
-This command shows all versions of modules.  It must be followed by the
-parameter *maximum state* and it may be followed by a whitespace separated list
-of module names. 
-
-maximum state
-:::::::::::::
-
-The *maximum state* is the maximum allowed state that a module or dependency
-may have. As mentioned at other places we have three possible states, "static",
-"testing" and "unstable". These states have, per definition, this order
-relation::
-
-  stable < testing < unstable
-
-If you specify for example "testing" as *maximum state*, the states "stable"
-and "testing" are allowed for modules and dependencies. 
-
-module name
-:::::::::::
-
-The command may be followed by one or mode module names. If given, only
-versions for these modules are printed to the console. If this parameter is
-omitted, versions for all modules are printed to the console.
-
-find
-++++
-
-Show all modules whose names or sources match regexp.
-
-maximum state
-:::::::::::::
-
-The *maximum state* is the maximum allowed state that a module or dependency
-may have. As mentioned at other places we have three possible states, "static",
-"testing" and "unstable". These states have, per definition, this order
-relation::
-
-  stable < testing < unstable
-
-If you specify for example "testing" as *maximum state*, the states "stable"
-and "testing" are allowed for modules and dependencies. 
-
-regexp
-::::::
-
-This is a perl compatible regular expression.
+Parameter MAXSTATE is the maximum :term:`state` a module may have. Parameter
+REGEXP is a perl compatible :term:`regular expression`.  
 
 check
 +++++
 
-This command does a consistency check of the database.
+This command does a consistency check of the dependency database (:term:`DB`
+file).
 
-merge
-+++++
+merge [DB]
+++++++++++
 
-This command merges a dependency database with another dependency database. The
-database that is modified must follow the command as a parameter. The database
-that is added must be specified with the "--db" option.
+This command merges a :term:`dependency database` with another
+:term:`dependency database`. The database that is modified must follow the
+command as parameter DB. The database that is added must be specified with the
+"--db" option.
 
-filter
-++++++
+filter [MODULES]
+++++++++++++++++
 
 This command prints only the parts of the dependency database that contain the
-given modules. The command must be followed by one or more whitespace separated
-module specifications, which may contain module version numbers. If called with
-option "--savedb", the db file is overwritten with the result.
+given modules. 
 
-cloneversion
-++++++++++++
+Parameter MODULES is a list of :term:`modulespecs` that specifies the
+:term:`modules` and :term:`versions` to operate on. 
 
-This command adds a new version for a module to the database by copying the old
-version. All modules that depend on the old version now also depend on the new
-version of the module. If you do this you must update the module source
-definition of the new version by editing the database file directly.
+If called with option "--savedb", the db file is overwritten with the result.
 
-replaceversion
-++++++++++++++
+cloneversion [MODULE] [OLD-VERSION] [NEW-VERSION]
++++++++++++++++++++++++++++++++++++++++++++++++++
 
-This command replaces a version of a module with a new version. All the data of
-the module is copied. All modules that used to depend on the old version now
-depend on the new version.
+This command adds a new :term:`version` of a :term:`module` to the
+:term:`dependency database` by copying the old :term:`version`. All
+:term:`modules` that depend on the old :term:`version` now also depend on the
+new :term:`version` of the module. If you do this you must update the module
+:term:`source` definition of the new :term:`version` by editing the
+:term:`dependency database` file directly.
+
+replaceversion [MODULE] [OLD-VERSION] [NEW-VERSION]
++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+This command replaces a :term:`version` of a :term:`module` with a new
+:term:`version`. All the data of the :term:`module` is copied. All
+:term:`modules` that used to depend on the old :term:`version` now depend on
+the new :term:`version`.
+
+Options
+-------
+
+Here is a short overview on command line options:
+
+--version             show program's version number and exit
+-h, --help            show this help message and exit
+--summary             Print a summary of the function of the program.
+--doc                 Print a longer description of the program (deprecated).
+--test                Perform some self tests.
+-c FILE, --config FILE
+                      Specify the name of the configuration file. If this
+                      option is not given try to read from "sumo-db.config" in
+                      the current working directory.
+--make-config FILE    Create a new config file FILE from the given options. If
+                      the filename is '-' dump to the console, if it is an
+                      empty string, rewrite the config file that was read
+                      before (see option --config).
+--db DB               Define the name of the DB file. This option value is
+                      stored in the configuration file. 
+--savedb              Resave db if it was modified. This option has only a
+                      meaning for the commands "merge","filter", "cloneversion"
+                      and "replaceversion".
+--arch ARCH           Define the name of a targetarchitecture. You can specify
+                      more than one target architecture.  You can specify more
+                      than one of these by repeating this option or by joining
+                      values in a single string separated by spaces.  This
+                      option value is stored in the configuration file.
+-m MODULE, --module MODULE
+                      Define a :term:`modulespec`. If you specify modules with
+                      this option you don't have to put :term:`modulespecs`
+                      after commands like 'find' or 'use'.  You can specify
+                      more than one of these by repeating this option or by
+                      joining values in a single string separated by spaces.
+                      This option value is stored in the configuration file.
+-b, --brief           Create a more brief output for some commands.
+-P EXPRESSION, --source-patch EXPRESSION
+                      Specify a source patchexpression. Such an expression
+                      consists of a tuple of 2 python strings. The first is the
+                      match expression, the second one is the replacement
+                      string. The regular expression is applied to every source
+                      url generated. You can specify more than one
+                      patchexpression.  This option value is stored in the
+                      configuration file.
+--noignorecase        For command 'find', do NOT ignore case.
+--nolock              Do not use file locking.
+-p, --progress        Show progress on stderr.  This option value is stored in
+                      the configuration file.
+-t, --trace           Switch on some trace messages.
+-v, --verbose         Show command calls.  This option value is stored in the
+                      configuration file.
+-n, --dry-run         Just show what the program would do.

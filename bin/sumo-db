@@ -676,12 +676,12 @@ where command is:
           "EDITOR" with that file. This command first aquires a file-lock on
           the file that is only released when the editor program is terminated.
           If you want to edit a DB or BUILDDB file directly, you should always
-          do this with this command. The file locking prevents other users to
-          use the file at the same time you modify it.
+          do it with this with this command. The file locking prevents other
+          users to use the file at the same time you modify it.
   convert [STATE] [SCANFILE]: 
           Convert SCANFILE to a new DB. All dependencies are marked with state
           STATE. STATE may be "stable", "testing" or "unstable".
-  distribution [MAXSTATE] [modules]: 
+  distribution [MAXSTATE] [MODULES]: 
           Create distribution from DB where all specified modules are
           contained. If you want a specific version of a module use
           modulename:versioname instead of the modulename alone. MAXSTATE is
@@ -707,18 +707,18 @@ where command is:
           Show all modules whose names or sources match regexp.
   check 
           do some consistency checks on the db specifed by --db
-  merge [db]
+  merge [DB]
           Merge the given db with the one specified by --db
-  filter [modules]
+  filter [MODULES]
           Print the database for the given modules. If you want a specific
           version of a module use modulename:versioname instead of the
           modulename alone.
-  cloneversion [module old-version new-version]
+  cloneversion [MODULE] [OLD-VERSION] [NEW-VERSION]
           Add a new version to the database by copying the old version. The
           old-version data is copied for the new version data. All modules that
           depend on module:old-version now alternatively depend on
           module:new-version.
-  replaceversion [module old-version new-version]
+  replaceversion [MODULE] [OLD-VERSION] [NEW-VERSION]
           Replace a version to the database with a new one. The old-version
           data is copied for the new version data. All modules that depend on
           module:old-version now depend on module:new-version.
@@ -742,7 +742,8 @@ def main():
                       )
     parser.add_option("--doc",
                       action="store_true",
-                      help="Print a longer description of the program.",
+                      help="Print a longer description of the program "
+                           "(deprecated).",
                       )
     parser.add_option("--test",
                       action="store_true",
@@ -767,9 +768,9 @@ def main():
     parser.add_option("--db",
                       action="store",
                       type="string",
-                      help="Define the name of the DBFILE. "
+                      help="Define the name of the DB file. "
                            "This option value is stored in the CONFIGFILE.",
-                      metavar="DBFILE"
+                      metavar="DB"
                       )
     parser.add_option("--savedb",
                       action="store_true",

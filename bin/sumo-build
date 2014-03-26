@@ -926,32 +926,46 @@ where command is:
           If you want to edit a DB or BUILDDB file directly, you should always
           do this with this command. The file locking prevents other users to
           use the file at the same time you modify it.
-  new [buildtag]  :
-          create a new buildtree
-          options --db, --partialdb, --builddb and --arch are mandatory for
-          this command.
-  partialdb [buildtag]:
-          recreate a partial db from a complete db and an buildtree
-  find [modules] :
-          find buildtrees that have all the given modules. Modules may have the
-          form modulename or modulename:version or modulename:-version or
-          modulename:+version
-  useall [buildtag]:
-          create a RELEASE file for an application, use all the modules from
-          the buildtree
-  use [buildtag] [modules]: create a RELEASE file for an application,
-          use only the mentioned modules and the modules they depend on. Note
-          that --db is mandatory for this command.
-  list    list the names of all builds
-  show [buildtag]
-          show the data of the build
-  state [buildtag] {new state}
-          show or change the state of the build. Allowed states are "stable"
-          and "testing".
-  delete [buildtag]
-          delete the build if no other build depends on it.
-  cleanup [buildtag]
-          remove the remains of a failed "new" command.
+  new [BUILDTAG]
+          This command creates a new build. It must be followed by a buildtag.
+          Note that options "--db", --partialdb" and "--builddb" are mandatory
+          for this command.
+  partialdb [BUILDTAG]
+          This command recreates a partialdb from a complete DB and a build.
+          The partialdb is printed on the console.
+  find [MODULESPECS]
+          This command is used to find matching builds for a given list of
+          modulespecs. It prints a list of buildtags of matching builds on the
+          console.  Note that the versions in modulespecs may be *unspecified*,
+          *specified exactly* or *specifed by relation*.
+  useall [BUILDTAG]
+          This command creates a RELEASE file for an application. The command
+          must be followed by buildtag. The release file is created that it
+          includes *all* modules of the build.
+  use [BUILDTAG] [MODULES]
+          This command creates a RELEASE file for an application. The command
+          must be followed by a buildtag and a list of modulespecs. The RELEASE
+          created includes only the modules that are specified. For this
+          command the DB file must be specified with the "--db" option.
+  list    
+          This command lists the names of all builds.
+  show [BUILDTAG]
+          This command shows the data of a build. It must be followed by a
+          buildtag. 
+  state [BUILDTAG] {NEW STATE}
+          This command is used to show or change the state of a build. If must
+          be followed by a buildtag. If there is no new state given, it just
+          shows the current state of the build. Otherwise the state of the
+          build is changed to the given value. 
+  delete [BUILDTAG]
+          If no other build depends on the build specified by the buildtag, the
+          directories of the build are removed and it's entry in the builddb is
+          deleted.
+  cleanup [BUILDTAG]
+          This command removes the remains of a failed build. If the command
+          "new" is interrupted or stopped by an exception in the program, the
+          build may be in an incomplete state. In this case you can use the
+          "cleanup" command to remove the directories of the failed build.
 """
 
 def main():

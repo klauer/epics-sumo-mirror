@@ -8,6 +8,7 @@
 .*\.pyc
 
 # python build system
+^MANIFEST$
 ^build$
 
 # test directories:
@@ -25,7 +26,5 @@
 ^samples/R3-14-8.DB
 
 # doc directories:
-^doc/
-
-^x$
+^doc/_build$
 
