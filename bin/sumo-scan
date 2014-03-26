@@ -494,6 +494,10 @@ def process(options, commands):
 
     deps= None
 
+    if "groups" in commands:
+        if not options.group_basedir:
+            sys.exit("error, option -g is mandatory here")
+
     if options.dir:
         (deps, archs)= get_configuration(options)
     elif options.info_file:
@@ -625,11 +629,15 @@ def main():
                       )
     parser.add_option("-g", "--group-basedir",
                       action="append",
-                      help="Try to group directories by their name. The "
-                           "BASEDIR is taken as directory base to "
-                           "calculate group names from directory names. "
-                           "You can specify more than one of these. "
-                           "This option value is stored in the CONFIGFILE.",
+                      help="Option \"-g\" or \"--group-basedir\" must be "
+                           "followed by a directory name. It defines the "
+                           "part of the directory path that is the same "
+                           "for all support modules. This is needed in "
+                           "order to generate a module name from the "
+                           "module's directory path. You can use this "
+                           "option several times in order to defined more "
+                           "than one base directory. The value of this "
+                           "option is stored in the configuration file.",
                       )
     parser.add_option("--exclude-path",
                       action="append",
