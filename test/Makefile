@@ -1,6 +1,3 @@
-#
-# test1.in : simply macro replacement
-
 TOP=$(shell pwd)
 export PYTHONPATH:=$(TOP)/..:$(PYTHONPATH)
 
@@ -18,27 +15,33 @@ PYTHON:=$(shell python -V 2>&1 | ( grep -q " 2\.[5678]" && echo python || ( pyth
 # the variable MUST BE set to "no".
 CREATE_TESTS=no
 
-testlist= $(sort $(basename $(wildcard *.ok)))
+tests= $(sort $(basename $(wildcard *.ok)))
+
+test_tst= $(addsuffix .tst, $(tests))
 
 
-all: pure_module_test $(addsuffix .tst, $(testlist))
+all: pure_module_test $(test_tst)
 
 test:
-	@echo $(testlist)
+	@echo $(tests)
 
 realclean: clean
 	rm -rf tmp-*
 
+# do not remove tmp-010.. since it takes relatively long to create:
+
 almostclean: clean
-	rm -rf tmp-test08 tmp-test1*
+	rm -rf `ls -d tmp-* | grep -v tmp-010`
 
 clean:
-	rm -f $(addsuffix .out, $(testlist)) 
+	rm -f $(addsuffix .out, $(tests)) 
 	rm -rf *.tmp
 	rm -rf *.bak
+	rm -f deps
 
 pure_module_test:
 ifeq ($(PYTHON),python)
+	# utils doctest fails with python2.5:
 	$(PYTHON) ../sumo/utils.py
 else
 	@echo "skipping testing sumo/utils.py"
@@ -47,7 +50,13 @@ endif
 	$(PYTHON) ../bin/sumo-db --test
 	$(PYTHON) ../bin/sumo-build --test
 
-ok: $(addsuffix .ok, $(testlist))
+include deps
+
+deps:
+	for f in *.sh; do ./$$f deps; done > $@
+
+x:
+	echo $(test_tst)
 
 %.out: %.sh 
 	sh ./$< $(PYTHON) > $@
@@ -58,29 +67,5 @@ ifeq "$(CREATE_TESTS)" "yes"
 endif
 
 %.tst: %.sh %.out %.ok
-	diff $(wordlist 2, 3, $+) 
-
-test09.tst: test09.sh test09.out test09.ok test08.out
-	diff $(wordlist 2, 3, $+) 
-
-test10.tst: test10.sh test10.out test10.ok test08.out
-	diff $(wordlist 2, 3, $+) 
-
-test11.tst: test11.sh test11.out test11.ok test10.out test08.out test04.out
-	diff $(wordlist 2, 3, $+) 
-
-test12.tst: test12.sh test12.out test12.ok test11.out
-	diff $(wordlist 2, 3, $+) 
-
-test13.tst: test13.sh test13.out test13.ok test11.out
-	diff $(wordlist 2, 3, $+) 
-
-test14.tst: test14.sh test14.out test14.ok test11.out
-	diff $(wordlist 2, 3, $+) 
-
-test15.tst: test15.sh test15.out test15.ok test11.out
-	diff $(wordlist 2, 3, $+) 
-
-test16.tst: test16.sh test16.out test16.ok test11.out
 	diff $(wordlist 2, 3, $+) 
 

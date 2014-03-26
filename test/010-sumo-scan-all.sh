@@ -1,8 +1,16 @@
 #!/bin/sh
 
+ME=`basename $0 .sh`
+
+if [ "$1" = "deps" ]; then
+        echo "$ME.tst: $ME.sh $ME.out $ME.ok"
+        echo
+        exit
+fi
+
 PYTHON=$1
 
-EXAMPLEDIR=tmp-test01
+EXAMPLEDIR=tmp-$ME
 GLOBALSUPPORTDIR=rcsadm@aragon.acc.bessy.de:/opt/Epics/R3.14.8/support
 GLOBALBASEDIR=rcsadm@aragon.acc.bessy.de:/opt/Epics/R3.14.8/base
 

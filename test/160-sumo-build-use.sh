@@ -1,10 +1,18 @@
 #!/bin/sh
 
+ME=`basename $0 .sh`
+
+if [ "$1" = "deps" ]; then
+        echo "$ME.tst: $ME.sh $ME.out $ME.ok"
+        echo
+        exit
+fi
+
 PYTHON=$1
 
 echo -e "\n-> Test sumo-build use" >&2
 
-TESTDIR=tmp-test11
+TESTDIR=tmp-110-sumo-build-new-2
 
 cd $TESTDIR > /dev/null
 

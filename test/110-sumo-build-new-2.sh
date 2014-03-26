@@ -1,12 +1,19 @@
 #!/bin/sh
 
+ME=`basename $0 .sh`
+
+if [ "$1" = "deps" ]; then
+        echo "$ME.tst: $ME.sh $ME.out $ME.ok 080-sumo-build-new.tst 040-sumo-db-replaceversion.tst 100-sumo-build-state-2.tst"
+        echo
+        exit
+fi
 PYTHON=$1
 
 echo -e "\n-> Test sumo-build new (use existing tree)" >&2
 
-TESTDIR=tmp-test08
+TESTDIR=tmp-080-sumo-build-new
 # this directory must exist
-MYTESTDIR=tmp-test11
+MYTESTDIR=tmp-$ME
 
 if [ ! -d $MYTESTDIR ]; then
     echo -e "\tcopy $TESTDIR to $MYTESTDIR..." >&2
@@ -21,8 +28,8 @@ if [ ! -d $MYTESTDIR ]; then
 
     # copy the DB and BUILDS file where everything is marked "stable" (see also
     # test10.sh):
-    cp DB-10.tmp DB
-    cp BUILDS-10.tmp BUILDS
+    cp DB-100-sumo-build-state-2.tmp DB
+    cp BUILDS-100-sumo-build-state-2.tmp BUILDS
 
     rm -f *.tmp
     rm -f *.bak
@@ -30,7 +37,7 @@ if [ ! -d $MYTESTDIR ]; then
     # sed is used to add spaces after each "," at the end of the line. The old JSON
     # library for python 2.5 doesn't do this.
 
-    $PYTHON ../../bin/sumo-build --arch vxWorks-ppc603 --db DB -P ../DB_IDCP-04.tmp --builddb BUILDS new 002 1>&2 
+    $PYTHON ../../bin/sumo-build --arch vxWorks-ppc603 --db DB -P ../DB_IDCP-040-sumo-db-replaceversion.tmp --builddb BUILDS new 002 1>&2 
 else
     echo -e "\t$MYTESTDIR already exists, effectively skipping this test..." 1>&2
     cd $MYTESTDIR > /dev/null

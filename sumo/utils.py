@@ -1785,7 +1785,7 @@ class Builddb(JSONstruct):
             if not isinstance(modules, dict):
                 break
             module= _somevalue(modules)
-            if not isinstance(module, str):
+            if not (isinstance(module, str) or isinstance(module, unicode)):
                 break
             return
         raise ValueError("Error: Builddb data is invalid %s" % msg)
