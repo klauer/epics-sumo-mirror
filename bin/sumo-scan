@@ -454,7 +454,10 @@ def get_configuration(options):
         if not os.path.exists(d):
             sys.exit("error, directory \"%s\" doesn't exist" % options.dir)
     exclude_matcher= utils.RegexpMatcher(options.exclude_path)
-    ignore_names= set(options.ignore_name)
+    if options.ignore_name:
+        ignore_names= set(options.ignore_name)
+    else:
+        ignore_names= set()
     (deps, archs)= \
        support_configure_data(options.dir,
                        options.buildtag,
