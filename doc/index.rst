@@ -44,6 +44,7 @@ Contents:
    reference-sumo-scan
    reference-sumo-db
    reference-sumo-build
+   examples
 
 License
 =======
