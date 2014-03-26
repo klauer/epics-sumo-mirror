@@ -136,7 +136,7 @@ import re
 import sumo.utils as utils
 
 # version of the program:
-my_version= "1.1"
+my_version= "1.2"
 
 KNOWN_COMMANDS=set(("edit", "convert", "distribution",
                     "weight",
