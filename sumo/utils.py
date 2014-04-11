@@ -149,6 +149,7 @@ class ConfigFile(object):
         self._filename= filename
         self.load_default= True
         self._dict= dict(dict_)
+        self._list_append_opts= set()
     def __repr__(self):
         """return repr string."""
         return "%s(%s, %s)" % (self.__class__.__name__,
@@ -161,6 +162,13 @@ class ConfigFile(object):
                 str(self._dict)]
         return "\n".join(lines)
 
+    def set_list_append(self, name):
+        """define an option to be of type "list append".
+
+        In this case, command line options do not overwrite but append the
+        list.
+        """
+        self._list_append_opts.add(name)
     def disable_default(self):
         """disable loading of the default file."""
         self.load_default= False
@@ -203,6 +211,10 @@ class ConfigFile(object):
                         "ERROR: key '%s' not in the option object" % opt)
             val= getattr(option_obj, opt)
             if val is not None:
+                if self._dict[opt]:
+                    if opt in self._list_append_opts:
+                        self._dict[opt].extend(getattr(option_obj, opt))
+                        continue
                 self._dict[opt]= getattr(option_obj, opt)
     def fill_options(self, option_obj, overwrite):
         """set option attributes."""
@@ -658,6 +670,10 @@ def scan_module_arch_spec(spec, default_archs=None):
     ('ALARM', {'version': 'R3-5', 'version_flag': '>='})
     >>> pprint.pprint(scan_module_arch_spec("ALARM:-R3-5"))
     ('ALARM', {'version': 'R3-5', 'version_flag': '<='})
+    >>> pprint.pprint(scan_module_arch_spec("ALARM:+"))
+    ('ALARM', {'version': '', 'version_flag': '>='})
+    >>> pprint.pprint(scan_module_arch_spec("ALARM:-"))
+    ('ALARM', {'version': '', 'version_flag': '<='})
     >>> pprint.pprint(scan_module_arch_spec("ALARM:-R3-5:linux-x86"))
     ('ALARM',
      {'archs': set(['linux-x86']), 'version': 'R3-5', 'version_flag': '<='})
@@ -718,6 +734,38 @@ def scan_module_arch_spec(spec, default_archs=None):
     return (modulename,d)
 
 # pylint: enable=C0301
+
+def scan_module_arch_specs(specs, default_archs= None):
+    """scan a list of module specification strings.
+
+    returns a list of tuples (modulename, moduledict).
+
+    Note that if a modulename is used twice, the later definition overwrites
+    the first one. However, the module retains it's position in the list of
+    modules.
+
+    A spec in the form "modulename:-" means that this is removed from the list
+    of modules even if it was mentioned before.
+    """
+    module_order= []
+    dict_= {}
+    for s in specs:
+        (modulename, moduledict)= scan_module_arch_spec(s, default_archs)
+        version= moduledict.get("version")
+        if version=="":
+            if moduledict["version_flag"]=="<=":
+                # "module:-" means "remove module from list
+                if dict_.has_key(modulename):
+                    del dict_[modulename]
+                    module_order.remove(modulename)
+                continue
+        if not dict_.has_key(modulename):
+            module_order.append(modulename)
+        dict_[modulename]= moduledict
+    lst= []
+    for modulename in module_order:
+        lst.append((modulename, dict_[modulename]))
+    return lst
 
 def compare_versions_flag(flag, version1, version2):
     """compare versions according to given flag.
@@ -1786,16 +1834,6 @@ class Dependencies(JSONstruct):
                     continue
                 d[version]= self.datadict()[modulename][version]
         return new
-    def partial_copy_by_specstrings(self, specstrings, archs):
-        """similar to partial_copy.
-
-        specs is a string as defined in function scan_module_arch_spec.
-        """
-        d= {}
-        for s in specstrings:
-            (modulename,modulespec)= scan_module_arch_spec(s, archs)
-            d[modulename]= modulespec
-        return self.partial_copy_by_specdict(d)
     def remove_missing_deps(self):
         """remove dependencies that are not part of the database."""
         modules= set()
@@ -2002,18 +2040,6 @@ class Builddb(JSONstruct):
             if found:
                 new.add_build(self, build_tag)
         return new
-    def filter_by_specstrings(self, specstrings, archs, db):
-        """return a new Builddb that satisfies the given list of specs.
-
-        Note that this function treats versions like "R1-3" and "1-3" to be
-        different.
-        """
-        d= {}
-        for s in specstrings:
-            (modulename,modulespec)= scan_module_arch_spec(s, archs)
-            d[modulename]= modulespec
-        return self.filter_by_specdict(d, db)
-
     def iter_builds(self):
         """return a build iterator.
         """

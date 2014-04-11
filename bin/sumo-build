@@ -784,6 +784,11 @@ def process(options, commands):
     if (not os.path.exists(CONFIG_NAME)) or options.no_default_config:
         config.disable_default()
 
+    if options.addmodules:
+        # "module" option is now *merged*, not copied in
+        # update_from_options:
+        config.set_list_append("module")
+
     config.load(options.config)
 
     config.update_from_options(options)
@@ -1016,7 +1021,10 @@ def process(options, commands):
         return
     if commands[0]=="find":
         if len(commands)>=2:
-            modulespecs= commands[1:]
+            if options.addmodules:
+                modulespecs= options.module + commands[1:]
+            else:
+                modulespecs= commands[1:]
         else:
             # no modulespecs after the command
             modulespecs= options.module
@@ -1029,9 +1037,9 @@ def process(options, commands):
             sys.exit("--db is mandatory")
         db= utils.Dependencies.from_json_file(options.db)
         builddb= utils.Builddb.from_json_file(options.builddb)
-        new_builddb= builddb.filter_by_specstrings(modulespecs,
-                                                   options.arch,
-                                                   db)
+        spec_dict= dict(utils.scan_module_arch_specs(modulespecs,
+                                                     options.arch))
+        new_builddb= builddb.filter_by_specdict(spec_dict, db)
         if not options.brief:
             new_builddb.json_print()
         else:
@@ -1074,7 +1082,10 @@ def process(options, commands):
             sys.exit("--db is mandatory")
 
         if len(commands)>1:
-            modulespecs= commands[1:]
+            if options.addmodules:
+                modulespecs= options.module + commands[1:]
+            else:
+                modulespecs= commands[1:]
         else:
             # no modulespecs after the command
             modulespecs= options.module
@@ -1287,6 +1298,14 @@ def main():
                             "string separated by spaces.  This option value "
                             "is stored in the configuration file. ",
                       metavar="MODULESPEC"
+                      )
+    parser.add_option("-A", "--addmodules",
+                      action="store_true",
+                      help="If set, modules from the command do not replace "
+                           "modules from the configuration file but are "
+                           "*added* to them. Module specifications of the "
+                           "form \"module:-\" remove a module from the "
+                           "list of specs."
                       )
     parser.add_option("-b", "--brief",
                       action="store_true",

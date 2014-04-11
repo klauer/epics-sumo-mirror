@@ -398,6 +398,11 @@ def process(options, commands):
     if (not os.path.exists(CONFIG_NAME)) or options.no_default_config:
         config.disable_default()
 
+    if options.addmodules:
+        # "module" option is now *merged*, not copied in
+        # update_from_options:
+        config.set_list_append("module")
+
     config.load(options.config)
 
     config.update_from_options(options)
@@ -454,7 +459,10 @@ def process(options, commands):
 
     if commands[0]=="distribution":
         if len(commands)>1:
-            modulespecs= commands[1:]
+            if options.addmodules:
+                modulespecs= options.module + commands[1:]
+            else:
+                modulespecs= commands[1:]
         else:
             # no modulespecs after the command
             modulespecs= options.module
@@ -499,7 +507,10 @@ def process(options, commands):
 
     if commands[0]=="filter":
         if len(commands)>1:
-            modulespecs= commands[1:]
+            if options.addmodules:
+                modulespecs= options.module + commands[1:]
+            else:
+                modulespecs= commands[1:]
         else:
             # no modulespecs after the command
             modulespecs= options.module
@@ -509,7 +520,9 @@ def process(options, commands):
         if not options.db:
             sys.exit("error, --db is mandatory here")
         db= utils.Dependencies.from_json_file(options.db, keep_locked= False)
-        db= db.partial_copy_by_specstrings(modulespecs, options.arch)
+        spec_dict= dict(utils.scan_module_arch_specs(modulespecs,
+                                                     options.arch))
+        db= db.partial_copy_by_specdict(spec_dict)
         db.json_print()
         return
 
@@ -584,7 +597,10 @@ def process(options, commands):
         db= utils.Dependencies.from_json_file(options.db)
 
         if len(commands)>1:
-            modulespecs= commands[1:]
+            if options.addmodules:
+                modulespecs= options.module + commands[1:]
+            else:
+                modulespecs= commands[1:]
         else:
             # no modulespecs after the command
             modulespecs= options.module
@@ -793,6 +809,14 @@ def main():
                             "This option value is stored in the "
                             "configuration file. ",
                       metavar="STATE"
+                      )
+    parser.add_option("-A", "--addmodules",
+                      action="store_true",
+                      help="If set, modules from the command do not replace "
+                           "modules from the configuration file but are "
+                           "*added* to them. Module specifications of the "
+                           "form \"module:-\" remove a module from the "
+                           "list of specs."
                       )
     parser.add_option("-b", "--brief",
                       action="store_true",

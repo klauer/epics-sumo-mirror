@@ -54,7 +54,10 @@ Here we define some of the terms used in the following text.
       *specified by relation*. In case of the *unspecified* :term:`version`,
       the *modulespec* is simply the :term:`modulename`. In all other cases,
       the :term:`modulename` is followed by a colon ":" and a
-      :term:`versionspec`.
+      :term:`versionspec`. A :term:`versionspec` may be followed by an
+      :term:`arch`. Note that for lists of modules the special modulespec
+      "modulename:-" is used to remove a module from a list of modules (see
+      :doc:`sumo-build <reference-sumo-build>`).
 
   versionspec
       This is a string that specifies the :term:`version` of a :term:`module`.
@@ -64,6 +67,20 @@ Here we define some of the terms used in the following text.
       "+versionname" it means all :term:`versions` that are equal or newer
       than :term:`versionname`. With "-versionname" it means all
       :term:`versions` that are equal or older than :term:`versionname`. 
+
+  architecture
+      This is the specification of the platform (processor + operating system)
+      a module is built for. The string specifying an *architecture* is called
+      :term:`arch`.
+
+  arch
+      This is a string that specifies an architecture. Common architectures are
+      "linux-x86" or "vxWorks-ppc603". 
+
+  archspec
+      This is a string that specifies the :term:`architecture` of a
+      :term:`module` in a :term:`modulespec`. This follows the
+      :term:`versionspec` and is separated from it by a colon ":".
 
   support directory
       This is the directory where the compiled versions of :term:`modules` are
