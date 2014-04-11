@@ -65,7 +65,7 @@ The scan file is converted to a dependency database like this::
 We have to set a weight factor for our BESSYRULES module, this ensures that
 this module always comes first in generated RELEASE files::
 
-  sumo-db --db DEPS.DB --savedb weight -- -1 BESSYRULES
+  sumo-db --db DEPS.DB weight -- -1 BESSYRULES
 
 Set up a support directory
 --------------------------

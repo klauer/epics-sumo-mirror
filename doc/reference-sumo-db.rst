@@ -392,8 +392,6 @@ given modules.
 Parameter MODULES is a list of :term:`modulespecs` that specifies the
 :term:`modules` and :term:`versions` to operate on. 
 
-If called with option "--savedb", the db file is overwritten with the result.
-
 cloneversion [MODULE] [OLD-VERSION] [NEW-VERSION]
 +++++++++++++++++++++++++++++++++++++++++++++++++
 
@@ -431,9 +429,9 @@ Here is a short overview on command line options:
                       the program are ignored.
 --db DB               Define the name of the DB file. This option value is
                       stored in the configuration file. 
---savedb              Resave db if it was modified. This option has only a
-                      meaning for the commands "merge","filter", "cloneversion"
-                      and "replaceversion".
+--dumpdb              Dump the modified db on the console, currently only for the 
+                      commands "weight", "merge", "cloneversion" and
+                      "replaceversion".
 --arch ARCH           Define the name of a targetarchitecture. You can specify
                       more than one target architecture.  You can specify more
                       than one of these by repeating this option or by joining
