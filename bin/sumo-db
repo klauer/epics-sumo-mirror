@@ -26,6 +26,7 @@ my_version= "1.3"
 KNOWN_COMMANDS=set(("edit", "convert",
                     "appconvert",
                     "distribution",
+                    "makeconfig",
                     "weight",
                     "show", "shownewest", "showall",
                     "find",
@@ -388,12 +389,37 @@ def process(options, commands):
     #                          Too many return statements
     # pylint: disable=R0915
     #                          Too many statements
+
+    config= utils.ConfigFile(( "arch", "db",
+                               "maxstate",
+                               "module",
+                               "progress", "source_patch",
+                               "verbose"), CONFIG_NAME)
+    config.load_file(options.config)
+
+    if options.update_config:
+        config.update_from_file(options.update_config, overwrite= True)
+
+    # Note: options that are "None" are not changed in the config object:
+    config.update_from_options(options)
+    config.fill_options(options, overwrite= False)
+
     if options.nolock:
         utils.use_lockfile= False
     if not commands:
         sys.exit("command missing")
     if commands[0] not in KNOWN_COMMANDS:
         sys.exit("unknown command: %s" % commands[0])
+
+    if commands[0]=="makeconfig":
+        if len(commands)>1:
+            sys.exit("error: extra arguments following \"makeconfig\"")
+        if len(commands)<=1:
+            configfile= None
+        else:
+            configfile= commands[1]
+        config.save_file(configfile)
+        return
 
     if commands[0]=="edit":
         if len(commands)!=2:
@@ -622,6 +648,10 @@ def _test():
 
 usage = """usage: %prog [options] command
 where command is:
+  makeconfig {FILE}
+          Create a new configuration file from the given options. If the
+          filename is '-' dump to the console, if it is omitted, rewrite the
+          configuration file that was read before (see option --config).
   edit [FILE]
           Start the editor specified by the environment variable "VISUAL" or
           "EDITOR" with that file. This command first aquires a file-lock on
@@ -706,16 +736,6 @@ def main():
                             "this option is not given try to read from "
                             "\"%s\" in the current working "
                             "directory. " % CONFIG_NAME,
-                      metavar="FILE"
-                      )
-    parser.add_option("--make-config",
-                      action="store",
-                      type="string",
-                      help= "Create a new config file FILE from the given "
-                            "options. If the filename is '-' dump to the "
-                            "console, if it is an empty string, rewrite the "
-                            "config file that was read before (see option "
-                            "--config). ",
                       metavar="FILE"
                       )
     parser.add_option("--update-config",
@@ -824,31 +844,12 @@ def main():
     options.arch  = utils.opt_join(options.arch, do_sort= True)
     options.module= utils.opt_join(options.module)
 
-    config= utils.ConfigFile(( "arch", "db",
-                               "maxstate",
-                               "module",
-                               "progress", "source_patch",
-                               "verbose"), CONFIG_NAME)
-
     if options.summary:
         print_summary()
         sys.exit(0)
 
     if options.test:
         _test()
-        sys.exit(0)
-
-    config.load_file(options.config)
-
-    if options.update_config:
-        config.update_from_file(options.update_config, overwrite= True)
-
-    # Note: options that are "None" are not changed in the config object:
-    config.update_from_options(options)
-    config.fill_options(options, overwrite= False)
-
-    if options.make_config is not None:
-        config.save_file(options.make_config)
         sys.exit(0)
 
     # we could pass "args" as an additional parameter to process here if it

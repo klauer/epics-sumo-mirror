@@ -145,6 +145,13 @@ Commands
 
 This is a list of all commands:
 
+makeconfig {FILE}
++++++++++++++++++
+
+Create a new configuration file from the given options. If the filename is '-'
+dump to the console, if it is omitted, rewrite the configuration file that was
+read before (see option --config).
+
 edit [FILE]
 +++++++++++
 
@@ -255,10 +262,6 @@ Here is a short overview on command line options:
                       Specify the name of the configuration file. If this
                       option is not given try to read from "sumo-build.config"
                       in the current working directory.
---make-config FILE    Create a new config file FILE from the given options. If
-                      the filename is '-' dump to the console, if it is an
-                      empty string, rewrite the config file that was read
-                      before (see option --config).
 --update-config FILE  Update options taken from the configuration file with
                       options taken from another file which must be a JSON
                       file. Options from FILE overwrite options taken from the

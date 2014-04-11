@@ -260,6 +260,13 @@ Commands
 
 This is a list of all commands:
 
+makeconfig {FILE}
++++++++++++++++++
+
+Create a new configuration file from the given options. If the filename is '-'
+dump to the console, if it is omitted, rewrite the configuration file that was
+read before (see option --config).
+
 all
 +++
 
@@ -392,15 +399,6 @@ this file is read if option "--config" is not used to specify a different file.
 
 In the current implementation it is not an error if the specified configuration
 file is not found.
-
-make-config
-+++++++++++
-
-This option must be followed by a filename, "-" or "". The config file, if found,
-is combined with the rest of the command line options and the result is written
-to the given file or, if the filename was "-", to the console. If the filename
-is an empty string like in --make-config "" the configuration file that was
-read before is rewritten.
 
 dir
 +++

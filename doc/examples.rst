@@ -82,11 +82,11 @@ For convenience, we remember the support directory in an environment variable::
 
 Create a configuration file for sumo-db::
 
-  sumo-db --maxstate stable --db $SUMODIR/DEPS.DB --make-config ""
+  sumo-db --maxstate stable --db $SUMODIR/DEPS.DB makeconfig
 
 Create a configuration file for sumo-build::
 
-  sumo-build --db $SUMODIR/DEPS.DB --builddb $SUMODIR/BUILDS.DB --supportdir $SUMODIR --make-config ""
+  sumo-build --db $SUMODIR/DEPS.DB --builddb $SUMODIR/BUILDS.DB --supportdir $SUMODIR makeconfig
 
 Build the EPICS base
 ++++++++++++++++++++
@@ -129,12 +129,12 @@ to sumo-db which creates a `JSON <http://www.json.org>`_ file with
 Now we create a configuration file for sumo-db that contains the list of
 :term:`modulespecs`:: from file "MODULES"::
 
-  sumo-db --maxstate stable --db $SUMODIR/DEPS.DB --update-config MODULES --make-config ""
+  sumo-db --maxstate stable --db $SUMODIR/DEPS.DB --update-config MODULES makeconfig
 
 Here we create a configuration file for sumo-build that contains the
 :term:`modulespecs` and :term:`aliases` from file "MODULES" ::
 
-  sumo-build --db $SUMODIR/DEPS.DB --builddb $SUMODIR/BUILDS.DB --supportdir $SUMODIR --readonly --update-config MODULES --make-config ""
+  sumo-build --db $SUMODIR/DEPS.DB --builddb $SUMODIR/BUILDS.DB --supportdir $SUMODIR --readonly --update-config MODULES makeconfig
 
 Create a build for an application
 ---------------------------------
