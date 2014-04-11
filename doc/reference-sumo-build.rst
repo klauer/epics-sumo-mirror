@@ -167,19 +167,20 @@ This command must be followed by a *filename*.
 new {BUILDTAG}
 ++++++++++++++
 
-This command creates a new build. It may be followed by a :term:`buildtag`. If
-the :term:`buildtag` is not given, a new unique :term:`buildtag` is generated.
-Generated :term:`buildtags` have the form "AUTO-nnn". Note that options "--db",
---partialdb" and "--builddb" are mandatory for this command.  This command
-calls "make" and, after successful completion, sets the state of the build to
-"testing". If you want to skip this step, use option "--no-make". In order to
-provide arbitrary options to make use option "--makeopts".  
+This command creates a new build. If the :term:`buildtag` is not given as
+argument or option, the program generates a :term:`buildtag` in the form
+"AUTO-nnn". Note that options "--db", --partialdb" and "--builddb" are
+mandatory for this command. This command calls "make" and, after successful
+completion, sets the state of the build to "testing". If you want to skip this
+step, use option "--no-make". In order to provide arbitrary options to make use
+option "--makeopts".
 
 partialdb [BUILDTAG]
 ++++++++++++++++++++
 
 This command recreates a :term:`partialdb` from a complete :term:`DB` and a
-:term:`build`. The :term:`partialdb` is printed on the console.
+:term:`build`. The :term:`partialdb` is printed on the console. The
+:term:`buildtag` may be given as argument or option.
 
 find [MODULESPECS]
 ++++++++++++++++++
@@ -195,28 +196,23 @@ useall [BUILDTAG]
 
 This command creates a RELEASE file for an application. The command must be
 followed by :term:`buildtag`. The release file is created that it includes
-*all* :term:`modules` of the build.
+*all* :term:`modules` of the :term:`build`. The :term:`buildtag` may be given
+as argument or option.
 
-use [BUILDTAG] [MODULES]
-++++++++++++++++++++++++
-
-This command creates a RELEASE file for an application. The command must be
-followed by a :term:`buildtag` and a list of :term:`modulespecs`. The RELEASE
-created includes only the modules that are specified. For this command the
-:term:`DB` file must be specified with the "--db" option.
-
-useauto [MODULES]
-+++++++++++++++++
+use [MODULES]
++++++++++++++
 
 This command creates a RELEASE file for an application. The command must be
-followed by a list of :term:`modulespecs`. It looks for all :term:`builds` that
-have the :term:`modules` in the required :term:`versions`. If more than one
-matching build found it takes the one with the alphabetically first
-:term:`buildtag`. Note that the :term:`modulespecs` MUST specify
-:term:`versions` exactly. If you have unspecified :term:`versions` or
-:term:`versions` specified by relation you must use command "use" instead. The
-RELEASE created includes only the :term:`modules` that are specified. For this
-command the :term:`DB` file must be specified with the "--db" option.
+followed by a list of :term:`modulespecs`. If option --buildtag is given, it
+checks if this is compatible with the given :term:`modules`.  Otherwise it
+looks for all :term:`builds` that have the :term:`modules` in the required
+:term:`versions`. If more than one matching :term:`build` found it takes the
+one with the alphabetically first :term:`buildtag`. Note that the
+:term:`modulespecs` MUST specify :term:`versions` exactly. If you have
+unspecified :term:`versions` or :term:`versions` specified by relation you must
+use command "use" instead.  The RELEASE created includes only the
+:term:`modules` that are specified. For this command the :term:`DB` file must
+be specified with the "--db" option.
 
 list
 ++++
@@ -226,31 +222,34 @@ This command lists the names of all builds.
 show [BUILDTAG]
 +++++++++++++++
 
-This command shows the data of a build. It must be followed by a
-:term:`buildtag`. 
+This command shows the data of a :term:`build`. The :term:`buildtag` may be
+given as argument or option.
 
 state [BUILDTAG] {NEW STATE}
 ++++++++++++++++++++++++++++
 
-This command is used to show or change the state of a build. If must be
-followed by a :term:`buildtag`. If there is no new :term:`state` given, it just
-shows the current :term:`state` of the :term:`build`. Otherwise the
-:term:`state` of the :term:`build` is changed to the given value. 
+This command is used to show or change the :term:`state` of a :term:`build`.
+The :term:`buildtag` may be given as argument or option.If there is no new
+:term:`state` given, it just shows the current :term:`state` of the
+:term:`build`. Otherwise the :term:`state` of the :term:`build` is changed to
+the given value. 
 
 delete [BUILDTAG]
 +++++++++++++++++
 
 If no other :term:`build` depends on the :term:`build` specified by the
 :term:`buildtag`, the directories of the :term:`build` are removed and it's
-entry in the :term:`builddb` is deleted.
+entry in the builddb is deleted. The :term:`buildtag` may be given as argument
+or option.
 
 cleanup [BUILDTAG]
 ++++++++++++++++++
 
 This command removes the remains of a failed :term:`build`. If the command
 "new" is interrupted or stopped by an exception in the program, the
-:term:`build` may be in an incomplete state. In this case you can use the
-"cleanup" command to remove the directories of the failed build.
+:term:`build` may be in an incomplete :term:`state`. In this case you can use
+the "cleanup" command to remove the directories of the failed :term:`build`.
+The :term:`buildtag` may be given as argument or option.
 
 Options
 -------
@@ -276,6 +275,8 @@ Here is a short overview on command line options:
                       Define the name of the partialdb file.
 --builddb BUILDDB     Specify the BUILDDB file. This option value is stored in
                       the configuration file.
+-t BUILDTAG, --buildtag BUILDTAG
+                      Specify a buildtag.
 --supportdir SUPPORDIR
                       Specify the support directory. If this option is not
                       given take the current working directory as support
