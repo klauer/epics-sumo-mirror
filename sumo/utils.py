@@ -162,6 +162,9 @@ class ConfigFile(object):
                 str(self._dict)]
         return "\n".join(lines)
 
+    def set(self, optionname, value):
+        """set an option to an arbitrary value."""
+        self._dict[optionname]= value
     def set_list_append(self, name):
         """define an option to be of type "list append".
 
@@ -618,6 +621,17 @@ def scan_source_spec(elms):
         else:
             raise ValueError("invalid source spec: '%s'" % repr(elms))
     raise ValueError("invalid source spec: '%s'" % repr(elms))
+
+def create_module_arch_spec(modulename, versionname, default_archs= None):
+    """create a module arch spec string from modulename, versionname, arch.
+
+    This function returns a string that can be parsed by scan_module_arch_spec.
+
+    """
+    elms= [modulename, versionname]
+    if default_archs is not None:
+        elms.extend(sorted(default_archs))
+    return ":".join(elms)
 
 # pylint: disable=C0301
 #                          Line too long
@@ -2055,6 +2069,19 @@ class Builddb(JSONstruct):
         """
         build_ = self.datadict()[build_tag]
         return build_["modules"]
+    def module_specs(self, build_tag, default_archs=None):
+        """return the modules of a build in form module spec strings.
+
+        This function returns a list of strings that ccan be parsed by
+        scan_module_arch_spec.
+        """
+        lst= []
+        build_dict= self.modules(build_tag)
+        for modulename in sorted(build_dict.keys()):
+            versionname= build_dict[modulename]
+            lst.append(create_module_arch_spec(modulename, versionname,
+                       default_archs))
+        return lst
 
 def _test():
     """perform internal tests."""

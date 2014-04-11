@@ -305,6 +305,10 @@ Here is a short overview on command line options:
                       of these by repeating this option or by joining values in
                       a single string separated by spaces.  This option value
                       is stored in the configuration file.
+--modules-from-build BUILDTAG
+                      Take the module specifications from a build. If you use
+                      "--addmodules" you can modify single module
+                      specifications in order to create a new build.
 -A, --addmodules      If set, modules from the command do not replace modules
                       from the configuration file but are *added* to them.
                       Module specifications of the form "module:-" remove a

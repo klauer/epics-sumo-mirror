@@ -784,6 +784,9 @@ def process(options, commands):
     if (not os.path.exists(CONFIG_NAME)) or options.no_default_config:
         config.disable_default()
 
+    if options.modules_from_build:
+        # do ignore value module settings from config file in this case:
+        config.set("module", [])
     if options.addmodules:
         # "module" option is now *merged*, not copied in
         # update_from_options:
@@ -1036,6 +1039,9 @@ def process(options, commands):
             sys.exit("--db is mandatory")
         db= utils.Dependencies.from_json_file(options.db)
         builddb= utils.Builddb.from_json_file(options.builddb)
+        if options.modules_from_build:
+            modulespecs= builddb.module_specs(options.modules_from_build) + \
+                         modulespecs
         spec_dict= dict(utils.scan_module_arch_specs(modulespecs,
                                                      options.arch))
         new_builddb= builddb.filter_by_specdict(spec_dict, db)
@@ -1093,6 +1099,9 @@ def process(options, commands):
 
         db= utils.Dependencies.from_json_file(options.db)
         builddb= utils.Builddb.from_json_file(options.builddb)
+        if options.modules_from_build:
+            modulespecs= builddb.module_specs(options.modules_from_build) + \
+                         modulespecs
         print apprelease(options.supportdir \
                              if options.supportdir else ".",
                          buildtag,
@@ -1297,6 +1306,15 @@ def main():
                             "string separated by spaces.  This option value "
                             "is stored in the configuration file. ",
                       metavar="MODULESPEC"
+                      )
+    parser.add_option("--modules-from-build",
+                      action="store",
+                      type="string",
+                      help= "Take the module specifications from a build. If "
+                            "you use \"--addmodules\" you can modify single "
+                            "module specifications in order to create a new "
+                            "build.",
+                      metavar="BUILDTAG"
                       )
     parser.add_option("-A", "--addmodules",
                       action="store_true",
