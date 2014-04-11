@@ -10,4 +10,4 @@ cd ..
 
 cd $MYDIR
 
-python2.5 `which sumo-db` --db $DB1 merge $DB2 > $DB
+python2.5 `which sumo-db` --dumpdb --db $DB1 merge $DB2 > $DB
