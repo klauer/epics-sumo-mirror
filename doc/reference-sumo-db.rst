@@ -392,15 +392,16 @@ given modules.
 Parameter MODULES is a list of :term:`modulespecs` that specifies the
 :term:`modules` and :term:`versions` to operate on. 
 
-cloneversion [MODULE] [OLD-VERSION] [NEW-VERSION]
-+++++++++++++++++++++++++++++++++++++++++++++++++
+cloneversion [MODULE] [OLD-VERSION] [NEW-VERSION] {SOURCESPEC}
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 This command adds a new :term:`version` of a :term:`module` to the
 :term:`dependency database` by copying the old :term:`version`. All
 :term:`modules` that depend on the old :term:`version` now also depend on the
-new :term:`version` of the module. If you do this you must update the module
-:term:`source` definition of the new :term:`version` by editing the
-:term:`dependency database` file directly.
+new :term:`version` of the module. 
+If sourcespec is given, the command changes the source part according to this
+parameter. A sourcespec has the form "path PATH" or "darcs URL" or "darcs URL
+TAG".
 
 replaceversion [MODULE] [OLD-VERSION] [NEW-VERSION]
 +++++++++++++++++++++++++++++++++++++++++++++++++++

@@ -195,8 +195,9 @@ def create_database(deps, repoinfo, groups, archs, state, source_patches):
                     #  module_archs list is empty:
                     errmsg("no archs for path %s" % \
                            versionedmodule_path)
-                db.set_source(module_name, versionname, module_archs, state,
-                              {repotype: repodata})
+                db.set_source_arch_state(module_name, versionname,
+                                         module_archs, state,
+                                         {repotype: repodata})
 
                 _path2namevname[versionedmodule_path]= \
                         (module_name,versionname)
@@ -543,14 +544,22 @@ def process(options, commands):
 
     if commands[0]=="cloneversion" or commands[0]=="replaceversion":
         do_replace= (commands[0]=="replaceversion")
-        if len(commands)!=4:
-            sys.exit("exactly three arguments must follow \"%s\"" % \
+        if len(commands)<4:
+            sys.exit("at least three arguments must follow \"%s\"" % \
                      commands[0])
+        (modulename, oldversion, newversion)= commands[1:4]
+        if len(commands)<=4:
+            sourcespec= None
+        else:
+            sourcespec= commands[4:]
         if not options.db:
             sys.exit("error, --db is mandatory here")
         db = utils.Dependencies.from_json_file(options.db,
                 keep_locked= not options.dumpdb and (not options.dry_run))
-        db.patch_version(commands[1], commands[2], commands[3], do_replace)
+        db.patch_version(modulename, oldversion, newversion, do_replace)
+        if sourcespec:
+            db.set_source(modulename, newversion,
+                          utils.scan_source_spec(sourcespec))
         if options.dumpdb:
             db.json_print()
         else:
@@ -693,11 +702,14 @@ where command is:
           Print the database for the given modules. If you want a specific
           version of a module use modulename:versioname instead of the
           modulename alone.
-  cloneversion [MODULE] [OLD-VERSION] [NEW-VERSION]
+  cloneversion [MODULE] [OLD-VERSION] [NEW-VERSION] {SOURCESPEC}
           Add a new version to the database by copying the old version. The
           old-version data is copied for the new version data. All modules that
           depend on module:old-version now alternatively depend on
           module:new-version.
+          If sourcespec is given, the command changes the source part according
+          to this parameter. A sourcespec has the form "path PATH" or
+          "darcs URL" or "darcs URL TAG".
   replaceversion [MODULE] [OLD-VERSION] [NEW-VERSION]
           Replace a version to the database with a new one. The old-version
           data is copied for the new version data. All modules that depend on

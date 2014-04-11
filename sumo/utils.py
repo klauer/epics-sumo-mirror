@@ -559,6 +559,50 @@ def is_standardpath(path, darcs_tag):
     l= split_path(path)
     return tag2version(l[1])==tag2version(darcs_tag)
 
+def scan_source_spec(elms):
+    """scan a source specification.
+
+    A sourcespec is a list of strings in the form ["path",PATH] or
+    ["darcs",URL] or ["darcs",URL,TAG].
+
+    Here are some examples:
+
+    >>> scan_source_spec(["path","ab"])
+    {'path': 'ab'}
+    >>> scan_source_spec(["path"])
+    Traceback (most recent call last):
+        ...
+    ValueError: invalid source spec: '['path']'
+    >>> scan_source_spec(["path","a","b"])
+    Traceback (most recent call last):
+        ...
+    ValueError: invalid source spec: '['path', 'a', 'b']'
+    >>> scan_source_spec(["darcs","abc"])
+    {'darcs': {'url': 'abc'}}
+    >>> scan_source_spec(["darcs","abc","R1-2"])
+    {'darcs': {'url': 'abc', 'tag': 'R1-2'}}
+    >>> scan_source_spec(["darcs"])
+    Traceback (most recent call last):
+        ...
+    ValueError: invalid source spec: '['darcs']'
+    >>> scan_source_spec(["darcs","abc","R1-2","xy"])
+    Traceback (most recent call last):
+        ...
+    ValueError: invalid source spec: '['darcs', 'abc', 'R1-2', 'xy']'
+    """
+    if elms[0]=="path":
+        if len(elms)!=2:
+            raise ValueError("invalid source spec: '%s'" % repr(elms))
+        return {"path": elms[1]}
+    if elms[0]=="darcs":
+        if len(elms)==2:
+            return {"darcs":{"url":elms[1]}}
+        elif len(elms)==3:
+            return {"darcs":{"url":elms[1], "tag":elms[2]}}
+        else:
+            raise ValueError("invalid source spec: '%s'" % repr(elms))
+    raise ValueError("invalid source spec: '%s'" % repr(elms))
+
 # pylint: disable=C0301
 #                          Line too long
 
@@ -1256,8 +1300,13 @@ class Dependencies(JSONstruct):
         m= self.datadict().setdefault(module_name,{})
         m[versionname]= copy.deepcopy(
                             other.datadict()[module_name][versionname])
-    def set_source(self, module_name, versionname, archs, state,
-                   repo_dict):
+    def set_source(self, module_name, versionname, repo_dict):
+        """add a module with source spec, state and archs."""
+        version_dict= self.datadict().setdefault(module_name,{})
+        version= version_dict.setdefault(versionname, {})
+        version["source"]= repo_dict
+    def set_source_arch_state(self, module_name, versionname, archs, state,
+                              repo_dict):
         """add a module with source spec, state and archs."""
         if not self.__class__.states_dict.has_key(state):
             raise ValueError("invalid state: %s" % state)
@@ -1632,6 +1681,8 @@ class Dependencies(JSONstruct):
         do_replace: if True, replace the old version with the new one
         Note: the state of the new version is always set to unstable.
         """
+        # pylint: disable=R0912
+        #                          Too many branches
         moduledata= self.datadict()[modulename]
         if moduledata.has_key(newversionname):
             raise ValueError("module %s: version %s already exists" % \
@@ -1640,8 +1691,14 @@ class Dependencies(JSONstruct):
         (_, sourcedata)= single_key_item(d["source"])
         if isinstance(sourcedata, dict):
             if sourcedata.has_key("tag"):
-                sourcedata["tag"]= \
-                    sourcedata["tag"].replace(versionname, newversionname)
+                if sourcedata["tag"]== versionname:
+                    sourcedata["tag"]= newversionname
+            else:
+                # cannot patch tag, invalidate the source spec:
+                sourcedata["url"]= ""
+        else:
+            # invalidate the source date
+            sourcedata= ""
         d["state"]= "unstable"
         moduledata[newversionname]= d
         if do_replace:
