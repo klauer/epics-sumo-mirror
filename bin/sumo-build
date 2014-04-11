@@ -991,79 +991,81 @@ def main():
     parser.add_option("-c", "--config",
                       action="store",
                       type="string",
-                      help="Load options from config file FILE, "
-                           "default: %s." % CONFIG_NAME,
+                      help= "Specify the name of the configuration file. If "
+                            "this option is not given try to read from "
+                            "\"%s\" in the current working "
+                            "directory. " % CONFIG_NAME,
                       metavar="FILE"
                       )
     parser.add_option("--make-config",
                       action="store",
                       type="string",
-                      help="Create a new config file FILE from the given "
-                           "options. If the filename is '-' dump "
-                           "to the console, if it is an empty string, "
-                           "rewrite the config file that was read before.",
+                      help= "Create a new config file FILE from the given "
+                            "options. If the filename is '-' dump to the "
+                            "console, if it is an empty string, rewrite the "
+                            "config file that was read before (see option "
+                            "--config). ",
                       metavar="FILE"
                       )
     parser.add_option("--update-config",
                       action="store",
                       help= "Update options taken from the configuration "
-                            "file with options taken from another file "
-                            "which must be a JSON file. Options from FILE "
+                            "file with options taken from another file which "
+                            "must be a JSON file. Options from FILE "
                             "overwrite options taken from the configuration "
-                            "file.  Options in FILE that are unknown to the "
-                            "program are ignored.",
+                            "file. Options in FILE that are unknown to the "
+                            "program are ignored. ",
                       metavar="FILE"
                       )
     parser.add_option("--db",
                       action="store",
                       type="string",
-                      help="Define the name of the DBFILE. "
-                           "This option value is stored in the CONFIGFILE.",
-                      metavar="DBFILE"
+                      help= "Define the name of the DB file. This option "
+                            "value is stored in the configuration file. ",
+                      metavar="DB"
                       )
     parser.add_option("-P", "--partialdb",
                       action="store",
                       type="string",
-                      help="Define the name of the PARTIALDBFILE.",
-                      metavar="PARTIALDBFILE"
+                      help= "Define the name of the PARTIALDB file.",
+                      metavar="PARTIALDB"
                       )
     parser.add_option("--builddb",
                       action="store",
                       type="string",
-                      help="Specify the BUILDDATABASE. "
-                           "This option value is stored in the CONFIGFILE.",
-                      metavar="BUILDDATABASE"
+                      help= "Specify the BUILDDB file. This option value is "
+                            "stored in the configuration file. ",
+                      metavar="BUILDDB"
                       )
     parser.add_option("--supportdir",
                       action="store",
                       type="string",
-                      help="Specify the SUPPORTDIRECTORY. If this option "
-                           "is not given take the current working "
-                           "directory as SUPPORTDIRECTORY. "
-                           "This option value is stored in the CONFIGFILE.",
-                      metavar="SUPPORTDIRECTORY"
+                      help= "Specify the support directory. If this option "
+                            "is not given take the current working directory "
+                            "as support directory.  This option value is "
+                            "stored in the configuration file. ",
+                      metavar="SUPPORTDIR"
                       )
     parser.add_option("-x", "--extra",
                       action="append",
                       type="string",
-                      help="Extra lines that are added to the RELEASE "
-                           "file. A LINE may be an arbitrary string or "
-                           "definition. "
-                           "This option value is stored in the CONFIGFILE.",
-                      metavar="LINE"
+                      help= "Specify an extra line that is added to the "
+                            "generated RELEASE file. This option value is "
+                            "stored in the configuration file. ",
+                      metavar="EXTRALINE"
                       )
     parser.add_option("-a", "--alias",
                       action="append",
                       type="string",
-                      help="Define an ALIAS for the commands 'use' "
-                           "and 'useall'. An ALIAS must have the "
-                           "form FROM:TO. A module named 'FROM' is then "
-                           "put to the generated RELEASE file as 'TO'. "
-                           "You can specify more than one of these by "
-                           "repeating this option or by joining values in "
-                           "a single string separated by spaces. "
-                           "This option value is stored in the CONFIGFILE.",
-                      metavar="LINE"
+                      help= "Define an alias for the commands 'use' and "
+                            "'useall'. An alias must have the form FROM:TO. "
+                            "The path of module named 'FROM' is put in the "
+                            "generated RELEASE file as a variable named "
+                            "'TO'. You can specify more than one of these by "
+                            "repeating this option or by joining values in a "
+                            "single string separated by spaces. This option "
+                            "value is stored in the configuration file. ",
+                      metavar="ALIAS"
                       )
     parser.add_option("--arch",
                       action="append",
@@ -1072,32 +1074,31 @@ def main():
                            "You can specify more than one of these by "
                            "repeating this option or by joining values in "
                            "a single string separated by spaces. "
-                           "This option value is stored in the CONFIGFILE.",
+                           "This option value is stored in the "
+                           "configuration file.",
                       metavar="TARGETARCHITECTURE"
                       )
     parser.add_option("-m", "--module",
                       action="append",
-                      help="Define a MODULESPEC. A MODULESPEC has the form "
-                           "modulename, modulename:version, "
-                           "modulename:-version or modulename:+version. If "
-                           "you specify modules with this option you don't "
-                           "have to put MODULESPECs after commands like "
-                           "'find' or 'use'. "
-                           "You can specify more than one of these by "
-                           "repeating this option or by joining values in "
-                           "a single string separated by spaces. "
-                           "This option value is stored in the CONFIGFILE.",
+                      help= "Define a modulespec. If you specify modules "
+                            "with this option you don't have to put "
+                            "modulespecs after some of the commands.  You "
+                            "can specify more than one of these by repeating "
+                            "this option or by joining values in a single "
+                            "string separated by spaces.  This option value "
+                            "is stored in the configuration file. ",
                       metavar="MODULESPEC"
                       )
     parser.add_option("-b", "--brief",
                       action="store_true",
-                      help="Do a more brief output for some commands.",
+                      help="Create a more brief output for some commands. ",
                       )
     parser.add_option("--readonly",
                       action="store_true",
                       help="Do not allow modifying the database files or "
                            "the support directory. "
-                           "This option value is stored in the CONFIGFILE.",
+                           "This option value is stored in the "
+                           "configuration file.",
                       )
     parser.add_option("--nolock",
                       action="store_true",
@@ -1105,13 +1106,13 @@ def main():
                       )
     parser.add_option("-p", "--progress",
                       action="store_true",
-                      help="Show progress on stderr. "
-                           "This option value is stored in the CONFIGFILE.",
+                      help= "Show progress on stderr. This option value is "
+                            "stored in the configuration file. "
                       )
     parser.add_option("-v", "--verbose",
                       action="store_true",
-                      help="Show command calls. "
-                           "This option value is stored in the CONFIGFILE.",
+                      help="Show command calls. This option value is stored "
+                           "in the configuration file.",
                       )
     parser.add_option("-n", "--dry-run",
                       action="store_true",

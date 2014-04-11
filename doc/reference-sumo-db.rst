@@ -417,17 +417,15 @@ Here is a short overview on command line options:
 --version             show program's version number and exit
 -h, --help            show this help message and exit
 --summary             Print a summary of the function of the program.
---doc                 Print a longer description of the program (deprecated).
 --test                Perform some self tests.
--c FILE, --config FILE
-                      Specify the name of the configuration file. If this
-                      option is not given try to read from "sumo-db.config" in
-                      the current working directory.
+-c FILE, --config FILE  Specify the name of the configuration file. If this
+                        option is not given try to read from "sumo-db.config"
+                        in the current working directory.
 --make-config FILE    Create a new config file FILE from the given options. If
                       the filename is '-' dump to the console, if it is an
                       empty string, rewrite the config file that was read
                       before (see option --config).
---update-config FILE  Update options taken from the configuration file with
+--update-config XFILE         Update options taken from the configuration file with
                       options taken from another file which must be a JSON
                       file. Options from FILE overwrite options taken from the
                       configuration file. Options in FILE that are unknown to
@@ -441,14 +439,13 @@ Here is a short overview on command line options:
                       more than one target architecture.  You can specify more
                       than one of these by repeating this option or by joining
                       values in a single string separated by spaces.  This
-                      option value is stored in the configuration file.
--m MODULE, --module MODULE
-                      Define a :term:`modulespec`. If you specify modules with
+                      option value is stored in the configuration file.  
+-m MODULE, --module MODULE  Define a :term:`modulespec`. If you specify modules with
                       this option you don't have to put :term:`modulespecs`
-                      after commands like 'find' or 'use'.  You can specify
-                      more than one of these by repeating this option or by
-                      joining values in a single string separated by spaces.
-                      This option value is stored in the configuration file.
+                      after some of the commands. You can specify more than one
+                      of these by repeating this option or by joining values in
+                      a single string separated by spaces.  This option value
+                      is stored in the configuration file.
 -b, --brief           Create a more brief output for some commands.
 -P EXPRESSION, --source-patch EXPRESSION
                       Specify a source patchexpression. Such an expression
@@ -458,9 +455,10 @@ Here is a short overview on command line options:
                       url generated. You can specify more than one
                       patchexpression.  This option value is stored in the
                       configuration file.
---noignorecase        For command 'find', do NOT ignore case.
+--noignorecase        
+    For command 'find', do NOT ignore case.
 --nolock              Do not use file locking.
--p, --progress        Show progress on stderr.  This option value is stored in
+-p, --progress        Show progress on stderr. This option value is stored in
                       the configuration file.
 -t, --trace           Switch on some trace messages.
 -v, --verbose         Show command calls.  This option value is stored in the

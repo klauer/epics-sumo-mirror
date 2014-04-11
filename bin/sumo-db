@@ -1,125 +1,10 @@
 #! /usr/bin/env python
 # -*- coding: UTF-8 -*-
 
+# pylint: disable=C0111
+#                          Missing docstring
 # pylint: disable=C0301
 #                          Line too long
-"""
-==========
-sumo-db-py
-==========
-
-Create a JSON database with module and dependency information.
-
-Logical definitions
--------------------
-
-module:
-    A module is a software package, usually an EPICS support module. Modules
-    have a directory tree with the sources and are usually managed with a
-    version control system. At the HZB we use darcs.  Each module has a unique
-    *modulename*. The source of the module is available in several versions.
-    The set of versions that have been tested are called the *moduleversions*.
-    A single item of this set is called a *versionedmodule*.
-
-versionedmodule:
-    This is a named and tested version of a module. A versionedmodule has a
-    *versionname* that is unique for that module, a *modulesource* and
-    *dependencies*.
-
-modulesource:
-    This is the specification on how to obtain the module. The modulesource
-    consists of a *sourcetype*, a *sourceurl* and an optional *sourcetag*.
-
-dependencies:
-    This is the specification of the dependencies of the versionedmodule. Each
-    item is a *dependency*, consisting of a *modulename* and a *versionname*.
-    Additionally, an *aliases* set defines alternative names for the dependency
-    modules, these are needed for generation of configure/RELEASE files.
-
-Datastructure
--------------
-
-Some parts of the entities described above are used as keys in maps (python
-dictionaries). In order to not to be confused with the definitions above we add
-some more here.
-
-dataset:
-    This is the collection of all the module data, a map. In this map, each key
-    is a *modulename* and the values are *moduleversions* entities.
-
-modulename:
-    The unique name of a module.
-
-moduleversions:
-    This is a map where each key is a *versionname* and each value is a
-    *versiondata* item.
-
-versiondata:
-    This is a map that contains the information associated with the
-    versionedmodile. The map keys are "source", the *modulesource* definition,
-    "aliases", the alias map and "dependencies", the dependencies
-    specification.
-
-modulesource:
-    This is the specification on how to obtain the module. It is a list of 2 to
-    3 items. The first one is the *sourcetype*, the second one is the
-    *sourceurl* and the optional third one is the *sourcetag*.
-
-aliases:
-    This is a map that contains optional alias names for modulenames in the
-    dependency specification. These aliases may be needed for the generation of
-    the configure/RELEASE files.
-
-dependencies:
-    This item contains the dependency specification for a module. It is a map
-    where each key is a modulename and the value is a list of versionnames.
-
-
-Example
--------
-
-Here is an example of a dataset::
-
-  {
-      "ALARM": {
-          "R3-5": {
-              "dependencies": {
-                  "MISC": [
-                      "R2-4"
-                  ],
-                  "TIMER": [
-                      "R5-1"
-                  ]
-              },
-              "source": [
-                  "darcs",
-                  "/opt/repositories/controls/darcs/epics/support/alarm/base-3-14",
-                  "R3-5"
-              ]
-          }
-      },
-
-      "MISC": {
-          "R2-1": {
-              "dependencies": {},
-              "source": [
-                  "darcs",
-                  "/opt/repositories/controls/darcs/epics/support/misc/base-3-14",
-                  "R2-1"
-              ]
-          },
-          "R2-4": {
-              "dependencies": {},
-              "source": [
-                  "darcs",
-                  "/opt/repositories/controls/darcs/epics/support/misc/base-3-14",
-                  "R2-4"
-              ]
-          }
-      },
-  }
-
-"""
 # pylint: enable=C0301
 
 # pylint: disable=C0103
@@ -726,10 +611,6 @@ def process(options, commands):
         newdb.json_print()
         return
 
-def print_doc():
-    """print a short summary of the scripts function."""
-    print __doc__
-
 def print_summary():
     """print a short summary of the scripts function."""
     print "%-20s: a tool for managing support EPICS trees \n" % \
@@ -818,11 +699,6 @@ def main():
                       action="store_true",
                       help="Print a summary of the function of the program.",
                       )
-    parser.add_option("--doc",
-                      action="store_true",
-                      help="Print a longer description of the program "
-                           "(deprecated).",
-                      )
     parser.add_option("--test",
                       action="store_true",
                       help="Perform simple self-test.",
@@ -830,34 +706,37 @@ def main():
     parser.add_option("-c", "--config",
                       action="store",
                       type="string",
-                      help="Load options from config file FILE, "
-                           "default: %s." % CONFIG_NAME,
+                      help= "Specify the name of the configuration file. If "
+                            "this option is not given try to read from "
+                            "\"%s\" in the current working "
+                            "directory. " % CONFIG_NAME,
                       metavar="FILE"
                       )
     parser.add_option("--make-config",
                       action="store",
                       type="string",
-                      help="Create a new config file FILE from the given "
-                           "options. If the filename is '-' dump "
-                           "to the console, if it is an empty string, "
-                           "rewrite the config file that was read before.",
+                      help= "Create a new config file FILE from the given "
+                            "options. If the filename is '-' dump to the "
+                            "console, if it is an empty string, rewrite the "
+                            "config file that was read before (see option "
+                            "--config). ",
                       metavar="FILE"
                       )
     parser.add_option("--update-config",
                       action="store",
                       help= "Update options taken from the configuration "
-                            "file with options taken from another file "
-                            "which must be a JSON file. Options from FILE "
+                            "file with options taken from another file which "
+                            "must be a JSON file. Options from FILE "
                             "overwrite options taken from the configuration "
-                            "file.  Options in FILE that are unknown to the "
-                            "program are ignored.",
+                            "file. Options in FILE that are unknown to the "
+                            "program are ignored. ",
                       metavar="FILE"
                       )
     parser.add_option("--db",
                       action="store",
                       type="string",
-                      help="Define the name of the DB file. "
-                           "This option value is stored in the CONFIGFILE.",
+                      help= "Define the name of the DB file. This option "
+                            "value is stored in the configuration file. ",
                       metavar="DB"
                       )
     parser.add_option("--savedb",
@@ -874,26 +753,24 @@ def main():
                            "You can specify more than one of these by "
                            "repeating this option or by joining values in "
                            "a single string separated by spaces. "
-                           "This option value is stored in the CONFIGFILE.",
+                           "This option value is stored in the "
+                           "configuration file.",
                       metavar="TARGETARCHITECTURE"
                       )
     parser.add_option("-m", "--module",
                       action="append",
-                      help="Define a MODULESPEC. A MODULESPEC has the form "
-                           "modulename, modulename:version, "
-                           "modulename:-version or modulename:+version. If "
-                           "you specify modules with this option you don't "
-                           "have to put MODULESPECs after commands like "
-                           "'find' or 'use'. "
-                           "You can specify more than one of these by "
-                           "repeating this option or by joining values in "
-                           "a single string separated by spaces. "
-                           "This option value is stored in the CONFIGFILE.",
+                      help= "Define a modulespec. If you specify modules "
+                            "with this option you don't have to put "
+                            "modulespecs after some of the commands.  You "
+                            "can specify more than one of these by repeating "
+                            "this option or by joining values in a single "
+                            "string separated by spaces.  This option value "
+                            "is stored in the configuration file. ",
                       metavar="MODULESPEC"
                       )
     parser.add_option("-b", "--brief",
                       action="store_true",
-                      help="Create a more brief output. ",
+                      help="Create a more brief output for some commands. ",
                       )
     parser.add_option("-P", "--source-patch",
                       action="append",
@@ -917,8 +794,8 @@ def main():
                       )
     parser.add_option("-p", "--progress",
                       action="store_true",
-                      help="Show progress on stderr. "
-                           "This option value is stored in the CONFIGFILE.",
+                      help= "Show progress on stderr. This option value is "
+                            "stored in the configuration file. "
                       )
     parser.add_option("-t", "--trace",
                       action="store_true",
@@ -926,8 +803,8 @@ def main():
                       )
     parser.add_option("-v", "--verbose",
                       action="store_true",
-                      help="Show command calls. "
-                           "This option value is stored in the CONFIGFILE.",
+                      help="Show command calls. This option value is stored "
+                           "in the configuration file.",
                       )
     parser.add_option("-n", "--dry-run",
                       action="store_true",
@@ -950,10 +827,6 @@ def main():
 
     if options.summary:
         print_summary()
-        sys.exit(0)
-
-    if options.doc:
-        print_doc()
         sys.exit(0)
 
     if options.test:
