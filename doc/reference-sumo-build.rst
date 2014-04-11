@@ -192,6 +192,19 @@ followed by a :term:`buildtag` and a list of :term:`modulespecs`. The RELEASE
 created includes only the modules that are specified. For this command the
 :term:`DB` file must be specified with the "--db" option.
 
+useauto [MODULES]
++++++++++++++++++
+
+This command creates a RELEASE file for an application. The command must be
+followed by a list of :term:`modulespecs`. It looks for all :term:`builds` that
+have the :term:`modules` in the required :term:`versions`. If more than one
+matching build found it takes the one with the alphabetically first
+:term:`buildtag`. Note that the :term:`modulespecs` MUST specify
+:term:`versions` exactly. If you have unspecified :term:`versions` or
+:term:`versions` specified by relation you must use command "use" instead. The
+RELEASE created includes only the :term:`modules` that are specified. For this
+command the :term:`DB` file must be specified with the "--db" option.
+
 list
 ++++
 

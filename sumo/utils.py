@@ -1896,22 +1896,17 @@ class Builddb(JSONstruct):
             if v== other_build_tag:
                 return True
         return False
-    def filter_by_specs(self, specstrings, archs, db):
+    def filter_by_specdict(self, specdict, db):
         """return a new Builddb that satisfies the given list of specs.
 
         Note that this function treats versions like "R1-3" and "1-3" to be
         different.
         """
-        specs= {}
-        for s in specstrings:
-            (modulename,modulespec)= scan_module_arch_spec(s, archs)
-            specs[modulename]= modulespec
-
         new= self.__class__()
         for build_tag in self.iter_builds():
             found= True
             m= self.modules(build_tag)
-            for (modulename,modulespec) in specs.items():
+            for (modulename,modulespec) in specdict.items():
                 v= m.get(modulename)
                 if v is None:
                     found= False
@@ -1926,6 +1921,17 @@ class Builddb(JSONstruct):
             if found:
                 new.add_build(self, build_tag)
         return new
+    def filter_by_specstrings(self, specstrings, archs, db):
+        """return a new Builddb that satisfies the given list of specs.
+
+        Note that this function treats versions like "R1-3" and "1-3" to be
+        different.
+        """
+        d= {}
+        for s in specstrings:
+            (modulename,modulespec)= scan_module_arch_spec(s, archs)
+            d[modulename]= modulespec
+        return self.filter_by_specdict(d, db)
 
     def iter_builds(self):
         """return a build iterator.

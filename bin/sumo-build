@@ -21,7 +21,7 @@ import sumo.utils as utils
 my_version= "1.3"
 
 KNOWN_COMMANDS=set(( "cleanup", "delete", "edit", "find", "list", "new",
-                     "partialdb", "show", "state", "use", "useall",
+                     "partialdb", "show", "state", "use", "useall", "useauto",
                   ))
 
 CONFIG_NAME="sumo-build.config"
@@ -607,22 +607,46 @@ def fullapprelease(build_path, build_tag, builddb, db, modules,
 # pylint: disable=R0913
 #                          Too many arguments
 
-def apprelease(build_path, build_tag, module_spec, builddb, db,
+def apprelease(build_path, build_tag, module_specs, builddb, db,
                archs, aliases, extra_lines):
     """create entries for an release file.
     """
+    # pylint: disable=R0914
+    #                          Too many local variables
+    specdict= {}
+    specstrings= {}
+    for m in module_specs:
+        (modulename,modulespec)= utils.scan_module_arch_spec(m, archs)
+        specstrings[modulename]= m
+        if build_tag is None:
+            # unspecifed build_tag, all versions must be *exactly specified*:
+            if modulespec.get("version_flag")!='==':
+                sys.exit("modulespec '%s' is not an exactly "
+                         "specified version" % m)
+        specdict[modulename]= modulespec
+
+    if build_tag is None:
+        # must look for a matching build:
+        new_builddb= builddb.filter_by_specdict(specdict, db)
+        if new_builddb.is_empty():
+            sys.exit("no build found that matches modulespecs")
+        tags= [b for b in new_builddb.iter_builds()]
+        build_tag= tags[0]
+        sys.stderr.write("using build %s\n" % build_tag)
+
+
     build_modules= builddb.modules(build_tag)
     module_dict= {}
-    for m in module_spec:
-        (modulename,modulespec)= utils.scan_module_arch_spec(m, archs)
+    for (modulename, modulespec) in specdict.items():
         v= build_modules.get(modulename)
         if v is None:
             sys.exit("error: module %s not found in build %s" % \
                      (modulename, build_tag))
         if not utils.compare_versions_flag(modulespec.get("version_flag"),
                                            v, modulespec.get("version")):
-            sys.exit(("error: no module matching %s "+ \
-                      "found in build %s") % (m, build_tag))
+            sys.exit("error: no module matching %s "
+                     "found in build %s" % \
+                     (specstrings[modulename], build_tag))
         module_dict[modulename]= v
     get_dependencies(module_dict, db, builddb, build_tag)
     return fullapprelease(build_path, build_tag, builddb, db,
@@ -838,9 +862,9 @@ def process(options, commands):
             sys.exit("--db is mandatory")
         db= utils.Dependencies.from_json_file(options.db)
         builddb= utils.Builddb.from_json_file(options.builddb)
-        new_builddb= builddb.filter_by_specs(modulespecs,
-                                             options.arch,
-                                             db)
+        new_builddb= builddb.filter_by_specstrings(modulespecs,
+                                                   options.arch,
+                                                   db)
         if not options.brief:
             new_builddb.json_print()
         else:
@@ -873,15 +897,21 @@ def process(options, commands):
                              options.extra)
         return
 
-    if commands[0]=="use":
-        if len(commands)<=1:
-            sys.exit("error: buildtag missing")
+    if commands[0]=="use" or commands[0]=="useauto":
+        if commands[0]=="useauto":
+            buildtag= None
+            mod_idx= 1
+        else:
+            if len(commands)<=1:
+                sys.exit("error: buildtag missing")
+            buildtag= commands[1]
+            mod_idx= 2
+
         if not options.db:
             sys.exit("--db is mandatory")
-        buildtag= commands[1]
 
-        if len(commands)>=3:
-            modulespecs= commands[2:]
+        if len(commands)>mod_idx:
+            modulespecs= commands[mod_idx:]
         else:
             # no modulespecs after the command
             modulespecs= options.module
@@ -947,6 +977,16 @@ where command is:
           must be followed by a buildtag and a list of modulespecs. The RELEASE
           created includes only the modules that are specified. For this
           command the DB file must be specified with the "--db" option.
+  useauto [MODULES]
+          This command creates a RELEASE file for an application. The command
+          must be followed by a list of modulespecs. It looks for all builds
+          that have the modules in the required versions. If more than one
+          matching build found it takes the one with the alphabetically first
+          buildtag. Note that the modulespecs MUST specify versions exactly. If
+          you have unspecified versions or versions specified by relation you
+          must use command "use" instead. The RELEASE created includes only the
+          modules that are specified. For this command the DB file must be
+          specified with the "--db" option.
   list    
           This command lists the names of all builds.
   show [BUILDTAG]

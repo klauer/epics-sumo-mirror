@@ -107,7 +107,7 @@ We decide to build version "TAGLESS-3-14-12-2-1" of the EPICS base. We give the
 new :term:`build` the :term:`buildtag` "BASE-3-14-12-2-1"::
 
   sumo-db --nolock distribution BASE:TAGLESS-3-14-12-2-1 | sumo-build --partialdb - new BASE-3-14-12-2-1
-  make -f Makefile-BASE-3-14-12-2-1
+  make -sj -f Makefile-BASE-3-14-12-2-1
 
 After a successful build we mark the :term:`build` with :term:`state` "stable"::
 
@@ -139,8 +139,18 @@ Here we create a configuration file for sumo-build that contains the
 Create a build for an application
 ---------------------------------
 
-We assume that the :term:`modules` needed by the application can not be found
-in the support directory so we have to create a new build.
+Now we try to use modules from our support directory::
+
+  sumo-build useauto > configure/RELASE
+
+The program prints this message::
+
+  no build found that matches modulespecs
+
+The reason is that we don't yet have built the :term:`modules` the application
+needs.
+
+So we first have to create a new build. 
 
 We remember our application directory in an environment variable::
 
@@ -154,15 +164,21 @@ We assume that the name of our :term:`build` should be "MLS-01"::
 
   sumo-db --nolock --update-config $APPDIR/sumo-db.config distribution | sumo-build --partialdb - new MLS-01
 
+The first part of the command line creates a definition of all :term:`modules`
+in form of a :term:`partialdb`. We do not save this as a file but pass it
+directly to sumo-build. sumo-build checks out the sources of all additional
+:term:`modules` needed, creates a new entry in the :term:`builddb` database and
+creates a makefile.
+
 Now we compile the :term:`build`::
 
-  make -f Makefile-MLS-01
+  make -sj -f Makefile-MLS-01
 
 After a successful build, we mark the :term:`build` with 
 :term:`state` "stable"::
 
   sumo-build state MLS-01 stable
-  
+
 Use a build in an application
 -----------------------------
 
@@ -170,13 +186,16 @@ We first go back to the application directory::
 
   cd $APPDIR
 
-Now we look for :term:`builds` that match our requirements::
+We use command "useauto" which combines "find" and "use". It looks in the
+:term:`support directory` for a :term:`build` matching our requirements and
+creates a RELEASE file that uses that :term:`build`::
 
-  sumo-build find
+  sumo-build useauto > configure/RELASE
 
-We see that "MLS-01" can be used, so we create the RELEASE file with this
-command::
+For our information the program shows on standard error what build was used. 
 
-  sumo-build use MLS-01 > configure/RELEASE
+Now that the RELEASE file is created we can go ahead and build our application
+by calling "make"::
 
-When we now compile our application it uses :term:`build` "MLS-01".
+  make
+
