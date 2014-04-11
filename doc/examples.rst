@@ -82,7 +82,7 @@ For convenience, we remember the support directory in an environment variable::
 
 Create a configuration file for sumo-db::
 
-  sumo-db --db $SUMODIR/DEPS.DB --make-config ""
+  sumo-db --maxstate stable --db $SUMODIR/DEPS.DB --make-config ""
 
 Create a configuration file for sumo-build::
 
@@ -93,7 +93,7 @@ Build the EPICS base
 
 First we look what versions of the EPICS base we have::
 
-  sumo-db showall stable BASE
+  sumo-db showall BASE
 
 The command gives this result::
 
@@ -106,7 +106,7 @@ The command gives this result::
 We decide to build version "TAGLESS-3-14-12-2-1" of the EPICS base. We give the
 new :term:`build` the :term:`buildtag` "BASE-3-14-12-2-1"::
 
-  sumo-db --nolock distribution stable BASE:TAGLESS-3-14-12-2-1 | sumo-build --partialdb - new BASE-3-14-12-2-1
+  sumo-db --nolock distribution BASE:TAGLESS-3-14-12-2-1 | sumo-build --partialdb - new BASE-3-14-12-2-1
   make -f Makefile-BASE-3-14-12-2-1
 
 After a successful build we mark the :term:`build` with :term:`state` "stable"::
@@ -129,7 +129,7 @@ to sumo-db which creates a `JSON <http://www.json.org>`_ file with
 Now we create a configuration file for sumo-db that contains the list of
 :term:`modulespecs`:: from file "MODULES"::
 
-  sumo-db --db $SUMODIR/DEPS.DB --update-config MODULES --make-config ""
+  sumo-db --maxstate stable --db $SUMODIR/DEPS.DB --update-config MODULES --make-config ""
 
 Here we create a configuration file for sumo-build that contains the
 :term:`modulespecs` and :term:`aliases` from file "MODULES" ::
@@ -152,7 +152,7 @@ Now we go the the support directory::
 
 We assume that the name of our :term:`build` should be "MLS-01"::
 
-  sumo-db --nolock --update-config $APPDIR/sumo-db.config distribution stable | sumo-build --partialdb - new MLS-01
+  sumo-db --nolock --update-config $APPDIR/sumo-db.config distribution | sumo-build --partialdb - new MLS-01
 
 Now we compile the :term:`build`::
 

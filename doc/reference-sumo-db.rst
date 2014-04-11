@@ -287,14 +287,14 @@ format. The result is printed to the console. It can be used with
 :doc:`"sumo-db "<reference-sumo-db>` or 
 :doc:`"sumo-build "<reference-sumo-build>` 
 
-distribution [MAXSTATE] [MODULES]
-+++++++++++++++++++++++++++++++++
+distribution [MODULES]
+++++++++++++++++++++++
 
 This command creates a :term:`distribution` from a dependency database or
-:term:`DB` file. Parameter MAXSTATE is the maximum :term:`state` of
-:term:`dependencies` that are taken into account. Parameter MODULES is a list
-of :term:`modulespecs` with *unspecified* or *exactly specified*
-:term:`versions`.
+:term:`DB` file. Option "--maxstate" is mandatory for this command. It defines
+the maximum :term:`state` of :term:`dependencies` that are taken into account.
+Parameter MODULES is a list of :term:`modulespecs` with *unspecified* or
+*exactly specified* :term:`versions`.
 
 For modules with *unspecified* version, the algorithm that selects
 :term:`versions` of :term:`modules` tries to find the newest version that is
@@ -334,37 +334,33 @@ show
 This command shows all :term:`modules` in the 
 :ref:`dependency database <reference-sumo-db-The-dependency-database>`.
 
-shownewest [MAXSTATE] {MODULES}
-+++++++++++++++++++++++++++++++
+shownewest {MODULES}
+++++++++++++++++++++
 
-This command shows only the newest versions of modules. It must be followed by
-the parameter *maximum state* and it may be followed by a whitespace separated
-list of :term:`modulenames`. 
+This command shows only the newest versions of modules. Mandatory option
+"--maxstate" defines the maximum :term:`state` a module may have. 
 
-Parameter MAXSTATE is the maximum :term:`state` a module may have. Optional
-parameter MODULES specifies which :term:`modules` are shown. If no
+Optional parameter MODULES specifies which :term:`modules` are shown. If no
 :term:`modules` are given the command shows the newest :term:`versions` of all
 :term:`modules`.
 
-showall [MAXSTATE] {MODULES}
-++++++++++++++++++++++++++++
+showall {MODULES}
++++++++++++++++++
 
-This command shows all versions of the given modules. It must be followed by
-the parameter *maximum state* and it may be followed by a whitespace separated
-list of :term:`modulenames`. 
+This command shows all versions of the given modules. Mandatory option
+"--maxstate" defines the maximum :term:`state` a module may have. 
 
-Parameter MAXSTATE is the maximum :term:`state` a module may have. Optional
-parameter MODULES specifies which :term:`modules` are shown. If no
+Optional parameter MODULES specifies which :term:`modules` are shown. If no
 :term:`modules` are given the command shows all :term:`versions` of all
 :term:`modules`.
 
-find [MAXSTATE] [REGEXP]
-++++++++++++++++++++++++
+find [REGEXP]
++++++++++++++
 
 This command shows all :term:`modules` whose names or :term:`sources` match a regexp. 
 
-Parameter MAXSTATE is the maximum :term:`state` a module may have. Parameter
-REGEXP is a perl compatible :term:`regular expression`.  
+Mandatory option "--maxstate" defines the maximum :term:`state` a module may
+have. Parameter REGEXP is a perl compatible :term:`regular expression`.  
 
 check
 +++++
@@ -447,6 +443,9 @@ Here is a short overview on command line options:
                       a single string separated by spaces.  This option value
                       is stored in the configuration file.
 -b, --brief           Create a more brief output for some commands.
+-M STATE, --maxstate STATE      
+                      Specify the maximum state for some commands.  This option
+                      value is stored in the configuration file.
 -P EXPRESSION, --source-patch EXPRESSION
                       Specify a source patchexpression. Such an expression
                       consists of a tuple of 2 python strings. The first is the

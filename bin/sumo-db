@@ -428,21 +428,20 @@ def process(options, commands):
         return
 
     if commands[0]=="distribution":
-        if len(commands)<=1:
-            sys.exit("error: MAXSTATE missing")
-        if len(commands)>2:
-            modulespecs= commands[2:]
+        if len(commands)>1:
+            modulespecs= commands[1:]
         else:
             # no modulespecs after the command
             modulespecs= options.module
             if not modulespecs:
                 sys.exit("error: module specs missing")
+        if not options.maxstate:
+            sys.exit("error, --maxstate is mandatory here")
         if not options.db:
             sys.exit("error, --db is mandatory here")
         db= utils.Dependencies.from_json_file(options.db)
-        maxstate= commands[1]
         (dist_dict, dist_obj)= distribution(db, modulespecs,
-                                            maxstate, options.arch,
+                                            options.maxstate, options.arch,
                                             options.trace)
         if options.brief:
             utils.json_dump(dist_dict)
@@ -550,21 +549,20 @@ def process(options, commands):
 
     if commands[0]=="shownewest" or commands[0]=="showall":
         showall= (commands[0]=="showall")
-        if len(commands)<=1:
-            sys.exit("error: MAXSTATE missing")
         if not options.db:
             sys.exit("error, --db is mandatory here")
+        if not options.maxstate:
+            sys.exit("error, --maxstate is mandatory here")
         db= utils.Dependencies.from_json_file(options.db)
 
-        if len(commands)>2:
-            modulespecs= commands[2:]
+        if len(commands)>1:
+            modulespecs= commands[1:]
         else:
             # no modulespecs after the command
             modulespecs= options.module
             if not modulespecs:
                 modulespecs= list(db.iter_modulenames())
 
-        maxstate= commands[1]
         result= {}
 
         for spec in modulespecs:
@@ -572,7 +570,7 @@ def process(options, commands):
             match_version= spec_dict.get("version")
             match_flag   = spec_dict.get("version_flag")
 
-            versions= db.sorted_moduleversions(modulename, maxstate,
+            versions= db.sorted_moduleversions(modulename, options.maxstate,
                                                options.arch, False)
             if not versions: # no versions match maxstate criteria
                 continue
@@ -589,20 +587,19 @@ def process(options, commands):
 
     if commands[0]=="find":
         if len(commands)<=1:
-            sys.exit("error: MAXSTATE missing")
-        if len(commands)<=2:
             sys.exit("error: REGEXP missing")
+        if not options.maxstate:
+            sys.exit("error, --maxstate is mandatory here")
         if not options.db:
             sys.exit("error, --db is mandatory here")
         db= utils.Dependencies.from_json_file(options.db)
-        maxstate= commands[1]
-        regexp= commands[2]
+        regexp= commands[1]
         if options.noignorecase:
             rx_flags= 0
         else:
             rx_flags= re.IGNORECASE
         rx= re.compile(regexp, rx_flags)
-        results= db.search_modules(rx, maxstate, options.arch)
+        results= db.search_modules(rx, options.maxstate, options.arch)
         if options.brief:
             for (module,version) in results:
                 print "%s:%s" % (module,version)
@@ -640,30 +637,29 @@ where command is:
           application to a list of aliases and modulespecs in JSON format. The
           result is printed to the console. It can be used with --update-config
           to put these in the configuration file of sumo-db or sumo-build.
-  distribution [MAXSTATE] [MODULES]: 
+  distribution [MODULES]: 
           Create distribution from DB where all specified modules are
           contained. If you want a specific version of a module use
-          modulename:versioname instead of the modulename alone. MAXSTATE is
-          the "maximum" state of dependencies that are taken into account:
-              stable:   take only dependencies marked stable
-              testing:  take dependencies marked stable or testing
-              unstable: take dependencies marked stable, testing or unstable
+          modulename:versioname instead of the modulename alone. 
+          Option --maxstate is mandatory for this command.
   weight [WEIGHT] [modules]
           Set the weight factor for modules. Use
           modulename:{+-}versionname to select more versions of a module.
           This command *does not* use the --modules option.
           Weight must be an integer.
   show:   show the names of all modules
-  shownewest [MAXSTATE] {modules}: 
+  shownewest {modules}: 
           Show newest version for each module. If {modules} is missing, take
-          all modules of the database. MAXSTATE is the "maximum" state as
-          described above.
-  showall [MAXSTATE] {modules}: 
+          all modules of the database. Mandatory option "--maxstate" defines
+          the "maximum" state modules may have.
+  showall {modules}: 
           Show all versions for each module. If {modules} is missing, take all
-          modules of the database. MAXSTATE is the "maximum" state as described
-          above.
-  find [MAXSTATE] [REGEXP]
-          Show all modules whose names or sources match regexp.
+          modules of the database. Mandatory option "--maxstate" defines
+          the "maximum" state modules may have.
+  find [REGEXP]
+          Show all modules whose names or sources match regexp. Mandatory
+          option "--maxstate" defines the "maximum" state modules may have.
+
   check 
           do some consistency checks on the db specifed by --db
   merge [DB]
@@ -768,6 +764,14 @@ def main():
                             "is stored in the configuration file. ",
                       metavar="MODULESPEC"
                       )
+    parser.add_option("-M", "--maxstate",
+                      action="store",
+                      type="string",
+                      help= "Specify the maximum state for some commands."
+                            "This option value is stored in the "
+                            "configuration file. ",
+                      metavar="STATE"
+                      )
     parser.add_option("-b", "--brief",
                       action="store_true",
                       help="Create a more brief output for some commands. ",
@@ -821,6 +825,7 @@ def main():
     options.module= utils.opt_join(options.module)
 
     config= utils.ConfigFile(( "arch", "db",
+                               "maxstate",
                                "module",
                                "progress", "source_patch",
                                "verbose"), CONFIG_NAME)
