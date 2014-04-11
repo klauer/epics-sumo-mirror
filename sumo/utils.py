@@ -863,6 +863,51 @@ class ModuleSpecs(object):
         """the default iterator."""
         for m in self.specs:
             yield m
+    @staticmethod
+    def scan_special(st):
+        """scan special in-line commands."""
+        if not st:
+            # empty string or None
+            return None
+        if st[0]!=":":
+            return None
+        return st[1:].split(":")
+    @staticmethod
+    def _from_strings(module_dict, idx, specs, default_archs):
+        """internal function to scan specs."""
+        for s in specs:
+            special= ModuleSpecs.scan_special(s)
+            if special:
+                # was special command
+                if special[0]=="clear":
+                    # clear module list so far
+                    module_dict= {}
+                    continue
+                if special[0]=="load":
+                    json_data= json_loadfile(special[1])
+                    # pylint: disable=E1103
+                    #         Instance of 'bool' has no 'get' member
+                    json_specs= json_data.get("module")
+                    if json_specs:
+                        idx= ModuleSpecs._from_strings(module_dict, idx,
+                                                       json_specs,
+                                                       default_archs)
+                    continue
+                raise ValueError("unexpected spec: %s" % s)
+            m= ModuleSpec.from_string(s, default_archs)
+            modulename= m.modulename
+            if m.versionname=="" and m.versionflag=="le":
+                # "module:-" means "remove module from list
+                if module_dict.has_key(modulename):
+                    module_dict[modulename][1]= None
+                continue
+            if module_dict.has_key(modulename):
+                module_dict[modulename][1]= m
+                continue
+            module_dict[modulename]= [idx, m]
+            idx+= 1
+        return idx
+
     @classmethod
     def from_strings(cls, specs, default_archs= None):
         """scan a list of module specification strings.
@@ -895,26 +940,11 @@ class ModuleSpecs(object):
         ModuleSpec('A','R3','eq',None)
         ModuleSpec('B','R3','le',None)
         """
-        order= []
-        order_set= set()
         module_dict= {}
-        for s in specs:
-            m= ModuleSpec.from_string(s, default_archs)
-            modulename= m.modulename
-            if m.versionname=="" and m.versionflag=="le":
-                # "module:-" means "remove module from list
-                if module_dict.has_key(modulename):
-                    del module_dict[modulename]
-                continue
-            if not modulename in order_set:
-                order.append(modulename)
-                order_set.add(modulename)
-            module_dict[modulename]= m
-        l= []
-        for modulename in order:
-            m= module_dict.get(modulename)
-            if m is not None:
-                l.append(m)
+        ModuleSpecs._from_strings(module_dict, 0, specs, default_archs)
+
+        l= [modulespec for (_,modulespec) in sorted(module_dict.values()) \
+                       if modulespec]
         return cls(l)
 
 # -----------------------------------------------
