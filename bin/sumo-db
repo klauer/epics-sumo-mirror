@@ -25,7 +25,6 @@ my_version= "1.3"
 
 KNOWN_COMMANDS=set(("edit", "convert",
                     "appconvert",
-                    "distribution",
                     "makeconfig",
                     "weight",
                     "list", "shownewest", "showall",
@@ -246,116 +245,6 @@ def create_database(deps, repoinfo, groups, archs, state, source_patches):
                                       _dep_name, _dep_version, state)
     return db
 
-def _distribution_add(db, dist, modulename, versionname, maxstate, archs):
-    """add a module to the set."""
-    # pylint: disable=R0913
-    #                          Too many arguments
-    #print "_distribution_add(..,..,",modulename,",",versionname,")"
-    existing_versionname= dist.get(modulename)
-    if existing_versionname is not None:
-        if existing_versionname!= versionname:
-            raise ValueError("conflict: %s %s %s" % \
-                      (modulename, existing_versionname, versionname))
-        return dist
-    if not db.check_archs(modulename, versionname, archs):
-        raise ValueError("no support for archs %s in module %s:%s" % \
-                         (repr(archs),modulename,versionname))
-    new_dist= dict(dist)
-    # ^^^ caution, not a deep copy
-    new_dist[modulename]= versionname
-    try:
-        if not db.dependencies_found(modulename, versionname):
-            return new_dist
-    except KeyError, e:
-        sys.exit("no information for module %s version %s" % \
-                 (modulename, versionname))
-
-    for dep_modulename in db.iter_dependencies(modulename, versionname):
-        for dep_version in db.sorted_dependency_versions(
-                modulename, versionname, dep_modulename, maxstate, archs):
-            errst= None
-            try:
-                new_dist= _distribution_add(db,
-                                            new_dist,
-                                            dep_modulename,
-                                            dep_version, maxstate, archs)
-                errst= None
-                break
-            except ValueError, e:
-                errst= str(e)
-        if errst:
-            raise ValueError("no module found, last error message: %s" % \
-                             errst)
-    return new_dist
-
-def distribution(db, modulespec_list, maxstate, archs, trace):
-    """create a distribution.
-    """
-    # pylint: disable=R0914
-    #                          Too many local variables
-    # pylint: disable=R0912
-    #                          Too many branches
-    if trace:
-        sys.stderr.write("looking for modules, archs: %s maxstate: %s\n\n" % \
-                         (repr(archs), maxstate))
-
-    versioned_modules= []
-    versionless_modules= []
-    modulespecs= utils.ModuleSpecs.from_strings(modulespec_list, archs)
-    for modulespec in modulespecs:
-        modulename= modulespec.modulename
-        if modulespec.no_version_spec():
-            versionless_modules.append((modulename, modulespec.archs))
-        elif modulespec.is_exact_spec():
-            versioned_modules.append((modulename,
-                                      modulespec.versionname,
-                                      modulespec.archs))
-        else:
-            raise ValueError("\"-version\" and \"+version\" not "
-                             "supported here")
-    dist= {}
-    for (modulename, versionname, archs) in versioned_modules:
-        try:
-            dist= _distribution_add(db, dist, modulename, versionname,
-                                    maxstate, archs)
-        except ValueError, e:
-            sys.exit(str(e))
-
-    for (modulename, archs) in versionless_modules:
-        if trace:
-            sys.stderr.write("module %s\n" % modulename)
-        try:
-            versionlist= db.sorted_moduleversions(modulename, maxstate,
-                                                  archs, True)
-        except KeyError, e:
-            sys.exit("no data for module %s" % modulename)
-        except ValueError, e:
-            sys.exit("Error: %s" % str(e))
-
-        found= False
-        for versionname in versionlist:
-            try:
-                dist= _distribution_add(db, dist, modulename, versionname,
-                                        maxstate, archs)
-                found= True
-                break
-            except ValueError, e:
-                if trace:
-                    sys.stderr.write("\t%-15s: %s\n" % \
-                                     (versionname, str(e)))
-        if not found:
-            sys.exit("no non conflicting versions found for %s" % modulename)
-        else:
-            if trace:
-                sys.stderr.write("\t%-15s --> found\n" % versionname)
-
-    spec_list= []
-    for (m,v) in dist.items():
-        spec_list.append(utils.ModuleSpec(m, v, "eq", None))
-    new= db.partial_copy_by_modulespecs(utils.ModuleSpecs(spec_list))
-    new.remove_missing_deps()
-    return (dist,new)
-
 def set_weight(db, weight, modulespeclist, trace):
     """set the weight for one or more modules."""
     modulespecs= utils.ModuleSpecs.from_strings(modulespeclist, None)
@@ -451,31 +340,6 @@ def process(options, commands):
         groups= scandata["groups"]
         struc= create_app_data(deps, repoinfo, groups)
         utils.json_dump(struc)
-        return
-
-    if commands[0]=="distribution":
-        if len(commands)>1:
-            if options.addmodules:
-                modulespecs= options.module + commands[1:]
-            else:
-                modulespecs= commands[1:]
-        else:
-            # no modulespecs after the command
-            modulespecs= options.module
-            if not modulespecs:
-                sys.exit("error: module specs missing")
-        if not options.maxstate:
-            sys.exit("error, --maxstate is mandatory here")
-        if not options.db:
-            sys.exit("error, --db is mandatory here")
-        db= utils.Dependencies.from_json_file(options.db)
-        (dist_dict, dist_obj)= distribution(db, modulespecs,
-                                            options.maxstate, options.arch,
-                                            options.trace)
-        if options.brief:
-            utils.json_dump(dist_dict)
-        else:
-            dist_obj.json_print()
         return
 
     if commands[0]=="weight":
@@ -680,11 +544,6 @@ where command is:
           application to a list of aliases and modulespecs in JSON format. The
           result is printed to the console. It can be used with --config
           to put these in the configuration file of sumo-db or sumo-build.
-  distribution [MODULES]: 
-          Create distribution from DB where all specified modules are
-          contained. If you want a specific version of a module use
-          modulename:versioname instead of the modulename alone. 
-          Option --maxstate is mandatory for this command.
   weight [WEIGHT] [modules]
           Set the weight factor for modules. Use
           modulename:{+-}versionname to select more versions of a module.

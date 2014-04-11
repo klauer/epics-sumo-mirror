@@ -1737,6 +1737,7 @@ directory tree (without darcs)
 ./BSPDEP_VMETAS/R2-0+001/src/Makefile
 ./BSPDEP_VMETAS/R2-0+001/src/VMEtas_vxWorks.c
 ./BSPDEP_VMETAS/R2-0+001/Makefile
+./IDCP.CONFIG
 ./CSM
 ./CSM/R4-3+001
 ./CSM/R4-3+001/.boring
@@ -2101,7 +2102,6 @@ directory tree (without darcs)
 ./MISC_DBC/R3-0+001/configure/RULES
 ./MISC_DBC/R3-0+001/Makefile
 ./Makefile-001
-./DB_IDCP
 ./VXSTATS
 ./VXSTATS/R3-0+001
 ./VXSTATS/R3-0+001/VxStatsApp

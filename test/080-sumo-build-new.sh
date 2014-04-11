@@ -17,11 +17,11 @@ TESTDIR=tmp-$ME
 if [ ! -d $TESTDIR ]; then
     mkdir $TESTDIR
     cp samples/DB $TESTDIR
-    cp samples/DB_IDCP $TESTDIR
+    cp samples/IDCP.CONFIG $TESTDIR
 
     cd $TESTDIR > /dev/null
 
-    $PYTHON ../../bin/sumo-build --arch vxWorks-68040 --arch vxWorks-ppc603 --db DB -P DB_IDCP --builddb BUILDS --no-make new 001 1>&2 
+    $PYTHON ../../bin/sumo-build --arch vxWorks-68040 --arch vxWorks-ppc603 --db DB --maxstate stable -c IDCP.CONFIG --builddb BUILDS --buildtag 001 --no-make new 1>&2 
 else
     echo -e "\t$TESTDIR already exists, effectively skipping this test..." 1>&2
     cd $TESTDIR > /dev/null

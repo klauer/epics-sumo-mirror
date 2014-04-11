@@ -23,11 +23,11 @@ echo -e "\nsumo-build find MCAN BSPDEP_TIMER:R5-1"
 $PYTHON ../../bin/sumo-build --db DB --builddb BUILDS find MCAN BSPDEP_TIMER:R5-1 | sed -e "s/,$/, /g"
 
 
-echo -e "\nsumo-build find MCAN ALARM:-R3-4:"
-$PYTHON ../../bin/sumo-build --db DB --builddb BUILDS find MCAN ALARM:-R3-4 | sed -e "s/,$/, /g"
+echo -e "\nsumo-build find MCAN ALARM:-R3-7:"
+$PYTHON ../../bin/sumo-build --db DB --builddb BUILDS find MCAN ALARM:-R3-7 | sed -e "s/,$/, /g"
 
 
-echo -e "\nsumo-build find MCAN ALARM:+R3-5:"
-$PYTHON ../../bin/sumo-build --db DB --builddb BUILDS find MCAN ALARM:+R3-5 | sed -e "s/,$/, /g"
+echo -e "\nsumo-build find MCAN ALARM:+R3-8:"
+$PYTHON ../../bin/sumo-build --db DB --builddb BUILDS find MCAN ALARM:+R3-8 | sed -e "s/,$/, /g"
 
 

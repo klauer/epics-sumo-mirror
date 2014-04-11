@@ -36,6 +36,9 @@ Here we define some of the terms used in the following text.
   modulename
       Each :term:`module` has a unique name, the *modulename*. Note that each
       :term:`version` of the same :term:`module` has the same *modulename*.
+
+  moduleversions
+      See :term:`version`.
   
   versionnames
       See :term:`versionname`.
@@ -131,12 +134,6 @@ Here we define some of the terms used in the following text.
       unstable
         Modules and their dependencies that are just being built.
   
-  distribution
-      A *distribution* is a set of modules where each :term:`module` has exactly
-      one :term:`version` and where for each :term:`module` every
-      :term:`dependency` is included. A *distribution* is defined by a partial
-      dependency database or :term:`partialdb`.
-
   builds
       See :term:`build`.
 
@@ -160,11 +157,6 @@ Here we define some of the terms used in the following text.
       introduction to regular expressions see 
       `Regular Expression HOWTO <http://docs.python.org/2/howto/regex.html#regex-howto>`_.
 
-  partialdb
-      This is a dependency database that does not contain all modules from the
-      main dependency database or :term:`DB`. It is used to define a
-      :term:`distribution`.
-  
   scanfile
       This is the file created by :doc:`"sumo-scan all"<reference-sumo-scan>`.
       This `JSON <http://www.json.org>`_ file can be converted to a :term:`DB`

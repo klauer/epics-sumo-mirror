@@ -3,7 +3,7 @@
 ME=`basename $0 .sh`
 
 if [ "$1" = "deps" ]; then
-        echo "$ME.tst: $ME.sh $ME.out $ME.ok 080-sumo-build-new.tst 040-sumo-db-replaceversion.tst 100-sumo-build-state-2.tst"
+        echo "$ME.tst: $ME.sh $ME.out $ME.ok 080-sumo-build-new.tst 100-sumo-build-state-2.tst"
         echo
         exit
 fi
@@ -38,7 +38,7 @@ if [ ! -d $MYTESTDIR ]; then
     # library for python 2.5 doesn't do this.
 
     # use an auto generated build tag:
-    $PYTHON ../../bin/sumo-build --arch vxWorks-ppc603 --db DB -P ../DB_IDCP-040-sumo-db-replaceversion.tmp --builddb BUILDS --no-make new 1>&2 
+    $PYTHON ../../bin/sumo-build --arch vxWorks-ppc603 --maxstate stable --db DB --builddb BUILDS --modules-from-build 001 -A -m 'ALARM:R3-7 MCAN:R2-4-5' --no-make new 1>&2 
 else
     echo -e "\t$MYTESTDIR already exists, effectively skipping this test..." 1>&2
     cd $MYTESTDIR > /dev/null

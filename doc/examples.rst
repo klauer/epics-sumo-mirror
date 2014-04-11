@@ -86,7 +86,7 @@ Create a configuration file for sumo-db::
 
 Create a configuration file for sumo-build::
 
-  sumo-build --db $SUMODIR/DEPS.DB --builddb $SUMODIR/BUILDS.DB --supportdir $SUMODIR makeconfig
+  sumo-build --db $SUMODIR/DEPS.DB --builddb $SUMODIR/BUILDS.DB --supportdir $SUMODIR --maxstate stable --makeopts "-s" makeconfig
 
 Build the EPICS base
 ++++++++++++++++++++
@@ -106,7 +106,7 @@ The command gives this result::
 We decide to build version "TAGLESS-3-14-12-2-1" of the EPICS base. We give the
 new :term:`build` the :term:`buildtag` "BASE-3-14-12-2-1"::
 
-  sumo-db --nolock distribution BASE:TAGLESS-3-14-12-2-1 | sumo-build --partialdb - --makeopts "-s" new 
+  sumo-build --maxstate unstable --buildtag BASE-3-14-12-2-1 new BASE:TAGLESS-3-14-12-2-1
 
 After a successful build we mark the :term:`build` with :term:`state` "stable"::
 
@@ -126,21 +126,21 @@ to sumo-db which creates a `JSON <http://www.json.org>`_ file with
   sumo-scan -d . all -g '/opt/csr/Epics/R3.14.12/support /opt/csr/Epics/R3.14.12' -N 'TOP EPICS_SUPPORT SUPPORT TEMPLATE_TOP EPICS_SITE_TOP EPICS_MODULES MSI' | sumo-db appconvert - > MODULES
 
 Now we create a configuration file for sumo-db that contains the list of
-:term:`modulespecs`:: from file "MODULES"::
+:term:`modulespecs` from file "MODULES"::
 
   sumo-db --maxstate stable --db $SUMODIR/DEPS.DB -c MODULES makeconfig
 
 Here we create a configuration file for sumo-build that contains the
 :term:`modulespecs` and :term:`aliases` from file "MODULES" ::
 
-  sumo-build --db $SUMODIR/DEPS.DB --builddb $SUMODIR/BUILDS.DB --supportdir $SUMODIR --readonly -c MODULES makeconfig
+  sumo-build --db $SUMODIR/DEPS.DB --builddb $SUMODIR/BUILDS.DB --supportdir $SUMODIR -c MODULES makeconfig
 
 Create a build for an application
 ---------------------------------
 
 Now we try to use modules from our support directory::
 
-  sumo-build useauto > configure/RELASE
+  sumo-build use > configure/RELASE
 
 The program prints this message::
 
@@ -161,13 +161,12 @@ Now we go the the support directory::
 
 We assume that the name of our :term:`build` should be "MLS-01"::
 
-  sumo-db --nolock -c $APPDIR/sumo-db.config distribution | sumo-build --partialdb - new MLS-01
+  sumo-build -c $APPDIR/sumo-build.config --maxstate unstable --buildtag MLS-01 new 
 
-The first part of the command line creates a definition of all :term:`modules`
-in form of a :term:`partialdb`. We do not save this as a file but pass it
-directly to sumo-build. sumo-build checks out the sources of all additional
-:term:`modules` needed, creates a new entry in the :term:`builddb` database and
-creates a makefile.
+The list of :term:`modules` is taken from file $APPDIR/sumo-build.config. The
+program creates a collection of all :term:`modules` needed, checks out the
+sources of all :term:`modules`, creates a new entry in the :term:`builddb`
+database, creates a makefile and calls make.
 
 After a successful build, we mark the :term:`build` with 
 :term:`state` "stable"::
@@ -185,7 +184,7 @@ We use command "useauto" which combines "find" and "use". It looks in the
 :term:`support directory` for a :term:`build` matching our requirements and
 creates a RELEASE file that uses that :term:`build`::
 
-  sumo-build useauto > configure/RELASE
+  sumo-build use > configure/RELASE
 
 For our information the program shows on standard error what build was used. 
 

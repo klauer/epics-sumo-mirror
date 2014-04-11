@@ -164,23 +164,32 @@ same time you modify it.
 
 This command must be followed by a *filename*.
 
-new {BUILDTAG}
-++++++++++++++
+try [MODULES]
++++++++++++++
 
-This command creates a new build. If the :term:`buildtag` is not given as
-argument or option, the program generates a :term:`buildtag` in the form
-"AUTO-nnn". Note that options "--db", --partialdb" and "--builddb" are
-mandatory for this command. This command calls "make" and, after successful
-completion, sets the state of the build to "testing". If you want to skip this
-step, use option "--no-make". In order to provide arbitrary options to make use
-option "--makeopts".
+This command shows the modules and versions the program would take if the same
+options would be given to command "new".
+
+new [MODULES]
++++++++++++++
+
+This command creates a new :term:`build`. If the :term:`buildtag` is not given
+as an option, the program generates a :term:`buildtag` in the form "AUTO-nnn".
+Note that options "--db" and "--builddb" are mandatory for this command. A new
+:term:`build` is created according to the :term:`modulespecs`. Moduleversions
+may be unspecified or exactly specified. The algorithm tries to find matching
+:term:`moduleversions` in the order they are specified for this command.  This
+command calls "make" and, after successful completion, sets the :term:`state`
+of the :term:`build` to "testing". If you want to skip this step, use option
+"--no-make". In order to provide arbitrary options to make use option
+"--makeopts".
 
 partialdb [BUILDTAG]
 ++++++++++++++++++++
 
-This command recreates a :term:`partialdb` from a complete :term:`DB` and a
-:term:`build`. The :term:`partialdb` is printed on the console. The
-:term:`buildtag` may be given as argument or option.
+This command creates a partial :term:`DB` from a complete :term:`DB` and a
+:term:`build`. The partial :term:`DB` contains just the modules of the
+:term:`build`.  The :term:`buildtag` may be given as argument or option.
 
 find [MODULESPECS]
 ++++++++++++++++++
@@ -270,8 +279,6 @@ Here is a short overview on command line options:
                       default configuration.
 --db DB               Define the name of the DB file. This option value is
                       stored in the configuration file. 
--P PARTIALDB, --partialdb PARTIALDB
-                      Define the name of the partialdb file.
 --builddb BUILDDB     Specify the BUILDDB file. This option value is stored in
                       the configuration file.
 -t BUILDTAG, --buildtag BUILDTAG
@@ -298,6 +305,8 @@ Here is a short overview on command line options:
                       than one of these by repeating this option or by joining
                       values in a single string separated by spaces.  This
                       option value is stored in the configuration file.
+-M, --maxstate        Specify the maximum state for some commands. This option
+                      value is stored in the configuration file.
 -m MODULE, --module MODULE
                       Define a :term:`modulespec`. If you specify modules with
                       this option you don't have to put :term:`modulespecs`
@@ -315,7 +324,7 @@ Here is a short overview on command line options:
                       module from the list of specs.
 -b, --brief           Create a more brief output for some commands.
 --no-make             With this option, "new" does not call "make".j
---makeopts [MAKEOPTIONS]
+--makeopts MAKEOPTIONS
                       Specify extra option strings for make You can specify
                       more than one of these by repeating this option or by
                       joining values in a single string separated by spaces.
@@ -326,6 +335,8 @@ Here is a short overview on command line options:
 --nolock              Do not use file locking.
 -p, --progress        Show progress on stderr. This option value is stored in
                       the configuration file.
+--trace               Switch on some trace messages.
+--dump-modules        Dump module specs, then stop the program.
 -v, --verbose         Show command calls.  This option value is stored in the
                       configuration file.
 -n, --dry-run         Just show what the program would do.

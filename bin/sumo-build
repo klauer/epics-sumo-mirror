@@ -23,7 +23,7 @@ my_version= "1.3"
 KNOWN_COMMANDS=set(( "cleanup", "delete", "edit", "find", "list",
                      "makeconfig",
                      "new",
-                     "partialdb", "show", "state", "use", "useall",
+                     "partialdb", "show", "state", "try", "use", "useall",
                   ))
 
 CONFIG_NAME="sumo-build.config"
@@ -194,11 +194,13 @@ def errmsg(msg):
 # dependency handling
 # -----------------------------------------------
 
-def gather_dependencies(db, modulename, versionname,
+def gather_dependencies(dist_dict, db, modulename, versionname,
                         gathered_deps):
     """recursively gather all dependencies of a module.
 
-    returns a dict mapping modulenames to versionnames
+    For dependencies, do only take moduleversions that are in dist_dict.
+
+    Returns a dict mapping modulenames to versionnames
     """
     if gathered_deps is None:
         gathered_deps= {}
@@ -206,16 +208,24 @@ def gather_dependencies(db, modulename, versionname,
         # get all depdendencies, even ones marked "unstable", take
         # archs==None:
         #   ignore architecture
-        dep_versions= list(db.iter_dependency_versions(modulename,
-                                                       versionname,
-                                                       dep_name,
-                                                       "unstable",
-                                                       None))
-        # Here we expect a unique version for each dependency of the module.
-        if len(dep_versions)>1:
-            raise AssertionError("m:%s v:%s d:%s dv:%s" % \
-                    (modulename, versionname, dep_name, repr(dep_versions)))
-        dep_version= dep_versions[0]
+        dep_version= None
+        for v in db.iter_dependency_versions(modulename, versionname,
+                                             dep_name, "unstable", None):
+            if dist_dict[dep_name]!= v:
+                continue
+            if dep_version is None:
+                dep_version= v
+                continue
+            else:
+                raise AssertionError("module %s dependency %s, two "
+                                     "dependency versions found in "
+                                     "dist_dict: %s and %s\n" % \
+                                     (modulename, dep_name, dep_version, v))
+        if dep_version is None:
+            raise AssertionError("module %s dependency %s, none of the "
+                                 "dependencies of the dependency database is "
+                                 "part of dist_dict\n" % \
+                                 (modulename, dep_name))
         existing= gathered_deps.get(dep_name)
         if existing is not None:
             if existing!=dep_version:
@@ -225,8 +235,8 @@ def gather_dependencies(db, modulename, versionname,
             # if this is already in gathered_deps we can skip recursion here
             continue
         gathered_deps[dep_name]= dep_version
-        gathered_deps= gather_dependencies(db, dep_name,  dep_version,
-                                           gathered_deps)
+        gathered_deps= gather_dependencies(dist_dict, db, dep_name,
+                                           dep_version, gathered_deps)
     return gathered_deps
 
 def _add_dependencies(module_dict, db, build_module_dict,
@@ -257,10 +267,10 @@ def get_dependencies(module_dict, db, builddb, buildtag):
         _add_dependencies(module_dict, db,
                           build_module_dict, modulename, versionname)
 
-def builddb_match(db, builddb, modulename, versionname):
+def builddb_match(dist_dict, db, builddb, modulename, versionname):
     """try to find matching deps in builddb.
     """
-    deps= gather_dependencies(db, modulename, versionname, None)
+    deps= gather_dependencies(dist_dict, db, modulename, versionname, None)
     # now deps is a dict mapping modulenames to versionnames that contains all
     # direct and indirect dependencies of modulename:versionname that was
     # given to this function.
@@ -289,6 +299,120 @@ def builddb_match(db, builddb, modulename, versionname):
         if match:
             return build_tag
     return
+
+# -----------------------------------------------
+# distribution creation
+# -----------------------------------------------
+
+def _distribution_add(db, dist, modulename, versionname, maxstate, archs):
+    """add a module to the set."""
+    # pylint: disable=R0913
+    #                          Too many arguments
+    #print "_distribution_add(..,..,",modulename,",",versionname,")"
+    existing_versionname= dist.get(modulename)
+    if existing_versionname is not None:
+        if existing_versionname!= versionname:
+            raise ValueError("conflict: %s %s %s" % \
+                      (modulename, existing_versionname, versionname))
+        return dist
+    if not db.check_archs(modulename, versionname, archs):
+        raise ValueError("no support for archs %s in module %s:%s" % \
+                         (repr(archs),modulename,versionname))
+    new_dist= dict(dist)
+    # ^^^ caution, not a deep copy
+    new_dist[modulename]= versionname
+    try:
+        if not db.dependencies_found(modulename, versionname):
+            return new_dist
+    except KeyError, e:
+        raise ValueError("no information for module %s version %s" % \
+                         (modulename, versionname))
+
+    for dep_modulename in db.iter_dependencies(modulename, versionname):
+        for dep_version in db.sorted_dependency_versions(
+                modulename, versionname, dep_modulename, maxstate, archs):
+            errst= None
+            try:
+                new_dist= _distribution_add(db,
+                                            new_dist,
+                                            dep_modulename,
+                                            dep_version, maxstate, archs)
+                errst= None
+                break
+            except ValueError, e:
+                errst= str(e)
+        if errst:
+            raise ValueError("no module found, last error message: %s" % \
+                             errst)
+    return new_dist
+
+def distribution(db, modulespecs, maxstate, trace):
+    """create a distribution.
+
+    modulespecs: a ModuleSpecs object.
+    """
+    # pylint: disable=R0914
+    #                          Too many local variables
+    # pylint: disable=R0912
+    #                          Too many branches
+    if not isinstance(modulespecs, utils.ModuleSpecs):
+        raise TypeError("wrong type: '%s'" % modulespecs)
+    if trace:
+        sys.stderr.write("looking for modules, maxstate: %s\n\n" % \
+                         maxstate)
+
+    versioned_modules= []
+    versionless_modules= []
+    for modulespec in modulespecs:
+        modulename= modulespec.modulename
+        if modulespec.no_version_spec():
+            versionless_modules.append((modulename, modulespec.archs))
+        elif modulespec.is_exact_spec():
+            versioned_modules.append((modulename,
+                                      modulespec.versionname,
+                                      modulespec.archs))
+        else:
+            raise ValueError("\"-version\" and \"+version\" not "
+                             "supported here")
+    dist= {}
+    for (modulename, versionname, archs) in versioned_modules:
+        try:
+            dist= _distribution_add(db, dist, modulename, versionname,
+                                    maxstate, archs)
+        except ValueError, e:
+            raise
+
+    for (modulename, archs) in versionless_modules:
+        if trace:
+            sys.stderr.write("module %s\n" % modulename)
+        try:
+            versionlist= db.sorted_moduleversions(modulename, maxstate,
+                                                  archs, True)
+        except KeyError, e:
+            raise ValueError("no data for module %s" % modulename)
+        except ValueError, e:
+            raise
+
+        found= False
+        for versionname in versionlist:
+            try:
+                dist= _distribution_add(db, dist, modulename, versionname,
+                                        maxstate, archs)
+                found= True
+                break
+            except ValueError, e:
+                if trace:
+                    sys.stderr.write("\t%-15s: %s\n" % \
+                                     (versionname, str(e)))
+        if not found:
+            raise ValueError("no non conflicting versions found for %s" % \
+                             modulename)
+        else:
+            if trace:
+                sys.stderr.write("\t%-15s --> found\n" % versionname)
+
+    # dist is now a map, mapping MODULE -> VERSION
+    return dist
 
 # -----------------------------------------------
 # file generation
@@ -348,7 +472,7 @@ def gen_RELEASE(db, builddb, buildtag, modulename, versionname,
     if not dry_run:
         fh.close()
 
-def create_makefile(partialdb, builddb, build_tag, verbose, dry_run):
+def create_makefile(db, builddb, build_tag, verbose, dry_run):
     """generate a makefile.
     """
     # pylint: disable=R0914
@@ -400,13 +524,13 @@ def create_makefile(partialdb, builddb, build_tag, verbose, dry_run):
         (modulename, versionname)= spec
         own_stamp= os.path.join(path, "stamp")
         dep_stamps= []
-        for dep_name in partialdb.iter_dependencies(modulename, versionname):
+        for dep_name in db.iter_dependencies(modulename, versionname):
             if builddb.module_link(build_tag, dep_name):
                 continue
             # get all depdendencies, even the ones marked "unstable":
             # archs==None:
             #   ignore architecture
-            dep_versions= list(partialdb.iter_dependency_versions(modulename,
+            dep_versions= list(db.iter_dependency_versions(modulename,
                                                            versionname,
                                                            dep_name,
                                                            "unstable",
@@ -493,7 +617,6 @@ def create_module(db, builddb, build_tag,
     # pylint: disable=R0913
     #                          Too many arguments
     if not db.check_archs(modulename, versionname, archs):
-
         sys.stderr.write("error: archs %s\nnot supportted by "
                          "module %s:%s\n" % \
                          (repr(archs), modulename, versionname))
@@ -512,24 +635,21 @@ def create_module(db, builddb, build_tag,
 # builddb utilities
 # -----------------------------------------------
 
-def add_modules(db, builddb, build_tag):
+def add_modules(dist_dict, db, builddb, build_tag):
     """add modules to the builddb object.
 
     This function looks for compatible modules in all already existing builds.
     If possible, modules of existing builds are used.
 
-    All modules specified by db are added with tag <build_tag> to the builddb.
+    All modules specified by dist_dict are added with tag <build_tag> to the
+    builddb.
     """
-    for modulename in db.iter_modulenames():
-        # get all versions, stable, testing and unstable, all archs,
-        # must_exist=True:
-        moduleversions= list(db.iter_versions(modulename, "unstable",
-                                              None, True))
-        if len(moduleversions)!=1:
-            raise ValueError("more than one version for %s" % modulename)
-        versionname= moduleversions[0]
+    for modulename in sorted(dist_dict.keys()):
+        versionname= dist_dict[modulename]
 
-        compatible_build= builddb_match(db, builddb, modulename,
+        # try to find a build that already has the module and where all it's
+        # dependencies are also present with the same version as in dist_dict:
+        compatible_build= builddb_match(dist_dict, db, builddb, modulename,
                                         versionname)
         if compatible_build is None:
             # no existing build of the module was found, we have to build the
@@ -571,6 +691,12 @@ def create_partialdb(db, builddb, buildtag):
 # -----------------------------------------------
 # functions called by process()
 # -----------------------------------------------
+
+def dump_modules(modulespecs):
+    """dump module specs.
+    """
+    for modulespec in modulespecs:
+        print modulespec.to_string()
 
 def delete_modules(builddb, build_tag, verbose, dry_run):
     """delete modules of a build.
@@ -614,7 +740,7 @@ def cleanup_modules(build_tag, verbose, dry_run):
     if not dry_run:
         rmcleanup(build_tag)
 
-def create_modules(partialdb, builddb, build_tag, extra_lines,
+def create_modules(dist_dict, db, builddb, build_tag, extra_lines,
                    archs,
                    verbose, dry_run):
     """create all modules.
@@ -632,10 +758,10 @@ def create_modules(partialdb, builddb, build_tag, extra_lines,
     cleanup_struc= loadcleanup(build_tag)
     module_list  = cleanup_struc.setdefault("modules", [])
 
-    # add all modules specified by partialdb to builddb under tag build_tag:
-    add_modules(partialdb, builddb, build_tag)
+    # add all modules specified by dist_dict to builddb under tag build_tag:
+    add_modules(dist_dict, db, builddb, build_tag)
 
-    for modulename in partialdb.iter_modulenames():
+    for modulename in sorted(dist_dict.keys()):
         versionname= builddb.module_version(build_tag, modulename)
         # do not re-create modules that are links:
         if builddb.module_link(build_tag, modulename):
@@ -646,7 +772,7 @@ def create_modules(partialdb, builddb, build_tag, extra_lines,
     if not dry_run:
         savecleanup(build_tag, cleanup_struc)
     for module_dict in module_list:
-        create_module(partialdb, builddb, build_tag,
+        create_module(db, builddb, build_tag,
                       module_dict["modulename"],
                       module_dict["versionname"],
                       extra_lines,
@@ -654,7 +780,6 @@ def create_modules(partialdb, builddb, build_tag, extra_lines,
                       verbose, dry_run)
 
 def call_make(db_name, builddb_name, buildtag,
-              partialdb,
               make_options,
               verbose, dry_run):
     """call "make", then mark the build "testing"."""
@@ -678,6 +803,7 @@ def call_make(db_name, builddb_name, buildtag,
     # ^^^ does also unlock the file
     db= utils.Dependencies.from_json_file(db_name,
                 keep_locked= not dry_run)
+    partialdb= create_partialdb(db, builddb, buildtag)
     db.merge(partialdb, "testing")
     db.json_save(db_name, verbose, dry_run)
     # ^^^ does also unlock the file
@@ -776,6 +902,7 @@ def process(options, commands):
     config= utils.ConfigFile.from_optionlist(
                 CONFIG_NAME,
                 ( "arch", "alias", "builddb", "db", "extra", "makeopts",
+                  "maxstate",
                   "module", "progress", "readonly", "supportdir",
                   "verbose",))
     if (not os.path.exists(CONFIG_NAME)) or options.no_default_config:
@@ -940,24 +1067,97 @@ def process(options, commands):
         cleanup_modules(buildtag, options.verbose, options.dry_run)
         return
 
+    if commands[0]=="try":
+        if not options.db:
+            sys.exit("--db is mandatory")
+        if not options.maxstate:
+            sys.exit("--maxstate is mandatory")
+
+        if len(commands)>1:
+            if options.addmodules:
+                modulespecs= options.module + commands[1:]
+            else:
+                modulespecs= commands[1:]
+        else:
+            # no modulespecs after the command
+            modulespecs= options.module
+            if not modulespecs:
+                sys.exit("error: module specs missing")
+
+        if options.modules_from_build:
+            if not options.builddb:
+                sys.exit("--builddb is mandatory")
+            builddb= utils.Builddb.from_json_file(options.builddb)
+            modulespecs= builddb.module_specs(options.modules_from_build) + \
+                         modulespecs
+
+        db= utils.Dependencies.from_json_file(options.db,
+                    keep_locked= False)
+
+        modulespecs_obj= utils.ModuleSpecs.from_strings(modulespecs,
+                                                        options.arch)
+        if options.dump_modules:
+            dump_modules(modulespecs_obj)
+            sys.exit(0)
+        try:
+            dist_dict= distribution(db, modulespecs_obj, options.maxstate,
+                                    options.trace)
+        except ValueError, e:
+            # db __del__ method should remove lockfiles
+            sys.exit(str(e))
+        l= []
+        for (m,v) in dist_dict.items():
+            l.append("%s:%s" % (m,v))
+        l.sort()
+        utils.json_dump({"module": l})
+        return
+
     if commands[0]=="new":
         if options.readonly:
             sys.exit("--readonly forbids creating a new build")
-        if len(commands)>2:
-            sys.exit("error: extra arguments following \"%s\"" % commands[0])
 
-        (_,buildtag)= get_buildtag(options, commands,
-                                   command_index=1,
-                                   optional= True,
-                                   check_conflict= True)
+        buildtag= options.buildtag
 
         if not options.db:
             sys.exit("--db is mandatory")
-        if not options.partialdb:
-            sys.exit("--partialdb is mandatory")
         if not options.builddb:
             sys.exit("--builddb is mandatory")
-        partialdb= utils.Dependencies.from_json_file(options.partialdb)
+        if not options.maxstate:
+            sys.exit("--maxstate is mandatory")
+
+        if len(commands)>1:
+            if options.addmodules:
+                modulespecs= options.module + commands[1:]
+            else:
+                modulespecs= commands[1:]
+        else:
+            # no modulespecs after the command
+            modulespecs= options.module
+            if not modulespecs:
+                sys.exit("error: module specs missing")
+
+        if options.modules_from_build:
+            builddb= utils.Builddb.from_json_file(options.builddb)
+            modulespecs= builddb.module_specs(options.modules_from_build) + \
+                         modulespecs
+
+        db= utils.Dependencies.from_json_file(options.db,
+                    keep_locked= not options.dry_run)
+
+        modulespecs_obj= utils.ModuleSpecs.from_strings(modulespecs,
+                                                        options.arch)
+        if options.dump_modules:
+            dump_modules(modulespecs_obj)
+            sys.exit(0)
+        try:
+            dist_dict= distribution(db,
+                                    modulespecs_obj,
+                                    options.maxstate,
+                                    options.trace)
+        except ValueError, e:
+            # db __del__ method should remove lockfiles
+            sys.exit(str(e))
+
         if not os.path.exists(options.builddb):
             builddb= utils.Builddb()
         else:
@@ -975,18 +1175,18 @@ def process(options, commands):
             os.chdir(options.supportdir)
         # modifies builddb:
         try:
-            create_modules(partialdb, builddb, buildtag,
+            create_modules(dist_dict, db, builddb, buildtag,
                            options.extra,
                            options.arch,
                            options.verbose, options.dry_run)
-            create_makefile(partialdb, builddb, buildtag,
+            create_makefile(db, builddb, buildtag,
                             options.verbose, options.dry_run)
         except IOError, e:
+            db.unlock_file()
             builddb.unlock_file()
             raise
 
-        db= utils.Dependencies.from_json_file(options.db,
-                    keep_locked= not options.dry_run)
+        partialdb= create_partialdb(db, builddb, buildtag)
         db.merge(partialdb, "unstable")
         db.json_save(options.db, options.verbose, options.dry_run)
         # ^^^ does also unlock the file
@@ -995,7 +1195,6 @@ def process(options, commands):
         rmcleanup(buildtag)
         if not options.no_make:
             call_make(options.db, options.builddb, buildtag,
-                      partialdb,
                       options.makeopts,
                       options.verbose, options.dry_run)
         return
@@ -1041,6 +1240,9 @@ def process(options, commands):
                          modulespecs
         modulespecs_obj= utils.ModuleSpecs.from_strings(modulespecs,
                                                         options.arch)
+        if options.dump_modules:
+            dump_modules(modulespecs_obj)
+            sys.exit(0)
         new_builddb= builddb.filter_by_modulespecs(modulespecs_obj, db)
         if not options.brief:
             new_builddb.json_print()
@@ -1094,6 +1296,10 @@ def process(options, commands):
             if not modulespecs:
                 sys.exit("error: module specs missing")
 
+        if options.dump_modules:
+            dump_modules(modulespecs_obj)
+            sys.exit(0)
+
         db= utils.Dependencies.from_json_file(options.db)
         builddb= utils.Builddb.from_json_file(options.builddb)
         if options.modules_from_build:
@@ -1135,18 +1341,24 @@ where command is:
           If you want to edit a DB or BUILDDB file directly, you should always
           do this with this command. The file locking prevents other users to
           use the file at the same time you modify it.
-  new {BUILDTAG}
-          This command creates a new build. If the buildtag is not given as
-          argument or option, the program generates a buildtag in the form
-          "AUTO-nnn". Note that options "--db", --partialdb" and "--builddb"
-          are mandatory for this command. This command calls "make" and, after
-          successful completion, sets the state of the build to "testing". If
-          you want to skip this step, use option "--no-make". In order to
-          provide arbitrary options to make use option "--makeopts".
+  try [MODULES]
+          This command shows the modules and versions the program would take if
+          the same options would be given to command "new".
+  new [MODULES]
+          This command creates a new build. If the buildtag is not given as an
+          option, the program generates a buildtag in the form "AUTO-nnn". Note
+          that options "--db" and "--builddb" are mandatory for this command. A
+          new build is created according to the modulespecs. Moduleversions may
+          be unspecified or exactly specified. The algorithm tries to find
+          matching moduleversions in the order they are specified for this
+          command.  This command calls "make" and, after successful completion,
+          sets the state of the build to "testing". If you want to skip this
+          step, use option "--no-make". In order to provide arbitrary options
+          to make use option "--makeopts".
   partialdb [BUILDTAG]
-          This command recreates a partialdb from a complete DB and a build.
-          The partialdb is printed on the console. The buildtag may be given as
-          argument or option.
+          This command creates a partial DB from a complete DB and a build. The
+          partial DB contains just the modules of the build.  The buildtag may
+          be given as argument or option.
   find [MODULESPECS]
           This command is used to find matching builds for a given list of
           modulespecs. It prints a list of buildtags of matching builds on the
@@ -1233,12 +1445,6 @@ def main():
                             "value is stored in the configuration file. ",
                       metavar="DB"
                       )
-    parser.add_option("-P", "--partialdb",
-                      action="store",
-                      type="string",
-                      help= "Define the name of the PARTIALDB file.",
-                      metavar="PARTIALDB"
-                      )
     parser.add_option("--builddb",
                       action="store",
                       type="string",
@@ -1292,6 +1498,14 @@ def main():
                            "This option value is stored in the "
                            "configuration file.",
                       metavar="TARGETARCHITECTURE"
+                      )
+    parser.add_option("-M", "--maxstate",
+                      action="store",
+                      type="string",
+                      help= "Specify the maximum state for some commands."
+                            "This option value is stored in the "
+                            "configuration file. ",
+                      metavar="STATE"
                       )
     parser.add_option("-m", "--module",
                       action="append",
@@ -1355,6 +1569,14 @@ def main():
                       action="store_true",
                       help= "Show progress on stderr. This option value is "
                             "stored in the configuration file. "
+                      )
+    parser.add_option("--trace",
+                      action="store_true",
+                      help="Switch on some trace messages.",
+                      )
+    parser.add_option("--dump-modules",
+                      action="store_true",
+                      help="Dump module specs, then stop the program.",
                       )
     parser.add_option("-v", "--verbose",
                       action="store_true",

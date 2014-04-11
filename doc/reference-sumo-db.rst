@@ -5,9 +5,8 @@ What the script does
 --------------------
 
 This program manages the dependency database or *DB* file. It is used to create
-this file from the output of :doc:`sumo-scan <reference-sumo-scan>`, to change
-this file and to create a *partialdb* file that is used by the
-:doc:`sumo-build <reference-sumo-build>` script.
+this file from the output of :doc:`sumo-scan <reference-sumo-scan>` and to
+query and change that file.
 
 The script takes one or mode commands and has a number of options. Single
 character options always start with a single dash "-", long options start with
@@ -293,36 +292,6 @@ format. The result is printed to the console. It can be used with
 --config to put these in the configuration file of 
 :doc:`"sumo-db "<reference-sumo-db>` or 
 :doc:`"sumo-build "<reference-sumo-build>` 
-
-distribution [MODULES]
-++++++++++++++++++++++
-
-This command creates a :term:`distribution` from a dependency database or
-:term:`DB` file. Option "--maxstate" is mandatory for this command. It defines
-the maximum :term:`state` of :term:`dependencies` that are taken into account.
-Parameter MODULES is a list of :term:`modulespecs` with *unspecified* or
-*exactly specified* :term:`versions`.
-
-For modules with *unspecified* version, the algorithm that selects
-:term:`versions` of :term:`modules` tries to find the newest version that is
-consistent with the modules with *exactly specified* :term:`versions`. 
-
-The algorithm selects :term:`versions` of modules in the order :term:`modules`
-are given to the command. If you have at least two :term:`modules` with an
-*unspecified* version, changing the order of :term:`modulespecs` given to the
-command may lead to different results.
-
-The output of this command is a 
-`JSON <http://www.json.org>`_ structure that has the same format as the
-:ref:`dependency database <reference-sumo-db-The-dependency-database>`.
-
-It is, in fact, a part of the dependency database where only one version is
-listed for each :term:`module` that is to be included in the
-:term:`distribution`. This is also called a :term:`partialdb` since it is a
-partial database.
-
-The :term:`partialdb` file is used by the script :doc:`sumo-build
-<reference-sumo-build>` to create a :term:`build`.
 
 weight [WEIGHT] [MODULES]
 +++++++++++++++++++++++++
