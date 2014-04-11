@@ -873,6 +873,13 @@ class ModuleSpecs(object):
                     # clear module list so far
                     module_dict= {}
                     continue
+                if special[0]=="rm":
+                    # remove single module
+                    if not special[1]:
+                        raise ValueError("argument to :rm: missing")
+                    if module_dict.has_key(special[1]):
+                        module_dict[special[1]][1]= None
+                    continue
                 if special[0]=="load":
                     if not special[1]:
                         raise ValueError("argument to :load: missing")
@@ -903,11 +910,6 @@ class ModuleSpecs(object):
                 raise ValueError("unexpected spec: %s" % s)
             m= ModuleSpec.from_string(s, default_archs)
             modulename= m.modulename
-            if m.versionname=="" and m.versionflag=="le":
-                # "module:-" means "remove module from list
-                if module_dict.has_key(modulename):
-                    module_dict[modulename][1]= None
-                continue
             if module_dict.has_key(modulename):
                 module_dict[modulename][1]= m
                 continue
