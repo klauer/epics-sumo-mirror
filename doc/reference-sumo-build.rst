@@ -318,10 +318,6 @@ Here is a short overview on command line options:
                       Take the module specifications from a build. If you use
                       "--addmodules" you can modify single module
                       specifications in order to create a new build.
--A, --addmodules      If set, modules from the command do not replace modules
-                      from the configuration file but are *added* to them.
-                      Module specifications of the form "module:-" remove a
-                      module from the list of specs.
 -b, --brief           Create a more brief output for some commands.
 --no-make             With this option, "new" does not call "make".j
 --makeopts MAKEOPTIONS

@@ -846,7 +846,7 @@ def apprelease(build_path, build_tag, module_specs, builddb, db,
     #                          Too many arguments
     # pylint: disable=R0914
     #                          Too many local variables
-    modulespecs= utils.ModuleSpecs.from_strings(module_specs, archs)
+    modulespecs= utils.ModuleSpecs.from_strings(module_specs, builddb, archs)
     for modulespec in modulespecs:
         modulename= modulespec.modulename
         if build_tag is None:
@@ -907,14 +907,6 @@ def process(options, commands):
                   "verbose",))
     if (not os.path.exists(CONFIG_NAME)) or options.no_default_config:
         config.disable_default()
-
-    if options.modules_from_build:
-        # do ignore value module settings from config file in this case:
-        config.set("module", [])
-    if options.addmodules:
-        # "module" option is now *merged*, not copied in
-        # update_from_options:
-        config.set_list_append("module")
 
     config.load(options.config)
 
@@ -1073,28 +1065,19 @@ def process(options, commands):
         if not options.maxstate:
             sys.exit("--maxstate is mandatory")
 
+        modulespecs= []
+        if options.module:
+            modulespecs.extend(options.module)
         if len(commands)>1:
-            if options.addmodules:
-                modulespecs= options.module + commands[1:]
-            else:
-                modulespecs= commands[1:]
-        else:
-            # no modulespecs after the command
-            modulespecs= options.module
-            if not modulespecs:
-                sys.exit("error: module specs missing")
-
-        if options.modules_from_build:
-            if not options.builddb:
-                sys.exit("--builddb is mandatory")
-            builddb= utils.Builddb.from_json_file(options.builddb)
-            modulespecs= builddb.module_specs(options.modules_from_build) + \
-                         modulespecs
+            modulespecs.extend(commands[1:])
+        if not modulespecs:
+            sys.exit("error: module specs missing")
 
         db= utils.Dependencies.from_json_file(options.db,
                     keep_locked= False)
 
         modulespecs_obj= utils.ModuleSpecs.from_strings(modulespecs,
+                                                        options.builddb,
                                                         options.arch)
         if options.dump_modules:
             dump_modules(modulespecs_obj)
@@ -1125,26 +1108,19 @@ def process(options, commands):
         if not options.maxstate:
             sys.exit("--maxstate is mandatory")
 
+        modulespecs= []
+        if options.module:
+            modulespecs.extend(options.module)
         if len(commands)>1:
-            if options.addmodules:
-                modulespecs= options.module + commands[1:]
-            else:
-                modulespecs= commands[1:]
-        else:
-            # no modulespecs after the command
-            modulespecs= options.module
-            if not modulespecs:
-                sys.exit("error: module specs missing")
-
-        if options.modules_from_build:
-            builddb= utils.Builddb.from_json_file(options.builddb)
-            modulespecs= builddb.module_specs(options.modules_from_build) + \
-                         modulespecs
+            modulespecs.extend(commands[1:])
+        if not modulespecs:
+            sys.exit("error: module specs missing")
 
         db= utils.Dependencies.from_json_file(options.db,
                     keep_locked= not options.dry_run)
 
         modulespecs_obj= utils.ModuleSpecs.from_strings(modulespecs,
+                                                        options.builddb,
                                                         options.arch)
         if options.dump_modules:
             dump_modules(modulespecs_obj)
@@ -1218,27 +1194,23 @@ def process(options, commands):
         new_db.json_print()
         return
     if commands[0]=="find":
-        if len(commands)>=2:
-            if options.addmodules:
-                modulespecs= options.module + commands[1:]
-            else:
-                modulespecs= commands[1:]
-        else:
-            # no modulespecs after the command
-            modulespecs= options.module
-            if not modulespecs:
-                sys.exit("error: module specs missing")
-
         if not options.builddb:
             sys.exit("--builddb is mandatory")
         if not options.db:
             sys.exit("--db is mandatory")
+
+        modulespecs= []
+        if options.module:
+            modulespecs.extend(options.module)
+        if len(commands)>1:
+            modulespecs.extend(commands[1:])
+        if not modulespecs:
+            sys.exit("error: module specs missing")
+
         db= utils.Dependencies.from_json_file(options.db)
         builddb= utils.Builddb.from_json_file(options.builddb)
-        if options.modules_from_build:
-            modulespecs= builddb.module_specs(options.modules_from_build) + \
-                         modulespecs
         modulespecs_obj= utils.ModuleSpecs.from_strings(modulespecs,
+                                                        builddb,
                                                         options.arch)
         if options.dump_modules:
             dump_modules(modulespecs_obj)
@@ -1285,16 +1257,13 @@ def process(options, commands):
         if not options.db:
             sys.exit("--db is mandatory")
 
+        modulespecs= []
+        if options.module:
+            modulespecs.extend(options.module)
         if len(commands)>1:
-            if options.addmodules:
-                modulespecs= options.module + commands[1:]
-            else:
-                modulespecs= commands[1:]
-        else:
-            # no modulespecs after the command
-            modulespecs= options.module
-            if not modulespecs:
-                sys.exit("error: module specs missing")
+            modulespecs.extend(commands[1:])
+        if not modulespecs:
+            sys.exit("error: module specs missing")
 
         if options.dump_modules:
             dump_modules(modulespecs_obj)
@@ -1302,9 +1271,6 @@ def process(options, commands):
 
         db= utils.Dependencies.from_json_file(options.db)
         builddb= utils.Builddb.from_json_file(options.builddb)
-        if options.modules_from_build:
-            modulespecs= builddb.module_specs(options.modules_from_build) + \
-                         modulespecs
         print apprelease(options.supportdir \
                              if options.supportdir else ".",
                          buildtag,
@@ -1517,23 +1483,6 @@ def main():
                             "string separated by spaces.  This option value "
                             "is stored in the configuration file. ",
                       metavar="MODULESPEC"
-                      )
-    parser.add_option("--modules-from-build",
-                      action="store",
-                      type="string",
-                      help= "Take the module specifications from a build. If "
-                            "you use \"--addmodules\" you can modify single "
-                            "module specifications in order to create a new "
-                            "build.",
-                      metavar="BUILDTAG"
-                      )
-    parser.add_option("-A", "--addmodules",
-                      action="store_true",
-                      help="If set, modules from the command do not replace "
-                           "modules from the configuration file but are "
-                           "*added* to them. Module specifications of the "
-                           "form \"module:-\" remove a module from the "
-                           "list of specs."
                       )
     parser.add_option("-b", "--brief",
                       action="store_true",

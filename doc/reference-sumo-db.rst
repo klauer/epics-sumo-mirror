@@ -413,10 +413,6 @@ Here is a short overview on command line options:
                       of these by repeating this option or by joining values in
                       a single string separated by spaces.  This option value
                       is stored in the configuration file.
--A, --addmodules      If set, modules from the command do not replace modules
-                      from the configuration file but are *added* to them.
-                      Module specifications of the form "module:-" remove a
-                      module from the list of specs.
 -b, --brief           Create a more brief output for some commands.
 -M STATE, --maxstate STATE      
                       Specify the maximum state for some commands.  This option

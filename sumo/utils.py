@@ -149,7 +149,6 @@ class ConfigFile(object):
         self._filename= filename
         self.load_default= True
         self._dict= dict(dict_)
-        self._list_append_opts= set()
     def __repr__(self):
         """return repr string."""
         return "%s(%s, %s)" % (self.__class__.__name__,
@@ -165,13 +164,6 @@ class ConfigFile(object):
     def set(self, optionname, value):
         """set an option to an arbitrary value."""
         self._dict[optionname]= value
-    def set_list_append(self, name):
-        """define an option to be of type "list append".
-
-        In this case, command line options do not overwrite but append the
-        list.
-        """
-        self._list_append_opts.add(name)
     def disable_default(self):
         """disable loading of the default file."""
         self.load_default= False
@@ -214,11 +206,7 @@ class ConfigFile(object):
                         "ERROR: key '%s' not in the option object" % opt)
             val= getattr(option_obj, opt)
             if val is not None:
-                if self._dict[opt]:
-                    if opt in self._list_append_opts:
-                        self._dict[opt].extend(getattr(option_obj, opt))
-                        continue
-                self._dict[opt]= getattr(option_obj, opt)
+                self._dict[opt]= val
         for (opt, val) in self._dict.items():
             if not hasattr(option_obj, opt):
                 raise AssertionError(
@@ -873,8 +861,10 @@ class ModuleSpecs(object):
             return None
         return st[1:].split(":")
     @staticmethod
-    def _from_strings(module_dict, idx, specs, default_archs):
+    def _from_strings(module_dict, idx, specs, builddb, default_archs):
         """internal function to scan specs."""
+        # pylint: disable=R0912
+        #                          Too many branches
         for s in specs:
             special= ModuleSpecs.scan_special(s)
             if special:
@@ -884,6 +874,8 @@ class ModuleSpecs(object):
                     module_dict= {}
                     continue
                 if special[0]=="load":
+                    if not special[1]:
+                        raise ValueError("argument to :load: missing")
                     json_data= json_loadfile(special[1])
                     # pylint: disable=E1103
                     #         Instance of 'bool' has no 'get' member
@@ -891,8 +883,23 @@ class ModuleSpecs(object):
                     if json_specs:
                         idx= ModuleSpecs._from_strings(module_dict, idx,
                                                        json_specs,
+                                                       builddb,
                                                        default_archs)
                     continue
+                if special[0]=="build":
+                    if not special[1]:
+                        raise ValueError("argument to :build: missing")
+                    if not builddb:
+                        raise ValueError("error: builddb not specified")
+                    if isinstance(builddb, str):
+                        builddb= Builddb.from_json_file(builddb)
+                    build_specs= builddb.module_specs(special[1])
+                    idx= ModuleSpecs._from_strings(module_dict, idx,
+                                                   build_specs,
+                                                   builddb,
+                                                   default_archs)
+                    continue
+
                 raise ValueError("unexpected spec: %s" % s)
             m= ModuleSpec.from_string(s, default_archs)
             modulename= m.modulename
@@ -909,8 +916,13 @@ class ModuleSpecs(object):
         return idx
 
     @classmethod
-    def from_strings(cls, specs, default_archs= None):
+    def from_strings(cls, specs, builddb_fn, default_archs= None):
         """scan a list of module specification strings.
+
+        specs:  list of module specification strings
+        builddb_fn: filename of builddb or the builddb itself,
+                    only needed for :build:buildtag
+        default_archs: list of default archs, may be None
 
         returns a new ModuleSpecs object.
 
@@ -941,7 +953,8 @@ class ModuleSpecs(object):
         ModuleSpec('B','R3','le',None)
         """
         module_dict= {}
-        ModuleSpecs._from_strings(module_dict, 0, specs, default_archs)
+        ModuleSpecs._from_strings(module_dict, 0, specs, builddb_fn,
+                                  default_archs)
 
         l= [modulespec for (_,modulespec) in sorted(module_dict.values()) \
                        if modulespec]
