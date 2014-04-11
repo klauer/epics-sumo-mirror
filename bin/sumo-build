@@ -29,8 +29,29 @@ KNOWN_COMMANDS=set(( "cleanup", "delete", "edit", "find", "list",
 CONFIG_NAME="sumo-build.config"
 
 # -----------------------------------------------
-# main
+# utilities
 # -----------------------------------------------
+
+def script_shortname():
+    """return the name of this script without a path component."""
+    return os.path.basename(sys.argv[0])
+
+# -----------------------------------------------
+# directory utilities and filenames
+# -----------------------------------------------
+
+def makefilename(build_tag):
+    """create a makefile name from a build_tag."""
+    return("Makefile-%s" % build_tag)
+
+def module_dir_string(buildtag, modulename, versionname):
+    """create a module directory string."""
+    subdir= "%s+%s" % (versionname, buildtag)
+    return os.path.join(modulename, subdir)
+
+def module_basedir_string(modulename):
+    """create a module base directory string."""
+    return modulename
 
 def ensure_dir(dir_, dry_run):
     """create a dir if it doesn't already exist.
@@ -54,14 +75,30 @@ def rm_empty_dir(dirname, verbose, dry_run):
         if ex.errno == errno.ENOTEMPTY:
             pass
 
-def module_dir_string(buildtag, modulename, versionname):
-    """create a module directory string."""
-    subdir= "%s+%s" % (versionname, buildtag)
-    return os.path.join(modulename, subdir)
+def _config_dir(build_tag, module_name, versionname, dry_run):
+    """get the config dir name."""
+    dir_= module_dir_string(build_tag, module_name, versionname)
+    config_dir= os.path.join(dir_, "configure")
+    if not dry_run:
+        if not os.path.exists(config_dir):
+            errmsg("no configure directory found in %s" % dir_)
+            return
+    return config_dir
 
-def module_basedir_string(modulename):
-    """create a module base directory string."""
-    return modulename
+# -----------------------------------------------
+# file I/O
+# -----------------------------------------------
+
+def _fwrite(fh, st, verbose, dry_run):
+    """write a line to a file."""
+    if verbose:
+        print st,
+    if not dry_run:
+        fh.write(st)
+
+# -----------------------------------------------
+# aliases
+# -----------------------------------------------
 
 def scan_aliases(aliases):
     """scan aliases given on the command line."""
@@ -80,13 +117,9 @@ def alias(alias_dict, modulename):
         return modulename
     return n
 
-def errmsg(msg):
-    """print something on stderr."""
-    sys.stderr.write(msg+"\n")
-
-def makefilename(build_tag):
-    """create a makefile name from a build_tag."""
-    return("Makefile-%s" % build_tag)
+# -----------------------------------------------
+# cleanup file handling
+# -----------------------------------------------
 
 def cleanupfilename(build_tag):
     """create the name of the cleanup file."""
@@ -111,6 +144,18 @@ def savecleanup(build_tag, struc):
     """save the cleanup file."""
     fn= cleanupfilename(build_tag)
     utils.json_dump_file(fn, struc)
+
+# -----------------------------------------------
+# error messages
+# -----------------------------------------------
+
+def errmsg(msg):
+    """print something on stderr."""
+    sys.stderr.write(msg+"\n")
+
+# -----------------------------------------------
+# dependency handling
+# -----------------------------------------------
 
 def gather_dependencies(db, modulename, versionname,
                         gathered_deps):
@@ -208,22 +253,9 @@ def builddb_match(db, builddb, modulename, versionname):
             return build_tag
     return
 
-def _config_dir(build_tag, module_name, versionname, dry_run):
-    """get the config dir name."""
-    dir_= module_dir_string(build_tag, module_name, versionname)
-    config_dir= os.path.join(dir_, "configure")
-    if not dry_run:
-        if not os.path.exists(config_dir):
-            errmsg("no configure directory found in %s" % dir_)
-            return
-    return config_dir
-
-def _fwrite(fh, st, verbose, dry_run):
-    """write a line to a file."""
-    if verbose:
-        print st,
-    if not dry_run:
-        fh.write(st)
+# -----------------------------------------------
+# file generation
+# -----------------------------------------------
 
 def gen_RELEASE(db, builddb, buildtag, modulename, versionname,
                 extra_lines,
@@ -278,194 +310,6 @@ def gen_RELEASE(db, builddb, buildtag, modulename, versionname,
         _fwrite(fh, "%s\n" % l.rstrip(), verbose, dry_run)
     if not dry_run:
         fh.close()
-
-def create_source(db, modulename, versionname,
-                  destdir, verbose, dry_run):
-    """create directory by given source spec.
-    """
-    # pylint: disable=R0913
-    #                          Too many arguments
-    (sourcetype, sourcedata)= db.module_source_dict(modulename, versionname)
-    if sourcetype=="path":
-        #cmd= "scp -r -p \"%s\" %s" % (url, destdir)
-        # join(url,"") effectively adds a "/" at the end of the path. This is
-        # needed in order for rsync to work as intended here.
-        cmd= "rsync -a -u -L --chmod=Fu+w \"%s\" %s" % \
-             (os.path.join(sourcedata,""), destdir)
-        utils.system(cmd, False, False, verbose, dry_run)
-    elif sourcetype=="darcs":
-        cmd_l= ["darcs", "get"]
-        if sourcedata.has_key("tag"):
-            cmd_l.extend(["-t", sourcedata["tag"]])
-        cmd_l.append(sourcedata["url"])
-        cmd_l.append(destdir)
-        cmd= " ".join(cmd_l)
-        utils.system(cmd, False, False, verbose, dry_run)
-    else:
-        raise AssertionError("unsupported source type %s" % sourcetype)
-
-def delete_module(build_tag, modulename, versionname,
-                  must_exist,
-                  verbose, dry_run):
-    """delete a single module."""
-    # pylint: disable=R0913
-    #                          Too many arguments
-    dirname= module_dir_string(build_tag, modulename, versionname)
-    if verbose:
-        print "removing %s" % dirname
-    if not dry_run:
-        if os.path.exists(dirname):
-            shutil.rmtree(dirname)
-        else:
-            if must_exist:
-                raise IOError("error: '%s' doesn't exist" % dirname)
-        # remove the parent directory if it is empty:
-    rm_empty_dir(modulename, verbose, dry_run)
-
-def delete_modules(builddb, build_tag, verbose, dry_run):
-    """delete modules of a build.
-    """
-    for b in builddb.iter_builds():
-        if builddb.is_linked_to(b, build_tag):
-            raise ValueError("error: other builds depend on build %s" % \
-                              build_tag)
-    for modulename, versionname in builddb.iter_modules(build_tag):
-        if builddb.module_link(build_tag, modulename):
-            continue
-        delete_module(build_tag, modulename, versionname, True,
-                      verbose, dry_run)
-
-    os.remove(makefilename(build_tag))
-
-    builddb.delete(build_tag)
-
-def cleanup_modules(build_tag, verbose, dry_run):
-    """cleanup remains of a failed build.
-
-    This can only happen if a "new" command was aborted due to an exception in
-    the script.
-    """
-    try:
-        cleanup_struc= loadcleanup(build_tag, must_exist= True)
-    except IOError, e:
-        sys.exit(str(e))
-
-    module_list= cleanup_struc["modules"]
-    for module_dict in module_list:
-        delete_module(build_tag,
-                      module_dict["modulename"],
-                      module_dict["versionname"],
-                      False,
-                      verbose, dry_run)
-    makefile= cleanup_struc.get("makefile")
-    if makefile:
-        if os.path.exists(makefile):
-            os.remove(makefile)
-    if not dry_run:
-        rmcleanup(build_tag)
-
-def create_module(db, builddb, build_tag,
-                  modulename, versionname,
-                  extra_defs,
-                  archs,
-                  verbose, dry_run):
-    """check out a module.
-
-    returns the build_tag that was used. If the module was found in another
-    build, return that built-tag.
-
-    This function requires that the current working directory is the
-    support directory!
-    """
-    # pylint: disable=R0913
-    #                          Too many arguments
-    if not db.check_archs(modulename, versionname, archs):
-
-        sys.stderr.write("error: archs %s\nnot supportted by "
-                         "module %s:%s\n" % \
-                         (repr(archs), modulename, versionname))
-    basedir= module_basedir_string(modulename)
-    ensure_dir(basedir, dry_run) # creates basedir if it doesn't exist
-    dirname= module_dir_string(build_tag, modulename, versionname)
-    if os.path.exists(dirname):
-        raise ValueError("directory %s already exists" % dirname)
-
-    create_source(db, modulename, versionname, dirname, verbose, dry_run)
-    gen_RELEASE(db, builddb, build_tag, modulename, versionname,
-                extra_defs,
-                verbose, dry_run)
-# pylint: enable=R0913
-
-def add_modules(db, builddb, build_tag):
-    """add modules to the builddb object.
-
-    This function looks for compatible modules in all already existing builds.
-    If possible, modules of existing builds are used.
-
-    All modules specified by db are added with tag <build_tag> to the builddb.
-    """
-    for modulename in db.iter_modulenames():
-        # get all versions, stable, testing and unstable, all archs,
-        # must_exist=True:
-        moduleversions= list(db.iter_versions(modulename, "unstable",
-                                              None, True))
-        if len(moduleversions)!=1:
-            raise ValueError("more than one version for %s" % modulename)
-        versionname= moduleversions[0]
-
-        compatible_build= builddb_match(db, builddb, modulename,
-                                        versionname)
-        if compatible_build is None:
-            # no existing build of the module was found, we have to build the
-            # module ourselbves:
-            build_tag_used= build_tag
-        else:
-            # a compatible existing build of the module was found:
-            build_tag_used= compatible_build
-
-        builddb.add_module(build_tag, build_tag_used, modulename, versionname)
-
-# pylint: disable=R0913
-#                          Too many arguments
-
-def create_modules(partialdb, builddb, build_tag, extra_lines,
-                   archs,
-                   verbose, dry_run):
-    """create all modules.
-
-    This function requires that the current working directory is the support
-    directory!
-    """
-    # save a list of possibly created directories in a cleanup-structure. In
-    # case the script exits with an exception, the created cleanup file can be
-    # used to clean up the support directory.
-    # Load the cleanup file in case other parts of the script have saved
-    # someting there:
-    cleanup_struc= loadcleanup(build_tag)
-    module_list  = cleanup_struc.setdefault("modules", [])
-
-    # add all modules specified by partialdb to builddb under tag build_tag:
-    add_modules(partialdb, builddb, build_tag)
-
-    for modulename in partialdb.iter_modulenames():
-        versionname= builddb.module_version(build_tag, modulename)
-        # do not re-create modules that are links:
-        if builddb.module_link(build_tag, modulename):
-            continue
-        module_list.append({"modulename" : modulename,
-                            "versionname": versionname})
-
-    if not dry_run:
-        savecleanup(build_tag, cleanup_struc)
-    for module_dict in module_list:
-        create_module(partialdb, builddb, build_tag,
-                      module_dict["modulename"],
-                      module_dict["versionname"],
-                      extra_lines,
-                      archs,
-                      verbose, dry_run)
-
-# pylint: enable=R0913
 
 def create_makefile(partialdb, builddb, build_tag, verbose, dry_run):
     """generate a makefile.
@@ -549,6 +393,229 @@ def create_makefile(partialdb, builddb, build_tag, verbose, dry_run):
     if not dry_run:
         fh.close()
 
+# -----------------------------------------------
+# module creation/deletion
+# -----------------------------------------------
+
+def create_source(db, modulename, versionname,
+                  destdir, verbose, dry_run):
+    """create directory by given source spec.
+    """
+    # pylint: disable=R0913
+    #                          Too many arguments
+    (sourcetype, sourcedata)= db.module_source_dict(modulename, versionname)
+    if sourcetype=="path":
+        #cmd= "scp -r -p \"%s\" %s" % (url, destdir)
+        # join(url,"") effectively adds a "/" at the end of the path. This is
+        # needed in order for rsync to work as intended here.
+        cmd= "rsync -a -u -L --chmod=Fu+w \"%s\" %s" % \
+             (os.path.join(sourcedata,""), destdir)
+        utils.system(cmd, False, False, verbose, dry_run)
+    elif sourcetype=="darcs":
+        cmd_l= ["darcs", "get"]
+        if sourcedata.has_key("tag"):
+            cmd_l.extend(["-t", sourcedata["tag"]])
+        cmd_l.append(sourcedata["url"])
+        cmd_l.append(destdir)
+        cmd= " ".join(cmd_l)
+        utils.system(cmd, False, False, verbose, dry_run)
+    else:
+        raise AssertionError("unsupported source type %s" % sourcetype)
+
+def delete_module(build_tag, modulename, versionname,
+                  must_exist,
+                  verbose, dry_run):
+    """delete a single module."""
+    # pylint: disable=R0913
+    #                          Too many arguments
+    dirname= module_dir_string(build_tag, modulename, versionname)
+    if verbose:
+        print "removing %s" % dirname
+    if not dry_run:
+        if os.path.exists(dirname):
+            shutil.rmtree(dirname)
+        else:
+            if must_exist:
+                raise IOError("error: '%s' doesn't exist" % dirname)
+        # remove the parent directory if it is empty:
+    rm_empty_dir(modulename, verbose, dry_run)
+
+def create_module(db, builddb, build_tag,
+                  modulename, versionname,
+                  extra_defs,
+                  archs,
+                  verbose, dry_run):
+    """check out a module.
+
+    returns the build_tag that was used. If the module was found in another
+    build, return that built-tag.
+
+    This function requires that the current working directory is the
+    support directory!
+    """
+    # pylint: disable=R0913
+    #                          Too many arguments
+    if not db.check_archs(modulename, versionname, archs):
+
+        sys.stderr.write("error: archs %s\nnot supportted by "
+                         "module %s:%s\n" % \
+                         (repr(archs), modulename, versionname))
+    basedir= module_basedir_string(modulename)
+    ensure_dir(basedir, dry_run) # creates basedir if it doesn't exist
+    dirname= module_dir_string(build_tag, modulename, versionname)
+    if os.path.exists(dirname):
+        raise ValueError("directory %s already exists" % dirname)
+
+    create_source(db, modulename, versionname, dirname, verbose, dry_run)
+    gen_RELEASE(db, builddb, build_tag, modulename, versionname,
+                extra_defs,
+                verbose, dry_run)
+
+# -----------------------------------------------
+# builddb utilities
+# -----------------------------------------------
+
+def add_modules(db, builddb, build_tag):
+    """add modules to the builddb object.
+
+    This function looks for compatible modules in all already existing builds.
+    If possible, modules of existing builds are used.
+
+    All modules specified by db are added with tag <build_tag> to the builddb.
+    """
+    for modulename in db.iter_modulenames():
+        # get all versions, stable, testing and unstable, all archs,
+        # must_exist=True:
+        moduleversions= list(db.iter_versions(modulename, "unstable",
+                                              None, True))
+        if len(moduleversions)!=1:
+            raise ValueError("more than one version for %s" % modulename)
+        versionname= moduleversions[0]
+
+        compatible_build= builddb_match(db, builddb, modulename,
+                                        versionname)
+        if compatible_build is None:
+            # no existing build of the module was found, we have to build the
+            # module ourselbves:
+            build_tag_used= build_tag
+        else:
+            # a compatible existing build of the module was found:
+            build_tag_used= compatible_build
+
+        builddb.add_module(build_tag, build_tag_used, modulename, versionname)
+
+def create_partialdb(db, builddb, buildtag):
+    """create a partial database from a build.
+
+    This function also ensures that each module has only one dependency version
+    for each dependency module.
+    """
+    new= utils.Dependencies()
+    for modulename, versionname in builddb.iter_modules(buildtag):
+        new.import_module(db, modulename, versionname)
+        for dep_module in new.iter_dependencies(modulename, versionname):
+            # archs==None:
+            #   ignore architecture
+            # we have to ignore the architecture here since the Dependencies
+            # object "new" is beeing built bit by bit. When we iterate over the
+            # dependencies of a module the dependency modules are not yet part
+            # of the Dependencies object, so we cannot know their architecture.
+            dep_versions= list(new.iter_dependency_versions(modulename,
+                                                            versionname,
+                                                            dep_module,
+                                                            "unstable",
+                                                            None))
+            wanted_version= builddb.module_version(buildtag, dep_module)
+            for d in dep_versions:
+                if d!=wanted_version:
+                    new.del_dependency(modulename, versionname, dep_module, d)
+    return new
+
+# -----------------------------------------------
+# functions called by process()
+# -----------------------------------------------
+
+def delete_modules(builddb, build_tag, verbose, dry_run):
+    """delete modules of a build.
+    """
+    for b in builddb.iter_builds():
+        if builddb.is_linked_to(b, build_tag):
+            raise ValueError("error: other builds depend on build %s" % \
+                              build_tag)
+    for modulename, versionname in builddb.iter_modules(build_tag):
+        if builddb.module_link(build_tag, modulename):
+            continue
+        delete_module(build_tag, modulename, versionname, True,
+                      verbose, dry_run)
+
+    os.remove(makefilename(build_tag))
+
+    builddb.delete(build_tag)
+
+def cleanup_modules(build_tag, verbose, dry_run):
+    """cleanup remains of a failed build.
+
+    This can only happen if a "new" command was aborted due to an exception in
+    the script.
+    """
+    try:
+        cleanup_struc= loadcleanup(build_tag, must_exist= True)
+    except IOError, e:
+        sys.exit(str(e))
+
+    module_list= cleanup_struc["modules"]
+    for module_dict in module_list:
+        delete_module(build_tag,
+                      module_dict["modulename"],
+                      module_dict["versionname"],
+                      False,
+                      verbose, dry_run)
+    makefile= cleanup_struc.get("makefile")
+    if makefile:
+        if os.path.exists(makefile):
+            os.remove(makefile)
+    if not dry_run:
+        rmcleanup(build_tag)
+
+def create_modules(partialdb, builddb, build_tag, extra_lines,
+                   archs,
+                   verbose, dry_run):
+    """create all modules.
+
+    This function requires that the current working directory is the support
+    directory!
+    """
+    # pylint: disable=R0913
+    #                          Too many arguments
+    # save a list of possibly created directories in a cleanup-structure. In
+    # case the script exits with an exception, the created cleanup file can be
+    # used to clean up the support directory.
+    # Load the cleanup file in case other parts of the script have saved
+    # someting there:
+    cleanup_struc= loadcleanup(build_tag)
+    module_list  = cleanup_struc.setdefault("modules", [])
+
+    # add all modules specified by partialdb to builddb under tag build_tag:
+    add_modules(partialdb, builddb, build_tag)
+
+    for modulename in partialdb.iter_modulenames():
+        versionname= builddb.module_version(build_tag, modulename)
+        # do not re-create modules that are links:
+        if builddb.module_link(build_tag, modulename):
+            continue
+        module_list.append({"modulename" : modulename,
+                            "versionname": versionname})
+
+    if not dry_run:
+        savecleanup(build_tag, cleanup_struc)
+    for module_dict in module_list:
+        create_module(partialdb, builddb, build_tag,
+                      module_dict["modulename"],
+                      module_dict["versionname"],
+                      extra_lines,
+                      archs,
+                      verbose, dry_run)
+
 def call_make(db_name, builddb_name, buildtag,
               partialdb,
               make_options,
@@ -577,33 +644,6 @@ def call_make(db_name, builddb_name, buildtag,
     db.merge(partialdb, "testing")
     db.json_save(db_name, verbose, dry_run)
     # ^^^ does also unlock the file
-
-def create_partialdb(db, builddb, buildtag):
-    """create a partial database from a build.
-
-    This function also ensures that each module has only one dependency version
-    for each dependency module.
-    """
-    new= utils.Dependencies()
-    for modulename, versionname in builddb.iter_modules(buildtag):
-        new.import_module(db, modulename, versionname)
-        for dep_module in new.iter_dependencies(modulename, versionname):
-            # archs==None:
-            #   ignore architecture
-            # we have to ignore the architecture here since the Dependencies
-            # object "new" is beeing built bit by bit. When we iterate over the
-            # dependencies of a module the dependency modules are not yet part
-            # of the Dependencies object, so we cannot know their architecture.
-            dep_versions= list(new.iter_dependency_versions(modulename,
-                                                            versionname,
-                                                            dep_module,
-                                                            "unstable",
-                                                            None))
-            wanted_version= builddb.module_version(buildtag, dep_module)
-            for d in dep_versions:
-                if d!=wanted_version:
-                    new.del_dependency(modulename, versionname, dep_module, d)
-    return new
 
 def fullapprelease(build_path, build_tag, builddb, db, modules,
                    aliases, extra_lines):
@@ -635,13 +675,12 @@ def fullapprelease(build_path, build_tag, builddb, db, modules,
     lines.extend(extra_lines)
     return "\n".join(lines)
 
-# pylint: disable=R0913
-#                          Too many arguments
-
 def apprelease(build_path, build_tag, module_specs, builddb, db,
                archs, aliases, extra_lines):
     """create entries for an release file.
     """
+    # pylint: disable=R0913
+    #                          Too many arguments
     # pylint: disable=R0914
     #                          Too many local variables
     specdict= {}
@@ -683,12 +722,11 @@ def apprelease(build_path, build_tag, module_specs, builddb, db,
     return fullapprelease(build_path, build_tag, builddb, db,
                           module_dict.keys(), aliases, extra_lines)
 
-# pylint: enable=R0913
 
-def script_shortname():
-    """return the name of this script without a path component."""
-    return os.path.basename(sys.argv[0])
 
+# -----------------------------------------------
+# process command line arguments and options
+# -----------------------------------------------
 
 def process(options, commands):
     """do all the work.
@@ -1004,10 +1042,6 @@ def process(options, commands):
                          scan_aliases(options.alias),
                          options.extra)
         return
-
-# pylint: enable=R0912
-# pylint: enable=R0911
-# pylint: enable=R0915
 
 def print_summary():
     """print a short summary of the scripts function."""
