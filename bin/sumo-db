@@ -28,7 +28,7 @@ KNOWN_COMMANDS=set(("edit", "convert",
                     "distribution",
                     "makeconfig",
                     "weight",
-                    "show", "shownewest", "showall",
+                    "list", "shownewest", "showall",
                     "find",
                     "merge", "check", "filter",
                     "cloneversion", "replaceversion"))
@@ -567,9 +567,9 @@ def process(options, commands):
             # ^^^ does also unlock the file
         return
 
-    if commands[0]=="show":
+    if commands[0]=="list":
         if len(commands)>1:
-            sys.exit("error: extra arguments following \"show\"")
+            sys.exit("error: extra arguments following \"list\"")
         if not options.db:
             sys.exit("error, --db is mandatory here")
         db= utils.Dependencies.from_json_file(options.db)
@@ -681,15 +681,19 @@ where command is:
           modulename:{+-}versionname to select more versions of a module.
           This command *does not* use the --modules option.
           Weight must be an integer.
-  show:   show the names of all modules
-  shownewest {modules}: 
+  list:   list the names of all modules
+  shownewest {MODULES}: 
           Show newest version for each module. If {modules} is missing, take
           all modules of the database. Mandatory option "--maxstate" defines
           the "maximum" state modules may have.
-  showall {modules}: 
+  showall {MODULES}: 
           Show all versions for each module. If {modules} is missing, take all
           modules of the database. Mandatory option "--maxstate" defines
           the "maximum" state modules may have.
+  filter [MODULES]
+          Print the database for the given modules. If you want a specific
+          version of a module use modulename:versioname instead of the
+          modulename alone.
   find [REGEXP]
           Show all modules whose names or sources match regexp. Mandatory
           option "--maxstate" defines the "maximum" state modules may have.
@@ -698,10 +702,6 @@ where command is:
           do some consistency checks on the db specifed by --db
   merge [DB]
           Merge the given db with the one specified by --db
-  filter [MODULES]
-          Print the database for the given modules. If you want a specific
-          version of a module use modulename:versioname instead of the
-          modulename alone.
   cloneversion [MODULE] [OLD-VERSION] [NEW-VERSION] {SOURCESPEC}
           Add a new version to the database by copying the old version. The
           old-version data is copied for the new version data. All modules that

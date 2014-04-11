@@ -335,10 +335,10 @@ Note that this command *does not* use the "--modules" command line option.
 
 Parameter WEIGHT must be an integer.
 
-show
+list
 ++++
 
-This command shows all :term:`modules` in the 
+This command lists all :term:`modules` in the 
 :ref:`dependency database <reference-sumo-db-The-dependency-database>`.
 
 shownewest {MODULES}
