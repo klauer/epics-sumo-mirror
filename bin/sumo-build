@@ -580,7 +580,7 @@ def fullapprelease(build_path, build_tag, builddb, db, modules,
     """
     # pylint: disable=R0913
     #                          Too many arguments
-    lines= ["SUPPORT=%s" % os.path.abspath(build_path)]
+    lines= ["SUPPORT=%s" % os.path.realpath(build_path)]
     if modules is None:
         modules= builddb.modules(build_tag).keys()
 
