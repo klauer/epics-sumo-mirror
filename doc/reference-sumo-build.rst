@@ -170,7 +170,10 @@ new {BUILDTAG}
 This command creates a new build. It may be followed by a :term:`buildtag`. If
 the :term:`buildtag` is not given, a new unique :term:`buildtag` is generated.
 Generated :term:`buildtags` have the form "AUTO-nnn". Note that options "--db",
---partialdb" and "--builddb" are mandatory for this command.
+--partialdb" and "--builddb" are mandatory for this command.  This command
+calls "make" and, after successful completion, sets the state of the build to
+"testing". If you want to skip this step, use option "--no-make". In order to
+provide arbitrary options to make use option "--makeopts".  
 
 partialdb [BUILDTAG]
 ++++++++++++++++++++
@@ -303,6 +306,12 @@ Here is a short overview on command line options:
                       a single string separated by spaces.  This option value
                       is stored in the configuration file.
 -b, --brief           Create a more brief output for some commands.
+--no-make             With this option, "new" does not call "make".j
+--makeopts [MAKEOPTIONS]
+                      Specify extra option strings for make You can specify
+                      more than one of these by repeating this option or by
+                      joining values in a single string separated by spaces.
+                      This option value is stored in the configuration file.
 --readonly            Do not allow modifying the database files or the support
                       directory.  This option value is stored in the
                       configuration file.

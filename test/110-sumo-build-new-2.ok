@@ -13433,10 +13433,10 @@ content of Makefile-AUTO-001
 all: ALARM/R3-4+AUTO-001/stamp MCAN/R2-3-18+AUTO-001/stamp
 
 clean:
-	$(MAKE) -C ALARM/R3-4+AUTO-001 clean
-	$(MAKE) -C MCAN/R2-3-18+AUTO-001 clean
-	rm ALARM/R3-4+AUTO-001/stamp
-	rm MCAN/R2-3-18+AUTO-001/stamp
+	-$(MAKE) -C ALARM/R3-4+AUTO-001 clean
+	-$(MAKE) -C MCAN/R2-3-18+AUTO-001 clean
+	rm -f ALARM/R3-4+AUTO-001/stamp
+	rm -f MCAN/R2-3-18+AUTO-001/stamp
 
 
 MCAN/R2-3-18+AUTO-001/stamp: ALARM/R3-4+AUTO-001/stamp

@@ -106,8 +106,7 @@ The command gives this result::
 We decide to build version "TAGLESS-3-14-12-2-1" of the EPICS base. We give the
 new :term:`build` the :term:`buildtag` "BASE-3-14-12-2-1"::
 
-  sumo-db --nolock distribution BASE:TAGLESS-3-14-12-2-1 | sumo-build --partialdb - new BASE-3-14-12-2-1
-  make -sj -f Makefile-BASE-3-14-12-2-1
+  sumo-db --nolock distribution BASE:TAGLESS-3-14-12-2-1 | sumo-build --partialdb - --makeopts "-s" new 
 
 After a successful build we mark the :term:`build` with :term:`state` "stable"::
 
@@ -169,10 +168,6 @@ in form of a :term:`partialdb`. We do not save this as a file but pass it
 directly to sumo-build. sumo-build checks out the sources of all additional
 :term:`modules` needed, creates a new entry in the :term:`builddb` database and
 creates a makefile.
-
-Now we compile the :term:`build`::
-
-  make -sj -f Makefile-MLS-01
 
 After a successful build, we mark the :term:`build` with 
 :term:`state` "stable"::

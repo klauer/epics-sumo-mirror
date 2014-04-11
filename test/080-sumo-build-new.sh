@@ -21,7 +21,7 @@ if [ ! -d $TESTDIR ]; then
 
     cd $TESTDIR > /dev/null
 
-    $PYTHON ../../bin/sumo-build --arch vxWorks-68040 --arch vxWorks-ppc603 --db DB -P DB_IDCP --builddb BUILDS new 001 1>&2 
+    $PYTHON ../../bin/sumo-build --arch vxWorks-68040 --arch vxWorks-ppc603 --db DB -P DB_IDCP --builddb BUILDS --no-make new 001 1>&2 
 else
     echo -e "\t$TESTDIR already exists, effectively skipping this test..." 1>&2
     cd $TESTDIR > /dev/null

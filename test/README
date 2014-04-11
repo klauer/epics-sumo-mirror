@@ -23,3 +23,6 @@ sumo-build find
 sumo-build show
 sumo-build useall
 sumo-build use
+
+Not covered:
+new without "--no-make"
