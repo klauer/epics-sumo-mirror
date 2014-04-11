@@ -13433,8 +13433,8 @@ content of Makefile-002
 all: ALARM/R3-4+002/stamp MCAN/R2-3-18+002/stamp
 
 clean:
-	make -C ALARM/R3-4+002 clean
-	make -C MCAN/R2-3-18+002 clean
+	$(MAKE) -C ALARM/R3-4+002 clean
+	$(MAKE) -C MCAN/R2-3-18+002 clean
 	rm ALARM/R3-4+002/stamp
 	rm MCAN/R2-3-18+002/stamp
 
@@ -13442,5 +13442,5 @@ clean:
 MCAN/R2-3-18+002/stamp: ALARM/R3-4+002/stamp
 
 %/stamp:
-	make -C $(@D)
+	$(MAKE) -C $(@D)
 	touch $@

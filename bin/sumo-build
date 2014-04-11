@@ -509,7 +509,7 @@ def create_makefile(partialdb, builddb, build_tag, verbose, dry_run):
     wr(fh, "all: %s\n\n" % (" ".join(stamps)), verbose)
     wr(fh, "clean:\n", verbose)
     for d in module_dirs:
-        wr(fh, "\tmake -C %s clean\n" % d, verbose)
+        wr(fh, "\t$(MAKE) -C %s clean\n" % d, verbose)
     for f in stamps:
         wr(fh, "\trm %s\n" % f, verbose)
     wr(fh, "\n", verbose)
@@ -542,7 +542,7 @@ def create_makefile(partialdb, builddb, build_tag, verbose, dry_run):
         if dep_stamps:
             wr(fh, "\n%s: %s\n" % (own_stamp, " ".join(dep_stamps)), verbose)
     wr(fh, "\n%/stamp:\n", verbose)
-    wr(fh, "\tmake -C $(@D)\n", verbose)
+    wr(fh, "\t$(MAKE) -C $(@D)\n", verbose)
     wr(fh, "\ttouch $@\n", verbose)
     if not dry_run:
         fh.close()
