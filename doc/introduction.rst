@@ -133,8 +133,7 @@ Here are three programs:
 
 :doc:`sumo-db <reference-sumo-db>`
   This python script manages *DB* files that hold all module version and
-  dependency information. It also can also generate *partial DB* files that are
-  used to create a new build.
+  dependency information. 
 
 :doc:`sumo-build <reference-sumo-build>`
   This python script creates and manages builds. It also updates the *status*

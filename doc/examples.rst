@@ -39,8 +39,6 @@ You first have to create a file sumo-scan.config with this content::
           "EPICS_MODULES",
           "MSI"
       ],
-      "missing_repo": null,
-      "missing_tag": null,
       "progress": true,
       "source_patch": [
           "r\"^([^:]*)$\",r\"rcsadm@aragon.acc.bessy.de:\\1\"",
@@ -51,7 +49,6 @@ You first have to create a file sumo-scan.config with this content::
           "r\"/(srv|opt)/csr/(repositories/controls/darcs)\",r\"/opt/\\2\"",
           "r\"/srv/csr/Epics\",\"/opt/Epics\""
       ],
-      "verbose": null
   }
 
 Now you can create SCAN file like this::
@@ -82,11 +79,11 @@ For convenience, we remember the support directory in an environment variable::
 
 Create a configuration file for sumo-db::
 
-  sumo-db --maxstate stable --db $SUMODIR/DEPS.DB makeconfig
+  sumo-db --maxstate testing --db $SUMODIR/DEPS.DB makeconfig
 
 Create a configuration file for sumo-build::
 
-  sumo-build --db $SUMODIR/DEPS.DB --builddb $SUMODIR/BUILDS.DB --supportdir $SUMODIR --maxstate stable --makeopts "-s" makeconfig
+  sumo-build --db $SUMODIR/DEPS.DB --builddb $SUMODIR/BUILDS.DB --supportdir $SUMODIR --maxstate testing --makeopts "-s" makeconfig
 
 Build the EPICS base
 ++++++++++++++++++++
@@ -106,7 +103,7 @@ The command gives this result::
 We decide to build version "TAGLESS-3-14-12-2-1" of the EPICS base. We give the
 new :term:`build` the :term:`buildtag` "BASE-3-14-12-2-1"::
 
-  sumo-build --maxstate unstable --buildtag BASE-3-14-12-2-1 new BASE:TAGLESS-3-14-12-2-1
+  sumo-build --buildtag BASE-3-14-12-2-1 new BASE:TAGLESS-3-14-12-2-1
 
 After a successful build we mark the :term:`build` with :term:`state` "stable"::
 
@@ -128,12 +125,12 @@ to sumo-db which creates a `JSON <http://www.json.org>`_ file with
 Now we create a configuration file for sumo-db that contains the list of
 :term:`modulespecs` from file "MODULES"::
 
-  sumo-db --maxstate stable --db $SUMODIR/DEPS.DB -c MODULES makeconfig
+  sumo-db --maxstate testing --db $SUMODIR/DEPS.DB -c MODULES makeconfig
 
 Here we create a configuration file for sumo-build that contains the
 :term:`modulespecs` and :term:`aliases` from file "MODULES" ::
 
-  sumo-build --db $SUMODIR/DEPS.DB --builddb $SUMODIR/BUILDS.DB --supportdir $SUMODIR -c MODULES makeconfig
+  sumo-build --maxstate testing --db $SUMODIR/DEPS.DB --builddb $SUMODIR/BUILDS.DB --supportdir $SUMODIR -c MODULES makeconfig
 
 Create a build for an application
 ---------------------------------
@@ -161,7 +158,7 @@ Now we go the the support directory::
 
 We assume that the name of our :term:`build` should be "MLS-01"::
 
-  sumo-build -c $APPDIR/sumo-build.config --maxstate unstable --buildtag MLS-01 new 
+  sumo-build --buildtag MLS-01 new :load:$APPDIR/sumo-build.config
 
 The list of :term:`modules` is taken from file $APPDIR/sumo-build.config. The
 program creates a collection of all :term:`modules` needed, checks out the
@@ -184,7 +181,7 @@ We use command "useauto" which combines "find" and "use". It looks in the
 :term:`support directory` for a :term:`build` matching our requirements and
 creates a RELEASE file that uses that :term:`build`::
 
-  sumo-build use > configure/RELASE
+  sumo-build use > configure/RELEASE
 
 For our information the program shows on standard error what build was used. 
 

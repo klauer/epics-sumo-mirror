@@ -41,10 +41,12 @@ Contents:
    :maxdepth: 1
 
    introduction
+   modulespecs
    reference-sumo-scan
    reference-sumo-db
    reference-sumo-build
    examples
+   glossary
 
 License
 =======

@@ -52,33 +52,28 @@ Here we define some of the terms used in the following text.
       See :term:`modulespec`.
 
   modulespec
-      This is a string that specifies a :term:`module` and a :term:`version`.
-      The :term:`version` may be *unspecified*, *specified exactly* or
-      *specified by relation*. In case of the *unspecified* :term:`version`,
-      the *modulespec* is simply the :term:`modulename`. In all other cases,
-      the :term:`modulename` is followed by a colon ":" and a
-      :term:`versionspec`. A :term:`versionspec` may be followed by an
-      :term:`arch`. Note that for lists of modules the special modulespec
-      "modulename:-" is used to remove a module from a list of modules (see
-      :doc:`sumo-build <reference-sumo-build>`).
+      This is a string that specifies a :term:`module`, its :term:`version` and
+      its :term:`architecture`. Module specifications are an important concept
+      in sumo, see also doc:`Module Specifications <modulespecs>`.
 
   versionspec
       This is a string that specifies the :term:`version` of a :term:`module`.
-      It may *specify exactly*, in this case *versionspec* is simply the
-      :term:`versionname`. It may also *specify by relation*. In this case 
-      *versionspec* has the form "+versionname" or "-versionname". With
-      "+versionname" it means all :term:`versions` that are equal or newer
-      than :term:`versionname`. With "-versionname" it means all
-      :term:`versions` that are equal or older than :term:`versionname`. 
+      See doc:`Module Specifications <modulespecs>` for further details.
 
   architecture
       This is the specification of the platform (processor + operating system)
       a module is built for. The string specifying an *architecture* is called
       :term:`arch`.
 
+  archs
+      See :term:`arch`.
+
   arch
-      This is a string that specifies an architecture. Common architectures are
-      "linux-x86" or "vxWorks-ppc603". 
+      This is a string that specifies an architecture. Examples are
+      "vxWorks-ppc603" or "linux-x86".  See 
+      doc:`Module Specifications <modulespecs>` on how to use this in a
+      module specification.
+
 
   archspec
       This is a string that specifies the :term:`architecture` of a
@@ -138,7 +133,7 @@ Here we define some of the terms used in the following text.
       See :term:`build`.
 
   build
-      A *build* is a :term:`distribution` where all modules are compiled.
+      A *build* is a set of modules where all modules are compiled.
       Information on all build is kept in the build database (:term:`BUILDDB`).
       Each *build* has a unique :term:`buildtag`.
 
@@ -173,3 +168,20 @@ Here we define some of the terms used in the following text.
       The build database is also called :term:`BUILDDB`. It is a file in 
       `JSON <http://www.json.org>`_ format which contains information on which
       versions of which modules were built.
+
+  commandline options
+      See :term:`commandline option`.
+
+  commandline option
+      This means an argument to a program that has the form "-[letter]" or
+      "--[word]". Some commandline options may require that an argument
+      immediately follows the option.
+
+  commands
+      See :term:`command`.
+
+  command
+      This is an argument to a program that doesn't start with a dash "-". In
+      all programs here, you can give only *one* command while there may be
+      several :term:`commandline options`. Commands may be immediately followed
+      by command arguments. 

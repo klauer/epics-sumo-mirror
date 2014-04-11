@@ -351,12 +351,14 @@ Here is a short overview on command line options:
                       by repeating this option or by joining values in a single
                       string separated by spaces.  The value of this option is
                       stored in the configuration file.
---exclude-path REGEXP Exclude all paths that match REGEXP from dependencies.
+--exclude-path REGEXP 
+                      Exclude all paths that match REGEXP from dependencies.
                       You can specify more than one of these by repeating this
                       option or by joining values in a single string separated
                       by spaces.  This option value is stored in the
                       CONFIGFILE.
---exclude-deps REGEXP Exclude all paths whose dependencies match REGEXP. This
+--exclude-deps REGEXP 
+                      Exclude all paths whose dependencies match REGEXP. This
                       option value is stored in the CONFIGFILE.,
 -P PATCHEXPRESSION, --source-patch PATCHEXPRESSION
                       Specify a source PATCHEXPRESSION. Such an expression
