@@ -720,21 +720,18 @@ def apprelease(build_path, build_tag, module_specs, builddb, db,
     #                          Too many arguments
     # pylint: disable=R0914
     #                          Too many local variables
-    specdict= {}
-    specstrings= {}
-    for m in module_specs:
-        (modulename,modulespec)= utils.scan_module_arch_spec(m, archs)
-        specstrings[modulename]= m
+    modulespecs= utils.ModuleSpecs.from_strings(module_specs, archs)
+    for modulespec in modulespecs:
+        modulename= modulespec.modulename
         if build_tag is None:
             # unspecifed build_tag, all versions must be *exactly specified*:
-            if modulespec.get("version_flag")!='==':
+            if not modulespec.is_exact_spec():
                 sys.exit("modulespec '%s' is not an exactly "
-                         "specified version" % m)
-        specdict[modulename]= modulespec
+                         "specified version" % modulespec.to_string())
 
     if build_tag is None:
         # must look for a matching build:
-        new_builddb= builddb.filter_by_specdict(specdict, db)
+        new_builddb= builddb.filter_by_modulespecs(modulespecs, db)
         if new_builddb.is_empty():
             sys.exit("no build found that matches modulespecs")
         tags= [b for b in new_builddb.iter_builds()]
@@ -744,16 +741,16 @@ def apprelease(build_path, build_tag, module_specs, builddb, db,
 
     build_modules= builddb.modules(build_tag)
     module_dict= {}
-    for (modulename, modulespec) in specdict.items():
+    for modulespec in modulespecs:
+        modulename= modulespec.modulename
         v= build_modules.get(modulename)
         if v is None:
             sys.exit("error: module %s not found in build %s" % \
                      (modulename, build_tag))
-        if not utils.compare_versions_flag(modulespec.get("version_flag"),
-                                           v, modulespec.get("version")):
+        if not modulespec.test(v):
             sys.exit("error: no module matching %s "
                      "found in build %s" % \
-                     (specstrings[modulename], build_tag))
+                     (modulespec.to_string(), build_tag))
         module_dict[modulename]= v
     get_dependencies(module_dict, db, builddb, build_tag)
     return fullapprelease(build_path, build_tag, builddb, db,
@@ -1042,9 +1039,9 @@ def process(options, commands):
         if options.modules_from_build:
             modulespecs= builddb.module_specs(options.modules_from_build) + \
                          modulespecs
-        spec_dict= dict(utils.scan_module_arch_specs(modulespecs,
-                                                     options.arch))
-        new_builddb= builddb.filter_by_specdict(spec_dict, db)
+        modulespecs_obj= utils.ModuleSpecs.from_strings(modulespecs,
+                                                        options.arch)
+        new_builddb= builddb.filter_by_modulespecs(modulespecs_obj, db)
         if not options.brief:
             new_builddb.json_print()
         else:

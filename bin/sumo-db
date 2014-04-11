@@ -301,14 +301,15 @@ def distribution(db, modulespec_list, maxstate, archs, trace):
 
     versioned_modules= []
     versionless_modules= []
-    for m in modulespec_list:
-        (modulename, modulespec)= utils.scan_module_arch_spec(m, archs)
-        versionname= modulespec.get("version")
-        if not versionname:
-            versionless_modules.append((modulename, modulespec.get("archs")))
-        elif modulespec["version_flag"]=="==":
-            versioned_modules.append((modulename, versionname,
-                                      modulespec.get("archs")))
+    modulespecs= utils.ModuleSpecs.from_strings(modulespec_list, archs)
+    for modulespec in modulespecs:
+        modulename= modulespec.modulename
+        if modulespec.no_version_spec():
+            versionless_modules.append((modulename, modulespec.archs))
+        elif modulespec.is_exact_spec():
+            versioned_modules.append((modulename,
+                                      modulespec.versionname,
+                                      modulespec.archs))
         else:
             raise ValueError("\"-version\" and \"+version\" not "
                              "supported here")
@@ -348,31 +349,27 @@ def distribution(db, modulespec_list, maxstate, archs, trace):
             if trace:
                 sys.stderr.write("\t%-15s --> found\n" % versionname)
 
-    spec_dict= {}
+    spec_list= []
     for (m,v) in dist.items():
-        spec_dict[m]= {"version":v, "version_flag":"=="}
-    new= db.partial_copy_by_specdict(spec_dict)
+        spec_list.append(utils.ModuleSpec(m, v, "eq", None))
+    new= db.partial_copy_by_modulespecs(utils.ModuleSpecs(spec_list))
     new.remove_missing_deps()
     return (dist,new)
 
 def set_weight(db, weight, modulespeclist, trace):
     """set the weight for one or more modules."""
-    for m in modulespeclist:
-        (modulename, modulespec)= utils.scan_module_arch_spec(m)
+    modulespecs= utils.ModuleSpecs.from_strings(modulespeclist, None)
+    for modulespec in modulespecs:
+        modulename= modulespec.modulename
         if trace:
-            sys.stderr.write("module %s, spec: %s\n" % \
-                             (modulename, modulespec))
-
-        versionname= modulespec.get("version")
-        versionflag= modulespec.get("version_flag")
+            sys.stderr.write("%s\n" % modulespec.to_string())
 
         # scan stable, testing and unstable versions:
         for version in db.iter_versions(modulename, "unstable",
                                         None, must_exist= False):
             if trace:
                 sys.stderr.write("test %s:%s\n" % (modulename,version))
-            if not utils.compare_versions_flag(versionflag,version,
-                                               versionname):
+            if not modulespec.test(version):
                 continue
             if trace:
                 sys.stderr.write("set weight %d on %s:%s\n" % \
@@ -519,9 +516,9 @@ def process(options, commands):
         if not options.db:
             sys.exit("error, --db is mandatory here")
         db= utils.Dependencies.from_json_file(options.db, keep_locked= False)
-        spec_dict= dict(utils.scan_module_arch_specs(modulespecs,
-                                                     options.arch))
-        db= db.partial_copy_by_specdict(spec_dict)
+        modulespecs_obj= utils.ModuleSpecs.from_strings(modulespecs,
+                                                        options.archs)
+        db= db.partial_copy_by_modulespecs(modulespecs_obj)
         db.json_print()
         return
 
@@ -608,18 +605,17 @@ def process(options, commands):
 
         result= {}
 
-        for spec in modulespecs:
-            (modulename,spec_dict)= utils.scan_module_arch_spec(spec)
-            match_version= spec_dict.get("version")
-            match_flag   = spec_dict.get("version_flag")
+        modulespecs_obj= utils.ModuleSpecs.from_strings(modulespecs,
+                                                        options.arch)
+        for modulespec in modulespecs_obj:
+            modulename= modulespec.modulename
 
             versions= db.sorted_moduleversions(modulename, options.maxstate,
                                                options.arch, False)
             if not versions: # no versions match maxstate criteria
                 continue
             versions= [v for v in versions \
-                       if utils.compare_versions_flag(match_flag,v,
-                                                      match_version)]
+                       if modulespec.test(v)]
 
             if not showall:
                 result[modulename]= versions[0]

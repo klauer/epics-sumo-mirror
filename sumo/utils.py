@@ -622,215 +622,300 @@ def scan_source_spec(elms):
             raise ValueError("invalid source spec: '%s'" % repr(elms))
     raise ValueError("invalid source spec: '%s'" % repr(elms))
 
-def create_module_arch_spec(modulename, versionname, default_archs= None):
-    """create a module arch spec string from modulename, versionname, arch.
+# -----------------------------------------------
+# modulespecification
+# -----------------------------------------------
 
-    This function returns a string that can be parsed by scan_module_arch_spec.
+class ModuleSpec(object):
+    """a class representing a single module specification."""
+    def __init__(self, modulename, versionname, versionflag, archs):
+        """initialize the object.
 
-    """
-    elms= [modulename, versionname]
-    if default_archs is not None:
-        elms.extend(sorted(default_archs))
-    return ":".join(elms)
+        Here are some examples:
 
-# pylint: disable=C0301
-#                          Line too long
+        >>> ModuleSpec("ALARM","R3-2","eq",["A","B"])
+        ModuleSpec('ALARM','R3-2','eq',['A', 'B'])
+        >>> ModuleSpec("ALARM","R3-2","eq",None)
+        ModuleSpec('ALARM','R3-2','eq',None)
+        """
+        self.modulename= modulename
+        self.versionname= versionname
+        self.versionflag= versionflag
+        self.archs= archs
+    def __repr__(self):
+        """return repr string."""
+        return "%s(%s,%s,%s,%s)" % (self.__class__.__name__,
+                                 repr(self.modulename),
+                                 repr(self.versionname),
+                                 repr(self.versionflag),
+                                 repr(self.archs))
+    def no_version_spec(self):
+        """returns True if there is no version spec."""
+        return not self.versionname
+    def is_exact_spec(self):
+        """return if the spec is an exact version specification."""
+        if not self.versionname:
+            return False
+        return self.versionflag=="eq"
+    @classmethod
+    def from_string(cls, spec, default_archs= None):
+        """create modulespec from a string.
 
-def scan_module_arch_spec(spec, default_archs=None):
-    """parse a module specification.
+        A module specification has one of these forms:
+          modulename
+          modulename:version
+          modulename::archs
+          modulename:version:archs
 
-    A module specification has one of these forms:
-      modulename
-      modulename:version
-      modulename::archs
-      modulename:version:archs
+        version may be:
+          versionname        : exactly this version
+          +versionname       : this version or newer
+          -versionname       : this version or older
 
-    version may be:
-      versionname        : exactly this version
-      +versionname       : this version or newer
-      -versionname       : this version or older
+        archs may be:
+          archspec{:archspec}
 
-    archs may be:
-      archspec{:archspec}
+        archspec may be:
+          +arch              : add this to the list of archs
+          -arch              : remove this from the list of archs
+           arch              : set exactly these archs (only of first arch has
+                               this form)
 
-    archspec may be:
-      +arch              : add this to the list of archs
-      -arch              : remove this from the list of archs
-       arch              : set exactly these archs
+        Here are some examples:
 
-    returns a tuple (modulename, moduledict) where moduledict is:
-      {
-        "version"     : <version>
-        "version_flag": "==" or ">=" or "<="
-        "archs"       : <set of archs>
-      }
+        >>> ModuleSpec.from_string("ALARM")
+        ModuleSpec('ALARM',None,None,None)
+        >>> ModuleSpec.from_string("ALARM:R3-2")
+        ModuleSpec('ALARM','R3-2','eq',None)
+        >>> ModuleSpec.from_string("ALARM:+R3-2")
+        ModuleSpec('ALARM','R3-2','ge',None)
+        >>> ModuleSpec.from_string("ALARM:-R3-2")
+        ModuleSpec('ALARM','R3-2','le',None)
 
-    Note that the returned moduledict contains "==" as equality flag, not "=".
-    This means that versions must match the version string *exactly*, e.g.
-    "R1-3" and "1-3" would not match.
+        >>> ModuleSpec.from_string("ALARM:R3-2:vxworks-ppc603")
+        ModuleSpec('ALARM','R3-2','eq',set(['vxworks-ppc603']))
+        >>> ModuleSpec.from_string("ALARM:R3-2:vxworks-ppc603:vxworks-mv162")
+        ModuleSpec('ALARM','R3-2','eq',set(['vxworks-mv162', 'vxworks-ppc603']))
 
-    Here are some examples:
-
-    >>> import pprint
-    >>> pprint.pprint(scan_module_arch_spec("ALARM"))
-    ('ALARM', {})
-    >>> pprint.pprint(scan_module_arch_spec("ALARM:R3-5"))
-    ('ALARM', {'version': 'R3-5', 'version_flag': '=='})
-    >>> pprint.pprint(scan_module_arch_spec("ALARM:+R3-5"))
-    ('ALARM', {'version': 'R3-5', 'version_flag': '>='})
-    >>> pprint.pprint(scan_module_arch_spec("ALARM:-R3-5"))
-    ('ALARM', {'version': 'R3-5', 'version_flag': '<='})
-    >>> pprint.pprint(scan_module_arch_spec("ALARM:+"))
-    ('ALARM', {'version': '', 'version_flag': '>='})
-    >>> pprint.pprint(scan_module_arch_spec("ALARM:-"))
-    ('ALARM', {'version': '', 'version_flag': '<='})
-    >>> pprint.pprint(scan_module_arch_spec("ALARM:-R3-5:linux-x86"))
-    ('ALARM',
-     {'archs': set(['linux-x86']), 'version': 'R3-5', 'version_flag': '<='})
-    >>> pprint.pprint(scan_module_arch_spec("ALARM::linux-x86"))
-    ('ALARM', {'archs': set(['linux-x86'])})
-    >>> pprint.pprint(scan_module_arch_spec("ALARM:-R3-5:+linux-x86",
-    ...                                     ["vxWorks-ppc603"]))
-    ('ALARM',
-     {'archs': set(['linux-x86', 'vxWorks-ppc603']),
-      'version': 'R3-5',
-      'version_flag': '<='})
-    >>> pprint.pprint(scan_module_arch_spec(
-    ...        "ALARM:-R3-5:-vxWorks-mv162:+vxWorks-ppc603",
-    ...        ["linux-x86","vxWorks-mv162"]))
-    ('ALARM',
-     {'archs': set(['linux-x86', 'vxWorks-ppc603']),
-      'version': 'R3-5',
-      'version_flag': '<='})
-    """
-    # pylint: disable=R0912
-    #                          Too many branches
-    modulename= None
-    version= None
-    if default_archs is None:
-        archs= set()
-    else:
-        archs= set(default_archs)
-    for l in spec.split(":"):
-        if modulename is None:
-            modulename= l
-            continue
-        if version is None:
-            if l=="":
-                version= ()
-                continue
-            if l[0]=="-":
-                version= (l[1:], "<=")
-            elif l[0]=="+":
-                version= (l[1:], ">=")
-            else:
-                version= (l, "==")
-            continue
-        if l[0]=="+":
-            archs.add(l[1:])
-            continue
-        elif l[0]=="-":
-            archs.discard(l[1:])
-            continue
+        >>> ModuleSpec.from_string("ALARM:R3-2:A:+B",["C"])
+        ModuleSpec('ALARM','R3-2','eq',set(['A', 'B']))
+        >>> ModuleSpec.from_string("ALARM:R3-2:+A:+B",["C"])
+        ModuleSpec('ALARM','R3-2','eq',set(['A', 'C', 'B']))
+        >>> ModuleSpec.from_string("ALARM:R3-2:+A:B",["C"])
+        ModuleSpec('ALARM','R3-2','eq',set(['A', 'C', 'B']))
+        """
+        # pylint: disable=R0912
+        #                          Too many branches
+        mode= 0
+        modulename= None
+        versionname= None
+        versionflag= None
+        if default_archs is None:
+            archs= set()
         else:
-            archs= set([l])
-            continue
-    d= {}
-    if version:
-        d["version"]= version[0]
-        d["version_flag"]= version[1]
-    if archs:
-        d["archs"]= archs
-    return (modulename,d)
-
-# pylint: enable=C0301
-
-def scan_module_arch_specs(specs, default_archs= None):
-    """scan a list of module specification strings.
-
-    returns a list of tuples (modulename, moduledict).
-
-    Note that if a modulename is used twice, the later definition overwrites
-    the first one. However, the module retains it's position in the list of
-    modules.
-
-    A spec in the form "modulename:-" means that this is removed from the list
-    of modules even if it was mentioned before.
-    """
-    module_order= []
-    dict_= {}
-    for s in specs:
-        (modulename, moduledict)= scan_module_arch_spec(s, default_archs)
-        version= moduledict.get("version")
-        if version=="":
-            if moduledict["version_flag"]=="<=":
-                # "module:-" means "remove module from list
-                if dict_.has_key(modulename):
-                    del dict_[modulename]
-                    module_order.remove(modulename)
+            archs= set(default_archs)
+        for l in spec.split(":"):
+            if mode==0:
+                modulename= l
+                mode+= 1
                 continue
-        if not dict_.has_key(modulename):
-            module_order.append(modulename)
-        dict_[modulename]= moduledict
-    lst= []
-    for modulename in module_order:
-        lst.append((modulename, dict_[modulename]))
-    return lst
+            if mode==1:
+                if l!="":
+                    if l[0]=="-":
+                        versionname= l[1:]
+                        versionflag= "le"
+                    elif l[0]=="+":
+                        versionname= l[1:]
+                        versionflag= "ge"
+                    else:
+                        versionname= l
+                        versionflag= "eq"
+                mode+= 1
+                continue
+            if mode==2:
+                if l[0]!="+" and l[0]!="-":
+                    # overwrite default set of archs
+                    archs= set([l])
+                    mode=3
+                    continue
+                mode=3
+            if mode==3:
+                if l[0]=="+":
+                    archs.add(l[1:])
+                elif l[0]=="-":
+                    archs.discard(l[1:])
+                else:
+                    archs.add(l)
+                continue
+        #print repr(modulename),repr(versionname),repr(versionflag),repr(archs)
+        return cls(modulename,
+                   versionname,
+                   versionflag,
+                   archs if archs else None)
+    def to_string(self):
+        """return a spec string.
 
-def compare_versions_flag(flag, version1, version2):
-    """compare versions according to given flag.
+        Here are some examples:
 
-    A <None> as version matches any other version.
+        >>> ModuleSpec("ALARM","R3-2","eq",["vxworks-ppc603"]).to_string()
+        'ALARM:R3-2:vxworks-ppc603'
+        >>> ModuleSpec("ALARM","R3-2","eq",["A","B"]).to_string()
+        'ALARM:R3-2:A:B'
+        >>> ModuleSpec("ALARM","R3-2","eq",None).to_string()
+        'ALARM:R3-2'
+        >>> ModuleSpec("ALARM","R3-2","ge",None).to_string()
+        'ALARM:+R3-2'
+        >>> ModuleSpec("ALARM","R3-2","le",None).to_string()
+        'ALARM:-R3-2'
+        >>> ModuleSpec("ALARM",None,None,None).to_string()
+        'ALARM'
+        >>> ModuleSpec("ALARM",None,None,["A","B"]).to_string()
+        'ALARM::A:B'
+        """
+        elms= [self.modulename]
+        if self.versionname:
+            extra= ""
+            if self.versionflag=="le":
+                extra="-"
+            elif self.versionflag=="ge":
+                extra="+"
+            elms.append("%s%s" % (extra, self.versionname))
+        if self.archs:
+            if not self.versionname:
+                elms.append("")
+            elms.extend(sorted(list(self.archs)))
+        return ":".join(elms)
+    @staticmethod
+    def compare_versions(version1, version2, flag):
+        """Test if a version matches another version."""
+        if version1 is None:
+            return True
+        if version2 is None:
+            return True
+        if flag=="eq":
+            return (version1==version2)
+        k1= rev2key(version1)
+        k2= rev2key(version2)
+        #if self.versionflag=="=":
+        #    return (k1==k2)
+        if flag=="le":
+            return (k1>=k2)
+        if flag=="ge":
+            return (k1<=k2)
+        raise ValueError("unknown flag: '%s'" % repr(flag))
 
-    Note that there are two ways to test equality, one where the version
-    strings must match exactly and one where only the version numbers must
-    match. We use the flags "==" and "=" to distinguish these. Here is the
-    meaning:
+    def test(self, version):
+        """Test if a version matches the spec.
 
-    ==  : match exactly, so "R1-3" is different from "1-3"
-    =   : match the version number, so "R1-3" is equal to "1-3".
+        Here are some examples:
+        >>> m= ModuleSpec.from_string("ALARM:R3-2")
+        >>> m.test("R3-1")
+        False
+        >>> m.test("R3-2")
+        True
+        >>> m.test("R3-3")
+        False
 
-    Here are some examples:
-    >>> compare_versions_flag("==", None, "R1-3")
-    True
-    >>> compare_versions_flag("==", "R1-2", None)
-    True
-    >>> compare_versions_flag("==", "R1-2", "R1-3")
-    False
-    >>> compare_versions_flag("==", "R1-2", "R1-2")
-    True
-    >>> compare_versions_flag("==", "R1-2", "1-2")
-    False
-    >>> compare_versions_flag("=", "R1-2", "1-2")
-    True
-    >>> compare_versions_flag("<=", "R1-2", "1-2")
-    True
-    >>> compare_versions_flag("<=", "R1-1", "R1-2")
-    True
-    >>> compare_versions_flag("<=", "R1-3", "R1-2")
-    False
-    >>> compare_versions_flag(">=", "R1-1", "R1-2")
-    False
-    >>> compare_versions_flag(">=", "R1-2", "R1-2")
-    True
-    >>> compare_versions_flag(">=", "R1-3", "R1-2")
-    True
-    """
-    if version1 is None:
-        return True
-    if version2 is None:
-        return True
-    if flag=="==":
-        return (version1==version2)
-    k1= rev2key(version1)
-    k2= rev2key(version2)
-    if flag=="=":
-        return (k1==k2)
-    if flag=="<=":
-        return (k1<=k2)
-    if flag==">=":
-        return (k1>=k2)
-    raise AssertionError("unknown flag: %s" % flag)
+        >>> m= ModuleSpec.from_string("ALARM:-R3-2")
+        >>> m.test("R3-1")
+        True
+        >>> m.test("R3-2")
+        True
+        >>> m.test("R3-3")
+        False
+
+        >>> m= ModuleSpec.from_string("ALARM:+R3-2")
+        >>> m.test("R3-1")
+        False
+        >>> m.test("R3-2")
+        True
+        >>> m.test("R3-3")
+        True
+        """
+        return ModuleSpec.compare_versions(self.versionname, version,
+                                           self.versionflag)
+
+class ModuleSpecs(object):
+    """A class representing a list of ModuleSpec objects."""
+    # pylint: disable=R0903
+    #         Too few public methods
+    def __init__(self, speclist):
+        """note: this DOES NOT a deep copy of the list.
+
+        Here is an example:
+
+        >>> def p(s):
+        ...     for m in s:
+        ...         print m
+
+        >>> a=ModuleSpec('A','R2','eq',None)
+        >>> b=ModuleSpec('B','R2','eq',None)
+        >>> p(ModuleSpecs((a,b)))
+        ModuleSpec('A','R2','eq',None)
+        ModuleSpec('B','R2','eq',None)
+        """
+        self.specs= speclist
+    def __repr__(self):
+        """return repr string."""
+        return "%s(%s)" % (self.__class__.__name__,
+                           ",".join([repr(s) for s in self.specs]))
+    def __iter__(self):
+        """the default iterator."""
+        for m in self.specs:
+            yield m
+    @classmethod
+    def from_strings(cls, specs, default_archs= None):
+        """scan a list of module specification strings.
+
+        returns a new ModuleSpecs object.
+
+        Note that if a modulename is used twice, the later definition
+        overwrites the first one. However, the module retains it's position in
+        the internal list of modules.
+
+        A spec in the form "modulename:-" means that this is removed from the
+        list of modules even if it was mentioned before.
+
+        Here are some examples:
+
+        >>> def p(s):
+        ...     for m in s:
+        ...         print m
+
+        >>> p(ModuleSpecs.from_strings(["A:R2","B:-R3","C:+R1:arch1"]))
+        ModuleSpec('A','R2','eq',None)
+        ModuleSpec('B','R3','le',None)
+        ModuleSpec('C','R1','ge',set(['arch1']))
+        >>> p(ModuleSpecs.from_strings(["A:R2","B:-R3","A:R3"]))
+        ModuleSpec('A','R3','eq',None)
+        ModuleSpec('B','R3','le',None)
+        >>> p(ModuleSpecs.from_strings(["A:R2","B:-R3","A:-"]))
+        ModuleSpec('B','R3','le',None)
+        >>> p(ModuleSpecs.from_strings(["A:R2","B:-R3","A:-","A:R3"]))
+        ModuleSpec('A','R3','eq',None)
+        ModuleSpec('B','R3','le',None)
+        """
+        order= []
+        order_set= set()
+        module_dict= {}
+        for s in specs:
+            m= ModuleSpec.from_string(s, default_archs)
+            modulename= m.modulename
+            if m.versionname=="" and m.versionflag=="le":
+                # "module:-" means "remove module from list
+                if module_dict.has_key(modulename):
+                    del module_dict[modulename]
+                continue
+            if not modulename in order_set:
+                order.append(modulename)
+                order_set.add(modulename)
+            module_dict[modulename]= m
+        l= []
+        for modulename in order:
+            m= module_dict.get(modulename)
+            if m is not None:
+                l.append(m)
+        return cls(l)
 
 # -----------------------------------------------
 # string utilities
@@ -1806,16 +1891,14 @@ class Dependencies(JSONstruct):
             # scan stable, testing and unstable versions:
             for version in self.iter_versions(modulename, "unstable",
                                               None, must_exist= True):
-                if not compare_versions_flag("==",version,
-                                             versionname):
+                if not ModuleSpec.compare_versions(version, versionname, "eq"):
                     continue
                 d[version]= self.datadict()[modulename][version]
         return new
-    def partial_copy_by_specdict(self, specdict):
+    def partial_copy_by_modulespecs(self, modulespecs):
         """take items from the Dependencies object and create a new one.
 
-        specdict must be a dict mapping modulenames to a dict as returned by
-        scan_module_arch_spec.
+        modulespecs must be a ModuleSpecs object.
 
         Note that this function treats versions like "R1-3" and "1-3" to be
         different.
@@ -1828,17 +1911,17 @@ class Dependencies(JSONstruct):
         Note that the new Dependencies object only contains references of the
         data. This DOES NOT do a deep copy.
         """
+        if not isinstance(modulespecs, ModuleSpecs):
+            raise TypeError("wrong type: '%s'" % repr(modulespecs))
         new= self.__class__()
-        for modulename, spec_dict in specdict.items():
+        for modulespec in modulespecs:
+            modulename= modulespec.modulename
+            archs= modulespec.archs
             d= new.datadict().setdefault(modulename, {})
-            archs= spec_dict.get("archs")
-            match_version= spec_dict.get("version")
-            match_flag   = spec_dict.get("version_flag")
             # scan stable, testing and unstable versions:
             for version in self.iter_versions(modulename, "unstable",
                                               archs, must_exist= True):
-                if not compare_versions_flag(match_flag,version,
-                                             match_version):
+                if not modulespec.test(version):
                     continue
                 if not self.check_archs(modulename, version, archs):
                     continue
@@ -2025,26 +2108,28 @@ class Builddb(JSONstruct):
             if v== other_build_tag:
                 return True
         return False
-    def filter_by_specdict(self, specdict, db):
+    def filter_by_modulespecs(self, modulespecs, db):
         """return a new Builddb that satisfies the given list of specs.
 
         Note that this function treats versions like "R1-3" and "1-3" to be
         different.
         """
+        if not isinstance(modulespecs, ModuleSpecs):
+            raise TypeError("wrong type: '%s'" % repr(modulespecs))
         new= self.__class__()
         for build_tag in self.iter_builds():
             found= True
             m= self.modules(build_tag)
-            for (modulename,modulespec) in specdict.items():
+            for modulespec in modulespecs:
+                modulename= modulespec.modulename
                 v= m.get(modulename)
                 if v is None:
                     found= False
                     break
-                if not compare_versions_flag(modulespec.get("version_flag"),
-                                             v,modulespec.get("version")):
+                if not modulespec.test(v):
                     found= False
                     break
-                if not db.check_archs(modulename, v, modulespec.get("archs")):
+                if not db.check_archs(modulename, v, modulespec.archs):
                     found= False
                     break
             if found:
@@ -2073,14 +2158,14 @@ class Builddb(JSONstruct):
         """return the modules of a build in form module spec strings.
 
         This function returns a list of strings that ccan be parsed by
-        scan_module_arch_spec.
+        ModuleSpec.from_string().
         """
         lst= []
         build_dict= self.modules(build_tag)
         for modulename in sorted(build_dict.keys()):
             versionname= build_dict[modulename]
-            lst.append(create_module_arch_spec(modulename, versionname,
-                       default_archs))
+            m= ModuleSpec(modulename, versionname, "eq", default_archs)
+            lst.append(m.to_string())
         return lst
 
 def _test():
