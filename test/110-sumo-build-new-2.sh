@@ -37,7 +37,8 @@ if [ ! -d $MYTESTDIR ]; then
     # sed is used to add spaces after each "," at the end of the line. The old JSON
     # library for python 2.5 doesn't do this.
 
-    $PYTHON ../../bin/sumo-build --arch vxWorks-ppc603 --db DB -P ../DB_IDCP-040-sumo-db-replaceversion.tmp --builddb BUILDS new 002 1>&2 
+    # use an auto generated build tag:
+    $PYTHON ../../bin/sumo-build --arch vxWorks-ppc603 --db DB -P ../DB_IDCP-040-sumo-db-replaceversion.tmp --builddb BUILDS new 1>&2 
 else
     echo -e "\t$MYTESTDIR already exists, effectively skipping this test..." 1>&2
     cd $MYTESTDIR > /dev/null
@@ -54,6 +55,6 @@ echo -e "\n\ncontent of DB:"
 cat DB | sed -e "s/,$/, /g"
 echo -e "\ncontent of BUILDS"
 cat BUILDS | sed -e "s/,$/, /g"
-echo -e "\ncontent of Makefile-002"
-cat Makefile-002
+echo -e "\ncontent of Makefile-AUTO-001"
+cat Makefile-AUTO-001
 

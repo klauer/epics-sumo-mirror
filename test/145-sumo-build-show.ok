@@ -20,9 +20,9 @@ sumo-build show 001
     }
 }
 
-sumo-build show 002
+sumo-build show AUTO-001
 {
-    "002": {
+    "AUTO-001": {
         "linked": {
             "ASYN": "001", 
             "BASE": "001", 

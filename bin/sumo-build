@@ -795,14 +795,15 @@ def process(options, commands):
         if len(commands)>2:
             sys.exit("error: extra arguments following \"new\"")
         if len(commands)<=1:
-            sys.exit("error: buildtag missing")
+            buildtag= None
+        else:
+            buildtag= commands[1]
         if not options.db:
             sys.exit("--db is mandatory")
         if not options.partialdb:
             sys.exit("--partialdb is mandatory")
         if not options.builddb:
             sys.exit("--builddb is mandatory")
-        buildtag= commands[1]
         db= utils.Dependencies.from_json_file(options.db,
                     keep_locked= not options.dry_run)
         partialdb= utils.Dependencies.from_json_file(options.partialdb)
@@ -811,6 +812,9 @@ def process(options, commands):
         else:
             builddb= utils.Builddb.from_json_file(options.builddb,
                         keep_locked= not options.dry_run)
+        if buildtag is None:
+            buildtag= builddb.generate_buildtag()
+            sys.stderr.write("creating build with tag '%s'\n" % buildtag)
         if builddb.has_build_tag(buildtag):
             # db and builddb __del__ method should remove lockfiles
             sys.exit("error, buildtag \"%s\" already taken" % buildtag)
@@ -956,10 +960,11 @@ where command is:
           If you want to edit a DB or BUILDDB file directly, you should always
           do this with this command. The file locking prevents other users to
           use the file at the same time you modify it.
-  new [BUILDTAG]
-          This command creates a new build. It must be followed by a buildtag.
-          Note that options "--db", --partialdb" and "--builddb" are mandatory
-          for this command.
+  new {BUILDTAG}
+          This command creates a new build. If the buildtag is not given, the
+          program generates a buildtag in the form "AUTO-nnn". Note that
+          options "--db", --partialdb" and "--builddb" are mandatory for this
+          command.
   partialdb [BUILDTAG]
           This command recreates a partialdb from a complete DB and a build.
           The partialdb is printed on the console.

@@ -1801,6 +1801,22 @@ class Builddb(JSONstruct):
                 break
             return
         raise ValueError("Error: Builddb data is invalid %s" % msg)
+    def generate_buildtag(self):
+        """generate a new buildtag that is not already in the Builddb."""
+        no= None
+        for b in self.iter_builds():
+            if b.startswith("AUTO-"):
+                b= b.replace("AUTO-","")
+                try:
+                    n= int(b)
+                except ValueError, _:
+                    continue
+                if n>no:
+                    no= n
+        if no is None:
+            no= 0
+        no+= 1
+        return "AUTO-%03d" % no
     def __init__(self, dict_= None):
         """create the object."""
         super(Builddb, self).__init__(dict_)

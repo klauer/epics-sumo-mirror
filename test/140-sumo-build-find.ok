@@ -18,7 +18,7 @@ sumo-build find MCAN -b:
         }, 
         "state": "stable"
     }, 
-    "002": {
+    "AUTO-001": {
         "linked": {
             "ASYN": "001", 
             "BASE": "001", 
@@ -71,7 +71,7 @@ sumo-build find MCAN BSPDEP_TIMER:R5-1
         }, 
         "state": "stable"
     }, 
-    "002": {
+    "AUTO-001": {
         "linked": {
             "ASYN": "001", 
             "BASE": "001", 
@@ -106,7 +106,7 @@ sumo-build find MCAN BSPDEP_TIMER:R5-1
 
 sumo-build find MCAN ALARM:-R3-4:
 {
-    "002": {
+    "AUTO-001": {
         "linked": {
             "ASYN": "001", 
             "BASE": "001", 

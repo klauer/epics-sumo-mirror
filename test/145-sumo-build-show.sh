@@ -19,6 +19,6 @@ cd $TESTDIR > /dev/null
 echo -e "sumo-build show 001"
 $PYTHON ../../bin/sumo-build --db DB --builddb BUILDS show 001 | sed -e "s/,$/, /g"
 
-echo -e "\nsumo-build show 002"
-$PYTHON ../../bin/sumo-build --db DB --builddb BUILDS show 002 | sed -e "s/,$/, /g"
+echo -e "\nsumo-build show AUTO-001"
+$PYTHON ../../bin/sumo-build --db DB --builddb BUILDS show AUTO-001 | sed -e "s/,$/, /g"
 

@@ -157,10 +157,13 @@ same time you modify it.
 
 This command must be followed by a *filename*.
 
-new [BUILDTAG]
+new {BUILDTAG}
 ++++++++++++++
 
-This command creates a new build. It must be followed by a :term:`buildtag`. Note that options "--db", --partialdb" and "--builddb" are mandatory for this command.
+This command creates a new build. It may be followed by a :term:`buildtag`. If
+the :term:`buildtag` is not given, a new unique :term:`buildtag` is generated.
+Generated :term:`buildtags` have the form "AUTO-nnn". Note that options "--db",
+--partialdb" and "--builddb" are mandatory for this command.
 
 partialdb [BUILDTAG]
 ++++++++++++++++++++

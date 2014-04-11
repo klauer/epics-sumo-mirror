@@ -19,6 +19,6 @@ cd $TESTDIR > /dev/null
 echo -e "\nsumo-build useall 001:"
 $PYTHON ../../bin/sumo-build --builddb BUILDS --db DB useall 001 | sed -e "s#`pwd -P`##"
 
-echo -e "\nsumo-build useall 002:"
-$PYTHON ../../bin/sumo-build --builddb BUILDS --db DB useall 002 | sed -e "s#`pwd -P`##"
+echo -e "\nsumo-build useall AUTO-001:"
+$PYTHON ../../bin/sumo-build --builddb BUILDS --db DB useall AUTO-001 | sed -e "s#`pwd -P`##"
 
