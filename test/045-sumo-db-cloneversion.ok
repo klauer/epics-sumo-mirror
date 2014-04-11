@@ -3,21 +3,25 @@
         "R3-4": {
             "aliases": {
                 "BASE": "EPICS_BASE", 
-                "BSPDEP_TIMER": "TIMER"
+                "BSPDEP_TIMER": "TIMER", 
+                "MISC_DBC": "DBC"
             }, 
             "archs": {
+                "RTEMS-mvme2100": true, 
+                "RTEMS-mvme5500": true, 
+                "linux-x86": true, 
                 "vxWorks-68040": true, 
                 "vxWorks-ppc603": true
             }, 
             "dependencies": {
                 "BASE": {
-                    "R3-14-8-2-0": "stable"
+                    "TAGLESS-3-14-12-2-1": "stable"
                 }, 
                 "BSPDEP_TIMER": {
-                    "R5-1": "stable"
+                    "R6-2": "stable"
                 }, 
-                "MISC": {
-                    "R2-4": "stable"
+                "MISC_DBC": {
+                    "R3-0": "stable"
                 }
             }, 
             "source": {
@@ -28,29 +32,33 @@
             }, 
             "state": "unstable"
         }, 
-        "R3-5": {
+        "R3-8": {
             "aliases": {
                 "BASE": "EPICS_BASE", 
-                "BSPDEP_TIMER": "TIMER"
+                "BSPDEP_TIMER": "TIMER", 
+                "MISC_DBC": "DBC"
             }, 
             "archs": {
+                "RTEMS-mvme2100": true, 
+                "RTEMS-mvme5500": true, 
+                "linux-x86": true, 
                 "vxWorks-68040": true, 
                 "vxWorks-ppc603": true
             }, 
             "dependencies": {
                 "BASE": {
-                    "R3-14-8-2-0": "stable"
+                    "TAGLESS-3-14-12-2-1": "stable"
                 }, 
                 "BSPDEP_TIMER": {
-                    "R5-1": "stable"
+                    "R6-2": "stable"
                 }, 
-                "MISC": {
-                    "R2-4": "stable"
+                "MISC_DBC": {
+                    "R3-0": "stable"
                 }
             }, 
             "source": {
                 "darcs": {
-                    "tag": "R3-5", 
+                    "tag": "R3-8", 
                     "url": "rcsadm@aragon.acc.bessy.de:/opt/repositories/controls/darcs/epics/support/alarm/base-3-14"
                 }
             }, 
@@ -58,63 +66,68 @@
         }
     }, 
     "ASYN": {
-        "R4-15-bessy2": {
+        "4-18-bessy1": {
             "aliases": {
                 "BASE": "EPICS_BASE"
             }, 
             "archs": {
+                "RTEMS-mvme2100": true, 
+                "RTEMS-mvme5500": true, 
                 "linux-x86": true, 
                 "vxWorks-68040": true, 
                 "vxWorks-ppc603": true
             }, 
             "dependencies": {
                 "BASE": {
-                    "R3-14-8-2-0": "stable"
+                    "TAGLESS-3-14-12-2-1": "stable"
                 }
             }, 
             "source": {
                 "darcs": {
-                    "tag": "R4-15-bessy2", 
-                    "url": "rcsadm@aragon.acc.bessy.de:/opt/repositories/controls/darcs/epics/support/asyn/4-15"
+                    "tag": "4-18-bessy1", 
+                    "url": "rcsadm@aragon.acc.bessy.de:/opt/repositories/controls/darcs/epics/support/asyn/4-18"
                 }
             }, 
             "state": "stable"
         }
     }, 
     "BASE": {
-        "R3-14-8-2-0": {
+        "TAGLESS-3-14-12-2-1": {
             "archs": {
-                "hpux-parisc": true, 
+                "RTEMS-mvme2100": true, 
+                "RTEMS-mvme5500": true, 
                 "linux-x86": true, 
                 "vxWorks-68040": true, 
                 "vxWorks-ppc603": true
             }, 
             "source": {
                 "darcs": {
-                    "tag": "R3-14-8-2-0", 
-                    "url": "rcsadm@aragon.acc.bessy.de:/opt/repositories/controls/darcs/epics/base/3-14-8-2"
+                    "url": "rcsadm@aragon.acc.bessy.de:/opt/Epics/R3.14.12/base/3-14-12-2-1"
                 }
             }, 
             "state": "stable"
         }
     }, 
     "BSPDEP_CPUBOARDINIT": {
-        "R4-0": {
+        "R4-1": {
             "aliases": {
                 "BASE": "EPICS_BASE"
             }, 
             "archs": {
+                "RTEMS-mvme2100": true, 
+                "RTEMS-mvme5500": true, 
+                "linux-x86": true, 
                 "vxWorks-68040": true, 
                 "vxWorks-ppc603": true
             }, 
             "dependencies": {
                 "BASE": {
-                    "R3-14-8-2-0": "stable"
+                    "TAGLESS-3-14-12-2-1": "stable"
                 }
             }, 
             "source": {
                 "darcs": {
-                    "tag": "R4-0", 
+                    "tag": "R4-1", 
                     "url": "rcsadm@aragon.acc.bessy.de:/opt/repositories/controls/darcs/epics/support/bspDep/cpuBoardInit"
                 }
             }, 
@@ -122,134 +135,181 @@
         }
     }, 
     "BSPDEP_TIMER": {
-        "R5-1": {
+        "R6-2": {
             "aliases": {
                 "BASE": "EPICS_BASE"
             }, 
             "archs": {
+                "RTEMS-mvme2100": true, 
+                "RTEMS-mvme5500": true, 
                 "vxWorks-68040": true, 
                 "vxWorks-ppc603": true
             }, 
             "dependencies": {
                 "BASE": {
-                    "R3-14-8-2-0": "stable"
+                    "TAGLESS-3-14-12-2-1": "stable"
                 }
             }, 
             "source": {
                 "darcs": {
-                    "tag": "R5-1", 
+                    "tag": "R6-2", 
                     "url": "rcsadm@aragon.acc.bessy.de:/opt/repositories/controls/darcs/epics/support/bspDep/timer"
                 }
             }, 
             "state": "stable"
         }
     }, 
-    "CSM": {
-        "R3-8": {
+    "BSPDEP_VMETAS": {
+        "R2-0": {
             "aliases": {
                 "BASE": "EPICS_BASE"
             }, 
             "archs": {
+                "RTEMS-mvme2100": true, 
+                "RTEMS-mvme5500": true, 
                 "linux-x86": true, 
                 "vxWorks-68040": true, 
                 "vxWorks-ppc603": true
             }, 
             "dependencies": {
                 "BASE": {
-                    "R3-14-8-2-0": "stable"
+                    "TAGLESS-3-14-12-2-1": "stable"
                 }
             }, 
             "source": {
                 "darcs": {
-                    "tag": "R3-8", 
-                    "url": "rcsadm@aragon.acc.bessy.de:/opt/repositories/controls/darcs/epics/support/csm/base-3-14-8"
+                    "tag": "R2-0", 
+                    "url": "rcsadm@aragon.acc.bessy.de:/opt/repositories/controls/darcs/epics/support/bspDep/VMEtas"
+                }
+            }, 
+            "state": "stable"
+        }
+    }, 
+    "CSM": {
+        "R4-3": {
+            "aliases": {
+                "BASE": "EPICS_BASE"
+            }, 
+            "archs": {
+                "RTEMS-mvme2100": true, 
+                "RTEMS-mvme5500": true, 
+                "linux-x86": true, 
+                "vxWorks-68040": true, 
+                "vxWorks-ppc603": true
+            }, 
+            "dependencies": {
+                "BASE": {
+                    "TAGLESS-3-14-12-2-1": "stable"
+                }
+            }, 
+            "source": {
+                "darcs": {
+                    "tag": "R4-3", 
+                    "url": "rcsadm@aragon.acc.bessy.de:/opt/repositories/controls/darcs/epics/support/csm/base-3-14-12"
                 }
             }, 
             "state": "stable"
         }
     }, 
     "EK": {
-        "R2-1": {
+        "R2-2": {
             "aliases": {
-                "BASE": "EPICS_BASE"
+                "BASE": "EPICS_BASE", 
+                "MISC_DEBUGMSG": "MISC"
             }, 
             "archs": {
-                "vxWorks-68040": true, 
-                "vxWorks-ppc603": true
-            }, 
-            "dependencies": {
-                "BASE": {
-                    "R3-14-8-2-0": "stable"
-                }, 
-                "MISC": {
-                    "R2-4": "stable"
-                }
-            }, 
-            "source": {
-                "darcs": {
-                    "tag": "R2-1", 
-                    "url": "rcsadm@aragon.acc.bessy.de:/opt/repositories/controls/darcs/epics/support/ek/base-3-14"
-                }
-            }, 
-            "state": "stable"
-        }
-    }, 
-    "GENSUB": {
-        "PATH-1-6-1": {
-            "aliases": {
-                "BASE": "EPICS_BASE"
-            }, 
-            "archs": {
+                "RTEMS-mvme2100": true, 
+                "RTEMS-mvme5500": true, 
                 "linux-x86": true, 
                 "vxWorks-68040": true, 
                 "vxWorks-ppc603": true
             }, 
             "dependencies": {
                 "BASE": {
-                    "R3-14-8-2-0": "stable"
+                    "TAGLESS-3-14-12-2-1": "stable"
+                }, 
+                "MISC_DEBUGMSG": {
+                    "R3-0": "stable"
                 }
             }, 
             "source": {
-                "path": "rcsadm@aragon.acc.bessy.de:/opt/Epics/R3.14.8/support/genSub/1-6-1"
+                "darcs": {
+                    "tag": "R2-2", 
+                    "url": "rcsadm@aragon.acc.bessy.de:/opt/repositories/controls/darcs/epics/support/ek/base-3-14-12"
+                }
+            }, 
+            "state": "stable"
+        }
+    }, 
+    "GENSUB": {
+        "R1-6-1": {
+            "aliases": {
+                "BASE": "EPICS_BASE"
+            }, 
+            "archs": {
+                "RTEMS-mvme2100": true, 
+                "RTEMS-mvme5500": true, 
+                "linux-x86": true, 
+                "vxWorks-68040": true, 
+                "vxWorks-ppc603": true
+            }, 
+            "dependencies": {
+                "BASE": {
+                    "TAGLESS-3-14-12-2-1": "stable"
+                }
+            }, 
+            "source": {
+                "darcs": {
+                    "tag": "R1-6-1", 
+                    "url": "rcsadm@aragon.acc.bessy.de:/opt/repositories/controls/darcs/epics/support/genSub/1-6"
+                }
             }, 
             "state": "stable"
         }
     }, 
     "MCAN": {
-        "R2-3-18": {
+        "TAGLESS-2-6-3-test": {
             "aliases": {
-                "BASE": "EPICS_BASE"
+                "BASE": "EPICS_BASE", 
+                "BSPDEP_VMETAS": "VMETAS", 
+                "MISC_DBC": "DBC", 
+                "MISC_DEBUGMSG": "DEBUGMSG", 
+                "SOFT_DEVHWCLIENT": "DEVHWCLIENT"
             }, 
             "archs": {
-                "vxWorks-68040": true, 
-                "vxWorks-ppc603": true
+                "ANY": true
             }, 
             "dependencies": {
                 "ALARM": {
                     "R3-4": "unstable", 
-                    "R3-5": "stable"
+                    "R3-8": "stable"
                 }, 
                 "BASE": {
-                    "R3-14-8-2-0": "stable"
+                    "TAGLESS-3-14-12-2-1": "stable"
                 }, 
-                "MISC": {
-                    "R2-4": "stable"
+                "BSPDEP_VMETAS": {
+                    "R2-0": "stable"
                 }, 
-                "SOFT": {
-                    "R2-5": "stable"
+                "MISC_DBC": {
+                    "R3-0": "stable"
+                }, 
+                "MISC_DEBUGMSG": {
+                    "R3-0": "stable"
+                }, 
+                "SOFT_DEVHWCLIENT": {
+                    "R3-0": "stable"
                 }
             }, 
             "source": {
                 "darcs": {
-                    "tag": "R2-3-18", 
-                    "url": "rcsadm@aragon.acc.bessy.de:/opt/repositories/controls/darcs/epics/support/mcan/base-3-14-8"
+                    "url": "rcsadm@aragon.acc.bessy.de:/opt/Epics/R3.14.12/support/mcan/2-6-3-test"
                 }
             }, 
             "state": "stable"
         }
     }, 
-    "MISC": {
-        "R2-4": {
+    "MISC_DBC": {
+        "R3-0": {
             "aliases": {
                 "BASE": "EPICS_BASE"
             }, 
@@ -258,68 +318,93 @@
             }, 
             "dependencies": {
                 "BASE": {
-                    "R3-14-8-2-0": "stable"
+                    "TAGLESS-3-14-12-2-1": "stable"
                 }
             }, 
             "source": {
                 "darcs": {
-                    "tag": "R2-4", 
-                    "url": "rcsadm@aragon.acc.bessy.de:/opt/repositories/controls/darcs/epics/support/misc/base-3-14"
+                    "tag": "R3-0", 
+                    "url": "rcsadm@aragon.acc.bessy.de:/opt/repositories/controls/darcs/epics/support/misc/dbc"
+                }
+            }, 
+            "state": "stable"
+        }
+    }, 
+    "MISC_DEBUGMSG": {
+        "R3-0": {
+            "aliases": {
+                "BASE": "EPICS_BASE"
+            }, 
+            "archs": {
+                "ANY": true
+            }, 
+            "dependencies": {
+                "BASE": {
+                    "TAGLESS-3-14-12-2-1": "stable"
+                }
+            }, 
+            "source": {
+                "darcs": {
+                    "tag": "R3-0", 
+                    "url": "rcsadm@aragon.acc.bessy.de:/opt/repositories/controls/darcs/epics/support/misc/debugmsg"
                 }
             }, 
             "state": "stable"
         }
     }, 
     "SEQ": {
-        "R2-0-12-1": {
+        "TAGLESS-2-1-12": {
             "aliases": {
                 "BASE": "EPICS_BASE"
             }, 
             "archs": {
+                "RTEMS-mvme2100": true, 
+                "RTEMS-mvme5500": true, 
                 "linux-x86": true, 
                 "vxWorks-68040": true, 
                 "vxWorks-ppc603": true
             }, 
             "dependencies": {
                 "BASE": {
-                    "R3-14-8-2-0": "stable"
+                    "TAGLESS-3-14-12-2-1": "stable"
                 }
             }, 
             "source": {
                 "darcs": {
-                    "tag": "R2-0-12-1", 
-                    "url": "rcsadm@aragon.acc.bessy.de:/opt/Epics/R3.14.8/support/seq/2-0-12-1"
+                    "url": "rcsadm@aragon.acc.bessy.de:/opt/Epics/R3.14.12/support/seq/2-1-12"
                 }
             }, 
             "state": "stable"
         }
     }, 
-    "SOFT": {
-        "R2-5": {
+    "SOFT_DEVHWCLIENT": {
+        "R3-0": {
             "aliases": {
                 "BASE": "EPICS_BASE"
             }, 
             "archs": {
+                "RTEMS-mvme2100": true, 
+                "RTEMS-mvme5500": true, 
                 "linux-x86": true, 
                 "vxWorks-68040": true, 
                 "vxWorks-ppc603": true
             }, 
             "dependencies": {
                 "BASE": {
-                    "R3-14-8-2-0": "stable"
+                    "TAGLESS-3-14-12-2-1": "stable"
                 }
             }, 
             "source": {
                 "darcs": {
-                    "tag": "R2-5", 
-                    "url": "rcsadm@aragon.acc.bessy.de:/opt/repositories/controls/darcs/epics/support/soft/base-3-14"
+                    "tag": "R3-0", 
+                    "url": "rcsadm@aragon.acc.bessy.de:/opt/repositories/controls/darcs/epics/support/soft/devHwClient"
                 }
             }, 
             "state": "stable"
         }
     }, 
     "VXSTATS": {
-        "R2-0": {
+        "R3-0": {
             "aliases": {
                 "BASE": "EPICS_BASE"
             }, 
@@ -329,13 +414,13 @@
             }, 
             "dependencies": {
                 "BASE": {
-                    "R3-14-8-2-0": "stable"
+                    "TAGLESS-3-14-12-2-1": "stable"
                 }
             }, 
             "source": {
                 "darcs": {
-                    "tag": "R2-0", 
-                    "url": "rcsadm@aragon.acc.bessy.de:/opt/repositories/controls/darcs/epics/support/vxStats/base-3-14"
+                    "tag": "R3-0", 
+                    "url": "rcsadm@aragon.acc.bessy.de:/opt/repositories/controls/darcs/epics/support/vxStats/base-3-14-12"
                 }
             }, 
             "state": "stable"

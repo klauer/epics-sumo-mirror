@@ -16,5 +16,5 @@ TESTDIR=tmp-110-sumo-build-new-2
 
 cd $TESTDIR > /dev/null
 
-$PYTHON ../../bin/sumo-build --db DB --builddb BUILDS use MCAN:R2-3-18 | sed -e "s#`pwd -P`##"
+$PYTHON ../../bin/sumo-build --db DB --builddb BUILDS use MCAN:TAGLESS-2-6-3-test | sed -e "s#`pwd -P`##"
 

@@ -16,6 +16,6 @@ cp samples/DB_IDCP DB_IDCP-$ME.tmp
 
 # sed is used to add spaces after each "," at the end of the line. The old JSON
 # library for python 2.5 doesn't do this.
-$PYTHON ../bin/sumo-db --db DB_IDCP-$ME.tmp replaceversion ALARM R3-5 R3-4 
+$PYTHON ../bin/sumo-db --db DB_IDCP-$ME.tmp replaceversion ALARM R3-8 R3-4 
 cat DB_IDCP-$ME.tmp | sed -e "s/,$/, /g"
 

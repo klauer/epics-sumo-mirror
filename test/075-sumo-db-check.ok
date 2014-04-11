@@ -1,9 +1,5 @@
 sumo-db --db samples/DB check:
-SRV_CSR_EPICS_R3.14.8:PATH-support: no target architectures
-SOFT:PATH-2-2-1: no target architectures
-SUPPORT_RULES:R2-1: no target architectures
-SRV_CSR_EPICS_EXTENSIONS_BIN_LINUX-X86:PATH-msi: no target architectures
-SRV_CSR_EPICS:PATH-R3.14.8: no target architectures
+
 
 sumo-db --db samples/BUILDS check:
 ValueError: Error: Dependency data is invalid (created from JSON file samples/BUILDS)

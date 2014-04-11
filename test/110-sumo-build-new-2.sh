@@ -48,7 +48,7 @@ fi
 # library for python 2.5 doesn't do this.
 
 echo -e "\ndirectory tree (without darcs)"
-find . | egrep -v '_darcs|\.tmp|\.bak'
+find . | egrep -v '_darcs|\.tmp|\.bak' | sort
 echo -e "\ncontents of RELEASE files\n"
 for f in `find . -name RELEASE | sort`; do echo -e "\nFILE: $f"; cat $f | sed -e "s#`pwd -P`##"; done
 echo -e "\n\ncontent of DB:"
