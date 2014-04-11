@@ -203,7 +203,7 @@ class ConfigFile(object):
             filename= self._filename
         json_dump_file(filename, dump)
 
-    def update_from_options(self, option_obj):
+    def merge_options(self, option_obj):
         """create from an option object."""
         for opt in self._dict.keys():
             if not hasattr(option_obj, opt):
@@ -216,16 +216,12 @@ class ConfigFile(object):
                         self._dict[opt].extend(getattr(option_obj, opt))
                         continue
                 self._dict[opt]= getattr(option_obj, opt)
-    def fill_options(self, option_obj, overwrite):
-        """set option attributes."""
         for (opt, val) in self._dict.items():
             if not hasattr(option_obj, opt):
                 raise AssertionError(
                         "ERROR: key '%s' not in the option object" % opt)
-            if not overwrite:
-                if getattr(option_obj, opt) is not None:
-                    continue
-            setattr(option_obj, opt, val)
+            if val is not None:
+                setattr(option_obj, opt, val)
 
 # -----------------------------------------------
 # tracing support

@@ -405,8 +405,7 @@ def process(options, commands):
 
     config.load(options.config)
 
-    config.update_from_options(options)
-    config.fill_options(options, overwrite= False)
+    config.merge_options(options)
 
     if options.nolock:
         utils.use_lockfile= False

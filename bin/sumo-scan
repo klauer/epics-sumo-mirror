@@ -490,9 +490,7 @@ def process(options, commands):
         config.disable_default()
 
     config.load(options.config)
-    # Note: options that are "None" are not changed in the config object:
-    config.update_from_options(options)
-    config.fill_options(options, overwrite= False)
+    config.merge_options(options)
 
 
     if not commands:
