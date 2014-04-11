@@ -290,7 +290,7 @@ Convert a :term:`scanfile` that was created by applying
 :doc:`"sumo-scan all"<reference-sumo-scan>` to an application to a list of 
 :term:`aliases` and :term:`modulespecs` in `JSON <http://www.json.org>`_
 format. The result is printed to the console. It can be used with
---update-config to put these in the configuration file of 
+--config to put these in the configuration file of 
 :doc:`"sumo-db "<reference-sumo-db>` or 
 :doc:`"sumo-build "<reference-sumo-build>` 
 
@@ -420,14 +420,14 @@ Here is a short overview on command line options:
 -h, --help            show this help message and exit
 --summary             Print a summary of the function of the program.
 --test                Perform some self tests.
--c FILE, --config FILE  Specify the name of the configuration file. If this
-                        option is not given try to read from "sumo-db.config"
-                        in the current working directory.
---update-config XFILE         Update options taken from the configuration file with
-                      options taken from another file which must be a JSON
-                      file. Options from FILE overwrite options taken from the
-                      configuration file. Options in FILE that are unknown to
-                      the program are ignored.
+-c FILE, --config FILE  
+                      Load options from the given configuration file. You can
+                      specify more than one of these, in this case the files
+                      are merged. If this option is not given and
+                      --no-default-config is not given, the program tries to
+                      load the default configuration file sumo-db.config.
+--no-default-config   If this option is given the program doesn't load the
+                      default configuration.
 --db DB               Define the name of the DB file. This option value is
                       stored in the configuration file. 
 --dumpdb              Dump the modified db on the console, currently only for the 
@@ -456,8 +456,7 @@ Here is a short overview on command line options:
                       url generated. You can specify more than one
                       patchexpression.  This option value is stored in the
                       configuration file.
---noignorecase        
-    For command 'find', do NOT ignore case.
+--noignorecase        For command 'find', do NOT ignore case.
 --nolock              Do not use file locking.
 -p, --progress        Show progress on stderr. This option value is stored in
                       the configuration file.

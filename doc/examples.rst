@@ -128,12 +128,12 @@ to sumo-db which creates a `JSON <http://www.json.org>`_ file with
 Now we create a configuration file for sumo-db that contains the list of
 :term:`modulespecs`:: from file "MODULES"::
 
-  sumo-db --maxstate stable --db $SUMODIR/DEPS.DB --update-config MODULES makeconfig
+  sumo-db --maxstate stable --db $SUMODIR/DEPS.DB -c MODULES makeconfig
 
 Here we create a configuration file for sumo-build that contains the
 :term:`modulespecs` and :term:`aliases` from file "MODULES" ::
 
-  sumo-build --db $SUMODIR/DEPS.DB --builddb $SUMODIR/BUILDS.DB --supportdir $SUMODIR --readonly --update-config MODULES makeconfig
+  sumo-build --db $SUMODIR/DEPS.DB --builddb $SUMODIR/BUILDS.DB --supportdir $SUMODIR --readonly -c MODULES makeconfig
 
 Create a build for an application
 ---------------------------------
@@ -161,7 +161,7 @@ Now we go the the support directory::
 
 We assume that the name of our :term:`build` should be "MLS-01"::
 
-  sumo-db --nolock --update-config $APPDIR/sumo-db.config distribution | sumo-build --partialdb - new MLS-01
+  sumo-db --nolock -c $APPDIR/sumo-db.config distribution | sumo-build --partialdb - new MLS-01
 
 The first part of the command line creates a definition of all :term:`modules`
 in form of a :term:`partialdb`. We do not save this as a file but pass it

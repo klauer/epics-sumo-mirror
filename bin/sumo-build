@@ -776,20 +776,16 @@ def process(options, commands):
     #                          Too many statements
     # pylint: disable=R0914
     #                          Too many local variables
-    config= utils.ConfigFile(( "arch", "alias", "builddb", "db", "extra",
-                               "makeopts",
-                               "module",
-                               "progress",
-                               "readonly",
-                               "supportdir",
-                               "verbose",),
-                               CONFIG_NAME)
-    config.load_file(options.config)
+    config= utils.ConfigFile.from_optionlist(
+                CONFIG_NAME,
+                ( "arch", "alias", "builddb", "db", "extra", "makeopts",
+                  "module", "progress", "readonly", "supportdir",
+                  "verbose",))
+    if (not os.path.exists(CONFIG_NAME)) or options.no_default_config:
+        config.disable_default()
 
-    if options.update_config:
-        config.update_from_file(options.update_config, overwrite= True)
+    config.load(options.config)
 
-    # Note: options that are "None" are not changed in the config object:
     config.update_from_options(options)
     config.fill_options(options, overwrite= False)
 
@@ -810,7 +806,7 @@ def process(options, commands):
             configfile= None
         else:
             configfile= commands[1]
-        config.save_file(configfile)
+        config.save(configfile)
         return
 
     if commands[0]=="edit":
@@ -1199,23 +1195,20 @@ def main():
                       help="Perform simple self-test.",
                       )
     parser.add_option("-c", "--config",
-                      action="store",
+                      action="append",
                       type="string",
-                      help= "Specify the name of the configuration file. If "
-                            "this option is not given try to read from "
-                            "\"%s\" in the current working "
-                            "directory. " % CONFIG_NAME,
-                      metavar="FILE"
+                      help="Load options from the given configuration "
+                           "file. You can specify more than one of these, "
+                           "in this case the files are merged. If this "
+                           "option is not given and --no-default-config "
+                           "is not given, the program tries to load the "
+                           "default configuration file %s." % CONFIG_NAME,
+                      metavar="CONFIGFILE"
                       )
-    parser.add_option("--update-config",
-                      action="store",
-                      help= "Update options taken from the configuration "
-                            "file with options taken from another file which "
-                            "must be a JSON file. Options from FILE "
-                            "overwrite options taken from the configuration "
-                            "file. Options in FILE that are unknown to the "
-                            "program are ignored. ",
-                      metavar="FILE"
+    parser.add_option("--no-default-config",
+                      action="store_true",
+                      help="If this option is given the program doesn't load "
+                           "the default configuration.",
                       )
     parser.add_option("--db",
                       action="store",

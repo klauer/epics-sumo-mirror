@@ -139,30 +139,62 @@ def json_loadfile(filename):
 
 class ConfigFile(object):
     """store options in a JSON file."""
-    def __init__(self, optionlist, filename):
+    @classmethod
+    def from_optionlist(cls, filename, optionlist):
+        """Create object from optionlist."""
+        d= dict( [(n,None) for n in optionlist])
+        return cls(filename, d)
+    def __init__(self, filename, dict_):
+        """create from a dict."""
         self._filename= filename
-        self._dict= {}
-        for opt in optionlist:
-            self._dict[opt]= None
+        self.load_default= True
+        self._dict= dict(dict_)
+    def __repr__(self):
+        """return repr string."""
+        return "%s(%s, %s)" % (self.__class__.__name__,
+                               repr(self._filename),
+                               repr(self._dict))
     def __str__(self):
-        """print in human readable form."""
+        """return string in human readable form."""
         lines= ["filename: %s\n" % self._filename,
                 "dict:",
                 str(self._dict)]
         return "\n".join(lines)
 
-    def update_from_file(self, filename, overwrite= False):
-        """update with JSON data from a file or stdin."""
-        data= json_loadfile(filename)
-        # pylint: disable=E1103
-        #                          Instance of 'bool' has no 'items' member
-        for (key,val) in data.items():
-            if not self._dict.has_key(key):
+    def disable_default(self):
+        """disable loading of the default file."""
+        self.load_default= False
+    def load(self, filenames):
+        """first load self._filename, then filenames."""
+        if self.load_default:
+            lst= [self._filename]
+        else:
+            lst= []
+        if filenames:
+            lst.extend(filenames)
+        for filename in lst:
+            data= json_loadfile(filename)
+            # pylint: disable=E1103
+            #                     Instance of 'bool' has no 'items' member
+            for (key, val) in data.items():
+                if not self._dict.has_key(key):
+                    continue # silently ignore unknown keys
+                self._dict[key]= val
+    def save(self, filename= None):
+        """dump in json format"""
+        # do not include "None" values:
+        dump= {}
+        for (k,v) in self._dict.items():
+            if v is None:
                 continue
-            if not overwrite:
-                if self._dict[key] is not None:
-                    continue
-            self._dict[key]= val
+            dump[k]= v
+        if filename=="-":
+            json_dump(dump)
+            return
+        if not filename:
+            filename= self._filename
+        json_dump_file(filename, dump)
+
     def update_from_options(self, option_obj):
         """create from an option object."""
         for opt in self._dict.keys():
@@ -172,30 +204,6 @@ class ConfigFile(object):
             val= getattr(option_obj, opt)
             if val is not None:
                 self._dict[opt]= getattr(option_obj, opt)
-    def load_file(self, filename= None):
-        """create from a file."""
-        if filename is None:
-            filename= self._filename
-        if not os.path.exists(filename):
-            # do nothing, do not print an error message
-            return
-        data= json_loadfile(filename)
-        # pylint: disable=E1103
-        #                          Instance of 'bool' has no 'items' member
-        for (opt, val) in data.items():
-            if not self._dict.has_key(opt):
-                sys.stderr.write(
-                    "warning: unexpected key '%s' in file '%s'\n" % \
-                    (opt, filename))
-            self._dict[opt]= val
-    def save_file(self, filename= None):
-        """dump in json format"""
-        if filename=="-":
-            json_dump(self._dict)
-            return
-        if not filename:
-            filename= self._filename
-        json_dump_file(filename, self._dict)
     def fill_options(self, option_obj, overwrite):
         """set option attributes."""
         for (opt, val) in self._dict.items():

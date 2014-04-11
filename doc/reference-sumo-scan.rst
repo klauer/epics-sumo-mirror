@@ -321,8 +321,13 @@ Here is a short overview on command line options:
 --summary             Print a summary of the function of the program.
 --test                Perform some self tests.
 -c FILE, --config FILE  
-                      Load options from config file CONFIGFILE, default:
-                      sumo-scan.config.
+                      Load options from the given configuration file. You can
+                      specify more than one of these, in this case the files
+                      are merged. If this option is not given and
+                      --no-default-config is not given, the program tries to
+                      load the default configuration file sumo-db.config.
+--no-default-config   If this option is given the program doesn't load the
+                      default configuration.
 -d DIR, --dir DIR     Parse all RELEASE files in directory DIR. You can
                       specify more than one of these by repeating this option
                       or by joining values in a single string separated by
