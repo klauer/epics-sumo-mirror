@@ -314,218 +314,72 @@ need this command in order to generate a dependency database. For details see
 Options
 -------
 
-summary
-+++++++
+Here is a short overview on command line options:
 
-With this option the program prints a one line summary of it's function.
+--version             show program's version number and exit
+-h, --help            show this help message and exit
+--summary             Print a summary of the function of the program.
+--test                Perform some self tests.
+-c FILE, --config FILE  
+                      Load options from config file CONFIGFILE, default:
+                      sumo-scan.config.
+-d DIR, --dir DIR     Parse all RELEASE files in directory DIR. You can
+                      specify more than one of these by repeating this option
+                      or by joining values in a single string separated by
+                      spaces. This option value is stored in the CONFIGFILE.
+-i INFOFILE, --info-file INFOFILE
+                      Read information from INFOFILE. This is a file generated
+                      by this script in a prevous run.
+-N NAME, --ignore-name NAME
+                      Define macro names in the RELEASE files that should be
+                      ignored. You usually want to ignore the names 'TOP' or
+                      'SUPPORT' in RELEASE files.  You can specify more than
+                      one of these by repeating this option or by joining
+                      values in a single string separated by spaces.  This
+                      option value is stored in the CONFIGFILE.
+-g DIR, --group-basedir DIR
+                      Option "-g" or "--group-basedir" must be followed by a
+                      directory name. It defines the part of the directory path
+                      that is the same for all support modules. This is needed
+                      in order to generate a module name from the module's
+                      directory path.  You can specify more than one of these
+                      by repeating this option or by joining values in a single
+                      string separated by spaces.  The value of this option is
+                      stored in the configuration file.
+--exclude-path REGEXP Exclude all paths that match REGEXP from dependencies.
+                      You can specify more than one of these by repeating this
+                      option or by joining values in a single string separated
+                      by spaces.  This option value is stored in the
+                      CONFIGFILE.
+--exclude-deps REGEXP Exclude all paths whose dependencies match REGEXP. This
+                      option value is stored in the CONFIGFILE.,
+-P PATCHEXPRESSION, --source-patch PATCHEXPRESSION
+                      Specify a source PATCHEXPRESSION. Such an expression
+                      consists of a tuple of 2 python strings. The first is the
+                      match expression, the second one is the replacement
+                      string. The regular expression is applied to every source
+                      url generated. You can specify more than one
+                      PATCHEXPRESSION. This option value is stored in the
+                      CONFIGFILE.
+--hint HINT           Specify a HINT. A HINT has the form REGEXP,FLAG{,FLAG}.
+                      REGEXP is a regular expression that is matched with the
+                      module path. FLAG is a string that gives hints how to
+                      treat that module.  You can specify more than one hint.
+                      This option value is stored in the CONFIGFILE.,
+--darcs-dirtest       Test if a found remote darcs repository has a '_darcs'
+                      directory in it. This may help detect invalid default
+                      repository entries. This option value is stored in the
+                      CONFIGFILE.,
+--missing-tag         Show directories where a repository was found but no tag.
+                      This option value is stored in the CONFIGFILE.
+--missing-repo        Show directories where no repository was found. This
+                      option value is stored in the CONFIGFILE.,
+-t BUILDTAG, --buildtag BUILDTAG
+                      Scan only directories of the given buildtag.
+-p, --progress        Show progress on stderr. This option value is stored in
+                      the configuration file.
+-t, --trace           Switch on some trace messages.
+-v, --verbose         Show command calls.  This option value is stored in the
+                      configuration file.
+-n, --dry-run         Just show what the program would do.
 
-doc
-+++
-
-With this option the program shows a link to the sumo documentation on the HZB
-web server.
-
-test
-++++
-
-With this option the program performs a simple self test.
-
-config
-++++++
-
-This option, that can be given as "-c" or "--config". It must be followed by the name of a configuration file. If this option it is used the values of some of the command line options are taken from this file. If an option given on the command line specifies a value different from the value of the configuration file, the value from the command line takes precedence. The configuration has `JSON <http://www.json.org>`_ format. The file contains a map where the keys are the long names of the options. Here is an example::
-
-  {
-      "darcs_dirtest": true,
-      "dir": [
-          "/opt/csr/Epics/R3.14.12/base/3-14-12-2-1",
-          "/opt/Epics/R3.14.12/support"
-      ],
-      "exclude_deps": "home/",
-      "exclude_path": [
-          "apps/crateCtrl/XXXXX",
-          "busy/vendor",
-          "monoapps",
-          "std/vendor",
-          "devIocStats/vendor"
-      ],
-      "group_basedir": [
-          "/opt/Epics/R3.14.12/support",
-          "/opt/Epics/R3.14.12"
-      ],
-      "hint": [
-      ],
-      "ignore_name": [
-          "TOP",
-          "EPICS_SUPPORT",
-          "SUPPORT",
-          "TEMPLATE_TOP",
-          "EPICS_SITE_TOP",
-          "EPICS_MODULES",
-          "MSI"
-      ],
-      "missing_repo": null,
-      "missing_tag": null,
-      "progress": true,
-      "source_patch": [
-          "r\"^([^:]*)$\",r\"rcsadm@aragon.acc.bessy.de:\\1\"",
-          "r\"^([^@]*)$\",r\"rcsadm@\\1\"",
-          "r\"\\b(aragon)(?:|\\.acc):\",r\"\\1.acc.bessy.de:\"",
-          "r\"^rcsadm@localhost:\",r\"rcsadm@aragon.acc.bessy.de:\"",
-          "\":darcs-repos\",\":/opt/repositories/controls/darcs\"",
-          "r\"/(srv|opt)/csr/(repositories/controls/darcs)\",r\"/opt/\\2\"",
-          "r\"/srv/csr/Epics\",\"/opt/Epics\""
-      ],
-      "verbose": null
-  }
-
-The following options are stored in the configuration file:
-
-- darcs_dirtest
-- dir
-- exclude_deps
-- exclude_path
-- group_basedir
-- hint
-- ignore_name
-- missing_repo
-- missing_tag
-- progress
-- source_patch
-- verbose
-
-If a file named "sumo-scan.config" is found in the current working directory,
-this file is read if option "--config" is not used to specify a different file.
-
-In the current implementation it is not an error if the specified configuration
-file is not found.
-
-dir
-+++
-
-Option "-d" or "--dir" must be followed by a directory name. This specifies the
-directory that is searched for the sources of EPICS support modules. You can
-specify more than one directory by using this option more than once. The value
-of this options is stored in the configuration file.
-
-info-file
-+++++++++
-
-Option "-i" or "--info-file" must be followed by the name of a file that was
-created in a previous run of the script. In this case the script doesn't scan
-directories but simply reads `JSON <http://www.json.org>`_ data from the given
-file. This may be useful for commands like "name2paths" or "path2names" command
-since scanning the support directories again for these commands may take a long
-time.
-
-ignore-name
-+++++++++++
-
-Option "-N" or "--ignore-name" must be followed by a string. This string
-defines a variable name that should be ignored when it is found in an RELEASE
-file. You can use this option several times in order to defined more than one
-variable name. The value of this option is stored in the configuration file.
-
-group-basedir
-+++++++++++++
-
-Option "-g" or "--group-basedir" must be followed by a directory name. It
-defines the part of the directory path that is the same for all support
-modules. This is needed in order to generate a module name from the module's
-directory path. You can use this option several times in order to defined more
-than one base directory. The value of this option is stored in the
-configuration file.
-
-exclude-path
-++++++++++++
-
-Option "--exclude-path" must be followed by a regular expression. Support
-module paths that match one of the given regular expressions are ignored. You
-can use this option several times in order to defined more than one regular
-expression. The value of this option is stored in the configuration file.
-
-exclude-deps
-++++++++++++
-
-Option "--exclude-deps" must be followed by a regular expression. Modules where
-at least one of the dependencies match the given regular expression are
-ignored. The value of this option is stored in the configuration file.
-
-source-patch
-++++++++++++
-
-Option "-P" or "--source-patch" must be followed by a patch expression. This is
-a python tuple of two strings, meaning that both strings must be separated by a
-comma. The first string is a regular expression, the second one is a
-replacement string according to the rules of the python regular expression
-library (module "re"). The regular expression and the replacement string are
-applied to all source urls. You can specify module than one regular expression.
-Here is an example::
-
-  -P 'r"\b(aragon)(?:|\.acc):",r"\1.acc.bessy.de:"'
-
-For python regular expressions see
-`<http://docs.python.org/2/library/re.html>`_.
-
-The value of this option is stored in the configuration file.
-
-hint
-++++
-
-This option must be followed by a string. It specifies an additional hint for
-the support module scanner. The string, also called *hint*, must be a regular
-expression followed by a comma ',' and a list of comma separated flags. A
-*flag* is string from a list of known flags. The known flags are "PATH" and
-"TAGLESS". If the flag is "PATH" the support module's source is set to "path"
-meaning that repository information is ignored and the source of the module is
-just the path of the installed support module. If the flag is "TAGLESS", the
-version control tag is ignored and the module's source is set to the local
-repository where the module is installed.  The value of this option is stored
-in the configuration file.
-
-darcs-dirtest
-+++++++++++++
-
-If this option is given the program tests if the default darcs repository
-exists and if it contains a "_darcs" directory. If the remote directory is not
-found, the module's source is treated as if "TAGLESS" was given with option
-"--hint".  The value of this option is stored in the configuration file.
-
-missing-tag
-+++++++++++
-
-If this option is given the program shows all directories where a repository
-was found but no tag was found.  The value of this option is stored in the
-configuration file.
-
-missing-repo
-++++++++++++
-
-If this option is given the program shows all directories no repository was
-found. The value of this option is stored in the configuration file.
-
-buildtag
-++++++++
-
-Option "-t" or "--buildtag" must be followed by a *buildtag*. If this option is
-given, the program scans only directories that match the given buildtag. This
-feature is used to scan parts of a support directory that was created by
-`sumo-build <reference-sumo-build>`.
-
-progress
-++++++++
-
-If option "-p" or "--progress" is given, the program shows it's progress on
-stderr. The value of this option is stored in the configuration file.
-
-verbose
-+++++++
-
-If "-v" or "--verbose" is given, the program shows all calls of external
-programs on the console.  The value of this option is stored in the
-configuration file.
-
-dry-run
-+++++++
-
-If "-n" or "--dry-run" is given, the program just shows what it *would* do.
