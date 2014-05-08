@@ -315,9 +315,6 @@ def _distribution_add(db, dist, modulename, versionname, maxstate, archs):
             raise ValueError("conflict: %s %s %s" % \
                       (modulename, existing_versionname, versionname))
         return dist
-    if not db.check_archs(modulename, versionname, archs):
-        raise ValueError("no support for archs %s in module %s:%s" % \
-                         (repr(archs),modulename,versionname))
     new_dist= dict(dist)
     # ^^^ caution, not a deep copy
     new_dist[modulename]= versionname
@@ -327,6 +324,10 @@ def _distribution_add(db, dist, modulename, versionname, maxstate, archs):
     except KeyError, e:
         raise ValueError("no information for module %s version %s" % \
                          (modulename, versionname))
+
+    if not db.check_archs(modulename, versionname, archs):
+        raise ValueError("no support for archs %s in module %s:%s" % \
+                         (repr(archs),modulename,versionname))
 
     for dep_modulename in db.iter_dependencies(modulename, versionname):
         for dep_version in db.sorted_dependency_versions(
