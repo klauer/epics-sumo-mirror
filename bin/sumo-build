@@ -42,7 +42,7 @@ def script_shortname():
 
 def makefilename(build_tag):
     """create a makefile name from a build_tag."""
-    return("Makefile-%s" % build_tag)
+    return "Makefile-%s" % build_tag
 
 def module_dir_string(buildtag, modulename, versionname):
     """create a module directory string."""
@@ -160,7 +160,7 @@ def alias(alias_dict, modulename):
 
 def cleanupfilename(build_tag):
     """create the name of the cleanup file."""
-    return("cleanup-%s" % build_tag)
+    return "cleanup-%s" % build_tag
 
 def rmcleanup(build_tag):
     """remove the cleanup file."""
@@ -544,15 +544,19 @@ def create_makefile(db, builddb, build_tag, verbose, dry_run):
                                                            dep_name,
                                                            "unstable",
                                                            None))
-            if len(dep_versions)>1:
+            # keep only (module,version) pairs that are in the path
+            # dictionary:
+            my_dep_versions= [v for v in dep_versions \
+                              if paths.has_key((dep_name,v))]
+            if len(my_dep_versions)>1:
                 raise AssertionError("unexpected: %s:%s %s\n" % \
-                        (modulename,versionname,repr(dep_versions)))
-            dep_version= dep_versions[0]
-            # modules that have no makefile are not in the paths dictionary, do
-            # treat these as dependencies:
-            if not paths.has_key((dep_name,dep_version)):
+                        (modulename,versionname,repr(my_dep_versions)))
+            if not my_dep_versions:
+                # do no handle dependencies that are not in the paths
+                # dictionary:
                 continue
-            dep_path= module_dir_string(build_tag, dep_name, dep_versions[0])
+            dep_path= module_dir_string(build_tag,
+                                        dep_name, my_dep_versions[0])
             dep_stamps.append(os.path.join(dep_path,"stamp"))
 
         if dep_stamps:
