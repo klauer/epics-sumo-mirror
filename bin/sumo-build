@@ -375,12 +375,20 @@ def distribution(db, modulespecs, maxstate, trace):
             raise ValueError("\"-version\" and \"+version\" not "
                              "supported here")
     dist= {}
+    m_list= []
     for (modulename, versionname, archs) in versioned_modules:
         try:
             dist= _distribution_add(db, dist, modulename, versionname,
                                     maxstate, archs)
         except ValueError, e:
+            if trace:
+                sys.stderr.write("modules added so far\n%s\n" % \
+                                 ("\n".join(m_list)))
+                sys.stderr.write("%s:%s\n" % \
+                                 (modulename, versionname))
             raise
+        if trace:
+            m_list.append("\t%s:%s" % (modulename, versionname))
 
     for (modulename, archs) in versionless_modules:
         if trace:
