@@ -177,9 +177,9 @@ We first go back to the application directory::
 
   cd $APPDIR
 
-We use command "useauto" which combines "find" and "use". It looks in the
-:term:`support directory` for a :term:`build` matching our requirements and
-creates a RELEASE file that uses that :term:`build`::
+The sumo-build command "use" looks in the :term:`support directory` for 
+a :term:`build` matching our :term:`module` requirements and creates
+a RELEASE that uses that :term:`build`::
 
   sumo-build use > configure/RELEASE
 
