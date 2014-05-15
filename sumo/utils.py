@@ -1548,11 +1548,44 @@ class Dependencies(JSONstruct):
         m= self.datadict().setdefault(module_name,{})
         m[versionname]= copy.deepcopy(
                             other.datadict()[module_name][versionname])
-    def set_source(self, module_name, versionname, repo_dict):
-        """add a module with source spec, state and archs."""
+    def set_source(self, module_name, versionname, new):
+        """add a module with source spec, state and archs.
+
+        [new] must be a dictionary as it is used in key "source" in
+        Dependencies objects. Examples:
+            {'path': 'ab'}
+            {'darcs': {'url': 'abc'}}
+            {'darcs': {'url': 'abc', 'tag': 'R1-2'}}
+
+        The dictionary has a single key that is called the source type that
+        maps to property dictionary.
+
+        The property dictionary in [new] may contain the special wildcard
+        string "*".
+
+        If the source type for the module and the source type in [new] are
+        different, this function just sets the module source to [new].
+
+        If the source type for the module and the source type in [new] are the
+        same, the property string is updated from the property string in [new].
+        Where the property string in [new] contains the string "*", the
+        property of the module remains unchanged.
+        """
         version_dict= self.datadict().setdefault(module_name,{})
         version= version_dict.setdefault(versionname, {})
-        version["source"]= repo_dict
+        source= version.get("source")
+        if not source:
+            version["source"]= new
+            return
+        (source_type,source_dict)= single_key_item(source)
+        (new_type,new_dict)= single_key_item(new)
+        if source_type==new_type:
+            for (k,v) in new_dict.items():
+                if v=="*":
+                    n= source_dict.get(k)
+                    if n:
+                        new_dict[k]= n
+        version["source"]= new
     def set_source_arch_state(self, module_name, versionname, archs, state,
                               repo_dict):
         """add a module with source spec, state and archs."""
@@ -1942,17 +1975,6 @@ class Dependencies(JSONstruct):
             raise ValueError("module %s: version %s already exists" % \
                     (modulename, newversionname))
         d= copy.deepcopy(self.datadict()[modulename][versionname])
-        (_, sourcedata)= single_key_item(d["source"])
-        if isinstance(sourcedata, dict):
-            if sourcedata.has_key("tag"):
-                if sourcedata["tag"]== versionname:
-                    sourcedata["tag"]= newversionname
-            else:
-                # cannot patch tag, invalidate the source spec:
-                sourcedata["url"]= ""
-        else:
-            # invalidate the source date
-            sourcedata= ""
         d["state"]= "unstable"
         moduledata[newversionname]= d
         if do_replace:

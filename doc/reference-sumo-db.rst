@@ -374,10 +374,10 @@ cloneversion [MODULE] [OLD-VERSION] [NEW-VERSION] {SOURCESPEC}
 This command adds a new :term:`version` of a :term:`module` to the
 :term:`dependency database` by copying the old :term:`version`. All
 :term:`modules` that depend on the old :term:`version` now also depend on the
-new :term:`version` of the module. 
-If sourcespec is given, the command changes the source part according to this
-parameter. A sourcespec has the form "path PATH" or "darcs URL" or "darcs URL
-TAG".
+new :term:`version` of the module. If sourcespec is given, the command changes
+the source part according to this parameter. A sourcespec has the form "path
+PATH" or "darcs URL" or "darcs URL TAG". Both, URL or TAG may be "*", in this
+case the original URL or TAG remains unchanged.
 
 replaceversion [MODULE] [OLD-VERSION] [NEW-VERSION]
 +++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -385,7 +385,10 @@ replaceversion [MODULE] [OLD-VERSION] [NEW-VERSION]
 This command replaces a :term:`version` of a :term:`module` with a new
 :term:`version`. All the data of the :term:`module` is copied. All
 :term:`modules` that used to depend on the old :term:`version` now depend on
-the new :term:`version`.
+the new :term:`version`. If sourcespec is given, the command changes the
+source part according to this parameter. A sourcespec has the form "path PATH"
+or "darcs URL" or "darcs URL TAG". Both, URL or TAG may be "*", in this case
+the original URL or TAG remains unchanged.
 
 Options
 -------
