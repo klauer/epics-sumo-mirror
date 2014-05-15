@@ -28,7 +28,7 @@ import re
 import sumo.utils as utils
 
 # version of the program:
-my_version= "1.4.1"
+my_version= "1.5"
 
 KNOWN_COMMANDS=set(("deps", "name2paths", "path2names",
                     "groups", "repos", "all", "makeconfig"))
