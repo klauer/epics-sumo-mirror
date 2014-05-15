@@ -293,6 +293,13 @@ format. The result is printed to the console. It can be used with
 :doc:`"sumo-db "<reference-sumo-db>` or 
 :doc:`"sumo-build "<reference-sumo-build>` 
 
+state [STATE] [MODULES]
++++++++++++++++++++++++
+
+Set the :term:`state` for :term:`modules`. This command sets the given STATE
+for all the given :term:`modules` and the :term:`dependencies` between the
+modules.
+
 weight [WEIGHT] [MODULES]
 +++++++++++++++++++++++++
 

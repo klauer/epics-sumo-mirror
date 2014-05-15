@@ -17,20 +17,17 @@ import sys
 import os.path
 import os
 import re
+import copy
 
 import sumo.utils as utils
 
 # version of the program:
 my_version= "1.4.1"
 
-KNOWN_COMMANDS=set(("edit", "convert",
-                    "appconvert",
-                    "makeconfig",
-                    "weight",
-                    "list", "shownewest", "showall",
-                    "find",
-                    "merge", "check", "filter",
-                    "cloneversion", "replaceversion"))
+KNOWN_COMMANDS=set(("appconvert", "check", "cloneversion", "convert", "edit",
+                    "filter", "find", "list", "makeconfig", "merge",
+                    "replaceversion", "showall", "shownewest", "state",
+                    "weight"))
 
 CONFIG_NAME="sumo-db.config"
 
@@ -245,6 +242,26 @@ def create_database(deps, repoinfo, groups, archs, state, source_patches):
                                       _dep_name, _dep_version, state)
     return db
 
+def set_state(db, state, modulespeclist):
+    """set the state for modules and dependencies."""
+    modulespecs= utils.ModuleSpecs.from_strings(modulespeclist, None)
+
+    for modulespec in modulespecs:
+        if not modulespec.is_exact_spec():
+            # should also unlock the db:
+            sys.exit("error: modulespec '%s' is not an exact "
+                     "modulespec\n" % modulespec.to_string())
+
+    # due to the remove_missing_deps() command later on, we have to ensure that
+    # the partialdb is a deep copy:
+    partialdb= copy.deepcopy(db.partial_copy_by_modulespecs(modulespecs))
+    # remove dependencies that are not part of the partialdb:
+    partialdb.remove_missing_deps()
+    # this sets the states of modules and dependencies to the new value:
+    db.merge(partialdb,
+             constant_src_state=state,
+             state_sum_mode= utils.Dependencies.SUM_FIRST)
+
 def set_weight(db, weight, modulespeclist, trace):
     """set the weight for one or more modules."""
     modulespecs= utils.ModuleSpecs.from_strings(modulespeclist, None)
@@ -441,6 +458,29 @@ def process(options, commands):
         utils.json_dump(result)
         return
 
+    if commands[0]=="state":
+        if len(commands)<=1:
+            sys.exit("error: STATE and module missing")
+        if len(commands)<=2:
+            sys.exit("error: no modules specified")
+        if not options.db:
+            sys.exit("error, --db is mandatory here")
+        state= commands[1]
+        modulespecs= commands[2:]
+        db= utils.Dependencies.from_json_file(options.db,
+                keep_locked= not options.dumpdb and (not options.dry_run))
+        try:
+            utils.Dependencies.check_state(state)
+        except ValueError, e:
+            sys.exit(str(e))
+        set_state(db, state, modulespecs)
+        if options.dumpdb:
+            db.json_print()
+        else:
+            db.json_save(options.db, options.verbose, options.dry_run)
+            # ^^^ does also unlock the file
+        return
+
     if commands[0]=="shownewest" or commands[0]=="showall":
         showall= (commands[0]=="showall")
         if not options.db:
@@ -535,6 +575,9 @@ where command is:
           application to a list of aliases and modulespecs in JSON format. The
           result is printed to the console. It can be used with --config
           to put these in the configuration file of sumo-db or sumo-build.
+  state  [STATE] [modules]
+          Set the state for modules. This command sets the given STATE for all
+          the given modules and the dependencies between the modules.
   weight [WEIGHT] [modules]
           Set the weight factor for modules. Use
           modulename:{+-}versionname to select more versions of a module.
