@@ -1347,10 +1347,33 @@ class Dependencies(JSONstruct):
     #                          Too many arguments
     states_list= ["stable", "testing", "unstable"]
     states_dict= dict(zip(states_list,range(len(states_list))))
+    SUM_MIN= 0
+    SUM_MAX= 1
+    SUM_FIRST= 2
     @classmethod
-    def _min_state(cls, state_list):
-        """return the minimum of a list of states."""
-        i= min([cls.states_dict[s] for s in state_list])
+    def check_state(cls, state):
+        """checks if a state is allowed."""
+        if not cls.states_dict.has_key(state):
+            raise ValueError("unknown state: %s" % repr(state))
+    @classmethod
+    def _sum_state(cls, mode, state1, state2):
+        """return a sum state of a list of states.
+
+        known modes:
+          SUM_MIN: minimize state, "stable"<"testing"<"unstable"
+          SUM_MAX: maximize state, "stable"<"testing"<"unstable"
+          SUM_FIRST: just take state1
+        """
+        if mode==cls.SUM_FIRST:
+            if not cls.states_dict.has_key(state1):
+                raise KeyError("unknown state: %s" % repr(state1))
+            return state1
+        if mode==cls.SUM_MIN:
+            i= min(cls.states_dict[state1], cls.states_dict[state2])
+        elif mode==cls.SUM_MAX:
+            i= max(cls.states_dict[state1], cls.states_dict[state2])
+        else:
+            raise ValueError("unknown mode: %s" % repr(mode))
         return cls.states_list[i]
     @classmethod
     def _allowed_states(cls, max_state):
@@ -1374,14 +1397,9 @@ class Dependencies(JSONstruct):
         return True
     @classmethod
     def _dependency_merge(cls, src_deps, dest_deps,
-                          constant_src_state= None):
+                          constant_src_state,
+                          state_sum_mode):
         """intelligent merge of dependency dicts.
-
-        If a dependency exists, take the "smaller" state as new state, if it
-        doesn't exist, just take it.
-
-        If constant_src_state is given take this instead of the
-        state actually found in src_deps.
         """
         for modulename, src_dep_dict in src_deps.items():
             dest_dep_dict= dest_deps.setdefault(modulename, {})
@@ -1392,7 +1410,9 @@ class Dependencies(JSONstruct):
                 if dest_state is None:
                     dest_dep_dict[src_ver]= src_state
                     continue
-                dest_dep_dict[src_ver]= cls._min_state((src_state, dest_state))
+                dest_dep_dict[src_ver]= \
+                        cls._sum_state(state_sum_mode,
+                                       src_state, dest_state)
     def selfcheck(self, msg):
         """raise exception if obj doesn't look like a dependency database."""
         def _somevalue(d):
@@ -1418,8 +1438,22 @@ class Dependencies(JSONstruct):
     def __init__(self, dict_= None):
         """create the object."""
         super(Dependencies, self).__init__(dict_)
-    def merge(self, other, constant_src_state= None):
-        """merge another Dependencies object to self."""
+    def merge(self, other,
+              constant_src_state,
+              state_sum_mode):
+        """merge another Dependencies object to self.
+
+        parameters:
+            self  - the object itself
+            other - the other Dependencies object
+            constant_src_state -
+                    take this as exting state in "self" instead of the state
+                    that is actually stored there.
+            state_sum_mode -
+                    determine the mode states are combinde. Must be
+                    Dependencies.SUM_FIRST, Dependencies.SUM_MIN or
+                    Dependencies.SUM_MAX.
+        """
         # pylint: disable=R0912
         #                          Too many branches
         for modulename in other.iter_modulenames():
@@ -1438,8 +1472,10 @@ class Dependencies(JSONstruct):
                         else:
                             src_state= vdict2[dictname]
                         if vdict.has_key(dictname):
-                            vdict[dictname]= self.__class__._min_state(
-                                    (vdict[dictname], src_state))
+                            vdict[dictname]= self.__class__._sum_state(
+                                    state_sum_mode,
+                                    src_state,
+                                    vdict[dictname])
                         else:
                             vdict[dictname]= src_state
                         # pylint: enable=W0212
@@ -1484,7 +1520,8 @@ class Dependencies(JSONstruct):
                         self.__class__._dependency_merge(
                                 dictval,
                                 vdict.setdefault(dictname,{}),
-                                constant_src_state)
+                                constant_src_state,
+                                state_sum_mode)
                         # pylint: enable=W0212
                         continue
                     raise AssertionError("unexpected dictname %s" % dictname)
@@ -2011,14 +2048,10 @@ class Builddb(JSONstruct):
     #                          Too many public methods
     states= set(("stable","testing","unstable"))
     @classmethod
-    def guess_state(cls,st):
-        """convert an abbreviation to a valid state."""
-        errst= "error: cannot determine what state is meant by %s" % st
-        match= guess_string(st, cls.states)
-        if match is None:
-            errst= "error: cannot determine what state is meant by %s" % st
-            raise ValueError(errst)
-        return match
+    def check_state(cls, state):
+        """checks if a state is allowed."""
+        if not state in cls.states:
+            raise ValueError("unknown state: %s" % repr(state))
     def selfcheck(self, msg):
         """raise exception if obj doesn't look like a builddb."""
         def _somevalue(d):
@@ -2084,8 +2117,8 @@ class Builddb(JSONstruct):
     def new_build(self, build_tag, state):
         """create a new build with the given state.
         """
-        if state not in self.__class__.states:
-            raise ValueError("not an allowed state: %s" % state)
+        # may raise ValueError:
+        self.__class__.check_state(state)
         d= self.datadict()
         if d.has_key(build_tag):
             raise ValueError("cannot create, build %s already exists" % \
@@ -2102,8 +2135,8 @@ class Builddb(JSONstruct):
         return d[build_tag]["state"]
     def change_state(self, build_tag, new_state):
         """sets the state to a new value."""
-        if new_state not in self.__class__.states:
-            raise ValueError("not an allowed state: %s" % new_state)
+        # may raise ValueError:
+        self.__class__.check_state(new_state)
         d= self.datadict()
         d[build_tag]["state"]= new_state
     def add_build(self, other, build_tag):

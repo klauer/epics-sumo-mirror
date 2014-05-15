@@ -852,7 +852,8 @@ def call_make(db_name, builddb_name, buildtag,
     db= utils.Dependencies.from_json_file(db_name,
                 keep_locked= not dry_run)
     partialdb= create_partialdb(db, builddb, buildtag)
-    db.merge(partialdb, "testing")
+    db.merge(partialdb, constant_src_state= "testing",
+             state_sum_mode= utils.Dependencies.SUM_MIN)
     db.json_save(db_name, verbose, dry_run)
     # ^^^ does also unlock the file
 
@@ -1066,7 +1067,8 @@ def process(options, commands):
                               options.verbose, options.dry_run)
             # ^^^ does also unlock the file
             partialdb= create_partialdb(db, builddb, buildtag)
-            db.merge(partialdb, new_state)
+            db.merge(partialdb, constant_src_state= new_state,
+                     state_sum_mode= utils.Dependencies.SUM_MIN)
             db.json_save(options.db, options.verbose, options.dry_run)
             # ^^^ does also unlock the file
         return
@@ -1213,7 +1215,8 @@ def process(options, commands):
             raise
 
         partialdb= create_partialdb(db, builddb, buildtag)
-        db.merge(partialdb, "unstable")
+        db.merge(partialdb, constant_src_state="unstable",
+                 state_sum_mode= utils.Dependencies.SUM_MIN)
         db.json_save(options.db, options.verbose, options.dry_run)
         # ^^^ does also unlock the file
         builddb.json_save(options.builddb, options.verbose, options.dry_run)

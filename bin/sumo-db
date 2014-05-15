@@ -120,7 +120,7 @@ def create_database(deps, repoinfo, groups, archs, state, source_patches):
         sys.stderr.write(msg+"\n")
 
     try:
-        state= utils.Builddb.guess_state(state)
+        utils.Dependencies.check_state(state)
     except ValueError, e:
         sys.exit(str(e))
     patcher= utils.RegexpPatcher()
@@ -397,7 +397,8 @@ def process(options, commands):
         db = utils.Dependencies.from_json_file(options.db,
                 keep_locked= not options.dumpdb and (not options.dry_run))
         db2= utils.Dependencies.from_json_file(commands[1])
-        db.merge(db2)
+        db.merge(db2, constant_src_state= None,
+                 state_sum_mode= utils.Dependencies.SUM_MIN)
         if options.dumpdb:
             db.json_print()
         else:
