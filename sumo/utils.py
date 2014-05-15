@@ -781,15 +781,15 @@ class ModuleSpec(object):
         if version2 is None:
             return True
         if flag=="eq":
-            return (version1==version2)
+            return version1==version2
         k1= rev2key(version1)
         k2= rev2key(version2)
         #if self.versionflag=="=":
         #    return (k1==k2)
         if flag=="le":
-            return (k1>=k2)
+            return k1>=k2
         if flag=="ge":
-            return (k1<=k2)
+            return k1<=k2
         raise ValueError("unknown flag: '%s'" % repr(flag))
 
     def test(self, version):
@@ -1715,7 +1715,7 @@ class Dependencies(JSONstruct):
                                                                  dep_name,
                                                                  "unstable",
                                                                  None):
-                    if not((dep_name,dep_version) in modules_set):
+                    if not (dep_name,dep_version) in modules_set:
                         continue
                     s.add((dep_name,dep_version))
 
@@ -1954,7 +1954,8 @@ class Dependencies(JSONstruct):
         When no moduleversions are found, rause a ValueError exception.
 
         Note that the new Dependencies object only contains references of the
-        data. This DOES NOT do a deep copy.
+        data. This DOES NOT do a deep copy so you should NOT modify the
+        result.
         """
         if not isinstance(modulespecs, ModuleSpecs):
             raise TypeError("wrong type: '%s'" % repr(modulespecs))
