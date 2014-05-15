@@ -28,3 +28,5 @@
 # doc directories:
 ^doc/_build$
 
+# distribution directory:
+^dist/
