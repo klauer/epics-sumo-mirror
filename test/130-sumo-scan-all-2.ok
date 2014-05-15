@@ -185,7 +185,7 @@
         }, 
         "/tmp-110-sumo-build-new-2/ASYN/4-18-bessy1+001": {
             "darcs": {
-                "tag": "4-18-bessy1", 
+                "tag": "R4-18-bessy1", 
                 "url": "rcsadm@aragon.acc.bessy.de:/opt/repositories/controls/darcs/epics/support/asyn/4-18"
             }
         }, 

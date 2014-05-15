@@ -188,6 +188,7 @@ directory tree (without darcs)
 ./ASYN/4-18-bessy1+001/asyn/vxi11/vxi11core.rpcl
 ./ASYN/4-18-bessy1+001/asyn/vxi11/vxi11.h
 ./ASYN/4-18-bessy1+001/asyn/vxi11/vxi11intr.rpcl
+./ASYN/4-18-bessy1+001/.boring
 ./ASYN/4-18-bessy1+001/configure
 ./ASYN/4-18-bessy1+001/configure/CONFIG
 ./ASYN/4-18-bessy1+001/configure/CONFIG_APP

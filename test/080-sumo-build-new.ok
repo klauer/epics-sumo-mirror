@@ -2499,6 +2499,7 @@ directory tree (without darcs)
 ./MCAN/TAGLESS-2-6-3-test+001/Makefile
 ./ASYN
 ./ASYN/4-18-bessy1+001
+./ASYN/4-18-bessy1+001/.boring
 ./ASYN/4-18-bessy1+001/testIPServerApp
 ./ASYN/4-18-bessy1+001/testIPServerApp/Db
 ./ASYN/4-18-bessy1+001/testIPServerApp/Db/testIPServer.db
