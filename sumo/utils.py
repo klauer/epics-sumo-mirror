@@ -1574,6 +1574,12 @@ class Dependencies(JSONstruct):
             return
         if dep_module_dict.has_key(dep_versionname):
             del dep_module_dict[dep_versionname]
+        if not dep_module_dict:
+            # dict is now empty, delete the whole entry in "dependencies":
+            del dep_dict[dep_modulename]
+        if not dep_dict:
+            # "dependencies" is now empty, remove it:
+            del m_dict[versionname]["dependencies"]
     def check(self):
         """do a consistency check on the db."""
         msg= []
@@ -2023,7 +2029,6 @@ class Dependencies(JSONstruct):
                 if not self.dependencies_found(modulename, versionname):
                     continue
                 deletions= []
-                dep_no= 0
                 for dep_name in self.iter_dependencies(modulename,
                                                        versionname):
                     for dep_ver in self.iter_dependency_versions(modulename,
@@ -2031,13 +2036,8 @@ class Dependencies(JSONstruct):
                                                                  dep_name,
                                                                  "unstable",
                                                                  None):
-                        dep_no+= 1
                         if not (dep_name,dep_ver) in modules:
                             deletions.append((dep_name, dep_ver))
-                if len(deletions)>= dep_no:
-                    raise ValueError("error: dependencies for %s:%s are "
-                                     "not part of the DB file" % \
-                                     (modulename, versionname))
                 for (dep_name, dep_ver) in deletions:
                     self.del_dependency(modulename, versionname,
                                         dep_name, dep_ver)
