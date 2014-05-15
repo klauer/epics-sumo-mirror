@@ -2100,6 +2100,10 @@ class Builddb(JSONstruct):
             d= self.datadict()
             if not isinstance(d, dict):
                 break
+            if not d:
+                # empty directory
+                # this may be OK:
+                return
             build= _somevalue(d)
             if not isinstance(build, dict):
                 break
