@@ -347,7 +347,7 @@ def _distribution_add(db, dist, modulename, versionname, maxstate, archs):
                              errst)
     return new_dist
 
-def distribution(db, modulespecs, maxstate, trace):
+def distribution(db, modulespecs, maxstate, trace, tracemore):
     """create a distribution.
 
     modulespecs: a ModuleSpecs object.
@@ -356,6 +356,8 @@ def distribution(db, modulespecs, maxstate, trace):
     #                          Too many local variables
     # pylint: disable=R0912
     #                          Too many branches
+    # pylint: disable=R0915
+    #                          Too many statements
     if not isinstance(modulespecs, utils.ModuleSpecs):
         raise TypeError("wrong type: '%s'" % modulespecs)
     if trace:
@@ -378,6 +380,9 @@ def distribution(db, modulespecs, maxstate, trace):
     dist= {}
     m_list= []
     for (modulename, versionname, archs) in versioned_modules:
+        if tracemore:
+            sys.stderr.write("dist: %s\n" % dist)
+            sys.stderr.write("examine %s:%s\n" % (modulename,versionname))
         try:
             dist= _distribution_add(db, dist, modulename, versionname,
                                     maxstate, archs)
@@ -392,6 +397,9 @@ def distribution(db, modulespecs, maxstate, trace):
             m_list.append("\t%s:%s" % (modulename, versionname))
 
     for (modulename, archs) in versionless_modules:
+        if tracemore:
+            sys.stderr.write("dist: %s\n" % dist)
+            sys.stderr.write("examine %s:*\n" % modulename)
         if trace:
             sys.stderr.write("module %s\n" % modulename)
         try:
@@ -1122,7 +1130,7 @@ def process(options, commands):
             sys.exit(0)
         try:
             dist_dict= distribution(db, modulespecs_obj, options.maxstate,
-                                    options.trace)
+                                    options.trace, options.tracemore)
         except ValueError, e:
             # db __del__ method should remove lockfiles
             sys.exit(str(e))
@@ -1167,7 +1175,8 @@ def process(options, commands):
             dist_dict= distribution(db,
                                     modulespecs_obj,
                                     options.maxstate,
-                                    options.trace)
+                                    options.trace,
+                                    options.tracemore)
         except ValueError, e:
             # db __del__ method should remove lockfiles
             sys.exit(str(e))
@@ -1560,6 +1569,10 @@ def main():
     parser.add_option("--trace",
                       action="store_true",
                       help="Switch on some trace messages.",
+                      )
+    parser.add_option("--tracemore",
+                      action="store_true",
+                      help="Switch on even more trace messages.",
                       )
     parser.add_option("--dump-modules",
                       action="store_true",
