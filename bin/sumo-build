@@ -1084,6 +1084,9 @@ def process(options, commands):
                                    optional= False,
                                    check_conflict= True)
 
+        if options.supportdir:
+            os.chdir(options.supportdir)
+
         builddb= utils.Builddb.from_json_file(options.builddb)
         if not builddb.has_build_tag(buildtag):
             sys.exit("error, buildtag \"%s\" not found" % buildtag)
@@ -1106,6 +1109,8 @@ def process(options, commands):
                                    command_index=1,
                                    optional= False,
                                    check_conflict= True)
+        if options.supportdir:
+            os.chdir(options.supportdir)
 
         cleanup_modules(buildtag, options.verbose, options.dry_run)
         return
