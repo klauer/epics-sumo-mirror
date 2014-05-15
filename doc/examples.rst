@@ -137,7 +137,7 @@ Create a build for an application
 
 Now we try to use modules from our support directory::
 
-  sumo-build use > configure/RELASE
+  sumo-build use > configure/RELEASE
 
 The program prints this message::
 
