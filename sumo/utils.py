@@ -1241,7 +1241,22 @@ class JSONstruct(object):
         if not os.path.exists(filename):
             raise IOError("file \"%s\" not found" % filename)
         l= lock_a_file(filename)
-        result= cls(json_loadfile(filename))
+        # If the line in "try" raises an exception, the file lock
+        # is removed, then the exception is re-raised
+
+        # simplejson and json raise different kinds of exceptions
+        # in case of a syntax error within the JSON file.
+        if _JSON_TYPE==1:
+            my_exceptionclass= ValueError
+        else:
+            my_exceptionclass= json.scanner.JSONDecodeError
+
+        try:
+            result= cls(json_loadfile(filename))
+        except my_exceptionclass, _:
+            unlock_a_file(l)
+            raise
+
         if keep_locked:
             result.lock= l
             result.lock_filename= filename
