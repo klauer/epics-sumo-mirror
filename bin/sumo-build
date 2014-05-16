@@ -612,7 +612,7 @@ def create_source(db, modulename, versionname,
     elif sourcetype=="darcs":
         cmd_l= ["darcs", "get"]
         if sourcedata.has_key("tag"):
-            cmd_l.extend(["-t", sourcedata["tag"]])
+            cmd_l.extend(["-t", r"'^%s\s*$'" % sourcedata["tag"]])
         cmd_l.append(sourcedata["url"])
         cmd_l.append(destdir)
         cmd= " ".join(cmd_l)
