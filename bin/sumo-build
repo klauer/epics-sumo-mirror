@@ -18,7 +18,7 @@ import shutil
 import sumo.utils as utils
 
 # version of the program:
-my_version= "1.5"
+my_version= "1.5.1"
 
 KNOWN_COMMANDS=set(( "cleanup", "delete", "edit", "find", "list",
                      "makeconfig",

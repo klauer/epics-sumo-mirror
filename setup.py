@@ -5,7 +5,7 @@ setup.py file for sumo.
 See http://docs.python.org/install
 on how to use setup.py
 """
-my_version="1.5"
+my_version="1.5.1"
 
 from distutils.core import setup
 
