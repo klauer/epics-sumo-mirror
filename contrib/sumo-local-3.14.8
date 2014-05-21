@@ -1,0 +1,52 @@
+#!/bin/sh
+
+set -e
+
+SCRIPT=`basename $0`
+
+SUMO_DB="sumo-db"
+SUMO_BUILD="sumo-build"
+
+SUMODIR=/opt/Epics/sumo3.14.8
+LOCAL_SUMO_SUBDIR=sumo-local
+
+if [ -z "$3" ];then
+    echo "usage: $SCRIPT MODULE OLDVERSION NEWVERSION {extra modulespecs}"
+    echo "        extra modulespecs is a space separated list of "
+    echo "        MODULENAME:MODULEVERSION items."
+    exit 1
+fi
+
+module="$1"
+shift
+oldversion="$1"
+shift
+newversion="$1"
+shift
+
+if [ -e $LOCAL_SUMO_SUBDIR ]; then
+    echo "error, directory $LOCAL_SUMO_SUBDIR already exists"
+    exit 1
+fi
+
+echo "set up local Sumo directory"
+
+mkdir $LOCAL_SUMO_SUBDIR && cd $LOCAL_SUMO_SUBDIR
+
+LOCAL_SUMODIR=`pwd`
+
+cp $SUMODIR/DEPS.DB .
+
+$SUMO_DB --maxstate unstable --db $LOCAL_SUMODIR/DEPS.DB makeconfig
+$SUMO_BUILD --db $LOCAL_SUMODIR/DEPS.DB --builddb $LOCAL_SUMODIR/BUILDS.DB --supportdir $LOCAL_SUMODIR --maxstate unstable --makeopts "-s" makeconfig
+
+$SUMO_DB cloneversion $module $oldversion $newversion
+
+echo "trying to build the support and all dependencies"
+
+$SUMO_BUILD --maxstate unstable new $@ $module:$newversion
+
+echo "$module:$newversion is now compiled."
+echo "Remember that this is still identical with $module:$oldversion."
+echo "You may now start to modify it. If finished do not forget to"
+echo "change the 'source' part of this module in DEPS.DB"

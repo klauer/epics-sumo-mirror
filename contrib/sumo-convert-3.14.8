@@ -1,0 +1,69 @@
+#!/bin/sh
+
+set -e
+
+SCRIPT=`basename $0`
+
+SUMO_DB="sumo-db"
+SUMO_BUILD="sumo-build"
+
+SUMODIR=/opt/Epics/sumo3.14.8
+EPICSDIR=/opt/csr/Epics/R3.14.8
+
+if [ -e "MODULES" ]; then
+    echo "File MODULES exists, you app is already converted"
+    exit 0
+fi
+
+if [ ! -e "configure/RELEASE" ]; then
+    echo "File 'configure/RELEASE' not found, this doesn't seem to be an "
+    echo "EPICS application."
+    exit 1
+fi
+        
+
+sumo-scan -d . all -g "$EPICSDIR/support $EPICSDIR" -N 'TOP EPICS_SUPPORT SUPPORT TEMPLATE_TOP EPICS_SITE_TOP EPICS_MODULES MSI' | $SUMO_DB appconvert - > MODULES
+
+$SUMO_DB --maxstate unstable --db $SUMODIR/DEPS.DB -c MODULES makeconfig
+
+$SUMO_BUILD --maxstate unstable --db $SUMODIR/DEPS.DB --builddb $SUMODIR/BUILDS.DB --supportdir $SUMODIR -c MODULES makeconfig
+
+cat > SUMO.make << 'MAKE_SUMO'
+# sumo rules start here
+
+# Note: in order to rebuild the RELEASE file you must exec "touch MODULES"
+# first
+
+SUMODIR=/opt/Epics/sumo3.14.8
+
+# This file can also be used with "make -f SUMO.make':
+
+ifndef TOP
+TOP=.
+endif
+
+sumo: $(TOP)/sumo-build.config $(TOP)/sumo-db.config $(TOP)/configure/RELEASE
+
+$(TOP)/sumo-build.config: $(TOP)/MODULES
+	sumo-build --maxstate unstable --db $(SUMODIR)/DEPS.DB --builddb $(SUMODIR)/BUILDS.DB --supportdir $(SUMODIR) -c $< makeconfig
+
+$(TOP)/sumo-db.config: $(TOP)/MODULES
+	sumo-db --maxstate unstable --db $(SUMODIR)/DEPS.DB -c $< makeconfig
+
+$(TOP)/configure/RELEASE: $(TOP)/sumo-build.config
+	@rm -f $@.bak
+	sumo-build -c $< use > $@.new
+	@mv $@ $@.bak
+	@mv $@.new $@
+
+# sumo rules end here
+MAKE_SUMO
+
+echo 'include $(TOP)/SUMO.make' >> Makefile
+
+echo "A file 'MODULES' containing the module dependencies was created."
+echo "You may review or modify that file."
+echo
+echo "In order to build your application you first have to run"
+echo "    'make sumo'"
+echo "in order to create the file 'configure/RELEASE' from the 'MODULES' file"

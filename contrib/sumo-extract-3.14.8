@@ -1,0 +1,48 @@
+#!/bin/sh
+
+set -e
+
+SCRIPT=`basename $0`
+
+SUMO_DB="sumo-db"
+SUMO_BUILD="sumo-build"
+
+SUMODIR=/opt/Epics/sumo3.14.8
+
+if [ -z "$3" ]; then
+    echo "usage: $SCRIPT [support-name] [support-version] [build-name]"
+    exit 1
+fi
+
+module="$1"
+version="$2"
+build="$3"
+
+dir=$SUMODIR/$module/$version+$build
+
+if [ ! -d $dir ]; then
+    echo "error, directory '$dir' not found"
+    exit 1
+fi
+
+if [ -d $module ]; then
+    echo "error, cannot create '$module', it already exists"
+    exit 1
+fi
+
+cp -a $dir .
+mv $version+$build $module
+
+echo "$dir" was copied to $module
+
+cd $module > /dev/null
+
+
+sumo-scan -d $SUMODIR/APPS_IOCWATCH/R2-2-x+BII-01 -g "$SUMODIR" all -N 'TOP EPICS_SUPPORT SUPPORT TEMPLATE_TOP EPICS_SITE_TOP EPICS_MODULES MSI' | $SUMO_DB appconvert - > MODULES
+
+$SUMO_DB --maxstate unstable --db $SUMODIR/DEPS.DB -c MODULES makeconfig
+$SUMO_BUILD --maxstate unstable --db $SUMODIR/DEPS.DB --builddb $SUMODIR/BUILDS.DB --supportdir $SUMODIR -c MODULES makeconfig
+
+echo "creating configure/RELEASE"
+$SUMO_BUILD use > configure/RELEASE
+
