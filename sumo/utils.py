@@ -2170,6 +2170,12 @@ class Builddb(JSONstruct):
         """
         d= self.datadict()
         return d[build_tag]["state"] == "stable"
+    def is_testing_or_stable(self, build_tag):
+        """returns True if the build is marked testing or stable.
+        """
+        d= self.datadict()
+        s= d[build_tag]["state"]
+        return (s=="testing") or (s=="stable")
     def state(self, build_tag):
         """return the state of the build."""
         d= self.datadict()

@@ -276,8 +276,8 @@ def builddb_match(dist_dict, db, builddb, modulename, versionname):
     # given to this function.
     for build_tag in builddb.iter_builds():
         # try to find modules that were already built, ignore builds that are
-        # not marked "stable":
-        if not builddb.is_stable(build_tag):
+        # not marked "stable" or testing:
+        if not builddb.is_testing_or_stable(build_tag):
             continue
         if not builddb.has_module(build_tag, modulename):
             continue
