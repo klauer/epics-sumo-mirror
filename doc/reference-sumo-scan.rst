@@ -316,77 +316,79 @@ Options
 
 Here is a short overview on command line options:
 
---version             show program's version number and exit
--h, --help            show this help message and exit
---summary             Print a summary of the function of the program.
---test                Perform some self tests.
--c FILE, --config FILE  
-                      Load options from the given configuration file. You can
-                      specify more than one of these, in this case the files
-                      are merged. If this option is not given and
-                      --no-default-config is not given, the program tries to
-                      load the default configuration file sumo-db.config.
---no-default-config   If this option is given the program doesn't load the
-                      default configuration.
--d DIR, --dir DIR     Parse all RELEASE files in directory DIR. You can
-                      specify more than one of these by repeating this option
-                      or by joining values in a single string separated by
-                      spaces. This option value is stored in the CONFIGFILE.
--i INFOFILE, --info-file INFOFILE
-                      Read information from INFOFILE. This is a file generated
-                      by this script in a prevous run.
--N NAME, --ignore-name NAME
-                      Define macro names in the RELEASE files that should be
-                      ignored. You usually want to ignore the names 'TOP' or
-                      'SUPPORT' in RELEASE files.  You can specify more than
-                      one of these by repeating this option or by joining
-                      values in a single string separated by spaces.  This
-                      option value is stored in the CONFIGFILE.
--g DIR, --group-basedir DIR
-                      Option "-g" or "--group-basedir" must be followed by a
-                      directory name. It defines the part of the directory path
-                      that is the same for all support modules. This is needed
-                      in order to generate a module name from the module's
-                      directory path.  You can specify more than one of these
-                      by repeating this option or by joining values in a single
-                      string separated by spaces.  The value of this option is
-                      stored in the configuration file.
---exclude-path REGEXP 
-                      Exclude all paths that match REGEXP from dependencies.
-                      You can specify more than one of these by repeating this
-                      option or by joining values in a single string separated
-                      by spaces.  This option value is stored in the
-                      CONFIGFILE.
---exclude-deps REGEXP 
-                      Exclude all paths whose dependencies match REGEXP. This
-                      option value is stored in the CONFIGFILE.,
--P PATCHEXPRESSION, --source-patch PATCHEXPRESSION
-                      Specify a source PATCHEXPRESSION. Such an expression
-                      consists of a tuple of 2 python strings. The first is the
-                      match expression, the second one is the replacement
-                      string. The regular expression is applied to every source
-                      url generated. You can specify more than one
-                      PATCHEXPRESSION. This option value is stored in the
-                      CONFIGFILE.
---hint HINT           Specify a HINT. A HINT has the form REGEXP,FLAG{,FLAG}.
-                      REGEXP is a regular expression that is matched with the
-                      module path. FLAG is a string that gives hints how to
-                      treat that module.  You can specify more than one hint.
-                      This option value is stored in the CONFIGFILE.,
---darcs-dirtest       Test if a found remote darcs repository has a '_darcs'
-                      directory in it. This may help detect invalid default
-                      repository entries. This option value is stored in the
-                      CONFIGFILE.,
---missing-tag         Show directories where a repository was found but no tag.
-                      This option value is stored in the CONFIGFILE.
---missing-repo        Show directories where no repository was found. This
-                      option value is stored in the CONFIGFILE.,
--t BUILDTAG, --buildtag BUILDTAG
-                      Scan only directories of the given buildtag.
--p, --progress        Show progress on stderr. This option value is stored in
-                      the configuration file.
--t, --trace           Switch on some trace messages.
--v, --verbose         Show command calls.  This option value is stored in the
-                      configuration file.
--n, --dry-run         Just show what the program would do.
+``--version``
+    show program's version number and exit
+``-h, --help``
+    show this help message and exit
+``--summary``
+    Print a summary of the function of the program.
+``--test``
+    Perform some self tests.
+``-c FILE, --config FILE``
+    Load options from the given configuration file. You can specify more than
+    one of these, in this case the files are merged. If this option is not
+    given and --no-default-config is not given, the program tries to load the
+    default configuration file sumo-db.config.
+``--no-default-config``
+    If this option is given the program doesn't load the default configuration.
+``-d DIR, --dir DIR``
+    Parse all RELEASE files in directory DIR. You can specify more than one of
+    these by repeating this option or by joining values in a single string
+    separated by spaces. This option value is stored in the CONFIGFILE.
+``-i INFOFILE, --info-file INFOFILE``
+    Read information from INFOFILE. This is a file generated by this script in
+    a prevous run.
+``-N NAME, --ignore-name NAME``
+    Define macro names in the RELEASE files that should be ignored. You usually
+    want to ignore the names 'TOP' or 'SUPPORT' in RELEASE files.  You can
+    specify more than one of these by repeating this option or by joining
+    values in a single string separated by spaces.  This option value is stored
+    in the CONFIGFILE.
+``-g DIR, --group-basedir DIR``
+    Option "-g" or "--group-basedir" must be followed by a directory name. It
+    defines the part of the directory path that is the same for all support
+    modules. This is needed in order to generate a module name from the
+    module's directory path.  You can specify more than one of these by
+    repeating this option or by joining values in a single string separated by
+    spaces.  The value of this option is stored in the configuration file.
+``--exclude-path REGEXP``
+    Exclude all paths that match REGEXP from dependencies.  You can specify
+    more than one of these by repeating this option or by joining values in a
+    single string separated by spaces.  This option value is stored in the
+    CONFIGFILE.
+``--exclude-deps REGEXP``
+    Exclude all paths whose dependencies match REGEXP. This option value is
+    stored in the CONFIGFILE.,
+``-P PATCHEXPRESSION, --source-patch PATCHEXPRESSION``
+    Specify a source PATCHEXPRESSION. Such an expression consists of a tuple of
+    2 python strings. The first is the match expression, the second one is the
+    replacement string. The regular expression is applied to every source url
+    generated. You can specify more than one PATCHEXPRESSION. This option value
+    is stored in the CONFIGFILE.
+``--hint HINT``
+    Specify a HINT. A HINT has the form REGEXP,FLAG{,FLAG}.  REGEXP is a
+    regular expression that is matched with the module path. FLAG is a string
+    that gives hints how to treat that module.  You can specify more than one
+    hint.  This option value is stored in the CONFIGFILE.,
+``--darcs-dirtest``
+    Test if a found remote darcs repository has a '_darcs' directory in it.
+    This may help detect invalid default repository entries. This option value
+    is stored in the CONFIGFILE.,
+``--missing-tag``
+    Show directories where a repository was found but no tag.  This option
+    value is stored in the CONFIGFILE.
+``--missing-repo``
+    Show directories where no repository was found. This option value is stored
+    in the CONFIGFILE.,
+``-t BUILDTAG, --buildtag BUILDTAG``
+    Scan only directories of the given buildtag.
+``-p, --progress``
+    Show progress on stderr. This option value is stored in the configuration
+    file.
+``-t, --trace``
+    Switch on some trace messages.
+``-v, --verbose``
+    Show command calls. This option value is stored in the configuration file.
+``-n, --dry-run``
+    Just show what the program would do.
 

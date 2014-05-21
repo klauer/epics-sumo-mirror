@@ -395,51 +395,59 @@ Options
 
 Here is a short overview on command line options:
 
---version             show program's version number and exit
--h, --help            show this help message and exit
---summary             Print a summary of the function of the program.
---test                Perform some self tests.
--c FILE, --config FILE  
-                      Load options from the given configuration file. You can
-                      specify more than one of these, in this case the files
-                      are merged. If this option is not given and
-                      --no-default-config is not given, the program tries to
-                      load the default configuration file sumo-db.config.
---no-default-config   If this option is given the program doesn't load the
-                      default configuration.
---db DB               Define the name of the DB file. This option value is
-                      stored in the configuration file. 
---dumpdb              Dump the modified db on the console, currently only for the 
-                      commands "weight", "merge", "cloneversion" and
-                      "replaceversion".
---arch ARCH           Define the name of a targetarchitecture. You can specify
-                      more than one target architecture.  You can specify more
-                      than one of these by repeating this option or by joining
-                      values in a single string separated by spaces.  This
-                      option value is stored in the configuration file.  
--m MODULE, --module MODULE  Define a :term:`modulespec`. If you specify modules with
-                      this option you don't have to put :term:`modulespecs`
-                      after some of the commands. You can specify more than one
-                      of these by repeating this option or by joining values in
-                      a single string separated by spaces.  This option value
-                      is stored in the configuration file.
--b, --brief           Create a more brief output for some commands.
--M STATE, --maxstate STATE      
-                      Specify the maximum state for some commands.  This option
-                      value is stored in the configuration file.
--P EXPRESSION, --source-patch EXPRESSION
-                      Specify a source patchexpression. Such an expression
-                      consists of a tuple of 2 python strings. The first is the
-                      match expression, the second one is the replacement
-                      string. The regular expression is applied to every source
-                      url generated. You can specify more than one
-                      patchexpression.  This option value is stored in the
-                      configuration file.
---noignorecase        For command 'find', do NOT ignore case.
---nolock              Do not use file locking.
--p, --progress        Show progress on stderr. This option value is stored in
-                      the configuration file.
--t, --trace           Switch on some trace messages.
--v, --verbose         Show command calls.  This option value is stored in the
-                      configuration file.
--n, --dry-run         Just show what the program would do.
+``--version``
+    show program's version number and exit
+``-h, --help``
+    show this help message and exit
+``--summary``
+    Print a summary of the function of the program.
+``--test``
+    Perform some self tests.
+``-c FILE, --config FILE``
+    Load options from the given configuration file. You can specify more than
+    one of these, in this case the files are merged. If this option is not
+    given and --no-default-config is not given, the program tries to load the
+    default configuration file sumo-db.config.
+``--no-default-config``
+    If this option is given the program doesn't load the default configuration.
+``--db DB``
+    Define the name of the DB file. This option value is stored in the
+    configuration file. 
+``--dumpdb``
+    Dump the modified db on the console, currently only for the commands
+    "weight", "merge", "cloneversion" and "replaceversion".
+``--arch ARCH``
+    Define the name of a targetarchitecture. You can specify more than one
+    target architecture.  You can specify more than one of these by repeating
+    this option or by joining values in a single string separated by spaces.
+    This option value is stored in the configuration file.  
+``-m MODULE, --module MODULE``
+    Define a :term:`modulespec`. If you specify modules with this option you
+    don't have to put :term:`modulespecs` after some of the commands. You can
+    specify more than one of these by repeating this option or by joining
+    values in a single string separated by spaces.  This option value is stored
+    in the configuration file.
+``-b, --brief``
+    Create a more brief output for some commands.
+``-M STATE, --maxstate STATE``
+    Specify the maximum state for some commands.  This option value is stored
+    in the configuration file.
+``-P EXPRESSION, --source-patch EXPRESSION``
+    Specify a source patchexpression. Such an expression consists of a tuple of
+    2 python strings. The first is the match expression, the second one is the
+    replacement string. The regular expression is applied to every source url
+    generated. You can specify more than one patchexpression.  This option
+    value is stored in the configuration file.
+``--noignorecase``
+    For command 'find', do NOT ignore case.
+``--nolock``
+    Do not use file locking.
+``-p, --progress``
+    Show progress on stderr. This option value is stored in the configuration
+    file.
+``-t, --trace``
+    Switch on some trace messages.
+``-v, --verbose``
+    Show command calls.  This option value is stored in the configuration file.
+``-n, --dry-run``
+    Just show what the program would do.

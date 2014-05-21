@@ -265,75 +265,83 @@ Options
 
 Here is a short overview on command line options:
 
---version             show program's version number and exit
--h, --help            show this help message and exit
---summary             Print a summary of the function of the program.
---test                Perform some self tests.
--c FILE, --config FILE  
-                      Load options from the given configuration file. You can
-                      specify more than one of these, in this case the files
-                      are merged. If this option is not given and
-                      --no-default-config is not given, the program tries to
-                      load the default configuration file sumo-build.config.
---no-default-config   If this option is given the program doesn't load the
-                      default configuration.
---db DB               Define the name of the DB file. This option value is
-                      stored in the configuration file. 
---builddb BUILDDB     Specify the BUILDDB file. This option value is stored in
-                      the configuration file.
--t BUILDTAG, --buildtag BUILDTAG
-                      Specify a buildtag.
---supportdir SUPPORDIR
-                      Specify the support directory. If this option is not
-                      given take the current working directory as support
-                      directory.  This option value is stored in the
-                      configuration file.
--x EXTRALINE, --extra EXTRALLINE
-                      Specify an extra line that is added to the generated
-                      RELEASE file. This option value is stored in the
-                      configuration file.
--a ALIAS, --alias ALIAS
-                      Define an alias for the commands 'use' and 'useall'. An
-                      alias must have the form FROM:TO. The path of module
-                      named 'FROM' is put in the generated RELEASE file as a
-                      variable named 'TO'. You can specify more than one of
-                      these by repeating this option or by joining values in a
-                      single string separated by spaces. This option value is
-                      stored in the configuration file.
---arch ARCH           Define the name of a targetarchitecture. You can specify
-                      more than one target architecture.  You can specify more
-                      than one of these by repeating this option or by joining
-                      values in a single string separated by spaces.  This
-                      option value is stored in the configuration file.
--M, --maxstate        Specify the maximum state for some commands. This option
-                      value is stored in the configuration file.
--m MODULE, --module MODULE
-                      Define a :term:`modulespec`. If you specify modules with
-                      this option you don't have to put :term:`modulespecs`
-                      after some of the commands. You can specify more than one
-                      of these by repeating this option or by joining values in
-                      a single string separated by spaces.  This option value
-                      is stored in the configuration file.
---modules-from-build BUILDTAG
-                      Take the module specifications from a build. If you use
-                      "--addmodules" you can modify single module
-                      specifications in order to create a new build.
--b, --brief           Create a more brief output for some commands.
---no-make             With this option, "new" does not call "make".j
---makeopts MAKEOPTIONS
-                      Specify extra option strings for make You can specify
-                      more than one of these by repeating this option or by
-                      joining values in a single string separated by spaces.
-                      This option value is stored in the configuration file.
---readonly            Do not allow modifying the database files or the support
-                      directory.  This option value is stored in the
-                      configuration file.
---nolock              Do not use file locking.
--p, --progress        Show progress on stderr. This option value is stored in
-                      the configuration file.
---trace               Switch on some trace messages.
---tracemore           Switch on even more trace messages.
---dump-modules        Dump module specs, then stop the program.
--v, --verbose         Show command calls.  This option value is stored in the
-                      configuration file.
--n, --dry-run         Just show what the program would do.
+``--version``
+    show program's version number and exit
+``-h, --help``
+    show this help message and exit
+``--summary``
+    Print a summary of the function of the program.
+``--test``
+    Perform some self tests.
+``-c FILE, --config FILE``
+    Load options from the given configuration file. You can specify more than
+    one of these, in this case the files are merged. If this option is not
+    given and --no-default-config is not given, the program tries to load the
+    default configuration file sumo-build.config.
+``--no-default-config``
+    If this option is given the program doesn't load the default configuration.
+``--db DB``
+    Define the name of the DB file. This option value is stored in the
+    configuration file. 
+``--builddb BUILDDB``
+    Specify the BUILDDB file. This option value is stored in the configuration
+    file.
+``-t BUILDTAG, --buildtag BUILDTAG``
+    Specify a buildtag.
+``--supportdir SUPPORDIR``
+    Specify the support directory. If this option is not given take the current
+    working directory as support directory.  This option value is stored in the
+    configuration file.
+``-x EXTRALINE, --extra EXTRALLINE``
+    Specify an extra line that is added to the generated RELEASE file. This
+    option value is stored in the configuration file.
+``-a ALIAS, --alias ALIAS``
+    Define an alias for the commands 'use' and 'useall'. An alias must have the
+    form FROM:TO. The path of module named 'FROM' is put in the generated
+    RELEASE file as a variable named 'TO'. You can specify more than one of
+    these by repeating this option or by joining values in a single string
+    separated by spaces. This option value is stored in the configuration file.
+``--arch ARCH``
+    Define the name of a targetarchitecture. You can specify more than one
+    target architecture.  You can specify more than one of these by repeating
+    this option or by joining values in a single string separated by spaces.
+    This option value is stored in the configuration file.
+``-M, --maxstate``
+    Specify the maximum state for some commands. This option value is stored in
+    the configuration file.
+``-m MODULE, --module MODULE``
+    Define a :term:`modulespec`. If you specify modules with this option you
+    don't have to put :term:`modulespecs` after some of the commands. You can
+    specify more than one of these by repeating this option or by joining
+    values in a single string separated by spaces.  This option value is stored
+    in the configuration file.
+``--modules-from-build BUILDTAG``
+    Take the module specifications from a build. If you use "--addmodules" you
+    can modify single module specifications in order to create a new build.
+``-b, --brief``
+    Create a more brief output for some commands.
+``--no-make``
+    With this option, "new" does not call "make".j
+``--makeopts MAKEOPTIONS``
+    Specify extra option strings for make You can specify more than one of
+    these by repeating this option or by joining values in a single string
+    separated by spaces.  This option value is stored in the configuration
+    file.
+``--readonly``
+    Do not allow modifying the database files or the support directory.  This
+    option value is stored in the configuration file.
+``--nolock``
+    Do not use file locking.
+``-p, --progress``
+    Show progress on stderr. This option value is stored in the configuration
+    file.
+``--trace``
+    Switch on some trace messages.
+``--tracemore``
+    Switch on even more trace messages.
+``--dump-modules``
+    Dump module specs, then stop the program.
+``-v, --verbose``
+    Show command calls.  This option value is stored in the configuration file.
+``-n, --dry-run``
+    Just show what the program would do.
