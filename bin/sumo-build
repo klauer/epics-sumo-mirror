@@ -806,6 +806,17 @@ def create_modules(dist_dict, db, builddb, build_tag, extra_lines,
     # add all modules specified by dist_dict to builddb under tag build_tag:
     add_modules(dist_dict, db, builddb, build_tag)
 
+    if builddb.is_fully_linked(build_tag):
+        # the new build would contain only links, this is probably not wanted.
+        if utils.Builddb.is_generated_buildtag(build_tag):
+            # we never want an autotag build that consists only of links
+            sys.exit("error, this build with an auto generated tag "
+                     "would consist only of links. You can as well "
+                     "use one of the existing builds. Just try "
+                     "'sumo-build use'.")
+        sys.stderr.write("Note: The generated build '%s' consists only of "
+                         "links.\n" % build_tag)
+
     for modulename in sorted(dist_dict.keys()):
         versionname= builddb.module_version(build_tag, modulename)
         module_set.add((modulename, versionname))

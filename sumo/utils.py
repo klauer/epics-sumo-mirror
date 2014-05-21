@@ -2150,6 +2150,10 @@ class Builddb(JSONstruct):
             no= 0
         no+= 1
         return "AUTO-%03d" % no
+    @staticmethod
+    def is_generated_buildtag(buildtag):
+        """return True of the buildtag was generated."""
+        return buildtag.startswith("AUTO-")
     def __init__(self, dict_= None):
         """create the object."""
         super(Builddb, self).__init__(dict_)
@@ -2203,6 +2207,16 @@ class Builddb(JSONstruct):
         self.__class__.check_state(new_state)
         d= self.datadict()
         d[build_tag]["state"]= new_state
+    def is_fully_linked(self, build_tag):
+        """returns True if the build consists *only* of links."""
+        build_= self.datadict()[build_tag]
+        modules_= build_["modules"]
+        linked_ = build_.get("linked")
+        if not linked_:
+            return False
+        if len(modules_)>len(linked_):
+            return False
+        return True
     def add_build(self, other, build_tag):
         """add build data from another Builddb to this one.
 
