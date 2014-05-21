@@ -973,7 +973,7 @@ def process(options, commands):
         options.extra= []
 
     if commands[0]=="makeconfig":
-        if len(commands)>1:
+        if len(commands)>2:
             sys.exit("error: extra arguments following \"%s\"" % commands[0])
         if len(commands)<=1:
             configfile= None

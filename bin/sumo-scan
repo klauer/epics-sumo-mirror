@@ -500,7 +500,7 @@ def process(options, commands):
             sys.exit("unknown command: %s" % c)
 
     if commands[0]=="makeconfig":
-        if len(commands)>1:
+        if len(commands)>2:
             sys.exit("error: extra arguments following \"makeconfig\"")
         if len(commands)<=1:
             configfile= None
