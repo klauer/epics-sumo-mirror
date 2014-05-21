@@ -280,6 +280,11 @@ Here is a short overview on command line options:
     default configuration file sumo-build.config.
 ``--no-default-config``
     If this option is given the program doesn't load the default configuration.
+``--#include FILE`` 
+    Specify a an '#include' directive in the configuration file.  This option
+    has only a meaning if a configuration file is created with the 'makeconfig'
+    command. '#include' means that the following file(s) are included before
+    the rest of the configuration file.
 ``--db DB``
     Define the name of the DB file. This option value is stored in the
     configuration file. 

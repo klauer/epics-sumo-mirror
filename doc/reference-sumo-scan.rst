@@ -331,6 +331,11 @@ Here is a short overview on command line options:
     default configuration file sumo-db.config.
 ``--no-default-config``
     If this option is given the program doesn't load the default configuration.
+``--#include FILE`` 
+    Specify a an '#include' directive in the configuration file.  This option
+    has only a meaning if a configuration file is created with the 'makeconfig'
+    command. '#include' means that the following file(s) are included before
+    the rest of the configuration file.
 ``-d DIR, --dir DIR``
     Parse all RELEASE files in directory DIR. You can specify more than one of
     these by repeating this option or by joining values in a single string

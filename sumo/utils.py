@@ -167,6 +167,29 @@ class ConfigFile(object):
     def disable_default(self):
         """disable loading of the default file."""
         self.load_default= False
+    def _merge(self, dict_):
+        """merge known keys from dict_ with self."""
+        for (key, val) in dict_.items():
+            if not self._dict.has_key(key):
+                continue # silently ignore unknown keys
+            self._dict[key]= val
+    def _load_file(self, filename):
+        """load filename.
+
+        Note that the special key "#include" means that another config file is
+        included much as with the #include directive in C.
+        """
+        if not os.path.exists(filename):
+            raise IOError("error: file \"%s\" doesn't exist" % filename)
+        data= json_loadfile(filename)
+        # pylint: disable=E1103
+        #                     Instance of 'bool' has no 'items' member
+        includefiles= data.get("#include")
+        if includefiles:
+            for f in includefiles:
+                self._load_file(f)
+            del data["#include"]
+        self._merge(data)
     def load(self, filenames):
         """first load self._filename, then filenames."""
         if self.load_default:
@@ -176,13 +199,7 @@ class ConfigFile(object):
         if filenames:
             lst.extend(filenames)
         for filename in lst:
-            data= json_loadfile(filename)
-            # pylint: disable=E1103
-            #                     Instance of 'bool' has no 'items' member
-            for (key, val) in data.items():
-                if not self._dict.has_key(key):
-                    continue # silently ignore unknown keys
-                self._dict[key]= val
+            self._load_file(filename)
     def save(self, filename= None):
         """dump in json format"""
         # do not include "None" values:

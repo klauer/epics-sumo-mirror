@@ -951,15 +951,18 @@ def process(options, commands):
     #                          Too many local variables
     config= utils.ConfigFile.from_optionlist(
                 CONFIG_NAME,
-                ( "arch", "alias", "builddb", "db", "extra", "makeopts",
+                ( "#include",
+                  "arch", "alias", "builddb", "db", "extra", "makeopts",
                   "maxstate",
                   "module", "progress", "readonly", "supportdir",
                   "verbose",))
     if (not os.path.exists(CONFIG_NAME)) or options.no_default_config:
         config.disable_default()
 
-    config.load(options.config)
-
+    try:
+        config.load(options.config)
+    except IOError, e:
+        sys.exit(str(e))
     config.merge_options(options)
 
     if options.nolock:
@@ -1461,6 +1464,17 @@ def main():
                       action="store_true",
                       help="If this option is given the program doesn't load "
                            "the default configuration.",
+                      )
+    parser.add_option("--#include",
+                      action="append",
+                      type="string",
+                      help="Specify a an '#include' directive in the "
+                           "configuration file.  This option has only a "
+                           "meaning if a configuration file is created with "
+                           "the 'makeconfig' command. '#include' means that "
+                           "the following file(s) are included before the "
+                           "rest of the configuration file. ",
+                      metavar="INCLUDEFILES"
                       )
     parser.add_option("--db",
                       action="store",
