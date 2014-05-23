@@ -22,48 +22,15 @@ if [ ! -e "configure/RELEASE" ]; then
 fi
         
 
-sumo-scan -d . all -g "$EPICSDIR/support $EPICSDIR" -N 'TOP EPICS_SUPPORT SUPPORT TEMPLATE_TOP EPICS_SITE_TOP EPICS_MODULES MSI' | $SUMO_DB appconvert - > MODULES
+sumo-scan -d . all -g "$EPICSDIR/support $EPICSDIR" -N 'TOP EPICS_SUPPORT SUPPORT TEMPLATE_TOP EPICS_SITE_TOP EPICS_MODULES MSI' | $SUMO_DB appconvert - > configure/MODULES
 
-$SUMO_DB --maxstate unstable --db $SUMODIR/DEPS.DB -c MODULES makeconfig
+$SUMO_DB --maxstate unstable --db $SUMODIR/DEPS.DB --#include configure/MODULES makeconfig
 
-$SUMO_BUILD --maxstate unstable --db $SUMODIR/DEPS.DB --builddb $SUMODIR/BUILDS.DB --supportdir $SUMODIR -c MODULES makeconfig
+$SUMO_BUILD --maxstate unstable --db $SUMODIR/DEPS.DB --builddb $SUMODIR/BUILDS.DB --supportdir $SUMODIR --#include configure/MODULES makeconfig
 
-cat > SUMO.make << 'MAKE_SUMO'
-# sumo rules start here
-
-# Note: in order to rebuild the RELEASE file you must exec "touch MODULES"
-# first
-
-SUMODIR=/opt/Epics/sumo3.14.8
-
-# This file can also be used with "make -f SUMO.make':
-
-ifndef TOP
-TOP=.
-endif
-
-sumo: $(TOP)/sumo-build.config $(TOP)/sumo-db.config $(TOP)/configure/RELEASE
-
-$(TOP)/sumo-build.config: $(TOP)/MODULES
-	sumo-build --maxstate unstable --db $(SUMODIR)/DEPS.DB --builddb $(SUMODIR)/BUILDS.DB --supportdir $(SUMODIR) -c $< makeconfig
-
-$(TOP)/sumo-db.config: $(TOP)/MODULES
-	sumo-db --maxstate unstable --db $(SUMODIR)/DEPS.DB -c $< makeconfig
-
-$(TOP)/configure/RELEASE: $(TOP)/sumo-build.config
-	@rm -f $@.bak
-	sumo-build -c $< use > $@.new
-	@mv $@ $@.bak
-	@mv $@.new $@
-
-# sumo rules end here
-MAKE_SUMO
-
-echo 'include $(TOP)/SUMO.make' >> Makefile
-
-echo "A file 'MODULES' containing the module dependencies was created."
+echo "A file 'MODULES' containing the module dependencies was created in directory 'configure'."
 echo "You may review or modify that file."
 echo
 echo "In order to build your application you first have to run"
-echo "    'make sumo'"
+echo "    'sumo-build use"
 echo "in order to create the file 'configure/RELEASE' from the 'MODULES' file"

@@ -203,25 +203,27 @@ This command is used to find matching :term:`builds` for a given list of
 useall [BUILDTAG]
 +++++++++++++++++
 
-This command creates a RELEASE file for an application. The command must be
-followed by :term:`buildtag`. The release file is created that it includes
-*all* :term:`modules` of the :term:`build`. The :term:`buildtag` may be given
-as argument or option.
+This command creates a configure/RELEASE file for an application. The command
+must be followed by buildtag. The release file created includes *all*
+:term:`modules` of the :term:`build`. The buildtag may be given as argument or
+option. Output to another file or the console can be specified with option
+'-o'.
 
 use [MODULES]
 +++++++++++++
 
-This command creates a RELEASE file for an application. The command must be
-followed by a list of :term:`modulespecs`. If option --buildtag is given, it
-checks if this is compatible with the given :term:`modules`.  Otherwise it
-looks for all :term:`builds` that have the :term:`modules` in the required
-:term:`versions`. If more than one matching :term:`build` found it takes the
-one with the alphabetically first :term:`buildtag`. Note that the
+This command creates a configure/RELEASE file for an application. The command
+must be followed by a list of :term:`modulespecs`. If option --buildtag is
+given, it checks if this is compatible with the given :term:`modules`.
+Otherwise it looks for all :term:`builds` that have the :term:`modules` in the
+required :term:`versions`. If more than one matching :term:`build` found it
+takes the one with the alphabetically first buildtag. Note that the
 :term:`modulespecs` MUST specify :term:`versions` exactly. If you have
 unspecified :term:`versions` or :term:`versions` specified by relation you must
 use command "use" instead.  The RELEASE created includes only the
 :term:`modules` that are specified. For this command the :term:`DB` file must
-be specified with the "--db" option.
+be specified with the "--db" option. Output to another file or the console can
+be specified with option '-o'.
 
 list
 ++++

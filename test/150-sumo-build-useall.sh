@@ -17,8 +17,8 @@ TESTDIR=tmp-110-sumo-build-new-2
 cd $TESTDIR > /dev/null
 
 echo -e "\nsumo-build useall 001:"
-$PYTHON ../../bin/sumo-build --builddb BUILDS --db DB useall 001 | sed -e "s#`pwd -P`##"
+$PYTHON ../../bin/sumo-build --builddb BUILDS --db DB useall 001 -o - | sed -e "s#`pwd -P`##"
 
 echo -e "\nsumo-build useall AUTO-001:"
-$PYTHON ../../bin/sumo-build --builddb BUILDS --db DB useall AUTO-001 | sed -e "s#`pwd -P`##"
+$PYTHON ../../bin/sumo-build --builddb BUILDS --db DB useall AUTO-001 -o - | sed -e "s#`pwd -P`##"
 
