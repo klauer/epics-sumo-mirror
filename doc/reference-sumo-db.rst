@@ -390,6 +390,15 @@ source part according to this parameter. A sourcespec has the form "path PATH"
 or "darcs URL" or "darcs URL TAG". Both, URL or TAG may be "*", in this case
 the original URL or TAG remains unchanged.
 
+clonemodule [OLD-MODULE] [NEW-MODULE] {VERSIONS}
+++++++++++++++++++++++++++++++++++++++++++++++++
+
+Copy all :term:`versions` of the existing old :term:`module` and add this with
+the name of thew new :term:`module` to the :term:`dependency` database. If
+there are no :term:`versions` specified, the command copies all existing
+:term:`versions`. Note that this DOES NOT add the new :term:`module` as
+:term:`dependency` to any other :term:`modules`.
+
 Options
 -------
 

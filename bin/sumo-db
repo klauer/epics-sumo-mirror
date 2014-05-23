@@ -24,10 +24,10 @@ import sumo.utils as utils
 # version of the program:
 my_version= "1.5.1"
 
-KNOWN_COMMANDS=set(("appconvert", "check", "cloneversion", "convert", "edit",
-                    "filter", "find", "list", "makeconfig", "merge",
-                    "replaceversion", "showall", "shownewest", "state",
-                    "weight"))
+KNOWN_COMMANDS=set(("appconvert", "check", "clonemodule", "cloneversion",
+                    "convert", "edit", "filter", "find", "list", "makeconfig",
+                    "merge", "replaceversion", "showall", "shownewest",
+                    "state", "weight"))
 
 CONFIG_NAME="sumo-db.config"
 
@@ -451,6 +451,24 @@ def process(options, commands):
             # ^^^ does also unlock the file
         return
 
+    if commands[0]=="clonemodule":
+        if len(commands)<3:
+            sys.exit("at least two arguments must follow \"%s\"" % \
+                     commands[0])
+        (oldmodule, newodule)= commands[1:3]
+        versions= commands[3:]
+        if not options.db:
+            sys.exit("error, --db is mandatory here")
+        db = utils.Dependencies.from_json_file(options.db,
+                keep_locked= not options.dumpdb and (not options.dry_run))
+        db.clonemodule(oldmodule, newodule, versions)
+        if options.dumpdb:
+            db.json_print()
+        else:
+            db.json_save(options.db, options.verbose, options.dry_run)
+            # ^^^ does also unlock the file
+        return
+
     if commands[0]=="list":
         if len(commands)>1:
             sys.exit("error: extra arguments following \"list\"")
@@ -623,6 +641,12 @@ where command is:
           parameter. A sourcespec has the form "path PATH" or "darcs URL" or
           "darcs URL TAG". Both, URL or TAG may be "*", in this case the
           original URL or TAG remains unchanged.
+  clonemodule [OLD-MODULE] [NEW-MODULE] {VERSIONS}
+          Copy all versions of the existing old module and add this with the
+          name of thew new module to the dependency database. If there are no
+          versions specified, the command copies all existing versions. Note
+          that this DOES NOT add the new module as dependency to any other
+          modules.
 """
 
 def main():
@@ -684,6 +708,7 @@ def main():
                       help="Dump the db on the console, currently "
                            "only for these commands : %s." % \
                            (" ".join(("weight","merge",
+                                      "clonemodule",
                                       "cloneversion", "replaceversion")))
                       )
     parser.add_option("--arch",

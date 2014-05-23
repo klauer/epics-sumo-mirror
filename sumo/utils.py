@@ -2015,6 +2015,21 @@ class Dependencies(JSONstruct):
                 # set the new dependency always to "unstable":
                 dep_module_dict[newversionname]= "unstable"
 
+    def clonemodule(self, old_modulename, modulename, versions):
+        """Take all versions of old_modulename to create modulename.
+        """
+        old_moduledata= self.datadict()[old_modulename]
+        if not versions:
+            versions= list(self.iter_versions(old_modulename,
+                                              max_state= "unstable",
+                                              archs= None, must_exist= True))
+        if self.datadict().has_key(modulename):
+            raise ValueError("Error, module '%s' already exists" % \
+                             modulename)
+        m= self.datadict().setdefault(modulename,{})
+        for version in versions:
+            m[version]= copy.deepcopy(old_moduledata[version])
+
     def partial_copy_by_list(self, list_):
         """take items from the Dependencies object and create a new one.
 
