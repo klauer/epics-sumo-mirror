@@ -7,7 +7,8 @@ SCRIPT=`basename $0`
 SUMO_DB="sumo-db"
 SUMO_BUILD="sumo-build"
 
-SUMODIR=/opt/Epics/sumo3.14.8
+#SUMODIR=/opt/Epics/sumo3.14.8
+SUMODIR=/opt/Epics/sumo-test
 EPICSDIR=/opt/csr/Epics/R3.14.8
 
 if [ -e "MODULES" ]; then
@@ -22,11 +23,12 @@ if [ ! -e "configure/RELEASE" ]; then
 fi
         
 
-sumo-scan -d . all -g "$EPICSDIR/support $EPICSDIR" -N 'TOP EPICS_SUPPORT SUPPORT TEMPLATE_TOP EPICS_SITE_TOP EPICS_MODULES MSI' | $SUMO_DB appconvert - > configure/MODULES
+# sumo-scan -d . all -g "$EPICSDIR/support $EPICSDIR" -N 'TOP EPICS_SUPPORT SUPPORT TEMPLATE_TOP EPICS_SITE_TOP EPICS_MODULES MSI' | $SUMO_DB appconvert - > configure/MODULES
+sumo-scan -c $HOME/net/project/sumo/samples/sumo-scan-3-14-8.config -d . all | $SUMO_DB --no-default-config appconvert - > configure/MODULES
 
-$SUMO_DB --maxstate unstable --db $SUMODIR/DEPS.DB --#include configure/MODULES makeconfig
+$SUMO_DB --no-default-config --maxstate unstable --db $SUMODIR/DEPS.DB --#include configure/MODULES makeconfig
 
-$SUMO_BUILD --maxstate unstable --db $SUMODIR/DEPS.DB --builddb $SUMODIR/BUILDS.DB --supportdir $SUMODIR --#include configure/MODULES makeconfig
+$SUMO_BUILD --no-default-config --maxstate unstable --db $SUMODIR/DEPS.DB --builddb $SUMODIR/BUILDS.DB --supportdir $SUMODIR --#include configure/MODULES makeconfig
 
 echo "A file 'MODULES' containing the module dependencies was created in directory 'configure'."
 echo "You may review or modify that file."

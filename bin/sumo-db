@@ -24,11 +24,11 @@ import sumo.utils as utils
 # version of the program:
 my_version= "1.5.1"
 
-KNOWN_COMMANDS=set(("appconvert", "check", "clonemodule", "cloneversion",
-                    "convert", "edit", "filter", "find", "list", "makeconfig",
-                    "merge", "dependency-add", "dependency-delete",
-                    "replaceversion", "showall", "shownewest", "state",
-                    "weight"))
+KNOWN_COMMANDS=set(("alias-add", "appconvert", "check", "clonemodule",
+                    "cloneversion", "convert", "edit", "filter", "find",
+                    "list", "makeconfig", "merge", "dependency-add",
+                    "dependency-delete", "replaceversion", "showall",
+                    "shownewest", "state", "weight"))
 
 CONFIG_NAME="sumo-db.config"
 
@@ -427,10 +427,32 @@ def process(options, commands):
             # ^^^ does also unlock the file
         return
 
+    if commands[0]=="alias-add":
+        if len(commands)<4:
+            sys.exit("Three arguments must follow \"%s\"" % \
+                     commands[0])
+        if not options.db:
+            sys.exit("error, --db is mandatory here")
+        module_spec= utils.ModuleSpec.from_string(commands[1])
+        (depname,alias)= commands[2:4]
+        db = utils.Dependencies.from_json_file(options.db,
+                keep_locked= not options.dumpdb and (not options.dry_run))
+        db.add_alias(module_spec.modulename,
+                     module_spec.versionname,
+                     alias, depname)
+        if options.dumpdb:
+            db.json_print()
+        else:
+            db.json_save(options.db, options.verbose, options.dry_run)
+            # ^^^ does also unlock the file
+        return
+
     if commands[0]=="dependency-add":
         if len(commands)<4:
             sys.exit("Three arguments must follow \"%s\"" % \
                      commands[0])
+        if not options.db:
+            sys.exit("error, --db is mandatory here")
         module_spec= utils.ModuleSpec.from_string(commands[1])
         dep_spec   = utils.ModuleSpec.from_string(commands[2])
         state      = commands[3]
@@ -452,6 +474,8 @@ def process(options, commands):
         if len(commands)<3:
             sys.exit("Two arguments must follow \"%s\"" % \
                      commands[0])
+        if not options.db:
+            sys.exit("error, --db is mandatory here")
         module_spec= utils.ModuleSpec.from_string(commands[1])
         dep_spec   = utils.ModuleSpec.from_string(commands[2])
         if module_spec.no_version_spec():
@@ -697,6 +721,8 @@ where command is:
           Delete a dependency of a module.
   dependency-add MODULE:VERSION DEPENDENCYNAME:DEPENDENCYVERSION STATE
           Add a dependency to a module.
+  alias-add MODULE:VERSION DEPENDENCYNAME ALIAS
+          Add an alias to a module.
 """
 
 def main():

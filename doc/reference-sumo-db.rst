@@ -409,6 +409,11 @@ dependency-add MODULE:VERSION DEPENDENCYNAME:DEPENDENCYVERSION STATE
 
 Add a :term:`dependency` to a :term:`module`.
 
+alias-add MODULE:VERSION DEPENDENCYNAME alias
++++++++++++++++++++++++++++++++++++++++++++++
+
+Add an :term:`alias` to a :term:`module`.
+
 Options
 -------
 
