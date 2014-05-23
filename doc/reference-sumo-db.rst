@@ -399,6 +399,16 @@ there are no :term:`versions` specified, the command copies all existing
 :term:`versions`. Note that this DOES NOT add the new :term:`module` as
 :term:`dependency` to any other :term:`modules`.
 
+dependency-delete MODULE:VERSION DEPENDENCYNAME:DEPENDENCYVERSION
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+Delete a :term:`dependency` of a :term:`module`.
+
+dependency-add MODULE:VERSION DEPENDENCYNAME:DEPENDENCYVERSION STATE
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+Add a :term:`dependency` to a :term:`module`.
+
 Options
 -------
 

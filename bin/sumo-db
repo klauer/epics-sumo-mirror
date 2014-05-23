@@ -26,8 +26,9 @@ my_version= "1.5.1"
 
 KNOWN_COMMANDS=set(("appconvert", "check", "clonemodule", "cloneversion",
                     "convert", "edit", "filter", "find", "list", "makeconfig",
-                    "merge", "replaceversion", "showall", "shownewest",
-                    "state", "weight"))
+                    "merge", "dependency-add", "dependency-delete",
+                    "replaceversion", "showall", "shownewest", "state",
+                    "weight"))
 
 CONFIG_NAME="sumo-db.config"
 
@@ -426,6 +427,51 @@ def process(options, commands):
             # ^^^ does also unlock the file
         return
 
+    if commands[0]=="dependency-add":
+        if len(commands)<4:
+            sys.exit("Three arguments must follow \"%s\"" % \
+                     commands[0])
+        module_spec= utils.ModuleSpec.from_string(commands[1])
+        dep_spec   = utils.ModuleSpec.from_string(commands[2])
+        state      = commands[3]
+        db = utils.Dependencies.from_json_file(options.db,
+                keep_locked= not options.dumpdb and (not options.dry_run))
+        db.add_dependency(module_spec.modulename,
+                          module_spec.versionname,
+                          dep_spec.modulename,
+                          dep_spec.versionname,
+                          state)
+        if options.dumpdb:
+            db.json_print()
+        else:
+            db.json_save(options.db, options.verbose, options.dry_run)
+            # ^^^ does also unlock the file
+        return
+
+    if commands[0]=="dependency-delete":
+        if len(commands)<3:
+            sys.exit("Two arguments must follow \"%s\"" % \
+                     commands[0])
+        module_spec= utils.ModuleSpec.from_string(commands[1])
+        dep_spec   = utils.ModuleSpec.from_string(commands[2])
+        if module_spec.no_version_spec():
+            sys.exit("module has no version")
+        if dep_spec.no_version_spec():
+            sys.exit("dependency has no version")
+
+        db = utils.Dependencies.from_json_file(options.db,
+                keep_locked= not options.dumpdb and (not options.dry_run))
+        db.del_dependency(module_spec.modulename,
+                          module_spec.versionname,
+                          dep_spec.modulename,
+                          dep_spec.versionname)
+        if options.dumpdb:
+            db.json_print()
+        else:
+            db.json_save(options.db, options.verbose, options.dry_run)
+            # ^^^ does also unlock the file
+        return
+
     if commands[0]=="cloneversion" or commands[0]=="replaceversion":
         do_replace= (commands[0]=="replaceversion")
         if len(commands)<4:
@@ -647,6 +693,10 @@ where command is:
           versions specified, the command copies all existing versions. Note
           that this DOES NOT add the new module as dependency to any other
           modules.
+  dependency-delete MODULE:VERSION DEPENDENCYNAME:DEPENDENCYVERSION
+          Delete a dependency of a module.
+  dependency-add MODULE:VERSION DEPENDENCYNAME:DEPENDENCYVERSION STATE
+          Add a dependency to a module.
 """
 
 def main():

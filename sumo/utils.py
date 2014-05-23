@@ -1620,11 +1620,15 @@ class Dependencies(JSONstruct):
                        dep_modulename, dep_versionname, state):
         """add dependency for a module:version.
         """
-        if not self.__class__.states_dict.has_key(state):
-            raise ValueError("invalid state: %s" % state)
+        self.__class__.check_state(state)
         m_dict= self.datadict()[modulename]
         dep_dict= m_dict[versionname].setdefault("dependencies",{})
         dep_module_dict= dep_dict.setdefault(dep_modulename, {})
+        if dep_module_dict.has_key(dep_versionname):
+            raise ValueError("module '%s:%s' already has dependency "
+                             "'%s:%s'" % \
+                             (modulename, versionname,
+                              dep_modulename, dep_versionname))
         dep_module_dict[dep_versionname]= state
     def del_dependency(self, modulename, versionname,
                        dep_modulename, dep_versionname):
@@ -1633,12 +1637,17 @@ class Dependencies(JSONstruct):
         m_dict= self.datadict()[modulename]
         dep_dict= m_dict[versionname].get("dependencies")
         if dep_dict is None:
-            return
+            raise ValueError("Error, %s:%s has no dependencies" % \
+                             (modulename, versionname))
         dep_module_dict= dep_dict.get(dep_modulename)
         if dep_module_dict is None:
-            return
-        if dep_module_dict.has_key(dep_versionname):
-            del dep_module_dict[dep_versionname]
+            raise ValueError("Error, %s:%s doesn't depend on %s" % \
+                             (modulename, versionname, dep_modulename))
+        if not dep_module_dict.has_key(dep_versionname):
+            raise ValueError("Error, %s:%s doesn't depend on %s:%s" % \
+                             (modulename, versionname,
+                              dep_modulename, dep_versionname))
+        del dep_module_dict[dep_versionname]
         if not dep_module_dict:
             # dict is now empty, delete the whole entry in "dependencies":
             del dep_dict[dep_modulename]
@@ -1978,6 +1987,7 @@ class Dependencies(JSONstruct):
                                          archs, must_exist),
                       key= rev2key,
                       reverse= True)
+
     def patch_version(self, modulename, versionname, newversionname,
                       do_replace):
         """add a new version to the database by copying the old one.
@@ -2108,8 +2118,11 @@ class Dependencies(JSONstruct):
                         if not (dep_name,dep_ver) in modules:
                             deletions.append((dep_name, dep_ver))
                 for (dep_name, dep_ver) in deletions:
-                    self.del_dependency(modulename, versionname,
-                                        dep_name, dep_ver)
+                    try:
+                        self.del_dependency(modulename, versionname,
+                                            dep_name, dep_ver)
+                    except ValueError, _:
+                        pass
 
 class Builddb(JSONstruct):
     """the buildtree database."""
