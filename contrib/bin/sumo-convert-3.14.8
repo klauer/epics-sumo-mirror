@@ -29,6 +29,18 @@ if [ ! -e "configure/RELEASE" ]; then
     echo "EPICS application."
     exit 1
 fi
+
+if grep -q '^RULES *=' configure/CONFIG; then
+    echo "Error: you have to move the definition of 'RULES' from"
+    echo "configure/CONFIG to configure/RELEASE before you can proceed."
+    exit 1
+fi
+
+if grep -q '^CHECK_RELEASE *= *YES' configure/Makefile ;then
+    echo "Error: in configure/Makefile you have to change the setting of"
+    echo "CHECK_RELEASE from 'YES' to 'NO' before you can proceed."
+    exit 1
+fi
         
 $SUMO_SCAN -c $SUMO_SCAN_CONFIG -d . all | $SUMO_DB --no-default-config appconvert - > $MODULES
 
