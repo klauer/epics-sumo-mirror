@@ -102,8 +102,11 @@ Here we define some of the terms used in the following text.
       cannot be built and without all these other :term:`modules`.  A
       *dependency* is the :term:`modulename` and :term:`versionname` of one of
       these other modules.
-  
+
   aliases
+      See :term:`alias`.
+
+  alias
       For each :term:`module` in the :term:`dependency` list there may be an
       *alias* definition.  When a RELEASE file is created for a :term:`module`,
       the variable names that are put into the file are the same as each

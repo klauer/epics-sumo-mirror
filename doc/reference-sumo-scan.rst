@@ -92,10 +92,10 @@ collection all the versions of a support module. This is done by parsing module
 paths. The program assumes that each module has a path of the form
 "[BASEDIR]/[MODULEPATH]/[VERSION]". [VERSION] is simply the last part of the
 path that contains no slashes "/". [BASEDIR] is given as a command line option
-to the program (see `group-basedir`_) and [MODULEPATH] is all that remains of
-the path. In order to create a *modulename* the program changes all characters
-in [MODULEPATH] to uppercase and replaces all slashes "/" with underscore "_"
-characters. Here is an example of the created datastructure in 
+to the program (see option "--group-basedir") and [MODULEPATH] is all that
+remains of the path. In order to create a *modulename* the program changes all
+characters in [MODULEPATH] to uppercase and replaces all slashes "/" with
+underscore "_" characters. Here is an example of the created datastructure in 
 `JSON <http://www.json.org>`_ format::
 
   {
