@@ -1,0 +1,27 @@
+#!/bin/sh
+
+set -e
+
+SHARE=../share
+
+# define some environment variables:
+source $SHARE/sumo-3.14.8.vars
+
+if [ "$1" = "-h" ]; then
+    echo "This script scans an existing EPICS support tree and"
+    echo "creates a *.SCAN a *.DB file with an ISO date in it's"
+    echo "file name."
+    echo "Just start the script without any arguments."
+fi
+
+if [ ! -r $SUMO_SCAN_CONFIG ]; then
+    echo "error, configuration file $SUMO_SCAN_CONFIG not found"
+    exit 1
+fi
+
+NOW=`date -Iseconds`
+
+$SUMO_SCAN -c $SUMO_SCAN_CONFIG all > SUMO-SCAN-$NOW.SCAN
+
+$SUMO_DB -c $SUMO_DB_CONFIG convert stable SUMO-SCAN-$NOW.SCAN > SUMO-SCAN-$NOW.DB
+

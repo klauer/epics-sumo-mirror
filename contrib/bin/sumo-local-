@@ -2,12 +2,11 @@
 
 set -e
 
-SCRIPT=`basename $0`
+SHARE=../share
 
-SUMO_DB="sumo-db"
-SUMO_BUILD="sumo-build"
+# define some environment variables:
+source $SHARE/sumo-3.14.8.vars
 
-SUMODIR=/opt/Epics/sumo3.14.8
 LOCAL_SUMO_SUBDIR=sumo-local
 
 if [ -z "$3" ];then
@@ -50,3 +49,5 @@ echo "$module:$newversion is now compiled."
 echo "Remember that this is still identical with $module:$oldversion."
 echo "You may now start to modify it. If finished do not forget to"
 echo "change the 'source' part of this module in DEPS.DB"
+echo "Do also not forget to apply the changes in your local copy "
+echo "of DEPS.DB to $SUMODIR/DEPS.DB".

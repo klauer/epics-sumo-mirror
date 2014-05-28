@@ -1,0 +1,41 @@
+#!/bin/sh
+
+set -e
+
+SHARE=../share
+
+# define some environment variables:
+source $SHARE/sumo-3.14.12.vars
+
+MODULES=configure/MODULES
+
+if [ -e "$MODULES" ]; then
+    echo "File $MODULES exists, you app is already converted"
+    exit 0
+fi
+
+if [ ! -e "configure/RELEASE" ]; then
+    echo "File 'configure/RELEASE' not found, this doesn't seem to be an "
+    echo "EPICS application."
+    exit 1
+fi
+        
+$SUMO_SCAN -c $SUMO_SCAN_CONFIG -d . all | $SUMO_DB --no-default-config appconvert - > $MODULES
+
+$SUMO_DB --no-default-config --maxstate unstable --db $SUMODIR/DEPS.DB --#include $MODULES makeconfig
+
+$SUMO_BUILD --no-default-config --maxstate unstable --db $SUMODIR/DEPS.DB --builddb $SUMODIR/BUILDS.DB --supportdir $SUMODIR --#include $MODULES makeconfig
+
+echo "A file '$MODULES' containing the module dependencies was created in "
+echo "directory 'configure'. You may review or modify that file."
+echo
+echo "In order to build your application you first have to run"
+echo "    'sumo-build use"
+echo "in order to create the file 'configure/RELEASE' from the "
+echo "'$MODULES' file."
+echo 
+echo "If 'sumo-build use' says that no build matches the modulespecs"
+echo "run"
+echo "    'sumo-build new'"
+echo "first."
+

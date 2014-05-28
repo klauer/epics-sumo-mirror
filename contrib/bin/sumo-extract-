@@ -2,12 +2,12 @@
 
 set -e
 
-SCRIPT=`basename $0`
+SHARE=../share
 
-SUMO_DB="sumo-db"
-SUMO_BUILD="sumo-build"
+# define some environment variables:
+source $SHARE/sumo-3.14.8.vars
 
-SUMODIR=/opt/Epics/sumo3.14.8
+MODULES=configure/MODULES
 
 if [ -z "$3" ]; then
     echo "usage: $SCRIPT [support-name] [support-version] [build-name]"
@@ -37,12 +37,11 @@ echo "$dir" was copied to $module
 
 cd $module > /dev/null
 
+$SUMO_SCAN -c $SUMO_SCAN_CONFIG -d . all | $SUMO_DB --no-default-config appconvert - > $MODULES
 
-sumo-scan -d $SUMODIR/APPS_IOCWATCH/R2-2-x+BII-01 -g "$SUMODIR" all -N 'TOP EPICS_SUPPORT SUPPORT TEMPLATE_TOP EPICS_SITE_TOP EPICS_MODULES MSI' | $SUMO_DB appconvert - > MODULES
-
-$SUMO_DB --maxstate unstable --db $SUMODIR/DEPS.DB -c MODULES makeconfig
-$SUMO_BUILD --maxstate unstable --db $SUMODIR/DEPS.DB --builddb $SUMODIR/BUILDS.DB --supportdir $SUMODIR -c MODULES makeconfig
+$SUMO_DB --maxstate unstable --db $SUMODIR/DEPS.DB -c $MODULES makeconfig
+$SUMO_BUILD --maxstate unstable --db $SUMODIR/DEPS.DB --builddb $SUMODIR/BUILDS.DB --supportdir $SUMODIR -c $MODULES makeconfig
 
 echo "creating configure/RELEASE"
-$SUMO_BUILD use > configure/RELEASE
+$SUMO_BUILD use 
 

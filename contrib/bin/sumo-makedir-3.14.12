@@ -1,0 +1,46 @@
+#!/bin/sh
+
+set -e
+
+SHARE=../share
+
+# define some environment variables:
+source $SHARE/sumo-3.14.12.vars
+
+if [ -z "$1" ]; then 
+    echo "This script creates a new SUMO support directory for EPICS 3.14.12"
+    echo "    here at Bessy"
+    echo "usage: $SCRIPT [directory]"
+    exit 0
+fi
+
+dir="$1"
+
+if [ -d $dir ]; then 
+    echo "error, directory $dir already exists"
+fi
+
+echo "* creating $dir"
+mkdir $dir
+cd $dir > /dev/null
+SUMODIR=`pwd`
+
+echo "* scanning existing EPICS 3.14.12 support directory"
+sumo-scan-3.14.12
+ORIG_DB=`ls *.DB`
+DB=DEPS.DB
+
+echo "* creating the Sumo dependency database"
+cp $ORIG_DB $DB
+
+echo "* creating Sumo configuration files"
+$SUMO_DB --maxstate testing --db $SUMODIR/$DB makeconfig
+$SUMO_BUILD --db $SUMODIR/$DB --builddb $SUMODIR/BUILDS.DB --supportdir $SUMODIR --maxstate testing --makeopts "-s" makeconfig
+
+#echo "* creating a BUILD containing just BASE R-3-14-8-2-1"
+#$SUMO_BUILD new BASE:R3-14-8-2-1 -t BASE-R3-14-8-2-1
+
+echo
+echo "You may now edit the definition of 'SUMODIR' in $SHARE/sumo-3.14.12.vars"
+echo "to use $SUMODIR as Sumo support directory in the various"
+echo "Epics 3.14.12 Sumo scripts."
