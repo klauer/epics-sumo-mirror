@@ -9,6 +9,16 @@ source $SHARE/sumo-3.14.8.vars
 
 MODULES=configure/MODULES
 
+if [ -z "$1" ]; then
+    echo "usage: $SCRIPT [application name]"
+    echo "    where 'application name' should be a short string identifying"
+    echo "    your application, usually a single word or words joined by "
+    echo "    dashes '-' or underscores '_', not spaces."
+    exit 1
+fi
+
+stem="$1"
+
 if [ -e "$MODULES" ]; then
     echo "File $MODULES exists, you app is already converted"
     exit 0
@@ -32,7 +42,7 @@ sed -e 's/\(HIGHLAND-V375\):TAGLESS-1-2/\1:TAGLESS-1-2-RULES-1-9/' -i $MODULES
 
 $SUMO_DB --no-default-config --maxstate unstable --db $SUMODIR/DEPS.DB --#include $MODULES makeconfig
 
-$SUMO_BUILD --no-default-config --maxstate unstable --db $SUMODIR/DEPS.DB --builddb $SUMODIR/BUILDS.DB --supportdir $SUMODIR --#include $MODULES makeconfig
+$SUMO_BUILD --no-default-config --maxstate unstable --buildtag-stem "$stem" --db $SUMODIR/DEPS.DB --builddb $SUMODIR/BUILDS.DB --supportdir $SUMODIR --#include $MODULES makeconfig
 
 echo "A file '$MODULES' containing the module dependencies was created in "
 echo "directory 'configure'. You may review or modify that file."
