@@ -1,6 +1,6 @@
-sumo-build show 001
+sumo-build show MYAPP-001
 {
-    "001": {
+    "MYAPP-001": {
         "modules": {
             "ALARM": "R3-8", 
             "ASYN": "4-18-bessy1", 
@@ -26,19 +26,19 @@ sumo-build show AUTO-001
 {
     "AUTO-001": {
         "linked": {
-            "ASYN": "001", 
-            "BASE": "001", 
-            "BSPDEP_CPUBOARDINIT": "001", 
-            "BSPDEP_TIMER": "001", 
-            "BSPDEP_VMETAS": "001", 
-            "CSM": "001", 
-            "EK": "001", 
-            "GENSUB": "001", 
-            "MISC_DBC": "001", 
-            "MISC_DEBUGMSG": "001", 
-            "SEQ": "001", 
-            "SOFT_DEVHWCLIENT": "001", 
-            "VXSTATS": "001"
+            "ASYN": "MYAPP-001", 
+            "BASE": "MYAPP-001", 
+            "BSPDEP_CPUBOARDINIT": "MYAPP-001", 
+            "BSPDEP_TIMER": "MYAPP-001", 
+            "BSPDEP_VMETAS": "MYAPP-001", 
+            "CSM": "MYAPP-001", 
+            "EK": "MYAPP-001", 
+            "GENSUB": "MYAPP-001", 
+            "MISC_DBC": "MYAPP-001", 
+            "MISC_DEBUGMSG": "MYAPP-001", 
+            "SEQ": "MYAPP-001", 
+            "SOFT_DEVHWCLIENT": "MYAPP-001", 
+            "VXSTATS": "MYAPP-001"
         }, 
         "modules": {
             "ALARM": "R3-7", 

@@ -295,6 +295,11 @@ Here is a short overview on command line options:
     file.
 ``-t BUILDTAG, --buildtag BUILDTAG``
     Specify a buildtag.
+``--buildtag-stem STEM``
+    Specify the stem of a buildtag. This option has only an effect on the
+    commands 'new' and 'try' if a buildtag is not specified. The program
+    generates a new tag in the form 'stem-nnn' where 'nnn' is the smallest
+    possible number that ensures that the buildtag is unique.
 ``--supportdir SUPPORDIR``
     Specify the support directory. If this option is not given take the current
     working directory as support directory.  This option value is stored in the

@@ -990,10 +990,9 @@ def process(options, commands):
     config= utils.ConfigFile.from_optionlist(
                 CONFIG_NAME,
                 ( "#include",
-                  "arch", "alias", "builddb", "db", "extra", "makeopts",
-                  "maxstate",
-                  "module", "progress", "readonly", "supportdir",
-                  "verbose",))
+                  "arch", "alias", "builddb", "buildtag_stem", "db", "extra",
+                  "makeopts", "maxstate", "module", "progress", "readonly",
+                  "supportdir", "verbose",))
     if (not os.path.exists(CONFIG_NAME)) or options.no_default_config:
         config.disable_default()
 
@@ -1157,8 +1156,11 @@ def process(options, commands):
         return
 
     if commands[0]=="try":
+        buildtag= options.buildtag
         if not options.db:
             sys.exit("--db is mandatory")
+        if not options.builddb:
+            sys.exit("--builddb is mandatory")
         if not options.maxstate:
             sys.exit("--maxstate is mandatory")
 
@@ -1176,6 +1178,9 @@ def process(options, commands):
         modulespecs_obj= utils.ModuleSpecs.from_strings(modulespecs,
                                                         options.builddb,
                                                         options.arch)
+        modulespecs_obj= utils.ModuleSpecs.from_strings(modulespecs,
+                                                        options.builddb,
+                                                        options.arch)
         if options.dump_modules:
             dump_modules(modulespecs_obj)
             sys.exit(0)
@@ -1185,6 +1190,17 @@ def process(options, commands):
         except ValueError, e:
             # db __del__ method should remove lockfiles
             sys.exit(str(e))
+
+        if buildtag is None:
+            if not os.path.exists(options.builddb):
+                builddb= utils.Builddb()
+            else:
+                builddb= utils.Builddb.from_json_file(options.builddb, keep_locked= False)
+            if not options.buildtag_stem:
+                options.buildtag_stem= "AUTO"
+            buildtag= builddb.generate_buildtag(options.buildtag_stem)
+            sys.stderr.write("would create build with tag '%s'\n\n" % buildtag)
+
         l= []
         for (m,v) in dist_dict.items():
             l.append("%s:%s" % (m,v))
@@ -1238,7 +1254,9 @@ def process(options, commands):
             builddb= utils.Builddb.from_json_file(options.builddb,
                         keep_locked= not options.dry_run)
         if buildtag is None:
-            buildtag= builddb.generate_buildtag()
+            if not options.buildtag_stem:
+                options.buildtag_stem= "AUTO"
+            buildtag= builddb.generate_buildtag(options.buildtag_stem)
             sys.stderr.write("creating build with tag '%s'\n" % buildtag)
         if builddb.has_build_tag(buildtag):
             # builddb __del__ method should remove lockfiles
@@ -1550,6 +1568,18 @@ def main():
                       type="string",
                       help= "Specify a buildtag",
                       metavar="BUILDTAG"
+                      )
+    parser.add_option("--buildtag-stem",
+                      action="store",
+                      type="string",
+                      help= "Specify the stem of a buildtag. This option "
+                            "has only an effect on the commands 'new' and "
+                            "'try' if a buildtag is not specified. The "
+                            "program generates a new tag in the "
+                            "form 'stem-nnn' where 'nnn' is the smallest "
+                            "possible number that ensures that the buildtag "
+                            "is unique.",
+                      metavar="STEM"
                       )
     parser.add_option("--supportdir",
                       action="store",

@@ -47,8 +47,8 @@ find . -name _darcs -prune -o -name '*' | sort
 echo -e "\ncontents of BUILDS file:"
 cat BUILDS | sed -e "s/,$/, /g"
 
-echo -e "\ndelete build '001'"
-$PYTHON ../../bin/sumo-build --db DB --builddb BUILDS delete 001
+echo -e "\ndelete build 'MYAPP-001'"
+$PYTHON ../../bin/sumo-build --db DB --builddb BUILDS delete MYAPP-001
 
 echo -e "\ndirectory tree (without darcs)"
 find . -name _darcs -prune -o -name '*' | sort

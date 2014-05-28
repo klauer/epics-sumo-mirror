@@ -17,4 +17,4 @@ TESTDIR=tmp-080-sumo-build-new
 
 cd $TESTDIR > /dev/null
 
-$PYTHON ../../bin/sumo-build --builddb BUILDS state 001 
+$PYTHON ../../bin/sumo-build --builddb BUILDS state MYAPP-001 

@@ -1,40 +1,20 @@
 sumo-build find MCAN -b:
 {
-    "001": {
-        "modules": {
-            "ALARM": "R3-8", 
-            "ASYN": "4-18-bessy1", 
-            "BASE": "TAGLESS-3-14-12-2-1", 
-            "BSPDEP_CPUBOARDINIT": "R4-1", 
-            "BSPDEP_TIMER": "R6-2", 
-            "BSPDEP_VMETAS": "R2-0", 
-            "CSM": "R4-3", 
-            "EK": "R2-2", 
-            "GENSUB": "R1-6-1", 
-            "MCAN": "TAGLESS-2-6-3-test", 
-            "MISC_DBC": "R3-0", 
-            "MISC_DEBUGMSG": "R3-0", 
-            "SEQ": "TAGLESS-2-1-12", 
-            "SOFT_DEVHWCLIENT": "R3-0", 
-            "VXSTATS": "R3-0"
-        }, 
-        "state": "stable"
-    }, 
     "AUTO-001": {
         "linked": {
-            "ASYN": "001", 
-            "BASE": "001", 
-            "BSPDEP_CPUBOARDINIT": "001", 
-            "BSPDEP_TIMER": "001", 
-            "BSPDEP_VMETAS": "001", 
-            "CSM": "001", 
-            "EK": "001", 
-            "GENSUB": "001", 
-            "MISC_DBC": "001", 
-            "MISC_DEBUGMSG": "001", 
-            "SEQ": "001", 
-            "SOFT_DEVHWCLIENT": "001", 
-            "VXSTATS": "001"
+            "ASYN": "MYAPP-001", 
+            "BASE": "MYAPP-001", 
+            "BSPDEP_CPUBOARDINIT": "MYAPP-001", 
+            "BSPDEP_TIMER": "MYAPP-001", 
+            "BSPDEP_VMETAS": "MYAPP-001", 
+            "CSM": "MYAPP-001", 
+            "EK": "MYAPP-001", 
+            "GENSUB": "MYAPP-001", 
+            "MISC_DBC": "MYAPP-001", 
+            "MISC_DEBUGMSG": "MYAPP-001", 
+            "SEQ": "MYAPP-001", 
+            "SOFT_DEVHWCLIENT": "MYAPP-001", 
+            "VXSTATS": "MYAPP-001"
         }, 
         "modules": {
             "ALARM": "R3-7", 
@@ -54,6 +34,26 @@ sumo-build find MCAN -b:
             "VXSTATS": "R3-0"
         }, 
         "state": "unstable"
+    }, 
+    "MYAPP-001": {
+        "modules": {
+            "ALARM": "R3-8", 
+            "ASYN": "4-18-bessy1", 
+            "BASE": "TAGLESS-3-14-12-2-1", 
+            "BSPDEP_CPUBOARDINIT": "R4-1", 
+            "BSPDEP_TIMER": "R6-2", 
+            "BSPDEP_VMETAS": "R2-0", 
+            "CSM": "R4-3", 
+            "EK": "R2-2", 
+            "GENSUB": "R1-6-1", 
+            "MCAN": "TAGLESS-2-6-3-test", 
+            "MISC_DBC": "R3-0", 
+            "MISC_DEBUGMSG": "R3-0", 
+            "SEQ": "TAGLESS-2-1-12", 
+            "SOFT_DEVHWCLIENT": "R3-0", 
+            "VXSTATS": "R3-0"
+        }, 
+        "state": "stable"
     }
 }
 
@@ -64,19 +64,19 @@ sumo-build find MCAN ALARM:-R3-7:
 {
     "AUTO-001": {
         "linked": {
-            "ASYN": "001", 
-            "BASE": "001", 
-            "BSPDEP_CPUBOARDINIT": "001", 
-            "BSPDEP_TIMER": "001", 
-            "BSPDEP_VMETAS": "001", 
-            "CSM": "001", 
-            "EK": "001", 
-            "GENSUB": "001", 
-            "MISC_DBC": "001", 
-            "MISC_DEBUGMSG": "001", 
-            "SEQ": "001", 
-            "SOFT_DEVHWCLIENT": "001", 
-            "VXSTATS": "001"
+            "ASYN": "MYAPP-001", 
+            "BASE": "MYAPP-001", 
+            "BSPDEP_CPUBOARDINIT": "MYAPP-001", 
+            "BSPDEP_TIMER": "MYAPP-001", 
+            "BSPDEP_VMETAS": "MYAPP-001", 
+            "CSM": "MYAPP-001", 
+            "EK": "MYAPP-001", 
+            "GENSUB": "MYAPP-001", 
+            "MISC_DBC": "MYAPP-001", 
+            "MISC_DEBUGMSG": "MYAPP-001", 
+            "SEQ": "MYAPP-001", 
+            "SOFT_DEVHWCLIENT": "MYAPP-001", 
+            "VXSTATS": "MYAPP-001"
         }, 
         "modules": {
             "ALARM": "R3-7", 
@@ -101,7 +101,7 @@ sumo-build find MCAN ALARM:-R3-7:
 
 sumo-build find MCAN ALARM:+R3-8:
 {
-    "001": {
+    "MYAPP-001": {
         "modules": {
             "ALARM": "R3-8", 
             "ASYN": "4-18-bessy1", 

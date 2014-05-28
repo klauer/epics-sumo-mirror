@@ -1,7 +1,7 @@
 
 BUILDS before:
 {
-    "001": {
+    "MYAPP-001": {
         "modules": {
             "ALARM": "R3-8", 
             "ASYN": "4-18-bessy1", 
@@ -24,7 +24,7 @@ BUILDS before:
 }
 BUILDS after:
 {
-    "001": {
+    "MYAPP-001": {
         "modules": {
             "ALARM": "R3-8", 
             "ASYN": "4-18-bessy1", 

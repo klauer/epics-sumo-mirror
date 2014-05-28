@@ -26,7 +26,7 @@ cat BUILDS | sed -e "s/,$/, /g"
 
 cp DB DB-$ME.tmp
 cp BUILDS BUILDS-$ME.tmp
-$PYTHON ../../bin/sumo-build --db DB-$ME.tmp --builddb BUILDS-$ME.tmp state 001 stable
+$PYTHON ../../bin/sumo-build --db DB-$ME.tmp --builddb BUILDS-$ME.tmp state MYAPP-001 stable
 
 echo -e "\nBUILDS after:"
 cat BUILDS-$ME.tmp | sed -e "s/,$/, /g"

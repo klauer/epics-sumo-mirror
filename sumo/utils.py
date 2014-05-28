@@ -2162,12 +2162,17 @@ class Builddb(JSONstruct):
                 break
             return
         raise ValueError("Error: Builddb data is invalid %s" % msg)
-    def generate_buildtag(self):
-        """generate a new buildtag that is not already in the Builddb."""
+    def generate_buildtag(self, buildtag_stem):
+        """generate a new buildtag.
+
+        A new buildtag in the form "STEM-nnn" is generated.
+        """
+        # determine which number to append:
         no= None
+        buildtag_stem= buildtag_stem + "-"
         for b in self.iter_builds():
-            if b.startswith("AUTO-"):
-                b= b.replace("AUTO-","")
+            if b.startswith(buildtag_stem):
+                b= b.replace(buildtag_stem,"")
                 try:
                     n= int(b)
                 except ValueError, _:
@@ -2177,7 +2182,7 @@ class Builddb(JSONstruct):
         if no is None:
             no= 0
         no+= 1
-        return "AUTO-%03d" % no
+        return "%s%03d" % (buildtag_stem, no)
     @staticmethod
     def is_generated_buildtag(buildtag):
         """return True of the buildtag was generated."""
