@@ -926,7 +926,7 @@ def fullapprelease(build_path, build_tag, builddb, db, modules,
         lines.append("%s\n" % l)
     return lines
 
-def apprelease(build_path, build_tag, module_specs, builddb, db,
+def apprelease(build_path, build_tag, modulespecs, builddb, db,
                archs, aliases, extra_lines):
     """create entries for an release file.
     """
@@ -934,7 +934,6 @@ def apprelease(build_path, build_tag, module_specs, builddb, db,
     #                          Too many arguments
     # pylint: disable=R0914
     #                          Too many local variables
-    modulespecs= utils.ModuleSpecs.from_strings(module_specs, builddb, archs)
     for modulespec in modulespecs:
         modulename= modulespec.modulename
         if build_tag is None:
@@ -1175,9 +1174,13 @@ def process(options, commands):
         db= utils.Dependencies.from_json_file(options.db,
                     keep_locked= False)
 
-        modulespecs_obj= utils.ModuleSpecs.from_strings(modulespecs,
-                                                        options.builddb,
-                                                        options.arch)
+        try:
+            modulespecs_obj= utils.ModuleSpecs.from_strings(modulespecs,
+                                                            options.builddb,
+                                                            options.arch)
+        except ValueError, e:
+            sys.exit(str(e))
+
         if options.dump_modules:
             dump_modules(modulespecs_obj)
             sys.exit(0)
@@ -1192,7 +1195,8 @@ def process(options, commands):
             if not os.path.exists(options.builddb):
                 builddb= utils.Builddb()
             else:
-                builddb= utils.Builddb.from_json_file(options.builddb, keep_locked= False)
+                builddb= utils.Builddb.from_json_file(options.builddb,
+                                                      keep_locked= False)
             if not options.buildtag_stem:
                 options.buildtag_stem= "AUTO"
             buildtag= builddb.generate_buildtag(options.buildtag_stem)
@@ -1229,9 +1233,13 @@ def process(options, commands):
         db= utils.Dependencies.from_json_file(options.db,
                     keep_locked= not options.dry_run)
 
-        modulespecs_obj= utils.ModuleSpecs.from_strings(modulespecs,
-                                                        options.builddb,
-                                                        options.arch)
+        try:
+            modulespecs_obj= utils.ModuleSpecs.from_strings(modulespecs,
+                                                            options.builddb,
+                                                            options.arch)
+        except ValueError, e:
+            sys.exit(str(e))
+
         if options.dump_modules:
             dump_modules(modulespecs_obj)
             sys.exit(0)
@@ -1323,9 +1331,13 @@ def process(options, commands):
 
         db= utils.Dependencies.from_json_file(options.db)
         builddb= utils.Builddb.from_json_file(options.builddb)
-        modulespecs_obj= utils.ModuleSpecs.from_strings(modulespecs,
-                                                        builddb,
-                                                        options.arch)
+        try:
+            modulespecs_obj= utils.ModuleSpecs.from_strings(modulespecs,
+                                                            builddb,
+                                                            options.arch)
+        except ValueError, e:
+            sys.exit(str(e))
+
         if options.dump_modules:
             dump_modules(modulespecs_obj)
             sys.exit(0)
@@ -1398,10 +1410,22 @@ def process(options, commands):
 
         db= utils.Dependencies.from_json_file(options.db)
         builddb= utils.Builddb.from_json_file(options.builddb)
+
+        try:
+            modulespecs_obj= utils.ModuleSpecs.from_strings(modulespecs,
+                                                            options.builddb,
+                                                            options.arch)
+        except ValueError, e:
+            sys.exit(str(e))
+
+        if options.dump_modules:
+            dump_modules(modulespecs_obj)
+            sys.exit(0)
+
         lines= apprelease(options.supportdir \
                              if options.supportdir else ".",
                           buildtag,
-                          modulespecs,
+                          modulespecs_obj,
                           builddb,
                           db,
                           options.arch,

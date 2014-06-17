@@ -376,7 +376,11 @@ def process(options, commands):
             sys.exit("error: weight must be an integer")
         db= utils.Dependencies.from_json_file(options.db,
                 keep_locked= not options.dumpdb and (not options.dry_run))
-        modulespecs_obj= utils.ModuleSpecs.from_strings(modulespecs, None)
+        try:
+            modulespecs_obj= utils.ModuleSpecs.from_strings(modulespecs, None)
+        except ValueError, e:
+            sys.exit(str(e))
+
         if options.dump_modules:
             dump_modules(modulespecs_obj)
             sys.exit(0)
@@ -400,8 +404,12 @@ def process(options, commands):
         if not options.db:
             sys.exit("error, --db is mandatory here")
         db= utils.Dependencies.from_json_file(options.db, keep_locked= False)
-        modulespecs_obj= utils.ModuleSpecs.from_strings(modulespecs,
-                                                        options.arch)
+        try:
+            modulespecs_obj= utils.ModuleSpecs.from_strings(modulespecs,
+                                                            options.arch)
+        except ValueError, e:
+            sys.exit(str(e))
+
         if options.dump_modules:
             dump_modules(modulespecs_obj)
             sys.exit(0)
@@ -574,7 +582,11 @@ def process(options, commands):
             utils.Dependencies.check_state(state)
         except ValueError, e:
             sys.exit(str(e))
-        modulespecs_obj= utils.ModuleSpecs.from_strings(modulespecs, None)
+        try:
+            modulespecs_obj= utils.ModuleSpecs.from_strings(modulespecs, None)
+        except ValueError, e:
+            sys.exit(str(e))
+
         if options.dump_modules:
             dump_modules(modulespecs_obj)
             sys.exit(0)
@@ -605,8 +617,12 @@ def process(options, commands):
 
         result= {}
 
-        modulespecs_obj= utils.ModuleSpecs.from_strings(modulespecs,
-                                                        options.arch)
+        try:
+            modulespecs_obj= utils.ModuleSpecs.from_strings(modulespecs,
+                                                            options.arch)
+        except ValueError, e:
+            sys.exit(str(e))
+
         if options.dump_modules:
             dump_modules(modulespecs_obj)
             sys.exit(0)

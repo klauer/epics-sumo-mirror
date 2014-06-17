@@ -899,13 +899,13 @@ class ModuleSpecs(object):
                     continue
                 if special[0]=="rm":
                     # remove single module
-                    if not special[1]:
+                    if len(special)<=1:
                         raise ValueError("argument to :rm: missing")
                     if module_dict.has_key(special[1]):
                         module_dict[special[1]][1]= None
                     continue
                 if special[0]=="load":
-                    if not special[1]:
+                    if len(special)<=1:
                         raise ValueError("argument to :load: missing")
                     json_data= json_loadfile(special[1])
                     # pylint: disable=E1103
@@ -918,7 +918,7 @@ class ModuleSpecs(object):
                                                        default_archs)
                     continue
                 if special[0]=="build":
-                    if not special[1]:
+                    if len(special)<=1:
                         raise ValueError("argument to :build: missing")
                     if not builddb:
                         raise ValueError("error: builddb not specified")
