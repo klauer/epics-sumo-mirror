@@ -1178,9 +1178,6 @@ def process(options, commands):
         modulespecs_obj= utils.ModuleSpecs.from_strings(modulespecs,
                                                         options.builddb,
                                                         options.arch)
-        modulespecs_obj= utils.ModuleSpecs.from_strings(modulespecs,
-                                                        options.builddb,
-                                                        options.arch)
         if options.dump_modules:
             dump_modules(modulespecs_obj)
             sys.exit(0)
