@@ -875,7 +875,7 @@ def call_make(db_name, builddb_name, buildtag,
         make_options=[]
     cmd="make %s -f %s" % (" ".join(make_options),makefilename(buildtag))
     try:
-        sys.stderr.write("CALLING MAKE: %s\n" % cmd)
+        # sys.stderr.write("CALLING MAKE: %s\n" % cmd)
         utils.system(cmd, False, False, verbose, dry_run)
     except IOError, e:
         sys.stderr.write("make failed, error: %s" % str(e))
