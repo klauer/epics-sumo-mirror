@@ -879,7 +879,14 @@ class ModuleSpecs(object):
         return st[1:].split(":")
     @staticmethod
     def _from_strings(module_dict, idx, specs, builddb, default_archs):
-        """internal function to scan specs."""
+        """internal function to scan specs.
+
+        Note:
+        module_dict maps a modulename to a pair (order-key,ModuleSpec-object).
+
+        The order-key is used to give the list of modules the same sort order
+        as they were found in the module specifications.
+        """
         # pylint: disable=R0912
         #                          Too many branches
         for s in specs:
@@ -888,7 +895,7 @@ class ModuleSpecs(object):
                 # was special command
                 if special[0]=="clear":
                     # clear module list so far
-                    module_dict= {}
+                    module_dict.clear()
                     continue
                 if special[0]=="rm":
                     # remove single module
