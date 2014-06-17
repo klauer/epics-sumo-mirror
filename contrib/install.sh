@@ -32,20 +32,36 @@ if [ ! -d "$sharedir" ]; then
     fi
 fi
 
-# all installed scripts:
-installed_scripts=`cd bin > /dev/null && ls *-[0-9]*`
+# scripts with an EPICS base version in their names:
+versioned_scripts=`cd bin > /dev/null && ls *-[0-9]*`
+
+# script templates that are used to create a script
+# for each EPICS base version:
+script_templates=`cd bin > /dev/null && ls *-`
+
+# scripts that are generic:
+generic_scripts=`cd bin > /dev/null && ls *[a-z]`
 
 # copy all version specific scripts:
-cp -a bin/*-[0-9]* $bindir
+for src in $versioned_scripts; do
+    cp -a bin/$src $bindir
+done
+
+# copy all generic scripts:
+for src in $generic_scripts; do
+    cp -a bin/$src $bindir
+done
+
+all_scripts="$versioned_scripts $generic_scripts"
 
 # create version specific scripts from generic scripts
-for src in bin/*-; do
-    file=`basename $src`
+for file in $script_templates; do
     for ver in $versions; do
+        src=bin/$file
         dst=$bindir/$file$ver
-        installed_scripts="$installed_scripts $file$ver"
+        all_scripts="$all_scripts $file$ver"
         cp $src $dst
-        sed -i -e "s#^source.*#source $sharedir/sumo-$ver.vars#" $dst
+        sed -i -e "s#^source \$SHARE/sumo-.*#source $sharedir/sumo-$ver.vars#" $dst
     done
 done
 
@@ -67,7 +83,7 @@ for src in share/*.vars; do
 done
 
 # patch location of share directory in all scripts:
-for script in $installed_scripts; do
+for script in $all_scripts; do
     sed -i -e "s#^SHARE=.*#SHARE=$sharedir#" $bindir/$script
 done
 

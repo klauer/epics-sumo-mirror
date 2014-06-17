@@ -1,0 +1,53 @@
+#!/bin/sh
+
+set -e
+
+SHARE=../share
+
+# define some environment variables:
+source $SHARE/sumo.vars
+
+if [ -z "$1" ]; then 
+    echo "This script creates a new SUMO support directory for EPICS 3.14.8"
+    echo "and for EPICS 3.14.12 here at Bessy"
+    echo "usage: $SCRIPT [directory]"
+    exit 0
+fi
+
+dir="$1"
+
+if [ -d $dir ]; then 
+    echo "error, directory $dir already exists"
+fi
+
+TMP="$dir-3.14.8"
+HERE=`pwd`
+
+sumo-makedir-3.14.8  $TMP
+sumo-makedir-3.14.12 $dir
+
+cd $TMP > /dev/null
+
+sumo-db replaceversion APPS_GENERICTEMPLATE R3-6 R3-6-EPICS-3-14-8 
+sumo-db replaceversion APPS_GENERICBOOT R0-9 R0-9-EPICS-3-14-8 
+sumo-db replaceversion APPS_GENERICBOOT R0-3 R0-3-EPICS-3-14-8
+sumo-db replaceversion APPS_GENERICBOOT R0-4 R0-4-EPICS-3-14-8
+sumo-db replaceversion APPS_GENERICBOOT R0-7 R0-7-EPICS-3-14-8
+sumo-db replaceversion APPS_VACUUM TAGLESS-1-1 TAGLESS-1-1-EPICS-3-14-8
+
+TMP=`pwd`
+
+cd $HERE > /dev/null
+cd $dir > /dev/null
+
+sumo-db merge $TMP/DEPS.DB
+
+mv $TMP/SUMO*.DB .
+mv $TMP/SUMO*.SCAN .
+
+rm $TMP/DEPS*
+rm $TMP/*.config
+rmdir $TMP
+
+echo
+echo "Finished"

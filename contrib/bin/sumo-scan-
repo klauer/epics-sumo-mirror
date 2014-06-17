@@ -5,7 +5,8 @@ set -e
 SHARE=../share
 
 # define some environment variables:
-source $SHARE/sumo-3.14.8.vars
+source $SHARE/sumo.vars
+source $SHARE/sumo-xx.vars
 
 if [ "$1" = "-h" ]; then
     echo "This script scans an existing EPICS support tree and"

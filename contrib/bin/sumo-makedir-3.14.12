@@ -5,6 +5,7 @@ set -e
 SHARE=../share
 
 # define some environment variables:
+source $SHARE/sumo.vars
 source $SHARE/sumo-3.14.12.vars
 
 if [ -z "$1" ]; then 
@@ -41,6 +42,6 @@ $SUMO_BUILD --db $SUMODIR/$DB --builddb $SUMODIR/BUILDS.DB --supportdir $SUMODIR
 #$SUMO_BUILD new BASE:R3-14-8-2-1 -t BASE-R3-14-8-2-1
 
 echo
-echo "You may now edit the definition of 'SUMODIR' in $SHARE/sumo-3.14.12.vars"
+echo "You may now edit the definition of 'SUMODIR' in $SHARE/sumo.vars"
 echo "to use $SUMODIR as Sumo support directory in the various"
-echo "Epics 3.14.12 Sumo scripts."
+echo "Sumo scripts."

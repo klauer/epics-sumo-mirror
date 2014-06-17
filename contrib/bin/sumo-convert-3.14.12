@@ -5,6 +5,7 @@ set -e
 SHARE=../share
 
 # define some environment variables:
+source $SHARE/sumo.vars
 source $SHARE/sumo-3.14.12.vars
 
 MODULES=configure/MODULES

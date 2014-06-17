@@ -1,0 +1,18 @@
+Create *.SCAN and *.DB files from existing support directories at BESSY
+sumo-scan-3.14.12
+sumo-scan-3.14.8
+
+Convert an application to Sumo usage:
+sumo-convert-3.14.12
+sumo-convert-3.14.8
+
+Extract a support from sumo
+sumo-extract
+
+Create a local Sumo support directory
+sumo-local
+
+Create a Sumo support directory from existing supports at BESSY
+sumo-makedir-3.14.12
+sumo-makedir-3.14.8
+
