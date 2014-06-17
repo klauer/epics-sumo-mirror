@@ -69,7 +69,7 @@ Module versions
 A module can be specified in these forms:
 
 =============================   ======================================
-Schema                          remark
+schema                          meaning
 =============================   ======================================
 modulename                      modulename 
 modulename:versionspec          modulename and version
@@ -120,7 +120,7 @@ how a command looks like:
 =============  ======================================
 command        remark
 =============  ======================================
-:clear         command "clear" with has no arguments
+:clear         command "clear" which has no arguments
 :load:myfile   command "load" with argument "myfile"
 =============  ======================================
 

@@ -54,11 +54,11 @@ Here we define some of the terms used in the following text.
   modulespec
       This is a string that specifies a :term:`module`, its :term:`version` and
       its :term:`architecture`. Module specifications are an important concept
-      in sumo, see also doc:`Module Specifications <modulespecs>`.
+      in sumo, see also :doc:`Module Specifications <modulespecs>`.
 
   versionspec
       This is a string that specifies the :term:`version` of a :term:`module`.
-      See doc:`Module Specifications <modulespecs>` for further details.
+      See :doc:`Module Specifications <modulespecs>` for further details.
 
   architecture
       This is the specification of the platform (processor + operating system)
@@ -71,7 +71,7 @@ Here we define some of the terms used in the following text.
   arch
       This is a string that specifies an architecture. Examples are
       "vxWorks-ppc603" or "linux-x86".  See 
-      doc:`Module Specifications <modulespecs>` on how to use this in a
+      :doc:`Module Specifications <modulespecs>` on how to use this in a
       module specification.
 
 

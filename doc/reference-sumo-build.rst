@@ -4,7 +4,7 @@ sumo-build
 What the script does
 --------------------
 
-This script creates and manages builds and updates the *status* of
+This script creates and manages builds and updates the :term:`state` of
 :term:`dependencies` in the :term:`DB` file.
 
 The script takes one or mode commands and has a number of options. Single
@@ -14,13 +14,13 @@ a double dash "--", commands are simple words on the command line.
 How it works
 ------------
 
-All :term:`builds` are kept in a single directory, the :term:`support directory`. Information in :term:`builds` is kept in a `JSON <http://www.json.org>`_ file, the build database or :term:`BUILDDB`.
+All :term:`builds` are kept in a single directory, the :term:`support directory`. Information on :term:`builds` is kept in a `JSON <http://www.json.org>`_ file, the build database or :term:`BUILDDB`.
 
 The build database
 ++++++++++++++++++
 
 The build database or :term:`BUILDDB` file is a `JSON <http://www.json.org>`_
-file that contains information all :term:`builds` in the 
+file that contains information of all :term:`builds` in the 
 :term:`support directory`.
 
 Here is an example how this file looks like::
