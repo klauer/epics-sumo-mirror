@@ -243,10 +243,8 @@ def create_database(deps, repoinfo, groups, archs, state, source_patches):
                                       _dep_name, _dep_version, state)
     return db
 
-def set_state(db, state, modulespeclist):
+def set_state(db, state, modulespecs):
     """set the state for modules and dependencies."""
-    modulespecs= utils.ModuleSpecs.from_strings(modulespeclist, None)
-
     for modulespec in modulespecs:
         if not modulespec.is_exact_spec():
             # should also unlock the db:
@@ -263,9 +261,8 @@ def set_state(db, state, modulespeclist):
              constant_src_state=state,
              state_sum_mode= utils.Dependencies.SUM_FIRST)
 
-def set_weight(db, weight, modulespeclist, trace):
+def set_weight(db, weight, modulespecs, trace):
     """set the weight for one or more modules."""
-    modulespecs= utils.ModuleSpecs.from_strings(modulespeclist, None)
     for modulespec in modulespecs:
         modulename= modulespec.modulename
         if trace:
@@ -282,6 +279,12 @@ def set_weight(db, weight, modulespeclist, trace):
                 sys.stderr.write("set weight %d on %s:%s\n" % \
                                  (weight,modulename,version))
             db.weight(modulename, version, weight)
+
+def dump_modules(modulespecs):
+    """dump module specs.
+    """
+    for modulespec in modulespecs:
+        print modulespec.to_string()
 
 def process(options, commands):
     """do all the work.
@@ -373,7 +376,11 @@ def process(options, commands):
             sys.exit("error: weight must be an integer")
         db= utils.Dependencies.from_json_file(options.db,
                 keep_locked= not options.dumpdb and (not options.dry_run))
-        set_weight(db, weight, modulespecs, options.trace)
+        modulespecs_obj= utils.ModuleSpecs.from_strings(modulespecs, None)
+        if options.dump_modules:
+            dump_modules(modulespecs_obj)
+            sys.exit(0)
+        set_weight(db, weight, modulespecs_obj, options.trace)
         if options.dumpdb:
             db.json_print()
         else:
@@ -395,6 +402,9 @@ def process(options, commands):
         db= utils.Dependencies.from_json_file(options.db, keep_locked= False)
         modulespecs_obj= utils.ModuleSpecs.from_strings(modulespecs,
                                                         options.arch)
+        if options.dump_modules:
+            dump_modules(modulespecs_obj)
+            sys.exit(0)
         db= db.partial_copy_by_modulespecs(modulespecs_obj)
         db.json_print()
         return
@@ -564,7 +574,11 @@ def process(options, commands):
             utils.Dependencies.check_state(state)
         except ValueError, e:
             sys.exit(str(e))
-        set_state(db, state, modulespecs)
+        modulespecs_obj= utils.ModuleSpecs.from_strings(modulespecs, None)
+        if options.dump_modules:
+            dump_modules(modulespecs_obj)
+            sys.exit(0)
+        set_state(db, state, modulespecs_obj)
         if options.dumpdb:
             db.json_print()
         else:
@@ -593,6 +607,9 @@ def process(options, commands):
 
         modulespecs_obj= utils.ModuleSpecs.from_strings(modulespecs,
                                                         options.arch)
+        if options.dump_modules:
+            dump_modules(modulespecs_obj)
+            sys.exit(0)
         for modulespec in modulespecs_obj:
             modulename= modulespec.modulename
 
@@ -849,6 +866,10 @@ def main():
     parser.add_option("-t", "--trace",
                       action="store_true",
                       help="Switch on some trace messages.",
+                      )
+    parser.add_option("--dump-modules",
+                      action="store_true",
+                      help="Dump module specs, then stop the program.",
                       )
     parser.add_option("-v", "--verbose",
                       action="store_true",

@@ -476,6 +476,8 @@ Here is a short overview on command line options:
     file.
 ``-t, --trace``
     Switch on some trace messages.
+``--dump-modules``
+    Dump module specs, then stop the program.
 ``-v, --verbose``
     Show command calls.  This option value is stored in the configuration file.
 ``-n, --dry-run``
