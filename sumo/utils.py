@@ -128,7 +128,30 @@ def json_loadfile(filename):
         fh= open(filename)
     else:
         fh= sys.stdin
-    results= json.load(fh)
+
+    # simplejson and json raise different kinds of exceptions
+    # in case of a syntax error within the JSON file.
+    if _JSON_TYPE==1:
+        my_exceptionclass= ValueError
+    else:
+        my_exceptionclass= json.scanner.JSONDecodeError
+
+    try:
+        results= json.load(fh)
+    except my_exceptionclass, e:
+        # no need to close the file here since this is always a fatal error:
+        if filename != "-":
+            msg= "%s: %s" % (filename, str(e))
+        else:
+            msg= "<stdin>: %s" % str(e)
+        raise e.__class__(msg)
+    except IOError, e:
+        # no need to close the file here since this is always a fatal error:
+        if filename != "-":
+            msg= "%s: %s" % (filename, str(e))
+        else:
+            msg= "<stdin>: %s" % str(e)
+        raise e.__class__(msg)
     if filename != "-":
         fh.close()
     return results
@@ -315,7 +338,7 @@ def system(cmd, catch_stdout, catch_stderr, verbose, dry_run):
     if dry_run or verbose:
         print ">", cmd
         if dry_run:
-            return None
+            return (None, None)
     if catch_stdout:
         stdout_par=subprocess.PIPE
     else:

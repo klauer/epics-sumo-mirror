@@ -33,13 +33,30 @@ KNOWN_COMMANDS=set(("alias-add", "appconvert", "check", "clonemodule",
 CONFIG_NAME="sumo-db.config"
 
 # -----------------------------------------------
-# main
+# utils
 # -----------------------------------------------
 
 def script_shortname():
     """return the name of this script without a path component."""
     return os.path.basename(sys.argv[0])
 
+# -----------------------------------------------
+# load JSON files
+# -----------------------------------------------
+
+def db_from_json_file(filename, keep_locked= False):
+    """load a db, exits gracefully in case of an error."""
+    try:
+        db= utils.Dependencies.from_json_file(filename, keep_locked)
+    except ValueError, e:
+        sys.exit("Error while loading builddb,\n%s" % str(e))
+    except IOError, e:
+        sys.exit("Error while loading builddb,\n%s" % str(e))
+    return db
+
+# -----------------------------------------------
+# main
+# -----------------------------------------------
 
 def create_app_data(deps, repoinfo, groups):
     """create configuration data for an app."""
@@ -308,8 +325,10 @@ def process(options, commands):
 
     try:
         config.load(options.config)
+    except ValueError, e:
+        sys.exit("Error while loading config file,\n%s" % str(e))
     except IOError, e:
-        sys.exit(str(e))
+        sys.exit("Error while loading config file,\n%s" % str(e))
     config.merge_options(options)
 
     if options.nolock:
@@ -374,7 +393,7 @@ def process(options, commands):
             weight= int(weight)
         except ValueError, _:
             sys.exit("error: weight must be an integer")
-        db= utils.Dependencies.from_json_file(options.db,
+        db= db_from_json_file(options.db,
                 keep_locked= not options.dumpdb and (not options.dry_run))
         try:
             modulespecs_obj= utils.ModuleSpecs.from_strings(modulespecs, None)
@@ -403,7 +422,7 @@ def process(options, commands):
 
         if not options.db:
             sys.exit("error, --db is mandatory here")
-        db= utils.Dependencies.from_json_file(options.db, keep_locked= False)
+        db= db_from_json_file(options.db, keep_locked= False)
         try:
             modulespecs_obj= utils.ModuleSpecs.from_strings(modulespecs,
                                                             options.arch)
@@ -422,7 +441,7 @@ def process(options, commands):
             sys.exit("error: extra arguments following \"check\"")
         if not options.db:
             sys.exit("error, --db is mandatory here")
-        db = utils.Dependencies.from_json_file(options.db,
+        db = db_from_json_file(options.db,
                                                keep_locked= False)
         msg= db.check()
         print "\n".join(msg)
@@ -433,9 +452,9 @@ def process(options, commands):
             sys.exit("exactly one filename must follow \"merge\"")
         if not options.db:
             sys.exit("error, --db is mandatory here")
-        db = utils.Dependencies.from_json_file(options.db,
+        db = db_from_json_file(options.db,
                 keep_locked= not options.dumpdb and (not options.dry_run))
-        db2= utils.Dependencies.from_json_file(commands[1])
+        db2= db_from_json_file(commands[1])
         db.merge(db2, constant_src_state= None,
                  state_sum_mode= utils.Dependencies.SUM_MIN)
         if options.dumpdb:
@@ -453,7 +472,7 @@ def process(options, commands):
             sys.exit("error, --db is mandatory here")
         module_spec= utils.ModuleSpec.from_string(commands[1])
         (depname,alias)= commands[2:4]
-        db = utils.Dependencies.from_json_file(options.db,
+        db = db_from_json_file(options.db,
                 keep_locked= not options.dumpdb and (not options.dry_run))
         db.add_alias(module_spec.modulename,
                      module_spec.versionname,
@@ -474,7 +493,7 @@ def process(options, commands):
         module_spec= utils.ModuleSpec.from_string(commands[1])
         dep_spec   = utils.ModuleSpec.from_string(commands[2])
         state      = commands[3]
-        db = utils.Dependencies.from_json_file(options.db,
+        db = db_from_json_file(options.db,
                 keep_locked= not options.dumpdb and (not options.dry_run))
         db.add_dependency(module_spec.modulename,
                           module_spec.versionname,
@@ -501,7 +520,7 @@ def process(options, commands):
         if dep_spec.no_version_spec():
             sys.exit("dependency has no version")
 
-        db = utils.Dependencies.from_json_file(options.db,
+        db = db_from_json_file(options.db,
                 keep_locked= not options.dumpdb and (not options.dry_run))
         db.del_dependency(module_spec.modulename,
                           module_spec.versionname,
@@ -526,7 +545,7 @@ def process(options, commands):
             sourcespec= commands[4:]
         if not options.db:
             sys.exit("error, --db is mandatory here")
-        db = utils.Dependencies.from_json_file(options.db,
+        db = db_from_json_file(options.db,
                 keep_locked= not options.dumpdb and (not options.dry_run))
         db.patch_version(modulename, oldversion, newversion, do_replace)
         if sourcespec:
@@ -547,7 +566,7 @@ def process(options, commands):
         versions= commands[3:]
         if not options.db:
             sys.exit("error, --db is mandatory here")
-        db = utils.Dependencies.from_json_file(options.db,
+        db = db_from_json_file(options.db,
                 keep_locked= not options.dumpdb and (not options.dry_run))
         db.clonemodule(oldmodule, newodule, versions)
         if options.dumpdb:
@@ -562,7 +581,7 @@ def process(options, commands):
             sys.exit("error: extra arguments following \"list\"")
         if not options.db:
             sys.exit("error, --db is mandatory here")
-        db= utils.Dependencies.from_json_file(options.db)
+        db= db_from_json_file(options.db)
         result= sorted(db.iter_modulenames())
         utils.json_dump(result)
         return
@@ -576,7 +595,7 @@ def process(options, commands):
             sys.exit("error, --db is mandatory here")
         state= commands[1]
         modulespecs= commands[2:]
-        db= utils.Dependencies.from_json_file(options.db,
+        db= db_from_json_file(options.db,
                 keep_locked= not options.dumpdb and (not options.dry_run))
         try:
             utils.Dependencies.check_state(state)
@@ -604,7 +623,7 @@ def process(options, commands):
             sys.exit("error, --db is mandatory here")
         if not options.maxstate:
             sys.exit("error, --maxstate is mandatory here")
-        db= utils.Dependencies.from_json_file(options.db)
+        db= db_from_json_file(options.db)
 
         modulespecs= []
         if options.module:
@@ -650,7 +669,7 @@ def process(options, commands):
             sys.exit("error, --maxstate is mandatory here")
         if not options.db:
             sys.exit("error, --db is mandatory here")
-        db= utils.Dependencies.from_json_file(options.db)
+        db= db_from_json_file(options.db)
         regexp= commands[1]
         if options.noignorecase:
             rx_flags= 0

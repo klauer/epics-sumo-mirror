@@ -492,8 +492,10 @@ def process(options, commands):
 
     try:
         config.load(options.config)
+    except ValueError, e:
+        sys.exit("Error while loading config file,\n%s" % str(e))
     except IOError, e:
-        sys.exit(str(e))
+        sys.exit("Error while loading config file,\n%s" % str(e))
     config.merge_options(options)
 
     if not commands:
@@ -535,6 +537,8 @@ def process(options, commands):
     if options.dir:
         (deps, archs)= get_configuration(options)
     elif options.info_file:
+        # pylint: disable=W0633
+        #                     Attempting to unpack a non-sequence
         (deps, archs)= utils.json_loadfile(options.info_file)
     else:
         sys.exit("error: -d or -i required for command")
