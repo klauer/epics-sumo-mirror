@@ -330,6 +330,9 @@ Here is a short overview on command line options:
 ``--modules-from-build BUILDTAG``
     Take the module specifications from a build. If you use "--addmodules" you
     can modify single module specifications in order to create a new build.
+``--add-deps``
+    Add dependencies to the database in a way that the given collection of
+    modules is supported. Only for commands "new" and "try".
 ``-b, --brief``
     Create a more brief output for some commands.
 ``--no-make``

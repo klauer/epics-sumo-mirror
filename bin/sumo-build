@@ -330,8 +330,14 @@ def builddb_match(dist_dict, db, builddb, modulename, versionname):
 # distribution creation
 # -----------------------------------------------
 
-def _distribution_add(db, dist, modulename, versionname, maxstate, archs):
-    """add a module to the set."""
+def _distribution_add(db, dist, modulename, versionname,
+                      maxstate, archs, required_modules):
+    """add a module to the set.
+
+    required_modules: a dict mapping modulename->version that contains modules
+    that MUST be used. If db doesn't contain the dependency with the version
+    given from required_modules, add it.
+    """
     # pylint: disable=R0913
     #                          Too many arguments
     #print "_distribution_add(..,..,",modulename,",",versionname,")"
@@ -356,14 +362,30 @@ def _distribution_add(db, dist, modulename, versionname, maxstate, archs):
                          (repr(archs),modulename,versionname))
 
     for dep_modulename in db.iter_dependencies(modulename, versionname):
-        for dep_version in db.sorted_dependency_versions(
-                modulename, versionname, dep_modulename, maxstate, archs):
+        required_version= required_modules.get(dep_modulename)
+        possible_dep_versions= []
+        if required_version:
+            if not db.depends_on(modulename, versionname,
+                                 dep_modulename, required_version):
+                db.add_dependency(modulename, versionname,
+                                  dep_modulename, required_version,
+                                  "unstable")
+                sys.stderr.write("%s:%s --> add dependency %s:%s\n" % \
+                                 (modulename, versionname,
+                                  dep_modulename, required_version))
+            possible_dep_versions= [required_version]
+        else:
+            possible_dep_versions= db.sorted_dependency_versions(
+                modulename, versionname, dep_modulename, maxstate, archs)
+
+        for dep_version in possible_dep_versions:
             errst= None
             try:
                 new_dist= _distribution_add(db,
                                             new_dist,
                                             dep_modulename,
-                                            dep_version, maxstate, archs)
+                                            dep_version, maxstate, archs,
+                                            required_modules)
                 errst= None
                 break
             except ValueError, e:
@@ -373,11 +395,16 @@ def _distribution_add(db, dist, modulename, versionname, maxstate, archs):
                              errst)
     return new_dist
 
-def distribution(db, modulespecs, maxstate, trace, tracemore):
+def distribution(db, modulespecs, maxstate, trace, tracemore, force):
     """create a distribution.
 
     modulespecs: a ModuleSpecs object.
+
+    If force is True, add dependencies to db inferred from modulespecs, when
+    they are missing.
     """
+    # pylint: disable=R0913
+    #                          Too many arguments
     # pylint: disable=R0914
     #                          Too many local variables
     # pylint: disable=R0912
@@ -390,6 +417,7 @@ def distribution(db, modulespecs, maxstate, trace, tracemore):
         sys.stderr.write("looking for modules, maxstate: %s\n\n" % \
                          maxstate)
 
+    required_modules= {}
     versioned_modules= []
     versionless_modules= []
     for modulespec in modulespecs:
@@ -397,6 +425,8 @@ def distribution(db, modulespecs, maxstate, trace, tracemore):
         if modulespec.no_version_spec():
             versionless_modules.append((modulename, modulespec.archs))
         elif modulespec.is_exact_spec():
+            if force:
+                required_modules[modulename]= modulespec.versionname
             versioned_modules.append((modulename,
                                       modulespec.versionname,
                                       modulespec.archs))
@@ -411,7 +441,8 @@ def distribution(db, modulespecs, maxstate, trace, tracemore):
             sys.stderr.write("examine %s:%s\n" % (modulename,versionname))
         try:
             dist= _distribution_add(db, dist, modulename, versionname,
-                                    maxstate, archs)
+                                    maxstate, archs,
+                                    required_modules)
         except ValueError, e:
             if trace:
                 sys.stderr.write("modules added so far\n%s\n" % \
@@ -440,7 +471,7 @@ def distribution(db, modulespecs, maxstate, trace, tracemore):
         for versionname in versionlist:
             try:
                 dist= _distribution_add(db, dist, modulename, versionname,
-                                        maxstate, archs)
+                                        maxstate, archs, required_modules)
                 found= True
                 break
             except ValueError, e:
@@ -927,7 +958,7 @@ def fullapprelease(build_path, build_tag, builddb, db, modules,
     return lines
 
 def apprelease(build_path, build_tag, modulespecs, builddb, db,
-               archs, aliases, extra_lines):
+               aliases, extra_lines):
     """create entries for an release file.
     """
     # pylint: disable=R0913
@@ -1186,7 +1217,8 @@ def process(options, commands):
             sys.exit(0)
         try:
             dist_dict= distribution(db, modulespecs_obj, options.maxstate,
-                                    options.trace, options.tracemore)
+                                    options.trace, options.tracemore,
+                                    options.add_deps)
         except ValueError, e:
             # db __del__ method should remove lockfiles
             sys.exit(str(e))
@@ -1248,7 +1280,8 @@ def process(options, commands):
                                     modulespecs_obj,
                                     options.maxstate,
                                     options.trace,
-                                    options.tracemore)
+                                    options.tracemore,
+                                    options.add_deps)
         except ValueError, e:
             # db __del__ method should remove lockfiles
             sys.exit(str(e))
@@ -1428,7 +1461,6 @@ def process(options, commands):
                           modulespecs_obj,
                           builddb,
                           db,
-                          options.arch,
                           scan_aliases(options.alias),
                           options.extra)
         _mkfile(output, lines, options.verbose, options.dry_run)
@@ -1671,6 +1703,12 @@ def main():
                             "string separated by spaces.  This option value "
                             "is stored in the configuration file. ",
                       metavar="MODULESPEC"
+                      )
+    parser.add_option("--add-deps",
+                      action="store_true",
+                      help="Add dependencies to the database in a way that "
+                           "the given collection of modules is supported. "
+                           "Only for commands \"new\" and \"try\". ",
                       )
     parser.add_option("-b", "--brief",
                       action="store_true",
