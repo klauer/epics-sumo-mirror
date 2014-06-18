@@ -191,7 +191,8 @@
         }, 
         "/tmp-110-sumo-build-new-2/BASE/TAGLESS-3-14-12-2-1+MYAPP-001": {
             "darcs": {
-                "url": "/tmp-110-sumo-build-new-2/BASE/TAGLESS-3-14-12-2-1+MYAPP-001"
+                "tag": "R3-14-12-2-1", 
+                "url": "rcsadm@aragon.acc.bessy.de:/opt/Epics/R3.14.12/base/3-14-12-2-1"
             }
         }, 
         "/tmp-110-sumo-build-new-2/BSPDEP_CPUBOARDINIT/R4-1+MYAPP-001": {
