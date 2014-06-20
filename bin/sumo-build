@@ -343,9 +343,9 @@ def builddb_match(dist_dict, db, builddb, modulename, versionname):
 
         # from here: check if all dependencies match:
         match= True
-        for module_name, versionname in deps.items():
-            other= modules.get(module_name)
-            if versionname!= other:
+        for dep_name, dep_ver in deps.items():
+            other= modules.get(dep_name)
+            if dep_ver!= other:
                 match= False
                 break
         if match:
