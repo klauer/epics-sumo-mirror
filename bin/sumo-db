@@ -22,7 +22,7 @@ import copy
 import sumo.utils as utils
 
 # version of the program:
-my_version= "1.7"
+my_version= "1.7.1"
 
 KNOWN_COMMANDS=set(("alias-add", "appconvert", "check", "clonemodule",
                     "cloneversion", "convert", "edit", "filter", "find",
