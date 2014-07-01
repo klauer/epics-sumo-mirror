@@ -30,6 +30,8 @@ import sumo.utils as utils
 # version of the program:
 my_version= "1.7.1" #VERSION#
 
+utils.assert_version(my_version)
+
 KNOWN_COMMANDS=set(("deps", "name2paths", "path2names",
                     "groups", "repos", "all", "makeconfig"))
 

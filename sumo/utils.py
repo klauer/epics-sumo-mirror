@@ -35,6 +35,17 @@ except ImportError, _lockfile_err:
         use_lockfile= False
 
 # -----------------------------------------------
+# ensure a certain module version
+# -----------------------------------------------
+
+def assert_version(wanted_version):
+    """check if the version is the one that was expected."""
+    if __version__!=wanted_version:
+        sys.exit("ERROR: module 'sumo/utils' version %s expected "
+                 "but found %s instead" % \
+                 (wanted_version, __version__))
+
+# -----------------------------------------------
 # JSON support
 # -----------------------------------------------
 
