@@ -34,3 +34,7 @@ You may install sumo from source:
     export PYTHONPATH=~/test/lib/python:$PYTHONPATH
     export PATH=~/test/bin:$PATH
 
+Creation of a distribution tar.gz file:
+
+    Go to administration_tools and enter:
+      ./mk-dist.sh
