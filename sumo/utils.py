@@ -15,7 +15,7 @@ import pprint
 import copy
 import re
 
-__version__="1.7.1" #VERSION#
+__version__="1.7.2" #VERSION#
 
 _pyver= (sys.version_info[0], sys.version_info[1])
 
