@@ -979,25 +979,22 @@ class ModuleSpecs(object):
         overwrites the first one. However, the module retains it's position in
         the internal list of modules.
 
-        A spec in the form "modulename:-" means that this is removed from the
-        list of modules even if it was mentioned before.
-
         Here are some examples:
 
         >>> def p(s):
         ...     for m in s:
         ...         print m
 
-        >>> p(ModuleSpecs.from_strings(["A:R2","B:-R3","C:+R1:arch1"]))
+        >>> p(ModuleSpecs.from_strings(["A:R2","B:-R3","C:+R1:arch1"], None))
         ModuleSpec('A','R2','eq',None)
         ModuleSpec('B','R3','le',None)
         ModuleSpec('C','R1','ge',set(['arch1']))
-        >>> p(ModuleSpecs.from_strings(["A:R2","B:-R3","A:R3"]))
+        >>> p(ModuleSpecs.from_strings(["A:R2","B:-R3","A:R3"], None))
         ModuleSpec('A','R3','eq',None)
         ModuleSpec('B','R3','le',None)
-        >>> p(ModuleSpecs.from_strings(["A:R2","B:-R3","A:-"]))
+        >>> p(ModuleSpecs.from_strings(["A:R2","B:-R3",":rm:A"], None))
         ModuleSpec('B','R3','le',None)
-        >>> p(ModuleSpecs.from_strings(["A:R2","B:-R3","A:-","A:R3"]))
+        >>> p(ModuleSpecs.from_strings(["A:R2","B:-R3",":rm:A","A:R3"], None))
         ModuleSpec('A','R3','eq',None)
         ModuleSpec('B','R3','le',None)
         """
