@@ -14,9 +14,7 @@ echo -e "\n-> Test sumo-db state" >&2
 
 cp samples/DB_IDCP DB_IDCP-$ME.tmp
 
-# sed is used to add spaces after each "," at the end of the line. The old JSON
-# library for python 2.5 doesn't do this.
 $PYTHON ../bin/sumo-db --db DB_IDCP-$ME.tmp state testing ALARM:R3-8 BSPDEP_TIMER:R6-2
-cat DB_IDCP-$ME.tmp | sed -e "s/,$/, /g"
+cat DB_IDCP-$ME.tmp 
 
 

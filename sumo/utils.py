@@ -60,7 +60,13 @@ def json_dump_file(filename, var):
     if _JSON_TYPE==0:
         json.dump(var, fh, sort_keys= True, indent= 4*" ")
     else:
-        json.dump(var, fh, sort_keys= True, indent= 4)
+        # modern python JSON modules add a trailing space at lines that end
+        # with a comma. It seems that this is only fixed in python 3.4. So for
+        # now we remove the spaces manually here:
+
+        # old code:
+        # json.dump(var, fh, sort_keys= True, indent= 4)
+        fh.write(json_str(var))
     fh.close()
 
 # pylint: disable=C0303
@@ -74,13 +80,13 @@ def json_str(var):
     >>> print json_str(var)
     {
         "key": [
-            1, 
-            2, 
+            1,
+            2,
             3
-        ], 
-        "key2": "val", 
+        ],
+        "key2": "val",
         "key3": {
-            "A": 1, 
+            "A": 1,
             "B": 2
         }
     }
@@ -88,7 +94,15 @@ def json_str(var):
     if _JSON_TYPE==0:
         return json.dumps(var, sort_keys= True, indent= 4*" ")
     else:
-        return json.dumps(var, sort_keys= True, indent= 4) 
+        # modern python JSON modules add a trailing space at lines that end
+        # with a comma. It seems that this is only fixed in python 3.4. So for
+        # now we remove the spaces manually here:
+
+        # old code:
+        # return json.dumps(var, sort_keys= True, indent= 4) 
+        return "\n".join([x.rstrip() \
+                         for x in json.dumps(var, sort_keys= True, 
+                                             indent= 4).splitlines()])
 
 def json_dump(var):
     """Dump a variable in JSON format.
@@ -98,13 +112,13 @@ def json_dump(var):
     >>> json_dump(var)
     {
         "key": [
-            1, 
-            2, 
+            1,
+            2,
             3
-        ], 
-        "key2": "val", 
+        ],
+        "key2": "val",
         "key3": {
-            "A": 1, 
+            "A": 1,
             "B": 2
         }
     }

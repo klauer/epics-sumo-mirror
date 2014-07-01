@@ -18,16 +18,14 @@ TESTDIR=tmp-080-sumo-build-new
 
 cd $TESTDIR > /dev/null
 
-# sed is used to add spaces after each "," at the end of the line. The old JSON
-# library for python 2.5 doesn't do this.
 
 echo -e "\nBUILDS before:"
-cat BUILDS | sed -e "s/,$/, /g"
+cat BUILDS 
 
 cp DB DB-$ME.tmp
 cp BUILDS BUILDS-$ME.tmp
 $PYTHON ../../bin/sumo-build --db DB-$ME.tmp --builddb BUILDS-$ME.tmp state MYAPP-001 stable
 
 echo -e "\nBUILDS after:"
-cat BUILDS-$ME.tmp | sed -e "s/,$/, /g"
+cat BUILDS-$ME.tmp 
 

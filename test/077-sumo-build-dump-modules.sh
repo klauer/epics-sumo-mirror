@@ -12,8 +12,6 @@ PYTHON=$1
 
 echo -e "\n-> Test sumo-build try --dump-modules" >&2
 
-# sed is used to add spaces after each "," at the end of the line. The old JSON
-# library for python 2.5 doesn't do this.
 echo "Take modulespecs from samples/IDCP.CONFIG:"
 $PYTHON ../bin/sumo-build --db samples/DB --maxstate stable --builddb samples/BUILDS --dump-modules try :load:samples/IDCP.CONFIG
 echo "Take modulespecs from build 002:"

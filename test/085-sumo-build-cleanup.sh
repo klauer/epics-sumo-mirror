@@ -32,7 +32,7 @@ echo -e "\ndirectory tree (without darcs)"
 find . -name _darcs -prune -o -name '*' | sort
 
 echo -e "\ncontents of cleanup file:"
-cat cleanup-001 | sed -e "s/,$/, /g"
+cat cleanup-001 
 
 echo -e "\nnow do sumo-build cleanup 001"
 

@@ -34,8 +34,6 @@ if [ ! -d $MYTESTDIR ]; then
     rm -f *.tmp
     rm -f *.bak
 
-    # sed is used to add spaces after each "," at the end of the line. The old JSON
-    # library for python 2.5 doesn't do this.
 
     # use an auto generated build tag,
     # use --add-deps to add new dependencies to the DB file on the fly:
@@ -45,17 +43,15 @@ else
     cd $MYTESTDIR > /dev/null
 fi
 
-# sed is used to add spaces after each "," at the end of the line. The old JSON
-# library for python 2.5 doesn't do this.
 
 echo -e "\ndirectory tree (without darcs)"
 find . | egrep -v '_darcs|\.tmp|\.bak' | sort
 echo -e "\ncontents of RELEASE files\n"
 for f in `find . -name RELEASE | sort`; do echo -e "\nFILE: $f"; cat $f | sed -e "s#`pwd -P`##"; done
 echo -e "\n\ncontent of DB:"
-cat DB | sed -e "s/,$/, /g"
+cat DB 
 echo -e "\ncontent of BUILDS"
-cat BUILDS | sed -e "s/,$/, /g"
+cat BUILDS 
 echo -e "\ncontent of Makefile-AUTO-001"
 cat Makefile-AUTO-001
 

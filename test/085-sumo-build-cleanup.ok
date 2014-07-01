@@ -524,63 +524,63 @@ contents of cleanup file:
 {
     "modules": [
         {
-            "modulename": "ALARM", 
+            "modulename": "ALARM",
             "versionname": "R3-8"
-        }, 
+        },
         {
-            "modulename": "ASYN", 
+            "modulename": "ASYN",
             "versionname": "4-18-bessy1"
-        }, 
+        },
         {
-            "modulename": "BASE", 
+            "modulename": "BASE",
             "versionname": "TAGLESS-3-14-12-2-1"
-        }, 
+        },
         {
-            "modulename": "BSPDEP_CPUBOARDINIT", 
+            "modulename": "BSPDEP_CPUBOARDINIT",
             "versionname": "R4-1"
-        }, 
+        },
         {
-            "modulename": "BSPDEP_TIMER", 
+            "modulename": "BSPDEP_TIMER",
             "versionname": "R6-2"
-        }, 
+        },
         {
-            "modulename": "BSPDEP_VMETAS", 
+            "modulename": "BSPDEP_VMETAS",
             "versionname": "R2-0"
-        }, 
+        },
         {
-            "modulename": "CSM", 
+            "modulename": "CSM",
             "versionname": "R4-3"
-        }, 
+        },
         {
-            "modulename": "EK", 
+            "modulename": "EK",
             "versionname": "R2-2"
-        }, 
+        },
         {
-            "modulename": "GENSUB", 
+            "modulename": "GENSUB",
             "versionname": "R1-6-1"
-        }, 
+        },
         {
-            "modulename": "MCAN", 
+            "modulename": "MCAN",
             "versionname": "TAGLESS-2-6-3-test"
-        }, 
+        },
         {
-            "modulename": "MISC_DBC", 
+            "modulename": "MISC_DBC",
             "versionname": "R3-0"
-        }, 
+        },
         {
-            "modulename": "MISC_DEBUGMSG", 
+            "modulename": "MISC_DEBUGMSG",
             "versionname": "R3-0"
-        }, 
+        },
         {
-            "modulename": "SEQ", 
+            "modulename": "SEQ",
             "versionname": "TAGLESS-2-1-12"
-        }, 
+        },
         {
-            "modulename": "SOFT_DEVHWCLIENT", 
+            "modulename": "SOFT_DEVHWCLIENT",
             "versionname": "R3-0"
-        }, 
+        },
         {
-            "modulename": "VXSTATS", 
+            "modulename": "VXSTATS",
             "versionname": "R3-0"
         }
     ]
