@@ -359,12 +359,13 @@ def builddb_match(dist_dict, db, builddb, modulename, versionname):
 # -----------------------------------------------
 
 def _distribution_add(db, dist, modulename, versionname,
-                      maxstate, archs, required_modules):
+                      maxstate, archs, required_modules, force):
     """add a module to the set.
 
     required_modules: a dict mapping modulename->version that contains modules
-    that MUST be used. If db doesn't contain the dependency with the version
-    given from required_modules, add it.
+    that MUST be used.
+
+    If force is True the program adds missing dependencies to the db.
     """
     # pylint: disable=R0913
     #                          Too many arguments
@@ -395,6 +396,12 @@ def _distribution_add(db, dist, modulename, versionname,
         if required_version:
             if not db.depends_on(modulename, versionname,
                                  dep_modulename, required_version):
+                if not force:
+                    raise ValueError("module %s:%s has no dependency of "
+                                     "%s:%s according to the dependency "
+                                     "database." % \
+                                     (modulename, versionname,
+                                      dep_modulename, required_version))
                 db.add_dependency(modulename, versionname,
                                   dep_modulename, required_version,
                                   "unstable")
@@ -413,7 +420,7 @@ def _distribution_add(db, dist, modulename, versionname,
                                             new_dist,
                                             dep_modulename,
                                             dep_version, maxstate, archs,
-                                            required_modules)
+                                            required_modules, force)
                 errst= None
                 break
             except ValueError, e:
@@ -453,8 +460,7 @@ def distribution(db, modulespecs, maxstate, trace, tracemore, force):
         if modulespec.no_version_spec():
             versionless_modules.append((modulename, modulespec.archs))
         elif modulespec.is_exact_spec():
-            if force:
-                required_modules[modulename]= modulespec.versionname
+            required_modules[modulename]= modulespec.versionname
             versioned_modules.append((modulename,
                                       modulespec.versionname,
                                       modulespec.archs))
@@ -470,7 +476,7 @@ def distribution(db, modulespecs, maxstate, trace, tracemore, force):
         try:
             dist= _distribution_add(db, dist, modulename, versionname,
                                     maxstate, archs,
-                                    required_modules)
+                                    required_modules, force)
         except ValueError, e:
             if trace:
                 sys.stderr.write("modules added so far\n%s\n" % \
@@ -499,7 +505,8 @@ def distribution(db, modulespecs, maxstate, trace, tracemore, force):
         for versionname in versionlist:
             try:
                 dist= _distribution_add(db, dist, modulename, versionname,
-                                        maxstate, archs, required_modules)
+                                        maxstate, archs,
+                                        required_modules, force)
                 found= True
                 break
             except ValueError, e:
