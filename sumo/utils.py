@@ -166,16 +166,17 @@ def json_loadfile(filename):
     try:
         results= json.load(fh)
     except my_exceptionclass, e:
-        # no need to close the file here since this is always a fatal error:
         if filename != "-":
             msg= "%s: %s" % (filename, str(e))
+            fh.close()
         else:
             msg= "<stdin>: %s" % str(e)
-        raise e.__class__(msg)
+        # always re-raise as a value error regardless of _JSON_TYPE:
+        raise ValueError(msg)
     except IOError, e:
-        # no need to close the file here since this is always a fatal error:
         if filename != "-":
             msg= "%s: %s" % (filename, str(e))
+            fh.close()
         else:
             msg= "<stdin>: %s" % str(e)
         raise e.__class__(msg)
@@ -1317,14 +1318,9 @@ class JSONstruct(object):
 
         # simplejson and json raise different kinds of exceptions
         # in case of a syntax error within the JSON file.
-        if _JSON_TYPE==1:
-            my_exceptionclass= ValueError
-        else:
-            my_exceptionclass= json.scanner.JSONDecodeError
-
         try:
             result= cls(json_loadfile(filename))
-        except my_exceptionclass, _:
+        except ValueError, _:
             unlock_a_file(l)
             raise
 
