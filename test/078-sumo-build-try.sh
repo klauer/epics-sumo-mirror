@@ -12,7 +12,7 @@ PYTHON=$1
 
 echo -e "\n-> Test sumo-build try" >&2
 
-$PYTHON ../bin/sumo-build --arch vxWorks-68040 --arch vxWorks-ppc603 --db samples/DB --maxstate stable --builddb BUILDS try ALARM BSPDEP_CPUBOARDINIT BSPDEP_TIMER VXSTATS CSM EK MCAN ASYN GENSUB SEQ 
+$PYTHON ../bin/sumo-build --arch vxWorks-68040 --arch vxWorks-ppc603 --db samples/DB --maxstate stable --builddb BUILDS try ALARM:R3-8 BSPDEP_CPUBOARDINIT BSPDEP_TIMER VXSTATS CSM EK MCAN ASYN GENSUB SEQ 
 
 
 

@@ -1,7 +1,7 @@
 {
     "AGILENT": "R2-3",
     "AGILENT-SUPPORT": "R0-12",
-    "ALARM": "R3-8",
+    "ALARM": "R3-9",
     "APPS_CRATECTRL": "TAGLESS-3-1",
     "APPS_GENERICTEMPLATE": "R4-0",
     "APPS_IOCWATCH": "R3-2",
@@ -12,7 +12,7 @@
     "APPS_VACUUM": "TAGLESS-0-1",
     "ASYN": "4-18-bessy1",
     "AUTOSAVE": "R4-8-bessy4",
-    "BASE": "TAGLESS-3-14-12-2-1",
+    "BASE": "TAGLESS-3-14-12-2-2",
     "BESSYRULES": "R2-6",
     "BINP": "R2-5",
     "BSPDEP_CPUBOARDINIT": "R4-1",

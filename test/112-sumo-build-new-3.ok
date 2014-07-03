@@ -3696,6 +3696,33 @@ content of DB:
                 }
             },
             "state": "stable"
+        },
+        "R3-9": {
+            "aliases": {
+                "BASE": "EPICS_BASE",
+                "BSPDEP_TIMER": "TIMER",
+                "MISC_DBC": "DBC"
+            },
+            "archs": {
+                "RTEMS-mvme2100": true,
+                "RTEMS-mvme5500": true,
+                "linux-x86": true,
+                "vxWorks-68040": true,
+                "vxWorks-ppc603": true
+            },
+            "dependencies": {
+                "BASE": {
+                    "TAGLESS-3-14-12-2-1": "stable",
+                    "TAGLESS-3-14-12-2-2": "stable"
+                }
+            },
+            "source": {
+                "darcs": {
+                    "tag": "R3-8",
+                    "url": "rcsadm@aragon.acc.bessy.de:/opt/repositories/controls/darcs/epics/support/alarm/base-3-14"
+                }
+            },
+            "state": "stable"
         }
     },
     "APPS_CRATECTRL": {
@@ -4784,7 +4811,8 @@ content of DB:
             },
             "dependencies": {
                 "BASE": {
-                    "TAGLESS-3-14-12-2-1": "stable"
+                    "TAGLESS-3-14-12-2-1": "stable",
+                    "TAGLESS-3-14-12-2-2": "stable"
                 }
             },
             "source": {
@@ -4979,6 +5007,21 @@ content of DB:
             "source": {
                 "darcs": {
                     "url": "rcsadm@aragon.acc.bessy.de:/opt/Epics/R3.14.12/base/3-14-12-2-1"
+                }
+            },
+            "state": "stable"
+        },
+        "TAGLESS-3-14-12-2-2": {
+            "archs": {
+                "RTEMS-mvme2100": true,
+                "RTEMS-mvme5500": true,
+                "linux-x86": true,
+                "vxWorks-68040": true,
+                "vxWorks-ppc603": true
+            },
+            "source": {
+                "darcs": {
+                    "url": "rcsadm@aragon.acc.bessy.de:/opt/Epics/R3.14.12/base/3-14-12-2-2"
                 }
             },
             "state": "stable"
@@ -6415,7 +6458,8 @@ content of DB:
             },
             "dependencies": {
                 "ALARM": {
-                    "R3-8": "stable"
+                    "R3-8": "stable",
+                    "R3-9": "stable"
                 },
                 "BASE": {
                     "TAGLESS-3-14-12-2-1": "stable"

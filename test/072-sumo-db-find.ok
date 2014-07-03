@@ -370,7 +370,8 @@ find unstable mcan:
             },
             "dependencies": {
                 "ALARM": {
-                    "R3-8": "stable"
+                    "R3-8": "stable",
+                    "R3-9": "stable"
                 },
                 "BASE": {
                     "TAGLESS-3-14-12-2-1": "stable"
