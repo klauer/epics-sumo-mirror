@@ -7532,6 +7532,7 @@ content of DB:
         }
     }
 }
+
 content of BUILDS
 {
     "MYAPP-001": {
@@ -7555,6 +7556,7 @@ content of BUILDS
         "state": "unstable"
     }
 }
+
 content of Makefile-MYAPP-001
 all: ALARM/R3-8+MYAPP-001/stamp ASYN/4-18-bessy1+MYAPP-001/stamp BASE/TAGLESS-3-14-12-2-1+MYAPP-001/stamp BSPDEP_CPUBOARDINIT/R4-1+MYAPP-001/stamp BSPDEP_TIMER/R6-2+MYAPP-001/stamp BSPDEP_VMETAS/R2-0+MYAPP-001/stamp CSM/R4-3+MYAPP-001/stamp EK/R2-2+MYAPP-001/stamp GENSUB/R1-6-1+MYAPP-001/stamp MCAN/TAGLESS-2-6-3-test+MYAPP-001/stamp MISC_DBC/R3-0+MYAPP-001/stamp MISC_DEBUGMSG/R3-0+MYAPP-001/stamp SEQ/TAGLESS-2-1-12+MYAPP-001/stamp SOFT_DEVHWCLIENT/R3-0+MYAPP-001/stamp VXSTATS/R3-0+MYAPP-001/stamp
 

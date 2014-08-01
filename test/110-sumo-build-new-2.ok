@@ -7822,6 +7822,7 @@ content of DB:
         }
     }
 }
+
 content of BUILDS
 {
     "AUTO-001": {
@@ -7880,6 +7881,7 @@ content of BUILDS
         "state": "stable"
     }
 }
+
 content of Makefile-AUTO-001
 all: ALARM/R3-7+AUTO-001/stamp MCAN/R2-4-5+AUTO-001/stamp
 

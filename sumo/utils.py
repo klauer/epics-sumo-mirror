@@ -70,16 +70,10 @@ def json_dump_file(filename, var):
     """Dump a variable to a file in JSON format.
     """
     fh= open(filename, "w")
-    if _JSON_TYPE==0:
-        json.dump(var, fh, sort_keys= True, indent= 4*" ")
-    else:
-        # modern python JSON modules add a trailing space at lines that end
-        # with a comma. It seems that this is only fixed in python 3.4. So for
-        # now we remove the spaces manually here:
-
-        # old code:
-        # json.dump(var, fh, sort_keys= True, indent= 4)
-        fh.write(json_str(var))
+    # modern python JSON modules add a trailing space at lines that end with a
+    # comma. It seems that this is only fixed in python 3.4. So for now we
+    # remove the spaces manually here, which is done by json_str().
+    fh.write(json_str(var))
     fh.close()
 
 # pylint: disable=C0303
@@ -103,19 +97,21 @@ def json_str(var):
             "B": 2
         }
     }
+    <BLANKLINE>
     """
     if _JSON_TYPE==0:
-        return json.dumps(var, sort_keys= True, indent= 4*" ")
+        raw_str= json.dumps(var, sort_keys= True, indent= 4*" ")
     else:
-        # modern python JSON modules add a trailing space at lines that end
-        # with a comma. It seems that this is only fixed in python 3.4. So for
-        # now we remove the spaces manually here:
+        raw_str= json.dumps(var, sort_keys= True, indent= 4)
 
-        # old code:
-        # return json.dumps(var, sort_keys= True, indent= 4) 
-        return "\n".join([x.rstrip() \
-                         for x in json.dumps(var, sort_keys= True, 
-                                             indent= 4).splitlines()])
+    # modern python JSON modules add a trailing space at lines that end
+    # with a comma. It seems that this is only fixed in python 3.4. So for
+    # now we remove the spaces manually here:
+
+    lines= [x.rstrip() for x in raw_str.splitlines()]
+    # effectively add a single newline at the end:
+    lines.append("")
+    return "\n".join(lines)
 
 def json_dump(var):
     """Dump a variable in JSON format.
@@ -135,6 +131,7 @@ def json_dump(var):
             "B": 2
         }
     }
+    <BLANKLINE>
     """
     print json_str(var)
 
