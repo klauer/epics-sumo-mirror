@@ -11,6 +11,6 @@ VERSION="$1"
 FILES="`ls ../bin/*` `ls ../sumo/[A-Za-z]*.py` ../doc/conf.py ../setup.py"
 
 for f in $FILES; do
-    sed -i -e "s/\"[^\"]\+\" \(#VERSION#\)/\"$VERSION\" \1/" $f
+    sed -i -e "s/\"[^\"]\+\" \+\(#VERSION#\)/\"$VERSION\" \1/" $f
 done
 

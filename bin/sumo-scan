@@ -27,10 +27,16 @@ import re
 
 import sumo.utils as utils
 
+import sumo.makefile_scan
+
+makefile_scan_pre= {}
+
 # version of the program:
 my_version= "1.7.3" #VERSION#
 
 utils.assert_version(my_version)
+
+sumo.makefile_scan.assert_version(my_version)
 
 KNOWN_COMMANDS=set(("deps", "name2paths", "path2names",
                     "groups", "repos", "all", "makeconfig"))
@@ -39,10 +45,6 @@ IGNORE_NAMES= set(["TOP", "EPICS_SUPPORT",
                    "SUPPORT", "TEMPLATE_TOP"]) #, "EPICS_BASE"])
 
 CONFIG_NAME="sumo-scan.config"
-
-import sumo.makefile_scan
-
-makefile_scan_pre= {}
 
 # -----------------------------------------------
 # RELEASE file scanning

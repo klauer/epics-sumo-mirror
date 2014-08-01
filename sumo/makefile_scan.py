@@ -32,6 +32,19 @@ import sys
 
 # pylint: disable=C0322,C0103
 
+__version__="1.7.3" #VERSION#
+
+# -----------------------------------------------
+# ensure a certain module version
+# -----------------------------------------------
+
+def assert_version(wanted_version):
+    """check if the version is the one that was expected."""
+    if __version__!=wanted_version:
+        sys.exit("ERROR: module 'sumo/makefile_scan' version %s expected "
+                 "but found %s instead" % \
+                 (wanted_version, __version__))
+
 # -----------------------------------------------
 # basic system utilities
 # -----------------------------------------------
