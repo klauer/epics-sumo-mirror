@@ -585,6 +585,7 @@ contents of cleanup file:
         }
     ]
 }
+
 now do sumo-build cleanup 001
 
 directory tree now (without darcs)

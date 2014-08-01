@@ -22,6 +22,7 @@ sumo-build show MYAPP-001
     }
 }
 
+
 sumo-build show AUTO-001
 {
     "AUTO-001": {
@@ -60,3 +61,4 @@ sumo-build show AUTO-001
         "state": "unstable"
     }
 }
+

@@ -57,8 +57,10 @@ sumo-build find MCAN -b:
     }
 }
 
+
 sumo-build find MCAN BSPDEP_TIMER:R5-1
 {}
+
 
 sumo-build find MCAN ALARM:-R3-7:
 {
@@ -99,6 +101,7 @@ sumo-build find MCAN ALARM:-R3-7:
     }
 }
 
+
 sumo-build find MCAN ALARM:+R3-8:
 {
     "MYAPP-001": {
@@ -122,3 +125,4 @@ sumo-build find MCAN ALARM:+R3-8:
         "state": "stable"
     }
 }
+

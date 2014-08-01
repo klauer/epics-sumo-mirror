@@ -3351,6 +3351,7 @@ contents of BUILDS file:
         "state": "stable"
     }
 }
+
 delete build 'AUTO-001'
 
 directory tree (without darcs)
@@ -6398,6 +6399,7 @@ contents of BUILDS file:
         "state": "stable"
     }
 }
+
 delete build 'MYAPP-001'
 
 directory tree (without darcs)
