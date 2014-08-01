@@ -38,3 +38,4 @@ Creation of a distribution tar.gz file:
 
     Go to administration_tools and enter:
       ./mk-dist.sh
+    The created tar and zip files can then be found in directory "dist".
