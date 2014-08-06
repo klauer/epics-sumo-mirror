@@ -8,7 +8,7 @@ if [ "$1" = "deps" ]; then
         exit
 fi
 
-PYTHON=$1
+PYTHON=$@
 
 # needed since sumo-scan call EPICS make:
 EPICS_HOST_ARCH=`scripts/EpicsHostArch.pl`

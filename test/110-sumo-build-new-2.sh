@@ -7,7 +7,7 @@ if [ "$1" = "deps" ]; then
         echo
         exit
 fi
-PYTHON=$1
+PYTHON=$@
 
 echo -e "\n-> Test sumo-build new (use existing tree)" >&2
 
@@ -43,7 +43,7 @@ else
 fi
 
 echo -e "\ndirectory tree (without darcs)"
-find . | egrep -v '_darcs|\.tmp|\.bak' | sort
+find . | egrep -v '_darcs|\.tmp|\.bak|\.coverage' | sort
 echo -e "\ncontents of RELEASE files\n"
 for f in `find . -name RELEASE | sort`; do echo -e "\nFILE: $f"; cat $f | sed -e "s#`pwd -P`##"; done
 echo -e "\n\ncontent of DB:"

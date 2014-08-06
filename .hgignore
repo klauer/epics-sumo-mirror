@@ -17,6 +17,10 @@
 ^test/.*\.tmp
 ^test/.*\.bak
 ^test/deps
+^test/.coverage
+
+# generated coverage data:
+^coverage
 
 # samples directory:
 ^samples/IDCP.DB

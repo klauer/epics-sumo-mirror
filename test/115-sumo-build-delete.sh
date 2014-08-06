@@ -7,7 +7,7 @@ if [ "$1" = "deps" ]; then
         echo
         exit
 fi
-PYTHON=$1
+PYTHON=$@
 
 echo -e "\n-> Test sumo-build delete" >&2
 
@@ -33,7 +33,7 @@ rm -f *.tmp
 rm -f *.bak
 
 echo -e "\ndirectory tree (without darcs)"
-find . -name _darcs -prune -o -name '*' | sort
+find . -name _darcs -prune -o -name '*' | grep -v '.coverage' | sort
 
 echo -e "\ncontents of BUILDS file:"
 cat BUILDS 
@@ -42,7 +42,7 @@ echo -e "\ndelete build 'AUTO-001'"
 $PYTHON ../../bin/sumo-build --db DB --builddb BUILDS delete AUTO-001
 
 echo -e "\ndirectory tree (without darcs)"
-find . -name _darcs -prune -o -name '*' | sort
+find . -name _darcs -prune -o -name '*' | grep -v '.coverage' | sort
 
 echo -e "\ncontents of BUILDS file:"
 cat BUILDS 
@@ -51,7 +51,7 @@ echo -e "\ndelete build 'MYAPP-001'"
 $PYTHON ../../bin/sumo-build --db DB --builddb BUILDS delete MYAPP-001
 
 echo -e "\ndirectory tree (without darcs)"
-find . -name _darcs -prune -o -name '*' | sort
+find . -name _darcs -prune -o -name '*' | grep -v '.coverage' | sort
 
 echo -e "\ncontents of BUILDS file:"
 cat BUILDS 

@@ -7,7 +7,7 @@ if [ "$1" = "deps" ]; then
         echo
         exit
 fi
-PYTHON=$1
+PYTHON=$@
 
 echo -e "\n-> Test sumo-build partialdb" >&2
 
