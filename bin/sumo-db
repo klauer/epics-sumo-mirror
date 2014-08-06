@@ -19,11 +19,15 @@ import os
 import re
 import copy
 
+import sumo.lock
+import sumo.JSON
 import sumo.utils as utils
 
 # version of the program:
 my_version= "1.7.3" #VERSION#
 
+sumo.lock.assert_version(my_version)
+sumo.JSON.assert_version(my_version)
 utils.assert_version(my_version)
 
 KNOWN_COMMANDS=set(("alias-add", "appconvert", "check", "clonemodule",
@@ -224,7 +228,7 @@ def create_database(deps, repoinfo, groups, archs, state, source_patches):
                                     (module_name, versionname),[])
                 _paths.append(versionedmodule_path)
 
-    #utils.json_dump(_path2namevname)
+    #sumo.JSON.dump(_path2namevname)
     #sys.exit(0)
 
     # here we populate the versiondata with the dependency specifications:
@@ -334,7 +338,7 @@ def process(options, commands):
     config.merge_options(options)
 
     if options.nolock:
-        utils.use_lockfile= False
+        sumo.lock.use_lockfile= False
     if not commands:
         sys.exit("command missing")
     if commands[0] not in KNOWN_COMMANDS:
@@ -353,14 +357,14 @@ def process(options, commands):
     if commands[0]=="edit":
         if len(commands)!=2:
             sys.exit("exactly one filename must follow \"edit\"")
-        utils.edit_with_lock(commands[1], options.verbose, options.dry_run)
+        sumo.lock.edit_with_lock(commands[1], options.verbose, options.dry_run)
         return
 
     if commands[0]=="convert":
         if len(commands)!=3:
             sys.exit("a state and a filename must follow \"convert\"")
         (state, filename)= commands[1:]
-        scandata= utils.json_loadfile(filename)
+        scandata= sumo.JSON.loadfile(filename)
         deps= scandata["dependencies"]
         repoinfo= utils.PathSource(scandata["repos"])
         groups= scandata["groups"]
@@ -374,12 +378,12 @@ def process(options, commands):
         if len(commands)!=2:
             sys.exit("a filename must follow \"convert\"")
         filename= commands[1]
-        scandata= utils.json_loadfile(filename)
+        scandata= sumo.JSON.loadfile(filename)
         deps= scandata["dependencies"]
         repoinfo= utils.PathSource(scandata["repos"])
         groups= scandata["groups"]
         struc= create_app_data(deps, repoinfo, groups)
-        utils.json_dump(struc)
+        sumo.JSON.dump(struc)
         return
 
     if commands[0]=="weight":
@@ -585,7 +589,7 @@ def process(options, commands):
             sys.exit("error, --db is mandatory here")
         db= db_from_json_file(options.db)
         result= sorted(db.iter_modulenames())
-        utils.json_dump(result)
+        sumo.JSON.dump(result)
         return
 
     if commands[0]=="state":
@@ -661,7 +665,7 @@ def process(options, commands):
                 result[modulename]= versions[0]
             else:
                 result[modulename]= versions
-        utils.json_dump(result)
+        sumo.JSON.dump(result)
         return
 
     if commands[0]=="find":

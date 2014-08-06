@@ -8,12 +8,12 @@
 # pylint: disable=C0103
 #                          Invalid name for type variable
 import sys
-import subprocess
 import os
 import os.path
-import pprint
 import copy
 import re
+
+import sumo.JSON
 
 __version__="1.7.3" #VERSION#
 
@@ -23,16 +23,7 @@ if _pyver < (2,5):
     sys.exit("ERROR: SUMO requires at least Python 2.5, "
              "your version is %d.%d" % _pyver)
 
-try:
-    import lockfile
-    use_lockfile= True
-except ImportError, _lockfile_err:
-    if str(_lockfile_err) != 'No module named lockfile':
-        raise
-    else:
-        sys.stderr.write("module 'lockfile' not found - " +\
-                         "file accesses will not be locked\n")
-        use_lockfile= False
+sumo.JSON.assert_version(__version__)
 
 # -----------------------------------------------
 # ensure a certain module version
@@ -44,142 +35,6 @@ def assert_version(wanted_version):
         sys.exit("ERROR: module 'sumo/utils' version %s expected "
                  "but found %s instead" % \
                  (wanted_version, __version__))
-
-# -----------------------------------------------
-# JSON support
-# -----------------------------------------------
-
-if _pyver > (2,5):
-    import json
-    _JSON_TYPE= 1
-elif _pyver == (2,5):
-    # python 2.5 has no standard json module, assume that simplejson is
-    # installed:
-    try:
-        import simplejson as json
-    except ImportError, _json_err:
-        sys.exit("ERROR: If SUMO is run with Python %d.%d "
-                 "you need to have module 'simplejson' installed." % \
-                 (sys.version_info[0],sys.version_info[1]))
-    _JSON_TYPE= 0
-else:
-    # older python versions are already detected further above
-    raise AssertionError("this shouldn't happen")
-
-def json_dump_file(filename, var):
-    """Dump a variable to a file in JSON format.
-    """
-    fh= open(filename, "w")
-    # modern python JSON modules add a trailing space at lines that end with a
-    # comma. It seems that this is only fixed in python 3.4. So for now we
-    # remove the spaces manually here, which is done by json_str().
-    fh.write(json_str(var))
-    fh.close()
-
-# pylint: disable=C0303
-#                          Trailing whitespace
-
-def json_str(var):
-    """convert a variable to JSON format.
-
-    Here is an example:
-    >>> var= {"key":[1,2,3], "key2":"val", "key3":{"A":1,"B":2}}
-    >>> print json_str(var)
-    {
-        "key": [
-            1,
-            2,
-            3
-        ],
-        "key2": "val",
-        "key3": {
-            "A": 1,
-            "B": 2
-        }
-    }
-    <BLANKLINE>
-    """
-    if _JSON_TYPE==0:
-        raw_str= json.dumps(var, sort_keys= True, indent= 4*" ")
-    else:
-        raw_str= json.dumps(var, sort_keys= True, indent= 4)
-
-    # modern python JSON modules add a trailing space at lines that end
-    # with a comma. It seems that this is only fixed in python 3.4. So for
-    # now we remove the spaces manually here:
-
-    lines= [x.rstrip() for x in raw_str.splitlines()]
-    # effectively add a single newline at the end:
-    lines.append("")
-    return "\n".join(lines)
-
-def json_dump(var):
-    """Dump a variable in JSON format.
-
-    Here is an example:
-    >>> var= {"key":[1,2,3], "key2":"val", "key3":{"A":1,"B":2}}
-    >>> json_dump(var)
-    {
-        "key": [
-            1,
-            2,
-            3
-        ],
-        "key2": "val",
-        "key3": {
-            "A": 1,
-            "B": 2
-        }
-    }
-    <BLANKLINE>
-    """
-    print json_str(var)
-
-# pylint: enable=C0303
-#                          Trailing whitespace
-
-def json_load(data):
-    """decode a JSON string.
-    """
-    return json.loads(data)
-
-def json_loadfile(filename):
-    """load a JSON file.
-
-    If filename is "-" read from stdin.
-    """
-    if filename != "-":
-        fh= open(filename)
-    else:
-        fh= sys.stdin
-
-    # simplejson and json raise different kinds of exceptions
-    # in case of a syntax error within the JSON file.
-    if _JSON_TYPE==1:
-        my_exceptionclass= ValueError
-    else:
-        my_exceptionclass= json.scanner.JSONDecodeError
-
-    try:
-        results= json.load(fh)
-    except my_exceptionclass, e:
-        if filename != "-":
-            msg= "%s: %s" % (filename, str(e))
-            fh.close()
-        else:
-            msg= "<stdin>: %s" % str(e)
-        # always re-raise as a value error regardless of _JSON_TYPE:
-        raise ValueError(msg)
-    except IOError, e:
-        if filename != "-":
-            msg= "%s: %s" % (filename, str(e))
-            fh.close()
-        else:
-            msg= "<stdin>: %s" % str(e)
-        raise e.__class__(msg)
-    if filename != "-":
-        fh.close()
-    return results
 
 # -----------------------------------------------
 # config file support
@@ -229,7 +84,7 @@ class ConfigFile(object):
         """
         if not os.path.exists(filename):
             raise IOError("error: file \"%s\" doesn't exist" % filename)
-        data= json_loadfile(filename)
+        data= sumo.JSON.loadfile(filename)
         # pylint: disable=E1103
         #                     Instance of 'bool' has no 'items' member
         includefiles= data.get("#include")
@@ -257,11 +112,11 @@ class ConfigFile(object):
                 continue
             dump[k]= v
         if filename=="-":
-            json_dump(dump)
+            sumo.JSON.dump(dump)
             return
         if not filename:
             filename= self._filename
-        json_dump_file(filename, dump)
+        sumo.JSON.dump_file(filename, dump)
 
     def merge_options(self, option_obj):
         """create from an option object."""
@@ -346,109 +201,6 @@ def dict_sets_to_lists(dict_):
     for (k,v) in dict_.items():
         new[k]= sorted(list(v))
     return new
-
-# -----------------------------------------------
-# basic system utilities
-# -----------------------------------------------
-
-def system(cmd, catch_stdout, catch_stderr, verbose, dry_run):
-    """execute a command.
-
-    execute a command and return the programs output
-    may raise:
-    IOError(errcode,stderr)
-    OSError(errno,strerr)
-    ValueError
-    """
-    if dry_run or verbose:
-        print ">", cmd
-        if dry_run:
-            return (None, None)
-    if catch_stdout:
-        stdout_par=subprocess.PIPE
-    else:
-        stdout_par=None
-
-    if catch_stderr:
-        stderr_par=subprocess.PIPE
-    else:
-        stderr_par=None
-
-    p= subprocess.Popen(cmd, shell=True,
-                        stdout=stdout_par, stderr=stderr_par,
-                        close_fds=True)
-    (child_stdout, child_stderr) = p.communicate()
-    # pylint: disable=E1101
-    # "Instance 'Popen'has no 'returncode' member
-    if p.returncode!=0:
-        if stderr_par is not None:
-            raise IOError(p.returncode,
-                          "cmd \"%s\", errmsg \"%s\"" % (cmd,child_stderr))
-        else:
-            raise IOError(p.returncode,
-                          "cmd \"%s\", rc %d" % (cmd, p.returncode))
-    # pylint: enable=E1101
-    return (child_stdout, child_stderr)
-
-# -----------------------------------------------
-# file locking
-# -----------------------------------------------
-
-def lock_a_file(filename, timeout=20):
-    """lock a file.
-    """
-    timedelta= 5
-    tries= timeout / timedelta
-    if timeout % timedelta > 0:
-        tries+= 1
-    if not use_lockfile:
-        return None
-    lock= lockfile.LockFile(filename)
-    # patch for not working lockfile module:
-    lock.unique_name= "%s-%s" % (lock.unique_name, os.path.basename(filename))
-    try_= 1
-    while True:
-        try_+= 1
-        try:
-            lock.acquire(timedelta)
-            return lock
-        except lockfile.Error,e:
-            timeout-= timedelta
-            if timeout>0:
-                sys.stderr.write("waiting to aquire lock on "
-                                 "file '%s' (%2d of %2d tries)...\n" % \
-                                 (filename, try_, tries))
-                continue
-            extra= str(e)
-            if extra:
-                extra= " (%s)" % extra
-            txt= ("File locking of file %s failed after %d seconds%s. "
-                  "If you know that the file shouldn't be locked "
-                  "you may try to remove the lockfiles.") % \
-                 (filename, timeout, extra)
-            raise AssertionError(txt)
-
-def unlock_a_file(lock):
-    """unlock a file.
-    """
-    if not use_lockfile:
-        return
-    if lock is None:
-        raise AssertionError("unexpected: lock is None")
-    lock.release()
-
-def edit_with_lock(filename, verbose, dry_run):
-    """lock a file, edit it, then unlock the file."""
-    if not os.path.exists(filename):
-        raise IOError("error: file \"%s\" doesn't exist" % filename)
-    l= lock_a_file(filename)
-    try:
-        system("%s %s" % (os.environ["VISUAL"], filename),
-               False, False, verbose, dry_run)
-    except IOError, _:
-        system("%s %s" % (os.environ["EDITOR"], filename),
-               False, False, verbose, dry_run)
-    unlock_a_file(l)
 
 # -----------------------------------------------
 # directory utilities
@@ -955,7 +707,7 @@ class ModuleSpecs(object):
                 if special[0]=="load":
                     if len(special)<=1:
                         raise ValueError("argument to :load: missing")
-                    json_data= json_loadfile(special[1])
+                    json_data= sumo.JSON.loadfile(special[1])
                     # pylint: disable=E1103
                     #         Instance of 'bool' has no 'get' member
                     json_specs= json_data.get("module")
@@ -1242,123 +994,7 @@ class Hints(object):
         #         Access to a protected member
         return self.__class__._empty
 
-class JSONstruct(object):
-    """an object that is a python structure.
-
-    This is a dict that contains other dicts or lists or strings or floats or
-    integers.
-    """
-    def selfcheck(self, msg):
-        """raise an exception if the object is not valid."""
-        # pylint: disable=W0613
-        #                          Unused argument
-        # pylint: disable=R0201
-        #                          Method could be a function
-        return
-    def __init__(self, dict_= None):
-        """create the object."""
-        if dict_ is None:
-            self.dict_= {}
-        else:
-            self.dict_= dict_
-        self.lock= None
-        self.lock_filename= None
-    def lock_file(self, filename):
-        """lock a file and store filename and lock in the object."""
-        if self.lock_filename==filename:
-            # already locked
-            return
-        self.unlock_file()
-        self.lock= lock_a_file(filename)
-        self.lock_filename= filename
-    def unlock_file(self):
-        """remove a filelock if there is one."""
-        if self.lock_filename is not None:
-            unlock_a_file(self.lock)
-            self.lock= None
-            self.lock_filename= None
-    def __del__(self):
-        """object destructor."""
-        self.unlock_file()
-    def datadict(self):
-        """return the internal dict."""
-        return self.dict_
-    def to_dict(self):
-        """return the object as a dict."""
-        return self.dict_
-    def __repr__(self):
-        """return a repr string."""
-        return "%s(%s)" % (self.__class__.__name__, repr(self.to_dict()))
-    def __str__(self):
-        """return a human readable string."""
-        txt= ["%s:" % self.__class__.__name__]
-        txt.append(pprint.pformat(self.to_dict(), indent=2))
-        return "\n".join(txt)
-    @classmethod
-    def from_json(cls, json_data):
-        """create an object from a json string."""
-        obj= cls(json_load(json_data))
-        obj.selfcheck("(created from JSON string)")
-        return obj
-    @classmethod
-    def from_json_file(cls, filename, keep_locked= False):
-        """create an object from a json file."""
-        if filename=="-":
-            result= cls(json_loadfile(filename))
-            result.selfcheck("(created from JSON string on stdin)")
-            return result
-        if not os.path.exists(filename):
-            raise IOError("file \"%s\" not found" % filename)
-        l= lock_a_file(filename)
-        # If the line in "try" raises an exception, the file lock
-        # is removed, then the exception is re-raised
-
-        # simplejson and json raise different kinds of exceptions
-        # in case of a syntax error within the JSON file.
-        try:
-            result= cls(json_loadfile(filename))
-        except ValueError, _:
-            unlock_a_file(l)
-            raise
-
-        if keep_locked:
-            result.lock= l
-            result.lock_filename= filename
-        else:
-            unlock_a_file(l)
-        result.selfcheck("(created from JSON file %s)" % filename)
-        return result
-    def json_string(self):
-        """return a JSON representation of the object."""
-        return json_str(self.to_dict())
-    def json_print(self):
-        """print a JSON representation of the object."""
-        print self.json_string()
-    def json_save(self, filename, verbose, dry_run):
-        """save as a JSON file."""
-        if not filename:
-            raise ValueError("filename is empty")
-        if filename=="-":
-            raise ValueError("filename must not be \"-\"")
-        backup= "%s.bak" % filename
-        if not dry_run:
-            self.lock_file(filename)
-        if os.path.exists(backup):
-            if verbose:
-                print "remove %s" % backup
-            if not dry_run:
-                os.remove(backup)
-        if os.path.exists(filename):
-            if verbose:
-                print "rename %s to %s" % (filename, backup)
-            if not dry_run:
-                os.rename(filename, backup)
-        if not dry_run:
-            json_dump_file(filename, self.to_dict())
-        if not dry_run:
-            self.unlock_file()
-
-class PathSource(JSONstruct):
+class PathSource(sumo.JSON.Container):
     """the structure that holds the source information for a path."""
     def __init__(self, dict_= None):
         """create the object."""
@@ -1418,7 +1054,7 @@ class PathSource(JSONstruct):
         data= self.datadict()[path]
         return single_key_item(data)
 
-class Dependencies(JSONstruct):
+class Dependencies(sumo.JSON.Container):
     """the dependency database."""
     # pylint: disable=R0904
     #                          Too many public methods
@@ -2171,7 +1807,7 @@ class Dependencies(JSONstruct):
                     except ValueError, _:
                         pass
 
-class Builddb(JSONstruct):
+class Builddb(sumo.JSON.Container):
     """the buildtree database."""
     # pylint: disable=R0904
     #                          Too many public methods
@@ -2247,7 +1883,7 @@ class Builddb(JSONstruct):
             d[key].update(other[key])
     def add_json_file(self, filename):
         """add data from a JSON file."""
-        data= json_loadfile(filename)
+        data= sumo.JSON.loadfile(filename)
         self.add(data)
     def delete(self, build_tag):
         """delete a build."""

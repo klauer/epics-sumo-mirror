@@ -15,11 +15,17 @@ import os
 import errno
 import shutil
 
+import sumo.system
+import sumo.JSON
+import sumo.lock
 import sumo.utils as utils
 
 # version of the program:
 my_version= "1.7.3" #VERSION#
 
+sumo.JSON.assert_version(my_version)
+sumo.lock.assert_version(my_version)
+sumo.system.assert_version(my_version)
 utils.assert_version(my_version)
 
 KNOWN_COMMANDS=set(( "cleanup", "delete", "edit", "find", "list",
@@ -226,7 +232,7 @@ def loadcleanup(build_tag, must_exist= False):
     """load the cleanup file."""
     fn= cleanupfilename(build_tag)
     if os.path.exists(fn):
-        return utils.json_loadfile(fn)
+        return sumo.JSON.loadfile(fn)
     if must_exist:
         raise IOError("file '%s' not found" % fn)
     return {"modules": [] }
@@ -234,7 +240,7 @@ def loadcleanup(build_tag, must_exist= False):
 def savecleanup(build_tag, struc):
     """save the cleanup file."""
     fn= cleanupfilename(build_tag)
-    utils.json_dump_file(fn, struc)
+    sumo.JSON.dump_file(fn, struc)
 
 # -----------------------------------------------
 # error messages
@@ -367,6 +373,10 @@ def _distribution_add(db, dist, modulename, versionname,
 
     If force is True the program adds missing dependencies to the db.
     """
+    # pylint: disable=R0914
+    #                          Too many local variables
+    # pylint: disable=R0912
+    #                          Too many branches
     # pylint: disable=R0913
     #                          Too many arguments
     #print "_distribution_add(..,..,",modulename,",",versionname,")"
@@ -700,7 +710,7 @@ def create_source(db, modulename, versionname,
         # needed in order for rsync to work as intended here.
         cmd= "rsync -a -u -L --chmod=Fu+w \"%s\" %s" % \
              (os.path.join(sourcedata,""), destdir)
-        utils.system(cmd, False, False, verbose, dry_run)
+        sumo.system.system(cmd, False, False, verbose, dry_run)
     elif sourcetype=="darcs":
         cmd_l= ["darcs", "get"]
         if sourcedata.has_key("tag"):
@@ -708,7 +718,7 @@ def create_source(db, modulename, versionname,
         cmd_l.append(sourcedata["url"])
         cmd_l.append(destdir)
         cmd= " ".join(cmd_l)
-        utils.system(cmd, False, False, verbose, dry_run)
+        sumo.system.system(cmd, False, False, verbose, dry_run)
     else:
         raise AssertionError("unsupported source type %s" % sourcetype)
 
@@ -942,7 +952,7 @@ def call_make(db_name, builddb_name, buildtag,
     cmd="make %s -f %s" % (" ".join(make_options),makefilename(buildtag))
     try:
         # sys.stderr.write("CALLING MAKE: %s\n" % cmd)
-        utils.system(cmd, False, False, verbose, dry_run)
+        sumo.system.system(cmd, False, False, verbose, dry_run)
     except IOError, e:
         sys.stderr.write("make failed, error: %s" % str(e))
         sys.exit(1)
@@ -1066,7 +1076,7 @@ def process(options, commands):
     config.merge_options(options)
 
     if options.nolock:
-        utils.use_lockfile= False
+        sumo.lock.use_lockfile= False
     if not commands:
         sys.exit("command missing")
     if commands[0] not in KNOWN_COMMANDS:
@@ -1090,7 +1100,7 @@ def process(options, commands):
             sys.exit("--readonly forbids editing a database file")
         if len(commands)!=2:
             sys.exit("exactly one filename must follow \"edit\"")
-        utils.edit_with_lock(commands[1], options.verbose, options.dry_run)
+        sumo.lock.edit_with_lock(commands[1], options.verbose, options.dry_run)
         return
 
     if commands[0]=="list":
@@ -1270,7 +1280,7 @@ def process(options, commands):
         for (m,v) in dist_dict.items():
             l.append("%s:%s" % (m,v))
         l.sort()
-        utils.json_dump({"module": l})
+        sumo.JSON.dump({"module": l})
         return
 
     if commands[0]=="new":
@@ -1416,7 +1426,7 @@ def process(options, commands):
                 d= {}
                 for b in new_builddb.iter_builds():
                     d[b]= new_builddb.modules(b)
-                utils.json_dump(d)
+                sumo.JSON.dump(d)
         return
     if commands[0]=="useall":
         if len(commands)>2:
