@@ -282,11 +282,11 @@ def scan_source_spec(elms):
     >>> scan_source_spec(["path"])
     Traceback (most recent call last):
         ...
-    ValueError: invalid source spec: '['path']'
+    ValueError: invalid source spec: 'path'
     >>> scan_source_spec(["path","a","b"])
     Traceback (most recent call last):
         ...
-    ValueError: invalid source spec: '['path', 'a', 'b']'
+    ValueError: invalid source spec: 'path a b'
     >>> scan_source_spec(["darcs","abc"])
     {'darcs': {'url': 'abc'}}
     >>> scan_source_spec(["darcs","abc","R1-2"])
@@ -294,15 +294,15 @@ def scan_source_spec(elms):
     >>> scan_source_spec(["darcs"])
     Traceback (most recent call last):
         ...
-    ValueError: invalid source spec: '['darcs']'
+    ValueError: invalid source spec: 'darcs'
     >>> scan_source_spec(["darcs","abc","R1-2","xy"])
     Traceback (most recent call last):
         ...
-    ValueError: invalid source spec: '['darcs', 'abc', 'R1-2', 'xy']'
+    ValueError: invalid source spec: 'darcs abc R1-2 xy'
     """
     if elms[0]=="path":
         if len(elms)!=2:
-            raise ValueError("invalid source spec: '%s'" % repr(elms))
+            raise ValueError("invalid source spec: '%s'" % (" ".join(elms)))
         return {"path": elms[1]}
     if elms[0]=="darcs":
         if len(elms)==2:
@@ -310,8 +310,8 @@ def scan_source_spec(elms):
         elif len(elms)==3:
             return {"darcs":{"url":elms[1], "tag":elms[2]}}
         else:
-            raise ValueError("invalid source spec: '%s'" % repr(elms))
-    raise ValueError("invalid source spec: '%s'" % repr(elms))
+            raise ValueError("invalid source spec: '%s'" % (" ".join(elms)))
+    raise ValueError("invalid source spec: '%s'" % (" ".join(elms)))
 
 # -----------------------------------------------
 # generic datastructure utilities
