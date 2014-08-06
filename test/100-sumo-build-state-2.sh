@@ -9,7 +9,7 @@ if [ "$1" = "deps" ]; then
 fi
 
 
-PYTHON=$1
+PYTHON=$@
 
 echo -e "\n-> Test sumo-build state (setting)" >&2
 

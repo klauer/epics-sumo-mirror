@@ -8,7 +8,7 @@ if [ "$1" = "deps" ]; then
         exit
 fi
 
-PYTHON=$1
+PYTHON=$@
 
 echo -e "\n-> Test sumo-build cleanup (for some seconds nothing will seem to happen)" >&2
 
@@ -29,7 +29,7 @@ echo -e "call sumo-build new, let the command fail on purpose..."
 $PYTHON ../../bin/sumo-build --arch vxWorks-68040 --arch vxWorks-ppc603 --db DB -c IDCP.CONFIG --builddb BUILDS --maxstate stable --buildtag 001 --no-make new 2>&1 | tail -n 1
 
 echo -e "\ndirectory tree (without darcs)"
-find . -name _darcs -prune -o -name '*' | sort
+find . -name _darcs -prune -o -name '*' | grep -v '.coverage' | sort
 
 echo -e "\ncontents of cleanup file:"
 cat cleanup-001 
@@ -39,7 +39,7 @@ echo -e "\nnow do sumo-build cleanup 001"
 $PYTHON ../../bin/sumo-build cleanup 001
 
 echo -e "\ndirectory tree now (without darcs)"
-find . -name _darcs -prune -o -name '*' | sort
+find . -name _darcs -prune -o -name '*' | grep -v '.coverage' | sort
 
 
 

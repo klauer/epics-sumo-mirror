@@ -8,7 +8,7 @@ if [ "$1" = "deps" ]; then
         exit
 fi
 
-PYTHON=$1
+PYTHON=$@
 
 EXAMPLEDIR=tmp-$ME
 GLOBALSUPPORTDIR=rcsadm@aragon.acc.bessy.de:/opt/Epics/R3.14.8/support

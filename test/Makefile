@@ -6,6 +6,10 @@ export PYTHONPATH:=$(TOP)/..:$(PYTHONPATH)
 # "python2.5":
 PYTHON:=$(shell python -V 2>&1 | ( grep -q " 2\.[5678]" && echo python || ( python2.5 -V >/dev/null 2>&1 && echo "python2.5" || echo python )))
 
+# use the following definition to create code coverage information with the
+# "coverage" tool:
+# PYTHON=coverage run -p
+
 .PRECIOUS: %.out
 
 # set this only to "yes" in order to create the 

@@ -8,7 +8,7 @@ if [ "$1" = "deps" ]; then
         exit
 fi
 
-PYTHON=$1
+PYTHON=$@
 
 echo -e "\n-> Test sumo-db cloneversion." >&2
 
