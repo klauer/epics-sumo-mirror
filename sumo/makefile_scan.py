@@ -76,7 +76,7 @@ def _system(cmd, catch_stdout, verbose, dry_run):
         raise IOError(p.returncode,
                       "cmd \"%s\", errmsg \"%s\"" % (cmd,child_stderr))
     # pylint: enable= E1101
-    return(child_stdout)
+    return child_stdout
 
 # -----------------------------------------------
 # makefile scanning
