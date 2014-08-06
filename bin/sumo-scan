@@ -26,6 +26,7 @@ import re
 # import pprint
 
 import sumo.system
+import sumo.Config
 import sumo.utils as utils
 
 import sumo.makefile_scan
@@ -487,7 +488,7 @@ def process(options, commands):
     #                          Too many branches
     # pylint: disable=R0915
     #                          Too many statements
-    config= utils.ConfigFile.from_optionlist(
+    config= sumo.Config.ConfigFile.from_optionlist(
                 CONFIG_NAME,
                 ( "#include",
                   "darcs_dirtest", "dir", "exclude_deps", "exclude_path",

@@ -42,11 +42,14 @@ clean:
 pure_module_test:
 ifeq ($(PYTHON),python)
 	# utils doctest fails with python2.5:
+	$(PYTHON) ../sumo/Config.py
 	$(PYTHON) ../sumo/JSON.py
 	$(PYTHON) ../sumo/lock.py
 	$(PYTHON) ../sumo/makefile_scan.py
 	$(PYTHON) ../sumo/system.py
 	$(PYTHON) ../sumo/utils.py
+	$(PYTHON) ../sumo/ModuleSpec.py
+	$(PYTHON) ../sumo/Databases.py
 else
 	@echo "skipping testing sumo/utils.py"
 endif
