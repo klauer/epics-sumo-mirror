@@ -128,10 +128,6 @@ def dirwalk(start_dir):
 # version and path support
 # -----------------------------------------------
 
-def contains_treetag(path):
-    """returns True if the path looks like it contains a treetag."""
-    return "+" in path
-
 def split_treetag(path):
     """split a path into head,treetag.
 
@@ -257,17 +253,6 @@ def tag2version(ver):
                 return ver
     return ver
 
-def version2tag(tag):
-    """convert a version to a darcs tag.
-
-    (according to BESSY conventions)
-    """
-    if not tag:
-        return
-    if tag[0].isdigit():
-        return "R"+tag
-    return tag
-
 def is_standardpath(path, darcs_tag):
     """checks if path is complient to Bessy convention for support paths.
 
@@ -329,25 +314,6 @@ def scan_source_spec(elms):
     raise ValueError("invalid source spec: '%s'" % repr(elms))
 
 # -----------------------------------------------
-# string utilities
-# -----------------------------------------------
-
-def guess_string(st, allowed):
-    """guess a string that is abbreviated.
-
-    Allowed should be a set of allowed strings. The function tries to find a
-    unique string in allowed that starts with the same characters as st and
-    returns it. Returns None if no unoue match was found.
-    """
-    match= None
-    for s in allowed:
-        if s.startswith(st):
-            if match is not None:
-                return None
-            match= s
-    return match
-
-# -----------------------------------------------
 # generic datastructure utilities
 # -----------------------------------------------
 
@@ -376,34 +342,6 @@ def dict_update(dict_, other, keylist= None):
     """
     if keylist is None:
         keylist= other.keys()
-    for k in keylist:
-        v= other[k]
-        old_v= dict_.get(k)
-        if old_v is None:
-            dict_[k]= v
-            continue
-        if old_v==v:
-            continue
-        raise ValueError("key %s: contradicting values: %s %s" % \
-                          (k,repr(old_v),repr(v)))
-
-def uniq_dict_update(dict_, other):
-    """update dict_ with other but do not change existing values.
-
-    The dict must have a single key.
-
-    """
-    keys= dict_.keys()
-    if len(keys)>1:
-        raise ValueError("dict has more than one key: %s" % repr(dict_))
-    okeys= other.keys()
-    if len(okeys)>1:
-        raise ValueError("other dict has more than one key: %s" % repr(other))
-    if keys[0]!=okeys[0]:
-        raise ValueError("dicts have different keys: %s %s" % \
-                         (keys[0], okeys[0]))
-
-    keylist= other.keys()
     for k in keylist:
         v= other[k]
         old_v= dict_.get(k)
