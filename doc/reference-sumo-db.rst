@@ -478,6 +478,8 @@ Here is a short overview on command line options:
     Switch on some trace messages.
 ``--dump-modules``
     Dump module specs, then stop the program.
+``-y, --yes``
+    All questions the program may ask are treated as if the user replied 'yes'.
 ``-v, --verbose``
     Show command calls.  This option value is stored in the configuration file.
 ``-n, --dry-run``

@@ -555,6 +555,17 @@ def process(options, commands):
             sourcespec= commands[4:]
         if not options.db:
             sys.exit("error, --db is mandatory here")
+        # prepare a warning text:
+        ident_warning= "Warning: you would create a module '%s' with " \
+                       "version '%s' that is completely identical " \
+                       "with version '%s' (same source specification). " % \
+                       (modulename, newversion, oldversion)
+        if not sourcespec and not do_replace:
+            # the following function may abort the program:
+            utils.ask_abort(ident_warning + "Maybe you have just "
+                            "forgotten to add a source specification ?",
+                            options.yes)
+
         db = db_from_json_file(options.db,
                 keep_locked= not options.dumpdb and (not options.dry_run))
         db.patch_version(modulename, oldversion, newversion, do_replace)
@@ -563,8 +574,13 @@ def process(options, commands):
                 source_spec_dict= utils.scan_source_spec(sourcespec)
             except ValueError, e:
                 sys.exit("Error: "+str(e))
-            db.set_source(modulename, newversion,
-                          source_spec_dict)
+            if not db.set_source(modulename, newversion,
+                                 source_spec_dict):
+                # no changes in the source spec, this may be an error
+                # the following function may abort the program:
+                utils.ask_abort(ident_warning + "Is this really "
+                                "your intention ?",
+                                options.yes)
         if options.dumpdb:
             db.json_print()
         else:
@@ -920,6 +936,11 @@ def main():
     parser.add_option("--dump-modules",
                       action="store_true",
                       help="Dump module specs, then stop the program.",
+                      )
+    parser.add_option("-y", "--yes",
+                      action="store_true",
+                      help="All questions the program may ask are treated "
+                           "as if the user replied 'yes'.",
                       )
     parser.add_option("-v", "--verbose",
                       action="store_true",

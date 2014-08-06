@@ -52,6 +52,38 @@ def show_progress(cnt, cnt_max, message= None):
     return cnt
 
 # -----------------------------------------------
+# user interaction
+# -----------------------------------------------
+
+def ask_yes_no(question):
+    """ask a yes or no question.
+
+    returns:
+      True  - if the user answered "yes" or "y"
+      False - if the user answered "no" or "n"
+    """
+    question+= " "
+    while True:
+        inp= raw_input(question).lower().strip()
+        if inp in ["yes","y"]:
+            return True
+        if inp in ["no", "n"]:
+            return False
+        print "\tplease enter 'y', 'yes, 'n' or 'no'"
+        question=""
+
+def ask_abort(question, force_yes):
+    """ask if the user wants to abort the program.
+
+    Aborts the program if the user enters "y".
+    """
+    if force_yes:
+        return
+    if not ask_yes_no(question + "Enter 'y' to continue or "
+                                 "'n' to abort the program"):
+        sys.exit("program aborted by user request")
+
+# -----------------------------------------------
 # data structure utilities
 # -----------------------------------------------
 
