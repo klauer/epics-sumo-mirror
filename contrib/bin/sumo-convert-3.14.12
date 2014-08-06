@@ -33,9 +33,9 @@ fi
         
 $SUMO_SCAN -c $SUMO_SCAN_CONFIG -d . all | $SUMO_DB --no-default-config appconvert - > $MODULES
 
-$SUMO_DB --no-default-config --maxstate unstable --db $SUMODIR/DEPS.DB --#include $MODULES makeconfig
+$SUMO_DB --no-default-config --maxstate unstable --db $SUMODIR/database/DEPS.DB --#include $MODULES makeconfig
 
-$SUMO_BUILD --no-default-config --maxstate unstable --buildtag-stem "$stem" --db $SUMODIR/DEPS.DB --builddb $SUMODIR/BUILDS.DB --supportdir $SUMODIR --#include $MODULES makeconfig
+$SUMO_BUILD --no-default-config --maxstate unstable --buildtag-stem "$stem" --db $SUMODIR/database/DEPS.DB --builddb $SUMODIR/build/BUILDS.DB --supportdir $SUMODIR/build --#include $MODULES makeconfig
 
 echo "A file '$MODULES' containing the module dependencies was created in "
 echo "directory 'configure'. You may review or modify that file."

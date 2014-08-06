@@ -33,11 +33,13 @@ echo "set up local Sumo directory"
 mkdir $LOCAL_SUMO_SUBDIR && cd $LOCAL_SUMO_SUBDIR
 
 LOCAL_SUMODIR=`pwd`
+mkdir build
+mkdir database
 
-cp $SUMODIR/DEPS.DB .
+cp $SUMODIR/database/DEPS.DB .
 
-$SUMO_DB --maxstate unstable --db $LOCAL_SUMODIR/DEPS.DB makeconfig
-$SUMO_BUILD --db $LOCAL_SUMODIR/DEPS.DB --builddb $LOCAL_SUMODIR/BUILDS.DB --supportdir $LOCAL_SUMODIR --maxstate unstable --makeopts "-s" makeconfig
+$SUMO_DB --maxstate unstable --db $LOCAL_SUMODIR/database/DEPS.DB makeconfig
+$SUMO_BUILD --db $LOCAL_SUMODIR/database/DEPS.DB --builddb $LOCAL_SUMODIR/build/BUILDS.DB --supportdir $LOCAL_SUMODIR/build --maxstate unstable --makeopts "-s" makeconfig
 
 $SUMO_DB cloneversion $module $oldversion $newversion
 
@@ -50,4 +52,4 @@ echo "Remember that this is still identical with $module:$oldversion."
 echo "You may now start to modify it. If finished do not forget to"
 echo "change the 'source' part of this module in DEPS.DB"
 echo "Do also not forget to apply the changes in your local copy "
-echo "of DEPS.DB to $SUMODIR/DEPS.DB".
+echo "of DEPS.DB to $SUMODIR/database/DEPS.DB".

@@ -53,9 +53,9 @@ sed -e 's/\(APPS_SCOPESAVERESTORE\):R1-1/\1:R1-1-RULES-1-4-1/' -i $MODULES
 sed -e 's/\(APPS_VACUUM\):TAGLESS-1-1-1/\1:TAGLESS-1-1-1-RULES-1-15/' -i $MODULES
 sed -e 's/\(HIGHLAND-V375\):TAGLESS-1-2/\1:TAGLESS-1-2-RULES-1-9/' -i $MODULES
 
-$SUMO_DB --no-default-config --maxstate unstable --db $SUMODIR/DEPS.DB --#include $MODULES makeconfig
+$SUMO_DB --no-default-config --maxstate unstable --db $SUMODIR/database/DEPS.DB --#include $MODULES makeconfig
 
-$SUMO_BUILD --no-default-config --maxstate unstable --buildtag-stem "$stem" --db $SUMODIR/DEPS.DB --builddb $SUMODIR/BUILDS.DB --supportdir $SUMODIR --#include $MODULES makeconfig
+$SUMO_BUILD --no-default-config --maxstate unstable --buildtag-stem "$stem" --db $SUMODIR/database/DEPS.DB --builddb $SUMODIR/build/BUILDS.DB --supportdir $SUMODIR/build --#include $MODULES makeconfig
 
 echo "A file '$MODULES' containing the module dependencies was created in "
 echo "directory 'configure'. You may review or modify that file."
