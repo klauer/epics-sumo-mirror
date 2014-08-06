@@ -236,22 +236,38 @@ class Dependencies(sumo.JSON.Container):
         same, the property string is updated from the property string in [new].
         Where the property string in [new] contains the string "*", the
         property of the module remains unchanged.
+
+        This function returns "True" when the source specification was changed
+        and False if the source specification was not changed.
         """
         version_dict= self.datadict().setdefault(module_name,{})
         version= version_dict.setdefault(versionname, {})
         source= version.get("source")
         if not source:
             version["source"]= new
-            return
+            return True
         (source_type,source_dict)= sumo.utils.single_key_item(source)
         (new_type,new_dict)= sumo.utils.single_key_item(new)
-        if source_type==new_type:
-            for (k,v) in new_dict.items():
-                if v=="*":
-                    n= source_dict.get(k)
-                    if n:
-                        new_dict[k]= n
+
+        # if source_type!=new_type we know that there are changes:
+        changes= (source_type!=new_type)
+        for (k,v) in new_dict.items():
+            v_old= source_dict.get(k)
+            if v=="*":
+                if source_type!=new_type:
+                    raise ValueError("sourcespec: '*' wildcard not allowed "
+                                     "for different source types "
+                                     "('%s'!='%s' here)" % \
+                                     (source_type, new_type))
+                if v_old is None:
+                    raise ValueError("sourcespec: no data found to replace "
+                                     "'%s=*'" % k)
+                new_dict[k]= v_old
+            else:
+                if v_old!=v:
+                    changes= True
         version["source"]= new
+        return changes
     def set_source_arch_state(self, module_name, versionname, archs, state,
                               repo_dict):
         """add a module with source spec, state and archs."""
