@@ -559,8 +559,12 @@ def process(options, commands):
                 keep_locked= not options.dumpdb and (not options.dry_run))
         db.patch_version(modulename, oldversion, newversion, do_replace)
         if sourcespec:
+            try:
+                source_spec_dict= utils.scan_source_spec(sourcespec)
+            except ValueError, e:
+                sys.exit("Error: "+str(e))
             db.set_source(modulename, newversion,
-                          utils.scan_source_spec(sourcespec))
+                          source_spec_dict)
         if options.dumpdb:
             db.json_print()
         else:
