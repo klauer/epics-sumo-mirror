@@ -22,6 +22,9 @@ import copy
 import sumo.lock
 import sumo.JSON
 import sumo.utils as utils
+import sumo.Config
+import sumo.ModuleSpec
+import sumo.Databases
 
 # version of the program:
 my_version= "1.7.3" #VERSION#
@@ -53,7 +56,7 @@ def script_shortname():
 def db_from_json_file(filename, keep_locked= False):
     """load a db, exits gracefully in case of an error."""
     try:
-        db= utils.Dependencies.from_json_file(filename, keep_locked)
+        db= sumo.Databases.Dependencies.from_json_file(filename, keep_locked)
     except ValueError, e:
         sys.exit("Error while loading builddb,\n%s" % str(e))
     except IOError, e:
@@ -141,7 +144,7 @@ def create_database(deps, repoinfo, groups, archs, state, source_patches):
         sys.stderr.write(msg+"\n")
 
     try:
-        utils.Dependencies.check_state(state)
+        sumo.Databases.Dependencies.check_state(state)
     except ValueError, e:
         sys.exit(str(e))
     patcher= utils.RegexpPatcher()
@@ -150,7 +153,7 @@ def create_database(deps, repoinfo, groups, archs, state, source_patches):
             patcher.add(eval(p))
     _path2namevname= {}
     _namevname2path= {}
-    db= utils.Dependencies()
+    db= sumo.Databases.Dependencies()
     # we first create the map from modulenames to versiondata. In this loop we
     # populate the versiondata only with the source specification. We also
     # create two maps:
@@ -282,7 +285,7 @@ def set_state(db, state, modulespecs):
     # this sets the states of modules and dependencies to the new value:
     db.merge(partialdb,
              constant_src_state=state,
-             state_sum_mode= utils.Dependencies.SUM_FIRST)
+             state_sum_mode= sumo.Databases.Dependencies.SUM_FIRST)
 
 def set_weight(db, weight, modulespecs, trace):
     """set the weight for one or more modules."""
@@ -321,7 +324,7 @@ def process(options, commands):
     # pylint: disable=R0915
     #                          Too many statements
 
-    config= utils.ConfigFile.from_optionlist(
+    config= sumo.Config.ConfigFile.from_optionlist(
                 CONFIG_NAME,
                 ( "#include",
                   "arch", "db", "maxstate", "module", "progress",
@@ -402,7 +405,8 @@ def process(options, commands):
         db= db_from_json_file(options.db,
                 keep_locked= not options.dumpdb and (not options.dry_run))
         try:
-            modulespecs_obj= utils.ModuleSpecs.from_strings(modulespecs, None)
+            modulespecs_obj= sumo.ModuleSpec.Specs.from_strings(modulespecs,
+                                                                None)
         except ValueError, e:
             sys.exit(str(e))
 
@@ -430,7 +434,7 @@ def process(options, commands):
             sys.exit("error, --db is mandatory here")
         db= db_from_json_file(options.db, keep_locked= False)
         try:
-            modulespecs_obj= utils.ModuleSpecs.from_strings(modulespecs,
+            modulespecs_obj= sumo.ModuleSpec.Specs.from_strings(modulespecs,
                                                             options.arch)
         except ValueError, e:
             sys.exit(str(e))
@@ -462,7 +466,7 @@ def process(options, commands):
                 keep_locked= not options.dumpdb and (not options.dry_run))
         db2= db_from_json_file(commands[1])
         db.merge(db2, constant_src_state= None,
-                 state_sum_mode= utils.Dependencies.SUM_MIN)
+                 state_sum_mode= sumo.Databases.Dependencies.SUM_MIN)
         if options.dumpdb:
             db.json_print()
         else:
@@ -476,7 +480,7 @@ def process(options, commands):
                      commands[0])
         if not options.db:
             sys.exit("error, --db is mandatory here")
-        module_spec= utils.ModuleSpec.from_string(commands[1])
+        module_spec= sumo.ModuleSpec.Spec.from_string(commands[1])
         (depname,alias)= commands[2:4]
         db = db_from_json_file(options.db,
                 keep_locked= not options.dumpdb and (not options.dry_run))
@@ -496,8 +500,8 @@ def process(options, commands):
                      commands[0])
         if not options.db:
             sys.exit("error, --db is mandatory here")
-        module_spec= utils.ModuleSpec.from_string(commands[1])
-        dep_spec   = utils.ModuleSpec.from_string(commands[2])
+        module_spec= sumo.ModuleSpec.Spec.from_string(commands[1])
+        dep_spec   = sumo.ModuleSpec.Spec.from_string(commands[2])
         state      = commands[3]
         db = db_from_json_file(options.db,
                 keep_locked= not options.dumpdb and (not options.dry_run))
@@ -519,8 +523,8 @@ def process(options, commands):
                      commands[0])
         if not options.db:
             sys.exit("error, --db is mandatory here")
-        module_spec= utils.ModuleSpec.from_string(commands[1])
-        dep_spec   = utils.ModuleSpec.from_string(commands[2])
+        module_spec= sumo.ModuleSpec.Spec.from_string(commands[1])
+        dep_spec   = sumo.ModuleSpec.Spec.from_string(commands[2])
         if module_spec.no_version_spec():
             sys.exit("module has no version")
         if dep_spec.no_version_spec():
@@ -604,11 +608,12 @@ def process(options, commands):
         db= db_from_json_file(options.db,
                 keep_locked= not options.dumpdb and (not options.dry_run))
         try:
-            utils.Dependencies.check_state(state)
+            sumo.Databases.Dependencies.check_state(state)
         except ValueError, e:
             sys.exit(str(e))
         try:
-            modulespecs_obj= utils.ModuleSpecs.from_strings(modulespecs, None)
+            modulespecs_obj= sumo.ModuleSpec.Specs.from_strings(modulespecs,
+                                                                None)
         except ValueError, e:
             sys.exit(str(e))
 
@@ -643,7 +648,7 @@ def process(options, commands):
         result= {}
 
         try:
-            modulespecs_obj= utils.ModuleSpecs.from_strings(modulespecs,
+            modulespecs_obj= sumo.ModuleSpec.Specs.from_strings(modulespecs,
                                                             options.arch)
         except ValueError, e:
             sys.exit(str(e))
