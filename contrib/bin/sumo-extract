@@ -18,7 +18,7 @@ module="$1"
 version="$2"
 build="$3"
 
-dir=$SUMODIR/$module/$version+$build
+dir=$SUMODIR/build/$module/$version+$build
 
 if [ ! -d $dir ]; then
     echo "error, directory '$dir' not found"
@@ -39,8 +39,8 @@ cd $module > /dev/null
 
 $SUMO_SCAN -c $SUMO_SCAN_CONFIG -d . all | $SUMO_DB --no-default-config appconvert - > $MODULES
 
-$SUMO_DB --maxstate unstable --db $SUMODIR/DEPS.DB -c $MODULES makeconfig
-$SUMO_BUILD --maxstate unstable --db $SUMODIR/DEPS.DB --builddb $SUMODIR/BUILDS.DB --supportdir $SUMODIR -c $MODULES makeconfig
+$SUMO_DB --maxstate unstable --db $SUMODIR/database/DEPS.DB -c $MODULES makeconfig
+$SUMO_BUILD --maxstate unstable --db $SUMODIR/database/DEPS.DB --builddb $SUMODIR/build/BUILDS.DB --supportdir $SUMODIR/build -c $MODULES makeconfig
 
 echo "creating configure/RELEASE"
 $SUMO_BUILD use 

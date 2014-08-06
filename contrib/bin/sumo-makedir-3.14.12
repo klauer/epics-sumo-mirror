@@ -25,6 +25,8 @@ echo "* creating $dir"
 mkdir $dir
 cd $dir > /dev/null
 SUMODIR=`pwd`
+mkdir database
+mkdir build
 
 echo "* scanning existing EPICS 3.14.12 support directory"
 sumo-scan-3.14.12
@@ -35,8 +37,8 @@ echo "* creating the Sumo dependency database"
 cp $ORIG_DB $DB
 
 echo "* creating Sumo configuration files"
-$SUMO_DB --maxstate testing --db $SUMODIR/$DB makeconfig
-$SUMO_BUILD --db $SUMODIR/$DB --builddb $SUMODIR/BUILDS.DB --supportdir $SUMODIR --maxstate testing --makeopts "-s" makeconfig
+$SUMO_DB --maxstate testing --db $SUMODIR/database/$DB makeconfig
+$SUMO_BUILD --db $SUMODIR/database/$DB --builddb $SUMODIR/build/BUILDS.DB --supportdir $SUMODIR/build --maxstate testing --makeopts "-s" makeconfig
 
 #echo "* creating a BUILD containing just BASE R-3-14-8-2-1"
 #$SUMO_BUILD new BASE:R3-14-8-2-1 -t BASE-R3-14-8-2-1
