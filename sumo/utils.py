@@ -136,6 +136,44 @@ def dict_sets_to_lists(dict_):
     return new
 
 # -----------------------------------------------
+# file utilities
+# -----------------------------------------------
+
+def file_w_open(filename, verbose, dry_run):
+    """open a file for write."""
+    if verbose:
+        print "opening file '%s'" % filename
+    if dry_run:
+        return None
+    return open(filename, "w")
+
+def file_write(fh, st, verbose, dry_run):
+    """write a line to a file."""
+    if verbose:
+        print st,
+    if not dry_run:
+        fh.write(st)
+
+def mk_text_file(filename, lines, verbose, dry_run):
+    """create a text file."""
+    if verbose:
+        if filename!="-":
+            print "creating",filename
+    if dry_run:
+        filename="-"
+    if filename=="-":
+        fh= None
+        # special settings for _fwrite:
+        verbose= True
+        dry_run= True
+    else:
+        fh= open(filename, "w")
+    for l in lines:
+        file_write(fh, l, verbose, dry_run)
+    if filename!="-":
+        fh.close()
+
+# -----------------------------------------------
 # directory utilities
 # -----------------------------------------------
 
