@@ -30,6 +30,7 @@ class OldDependencies(sumo.JSON.Container):
         """convert to a Dependencies and BuildCache object.
         """
         new= {}
+        buildcache= BuildCache()
         for (modulename, moduledict) in self.datadict().items():
             new_moduledict= new.setdefault(modulename, {})
             for (versionname, versiondict) in moduledict.items():
@@ -48,8 +49,20 @@ class OldDependencies(sumo.JSON.Container):
                         if dep_name==modulename:
                             continue
                         s.add(dep_name)
+                        for dep_version in dep_dict.keys():
+                            buildcache.add_dependency(modulename,
+                                                      versionname,
+                                                      dep_name,
+                                                      dep_version,
+                                                      "scanned")
+                                                      #dep_dict[dep_version])
+                        # ^^^ we use "scanned" on purpose here, we do not want
+                        # to take old state values from a converted database
+                        # since we cannot trust that these can easily be built
+                        # on the local machine. update_from_builddb will take
+                        # state values from builds, though.
                     new_versiondict["dependencies"]= sorted(list(s))
-        return Dependencies(new)
+        return (buildcache, Dependencies(new))
 
 class Dependencies(sumo.JSON.Container):
     """the dependency database."""
@@ -730,6 +743,12 @@ class Builddb(sumo.JSON.Container):
         d= self.datadict()
         s= d[build_tag]["state"]
         return (s=="testing") or (s=="stable")
+    def is_unstable(self, build_tag):
+        """returns True if the build is marked testing or stable.
+        """
+        d= self.datadict()
+        s= d[build_tag]["state"]
+        return s=="unstable"
     def state(self, build_tag):
         """return the state of the build."""
         d= self.datadict()
@@ -859,6 +878,80 @@ class Builddb(sumo.JSON.Container):
             lst.append(m.to_string())
         return lst
 
+class BuildCache(sumo.JSON.Container):
+    """Detailed dependency information.
+
+    Taken from sumo-scan and from the build database.
+
+    { "modulename": { "versionname": { "depmodule" :
+                                       {
+                                         "depvers1": state,
+                                         "depvers2": state
+                                       }
+                                     }
+                    }
+    }
+    """
+    def __init__(self, dict_= None):
+        """create the object."""
+        super(BuildCache, self).__init__(dict_)
+    def add_dependency(self, modulename, versionname,
+                       dep_name, dep_version, state):
+        """add a single dependency with a state."""
+        # pylint: disable=R0913
+        #                          Too many arguments
+        d= self.datadict()
+        versiondict   = d.setdefault(modulename, {})
+        depmoduledict = versiondict.setdefault(versionname, {})
+        depversiondict= depmoduledict.setdefault(dep_name, {})
+        depversiondict[dep_version]= state
+    def update_from_builddb(self, builddb, db):
+        """update data from a builddb.
+        """
+        d= self.datadict()
+        for buildtag in builddb.iter_builds():
+            state= builddb.state(buildtag)
+            # skip builds marked "unstable":
+            if builddb.is_unstable(buildtag):
+                continue
+            # set per build, contains (modulename,versionname)
+            build_dict= {}
+            for modulename, versionname in builddb.iter_modules(buildtag):
+                build_dict[modulename]= versionname
+            for (modulename, versionname) in build_dict.items():
+                versiondict   = d.setdefault(modulename, {})
+                depmoduledict = versiondict.setdefault(versionname, {})
+                for dep_name in db.iter_dependencies(modulename, versionname):
+                    v= build_dict.get(dep_name)
+                    if v is not None:
+                        depversiondict= depmoduledict.setdefault(dep_name, {})
+                        depversiondict[v]= state
+
+    def was_built(self, modulename, versionname):
+        """return True when the module was built sometime.
+        """
+        d= self.datadict()
+        versiondict   = d.get(modulename)
+        if not versiondict:
+            return False
+        return versiondict.has_key(versionname)
+    def relation(self, modulename, versionname, dep_name, dep_version):
+        """return the relation between two modules.
+
+        None: unrelated
+        <state>: built together in a build with state <state>.
+        """
+        d= self.datadict()
+        versiondict   = d.get(modulename)
+        if not versiondict:
+            return None
+        depmoduledict = versiondict.get(versionname)
+        if not depmoduledict:
+            return None
+        depversiondict= depmoduledict.get(dep_name)
+        if not depversiondict:
+            return None
+        return depversiondict.get(dep_version)
 
 def _test():
     """perform internal tests."""

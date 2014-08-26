@@ -166,6 +166,23 @@ def builddb_from_json_file(filename, keep_locked= False):
         sys.exit("Error while loading build database (builddb),\n%s" % str(e))
     return builddb
 
+def init_buildcache(scandb_name, builddb, db):
+    """load a builddb, exits gracefully in case of an error."""
+    if not scandb_name:
+        buildcache= sumo.Databases.BuildCache()
+    else:
+        try:
+            buildcache= sumo.Databases.BuildCache.from_json_file(scandb_name,
+                                                                 False)
+        except ValueError, e:
+            sys.exit("Error while loading build database (buildcache),\n%s" % \
+                     str(e))
+        except IOError, e:
+            sys.exit("Error while loading build database (buildcache),\n%s" % \
+                     str(e))
+    buildcache.update_from_builddb(builddb, db)
+    return buildcache
+
 # -----------------------------------------------
 # aliases
 # -----------------------------------------------
@@ -234,40 +251,13 @@ def gather_dependencies(dist_dict, db, modulename, versionname,
     For dependencies, do only take moduleversions that are in dist_dict.
 
     Returns a dict mapping modulenames to versionnames
+
+    called by builddb_match, command "new"
     """
     if gathered_deps is None:
         gathered_deps= {}
     for dep_name in db.iter_dependencies(modulename, versionname):
-        # get all depdendencies, even ones marked "unstable", take
-        # archs==None:
-        #   ignore architecture
-        dep_version= None
-        # Note: iter_dependency_versions no longer exists!!
-        for v in db.iter_dependency_versions(modulename, versionname,
-                                             dep_name, "unstable", None):
-            if dist_dict[dep_name]!= v:
-                continue
-            if dep_version is None:
-                dep_version= v
-                continue
-            else:
-                raise AssertionError("module %s dependency %s, two "
-                                     "dependency versions found in "
-                                     "dist_dict: %s and %s\n" % \
-                                     (modulename, dep_name, dep_version, v))
-        if dep_version is None:
-            raise AssertionError("module %s dependency %s, none of the "
-                                 "dependencies of the dependency database is "
-                                 "part of dist_dict\n" % \
-                                 (modulename, dep_name))
-        existing= gathered_deps.get(dep_name)
-        if existing is not None:
-            if existing!=dep_version:
-                raise AssertionError(
-                      "version conflict module %s versions %s %s" % \
-                      (modulename, existing, dep_version))
-            # if this is already in gathered_deps we can skip recursion here
-            continue
+        dep_version= dist_dict[dep_name]
         gathered_deps[dep_name]= dep_version
         gathered_deps= gather_dependencies(dist_dict, db, dep_name,
                                            dep_version, gathered_deps)
@@ -304,6 +294,8 @@ def get_dependencies(module_dict, db, builddb, buildtag):
 
 def builddb_match(dist_dict, db, builddb, modulename, versionname):
     """try to find matching deps in builddb.
+
+    called by add_modules, command "new"
     """
     deps= gather_dependencies(dist_dict, db, modulename, versionname, None)
     # now deps is a dict mapping modulenames to versionnames that contains all
@@ -501,7 +493,7 @@ def distribution(db, modulespecs, maxstate, trace, tracemore):
 # -----------------------------------------------
 
 def gen_RELEASE(db, builddb, buildtag,
-                module_set,
+                dist_dict,
                 modulename, versionname,
                 extra_lines,
                 verbose, dry_run):
@@ -512,9 +504,10 @@ def gen_RELEASE(db, builddb, buildtag,
 
     Note: the SUPPORT path is the directory of the builddb file!
 
-    module_set:
-      a set of (modulename,versionname) pairs that contains all modules of the
-      build.
+    dist_dict: a dictionary mapping modulename-->versionname that is
+        with respect to dependencies a complete set of modules.
+
+    called by create_module, command "new"
     """
     # pylint: disable=R0913
     #                          Too many arguments
@@ -534,23 +527,7 @@ def gen_RELEASE(db, builddb, buildtag,
     utils.file_write(fh, "SUPPORT=%s\n" % supportdir, verbose, dry_run)
     deps= []
     for dep_name in db.iter_dependencies(modulename, versionname):
-        # get all depdendencies, even ones marked "unstable":
-        # archs==None:
-        #   ignore architecture
-        # Note: iter_dependency_versions no longer exists!!
-        dep_versions= list(db.iter_dependency_versions(modulename,
-                                                       versionname,
-                                                       dep_name,
-                                                       "unstable",
-                                                       None))
-        my_dep_versions= [v for v in dep_versions \
-                          if (dep_name,v) in module_set]
-        if len(my_dep_versions)!=1:
-            raise AssertionError("unexpected: %s:%s %s %s\n" % \
-                    (modulename,versionname,dep_name,
-                    repr(my_dep_versions)))
-
-        dep_versionname= my_dep_versions[0]
+        dep_versionname= dist_dict[dep_name]
         deps.append((dep_name, dep_versionname))
 
     deps= db.sortby_weight(db.sortby_dependency(sorted(deps), True))
@@ -569,13 +546,20 @@ def gen_RELEASE(db, builddb, buildtag,
     if not dry_run:
         fh.close()
 
-def create_makefile(db, builddb, build_tag, verbose, dry_run):
+def create_makefile(dist_dict, db, builddb, build_tag, verbose, dry_run):
     """generate a makefile.
+
+    dist_dict: a dictionary mapping modulename-->versionname that is
+        with respect to dependencies a complete set of modules.
+
+    called by create_modules, command "new"
     """
     # pylint: disable=R0914
     #                          Too many local variables
     # pylint: disable=R0912
     #                          Too many branches
+    # pylint: disable=R0913
+    #                          Too many arguments
     def has_makefile(path):
         """checks if there is a makefile in path."""
         fn= os.path.join(path,"Makefile")
@@ -616,29 +600,13 @@ def create_makefile(db, builddb, build_tag, verbose, dry_run):
         for dep_name in db.iter_dependencies(modulename, versionname):
             if builddb.module_link(build_tag, dep_name):
                 continue
-            # get all depdendencies, even the ones marked "unstable":
-            # archs==None:
-            #   ignore architecture
-            # Note: iter_dependency_versions no longer exists!!
-            dep_versions= list(db.iter_dependency_versions(modulename,
-                                                           versionname,
-                                                           dep_name,
-                                                           "unstable",
-                                                           None))
-            # keep only (module,version) pairs that are in the path
+            dep_version= dist_dict[dep_name]
+            # do no handle dependencies that are not in the paths
             # dictionary:
-            my_dep_versions= [v for v in dep_versions \
-                              if paths.has_key((dep_name,v))]
-            if len(my_dep_versions)>1:
-                raise AssertionError("unexpected: %s:%s %s %s\n" % \
-                        (modulename,versionname,dep_name,
-                        repr(my_dep_versions)))
-            if not my_dep_versions:
-                # do no handle dependencies that are not in the paths
-                # dictionary:
+            if not paths.has_key((dep_name, dep_version)):
                 continue
             dep_path= module_dir_string(build_tag,
-                                        dep_name, my_dep_versions[0])
+                                        dep_name, dep_version)
             dep_stamps.append(os.path.join(dep_path,"stamp"))
 
         dep_stamps.sort()
@@ -701,7 +669,7 @@ def delete_module(build_tag, modulename, versionname,
     rm_empty_dir(modulename, verbose, dry_run)
 
 def create_module(db, builddb, build_tag,
-                  module_set,
+                  dist_dict,
                   modulename, versionname,
                   extra_defs,
                   archs,
@@ -714,9 +682,10 @@ def create_module(db, builddb, build_tag,
     This function requires that the current working directory is the
     support directory!
 
-    module_set:
-      a set of (modulename,versionname) pairs that contains all modules of the
-      build.
+    dist_dict: a dictionary mapping modulename-->versionname that is
+        with respect to dependencies a complete set of modules.
+
+    called by create_modules, command "new"
     """
     # pylint: disable=R0913
     #                          Too many arguments
@@ -732,7 +701,7 @@ def create_module(db, builddb, build_tag,
 
     create_source(db, modulename, versionname, dirname, verbose, dry_run)
     gen_RELEASE(db, builddb, build_tag,
-                module_set,
+                dist_dict,
                 modulename, versionname,
                 extra_defs,
                 verbose, dry_run)
@@ -749,6 +718,8 @@ def add_modules(dist_dict, db, builddb, build_tag):
 
     All modules specified by dist_dict are added with tag <build_tag> to the
     builddb.
+
+    called by create_modules, command "new"
     """
     for modulename in sorted(dist_dict.keys()):
         versionname= dist_dict[modulename]
@@ -826,6 +797,11 @@ def create_modules(dist_dict, db, builddb, build_tag, extra_lines,
 
     This function requires that the current working directory is the support
     directory!
+
+    dist_dict: a dictionary mapping modulename-->versionname that is
+        with respect to dependencies a complete set of modules.
+
+    called by process, command "new"
     """
     # pylint: disable=R0913
     #                          Too many arguments
@@ -836,7 +812,6 @@ def create_modules(dist_dict, db, builddb, build_tag, extra_lines,
     # someting there:
     cleanup_struc= loadcleanup(build_tag)
     module_list  = cleanup_struc.setdefault("modules", [])
-    module_set   = set()
 
     # add all modules specified by dist_dict to builddb under tag build_tag:
     add_modules(dist_dict, db, builddb, build_tag)
@@ -854,7 +829,6 @@ def create_modules(dist_dict, db, builddb, build_tag, extra_lines,
 
     for modulename in sorted(dist_dict.keys()):
         versionname= builddb.module_version(build_tag, modulename)
-        module_set.add((modulename, versionname))
         # do not re-create modules that are links:
         if builddb.module_link(build_tag, modulename):
             continue
@@ -866,7 +840,7 @@ def create_modules(dist_dict, db, builddb, build_tag, extra_lines,
         savecleanup(build_tag, cleanup_struc)
     for module_dict in module_list:
         create_module(db, builddb, build_tag,
-                      module_set,
+                      dist_dict,
                       module_dict["modulename"],
                       module_dict["versionname"],
                       extra_lines,
@@ -990,6 +964,7 @@ def process(options, commands):
                 ( "#include",
                   "arch", "alias", "builddb", "buildtag_stem", "db", "extra",
                   "makeopts", "maxstate", "module", "progress", "readonly",
+                  "scandb",
                   "supportdir", "verbose",))
     if (not os.path.exists(CONFIG_NAME)) or options.no_default_config:
         config.disable_default()
@@ -1151,6 +1126,9 @@ def process(options, commands):
         return
 
     if commands[0]=="try":
+
+        # this command can no longer work this way,
+        # it has to be re-implemented
         buildtag= options.buildtag
         if not options.db:
             sys.exit("--db is mandatory")
@@ -1179,6 +1157,13 @@ def process(options, commands):
         if options.dump_modules:
             dump_modules(modulespecs_obj)
             sys.exit(0)
+
+        # ensure that each module is only mentioned once in the modulelist:
+        try:
+            modulespecs_obj.assert_unique()
+        except ValueError, e:
+            sys.exit(str(e))
+
         try:
             dist_dict= distribution(db, modulespecs_obj, options.maxstate,
                                     options.trace, options.tracemore)
@@ -1268,7 +1253,7 @@ def process(options, commands):
                            options.extra,
                            options.arch,
                            options.verbose, options.dry_run)
-            create_makefile(db, builddb, buildtag,
+            create_makefile(dist_dict, db, builddb, buildtag,
                             options.verbose, options.dry_run)
         except IOError, e:
             db.unlock_file()
@@ -1546,6 +1531,15 @@ def main():
                       help= "Specify the BUILDDB file. This option value is "
                             "stored in the configuration file. ",
                       metavar="BUILDDB"
+                      )
+    parser.add_option("--scandb",
+                      action="store",
+                      type="string",
+                      help= "Specify the (optional) SCANDB file. The scan "
+                            "database file contains information on what "
+                            "moduleversion can be used with what "
+                            "dependency version.",
+                      metavar="SCANDB"
                       )
     parser.add_option("-t", "--buildtag",
                       action="store",

@@ -230,6 +230,8 @@ def create_database(deps, repoinfo, groups, archs, source_patches):
     #sumo.JSON.dump(_path2namevname)
     #sys.exit(0)
 
+    buildcache= sumo.Databases.BuildCache()
+
     # here we populate the versiondata with the dependency specifications:
     for modulename in db.iter_modulenames():
         # loop on stable, testing and unstable versions:
@@ -263,7 +265,10 @@ def create_database(deps, repoinfo, groups, archs, source_patches):
                                    (modulename, str(e)))
                     db.add_dependency(modulename, versionname,
                                       _dep_name)
-    return db
+                    buildcache.add_dependency(modulename, versionname,
+                                              _dep_name, _dep_version,
+                                              "scanned")
+    return (buildcache,db)
 
 def set_weight(db, weight, modulespecs, trace):
     """set the weight for one or more modules."""
@@ -306,6 +311,7 @@ def process(options, commands):
                 CONFIG_NAME,
                 ( "#include",
                   "arch", "db", "module", "progress",
+                  "scandb",
                   "source_patch", "verbose"))
     if (not os.path.exists(CONFIG_NAME)) or options.no_default_config:
         config.disable_default()
@@ -342,31 +348,49 @@ def process(options, commands):
         return
 
     if commands[0]=="convert":
+        if not options.db:
+            sys.exit("error, --db is mandatory here")
+        if not options.scandb:
+            sys.exit("error, --scandb is mandatory here")
         if len(commands)!=2:
             sys.exit("a filename must follow \"convert\"")
+        if os.path.exists(options.db):
+            sys.exit("error, db file '%s' already exists" % options.db)
+        if os.path.exists(options.scandb):
+            sys.exit("error, scandb file '%s' already exists" % \
+                     options.scandb)
         filename= commands[1]
         scandata= sumo.JSON.loadfile(filename)
         deps= scandata["dependencies"]
         repoinfo= utils.PathSource(scandata["repos"])
         groups= scandata["groups"]
         archs= scandata["archs"]
-        db= create_database(deps, repoinfo, groups, archs,
-                            options.source_patch)
-        db.json_print()
+        (buildcache, db)= create_database(deps, repoinfo, groups, archs,
+                                          options.source_patch)
+        db.json_save(options.db, options.verbose, options.dry_run)
+        buildcache.json_save(options.scandb,
+                             options.verbose, options.dry_run)
         return
 
     if commands[0]=="convert-old":
         if not options.db:
             sys.exit("error, --db is mandatory here")
+        if not options.scandb:
+            sys.exit("error, --scandb is mandatory here")
         if len(commands)!=2:
             sys.exit("a filename must follow \"convert-old\"")
         if os.path.exists(options.db):
             sys.exit("error, db file '%s' already exists" % options.db)
+        if os.path.exists(options.scandb):
+            sys.exit("error, scandb file '%s' already exists" % \
+                     options.scandb)
         filename= commands[1]
         old= sumo.Databases.OldDependencies.from_json_file(filename,
                                                            keep_locked=False)
-        db= old.convert()
+        (buildcache, db)= old.convert()
         db.json_save(options.db, options.verbose, options.dry_run)
+        buildcache.json_save(options.scandb,
+                             options.verbose, options.dry_run)
         return
 
     if commands[0]=="appconvert":
@@ -691,10 +715,21 @@ where command is:
           do it with this with this command. The file locking prevents other
           users to use the file at the same time you modify it.
   convert [SCANFILE]: 
-          Convert SCANFILE to a new DB.
+          Convert SCANFILE created by "sumo-scan all" to a new dependency
+          database. If SCANFILE is a dash "-" the program expects the scanfile
+          on stdin.  Note that options "--db" and "--scandb" are mandatory
+          here. With "--db" you specify the name of the new created dependency
+          database file, with "--scandb" you specify the name of the scan
+          database file.  The scan database file contains information on what
+          moduleversion can be used with what dependency version.
   convert-old [OLD-DEPS-DB]
-          Convert a dependency database in the old format to the new format.
-          Note that option "--db" is mandatory here.
+          Convert a dependency database from the old to the new format. Note
+          that options "--db" and "--scandb" are mandatory here. With "--db"
+          you specify the name of the new created dependency database file,
+          with "--scandb" you specify the name of the scan database or SCANDB
+          file. The scan database file contains information on what version of
+          a module is probably compatible with what version of a dependency
+          according to the data in the old dependency database.
   appconvert [SCANFILE] 
           Convert a SCANFILE that was created by applying sumo-scan to an
           application to a list of aliases and modulespecs in JSON format. The
@@ -804,6 +839,13 @@ def main():
                       help= "Define the name of the DB file. This option "
                             "value is stored in the configuration file. ",
                       metavar="DB"
+                      )
+    parser.add_option("--scandb",
+                      action="store",
+                      type="string",
+                      help= "Specify the SCANDB file (only for 'convert' "
+                            "and 'convert-old` command).",
+                      metavar="SCANDB"
                       )
     parser.add_option("--dumpdb",
                       action="store_true",

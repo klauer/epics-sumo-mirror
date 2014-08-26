@@ -284,6 +284,9 @@ Here is a short overview on command line options:
 ``--builddb BUILDDB``
     Specify the BUILDDB file. This option value is stored in the configuration
     file.
+``--scandb SCANDB``
+    Specify the (optional) SCANDB file. The scan database file contains
+    information on what moduleversion can be used with what dependency version.
 ``-t BUILDTAG, --buildtag BUILDTAG``
     Specify a buildtag.
 ``--buildtag-stem STEM``
