@@ -33,7 +33,8 @@ sumo.JSON.assert_version(my_version)
 utils.assert_version(my_version)
 
 KNOWN_COMMANDS=set(("alias-add", "appconvert", "check", "clonemodule",
-                    "cloneversion", "convert", "edit", "filter", "find",
+                    "cloneversion", "convert", "convert-old",
+                    "edit", "filter", "find",
                     "list", "makeconfig", "merge", "dependency-add",
                     "dependency-delete", "replaceversion", "showall",
                     "shownewest", "weight"))
@@ -352,6 +353,20 @@ def process(options, commands):
         db= create_database(deps, repoinfo, groups, archs,
                             options.source_patch)
         db.json_print()
+        return
+
+    if commands[0]=="convert-old":
+        if not options.db:
+            sys.exit("error, --db is mandatory here")
+        if len(commands)!=2:
+            sys.exit("a filename must follow \"convert-old\"")
+        if os.path.exists(options.db):
+            sys.exit("error, db file '%s' already exists" % options.db)
+        filename= commands[1]
+        old= sumo.Databases.OldDependencies.from_json_file(filename,
+                                                           keep_locked=False)
+        db= old.convert()
+        db.json_save(options.db, options.verbose, options.dry_run)
         return
 
     if commands[0]=="appconvert":
@@ -677,6 +692,9 @@ where command is:
           users to use the file at the same time you modify it.
   convert [SCANFILE]: 
           Convert SCANFILE to a new DB.
+  convert-old [OLD-DEPS-DB]
+          Convert a dependency database in the old format to the new format.
+          Note that option "--db" is mandatory here.
   appconvert [SCANFILE] 
           Convert a SCANFILE that was created by applying sumo-scan to an
           application to a list of aliases and modulespecs in JSON format. The
