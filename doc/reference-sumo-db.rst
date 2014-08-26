@@ -26,105 +26,80 @@ that contains information on versions of support modules and their
 dependencies. Here is an example how this file looks like::
 
   {
-      "BSPDEP_TIMER": {
-          "R6-2": {
-              "aliases": {
-                  "BASE": "EPICS_BASE"
-              },
-              "archs": {
-                  "RTEMS-mvme2100": true,
-                  "RTEMS-mvme5500": true,
-                  "vxWorks-68040": true,
-                  "vxWorks-ppc603": true
-              },
-              "dependencies": {
-                  "BASE": {
-                      "R3-14-12-2-1": "stable"
-                  }
-              },
-              "source": {
-                  "darcs": {
-                      "tag": "R6-2",
-                      "url": "rcsadm@aragon.acc.bessy.de:/opt/repositories/controls/darcs/epics/support/bspDep/timer"
-                  }
-              },
-              "state": "stable"
-          }
-      },
-      "MCAN": {
-          "R2-4-0": {
-              "aliases": {
-                  "BASE": "EPICS_BASE",
-                  "MISC_DBC": "DBC",
-                  "MISC_DEBUGMSG": "DEBUGMSG",
-                  "SOFT_DEVHWCLIENT": "DEVHWCLIENT"
-              },
-              "archs": {
-                  "vxWorks-68040": true,
-                  "vxWorks-ppc603": true
-              },
-              "dependencies": {
-                  "ALARM": {
-                      "R3-7": "stable"
-                  },
-                  "BASE": {
-                      "R3-14-12-2-1": "stable"
-                  },
-                  "MISC_DBC": {
-                      "R3-0": "stable"
-                  },
-                  "MISC_DEBUGMSG": {
-                      "R3-0": "stable"
-                  },
-                  "SOFT_DEVHWCLIENT": {
-                      "R3-0": "stable"
-                  }
-              },
-              "source": {
-                  "darcs": {
-                      "tag": "R2-4-0",
-                      "url": "rcsadm@aragon.acc.bessy.de:/opt/Epics/R3.14.12/support/mcan/2-4-0"
-                  }
-              },
-              "state": "stable"
-          },
-          "R2-4-1": {
-              "aliases": {
-                  "BASE": "EPICS_BASE",
-                  "MISC_DBC": "DBC",
-                  "MISC_DEBUGMSG": "DEBUGMSG",
-                  "SOFT_DEVHWCLIENT": "DEVHWCLIENT"
-              },
-              "archs": {
-                  "vxWorks-68040": true,
-                  "vxWorks-ppc603": true
-              },
-              "dependencies": {
-                  "ALARM": {
-                      "R3-7": "stable"
-                  },
-                  "BASE": {
-                      "R3-14-12-2-1": "stable"
-                  },
-                  "MISC_DBC": {
-                      "R3-0": "stable"
-                  },
-                  "MISC_DEBUGMSG": {
-                      "R3-0": "stable"
-                  },
-                  "SOFT_DEVHWCLIENT": {
-                      "R3-0": "stable"
-                  }
-              },
-              "source": {
-                  "darcs": {
-                      "tag": "R2-4-1",
-                      "url": "rcsadm@aragon.acc.bessy.de:/opt/Epics/R3.14.12/support/mcan/2-4-0"
-                  }
-              },
-              "state": "stable"
-          }
-      }
+    "BSPDEP_TIMER": {
+        "R6-2": {
+            "aliases": {
+                "BASE": "EPICS_BASE"
+            },
+            "archs": {
+                "RTEMS-mvme2100": true,
+                "RTEMS-mvme5500": true,
+                "vxWorks-68040": true,
+                "vxWorks-ppc603": true
+            },
+            "dependencies": [
+                "BASE"
+            ],
+            "source": {
+                "darcs": {
+                    "tag": "R6-2",
+                    "url": "rcsadm@aragon.acc.bessy.de:/opt/repositories/controls/darcs/epics/support/bspDep/timer"
+                }
+            }
+        }
+    },
+    "MCAN": {
+        "R2-4-0": {
+            "aliases": {
+                "BASE": "EPICS_BASE",
+                "MISC_DBC": "DBC",
+                "MISC_DEBUGMSG": "DEBUGMSG",
+                "SOFT_DEVHWCLIENT": "DEVHWCLIENT"
+            },
+            "archs": {
+                "vxWorks-68040": true,
+                "vxWorks-ppc603": true
+            },
+            "dependencies": [
+                "ALARM",
+                "BASE",
+                "MISC_DBC",
+                "MISC_DEBUGMSG",
+                "SOFT_DEVHWCLIENT"
+            ],
+            "source": {
+                "darcs": {
+                    "tag": "R2-4-0",
+                    "url": "rcsadm@aragon.acc.bessy.de:/opt/Epics/R3.14.12/support/mcan/2-4-0"
+                }
+            }
+        },
+        "R2-4-1": {
+            "aliases": {
+                "BASE": "EPICS_BASE",
+                "MISC_DBC": "DBC",
+                "MISC_DEBUGMSG": "DEBUGMSG",
+                "SOFT_DEVHWCLIENT": "DEVHWCLIENT"
+            },
+            "archs": {
+                "vxWorks-68040": true,
+                "vxWorks-ppc603": true
+            },
+            "dependencies": [
+                "ALARM",
+                "BASE",
+                "MISC_DBC",
+                "MISC_DEBUGMSG",
+                "SOFT_DEVHWCLIENT"
+            ],
+            "source": {
+                "darcs": {
+                    "tag": "R2-4-1",
+                    "url": "rcsadm@aragon.acc.bessy.de:/opt/Epics/R3.14.12/support/mcan/2-4-0"
+                }
+            }
+        },
+    },
   }
 
 The basic datastructure is this::
@@ -155,8 +130,7 @@ The *versiondata* map has this form::
       },
       "source": {
           <source data>
-      },
-      "state": STATE
+      }
   }
 
 aliasdata
@@ -195,25 +169,17 @@ module is architecture independent, the *archdata* map contains the special key
 dependencies
 ::::::::::::
 
-This is a map that has a key for each module this module depends on. The value
-for each key is a map where keys are names of supported versions and values are
-*STATES*. A *STATE* is one of the strings "stable", "testing" or "unstable".
-This indicates how well the dependency is tested. This is the form of the
-*dependencies* map::
+This is a list of :term:`modules` this :term:`module` depends on. Note that we
+do not store the :term:`versions` of the :term:`modules` here. Information on
+which :term:`version` is compatible with another :term:`version` can be found
+in the build database or :term:`BUILDDB`.  This is the form of the
+*dependencies* list::
 
-  {
-      MODULENAME: {
-          VERSIONNAME: STATE,
-          VERSIONNAME: STATE,
-          ...
-      },
-      MODULENAME: {
-          VERSIONNAME: STATE,
-          VERSIONNAME: STATE,
-          ...
-      },
+  [
+      MODULENAME,
+      MODULENAME,
       ...
-  }
+  ]
 
 source data
 :::::::::::
@@ -270,13 +236,12 @@ same time you modify it.
 
 This command must be followed by a *filename*.
 
-convert [STATE] [SCANFILE]
-++++++++++++++++++++++++++
+convert [SCANFILE]
+++++++++++++++++++
 
 Convert a :term:`scanfile` that was created by by 
 :doc:`"sumo-scan all"<reference-sumo-scan>` to a new depedency database or
-:term:`DB` file. All :term:`dependencies` are marked with the specified
-:term:`state`.
+:term:`DB` file.
 
 If SCANFILE is a dash "-", the program expects the scanfile on stdin.
 
@@ -292,13 +257,6 @@ format. The result is printed to the console. It can be used with
 --config to put these in the configuration file of 
 :doc:`"sumo-db "<reference-sumo-db>` or 
 :doc:`"sumo-build "<reference-sumo-build>` 
-
-state [STATE] [MODULES]
-+++++++++++++++++++++++
-
-Set the :term:`state` for :term:`modules`. This command sets the given STATE
-for all the given :term:`modules` and the :term:`dependencies` between the
-modules.
 
 weight [WEIGHT] [MODULES]
 +++++++++++++++++++++++++
@@ -320,8 +278,7 @@ This command lists all :term:`modules` in the
 shownewest {MODULES}
 ++++++++++++++++++++
 
-This command shows only the newest versions of modules. Mandatory option
-"--maxstate" defines the maximum :term:`state` a module may have. 
+This command shows only the newest versions of modules.
 
 Optional parameter MODULES specifies which :term:`modules` are shown. If no
 :term:`modules` are given the command shows the newest :term:`versions` of all
@@ -330,8 +287,7 @@ Optional parameter MODULES specifies which :term:`modules` are shown. If no
 showall {MODULES}
 +++++++++++++++++
 
-This command shows all versions of the given modules. Mandatory option
-"--maxstate" defines the maximum :term:`state` a module may have. 
+This command shows all versions of the given modules. 
 
 Optional parameter MODULES specifies which :term:`modules` are shown. If no
 :term:`modules` are given the command shows all :term:`versions` of all
@@ -341,9 +297,7 @@ find [REGEXP]
 +++++++++++++
 
 This command shows all :term:`modules` whose names or :term:`sources` match a regexp. 
-
-Mandatory option "--maxstate" defines the maximum :term:`state` a module may
-have. Parameter REGEXP is a perl compatible :term:`regular expression`.  
+Parameter REGEXP is a perl compatible :term:`regular expression`.  
 
 check
 +++++
@@ -372,23 +326,19 @@ cloneversion [MODULE] [OLD-VERSION] [NEW-VERSION] {SOURCESPEC}
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 This command adds a new :term:`version` of a :term:`module` to the
-:term:`dependency database` by copying the old :term:`version`. All
-:term:`modules` that depend on the old :term:`version` now also depend on the
-new :term:`version` of the module. If sourcespec is given, the command changes
-the source part according to this parameter. A sourcespec has the form "path
-PATH" or "darcs URL" or "darcs URL TAG". Both, URL or TAG may be "*", in this
-case the original URL or TAG remains unchanged.
+:term:`dependency database` by copying the old :term:`version`. If sourcespec
+is given, the command changes the source part according to this parameter. A
+sourcespec has the form "path PATH" or "darcs URL" or "darcs URL TAG". Both,
+URL or TAG may be "*", in this case the original URL or TAG remains unchanged.
 
 replaceversion [MODULE] [OLD-VERSION] [NEW-VERSION]
 +++++++++++++++++++++++++++++++++++++++++++++++++++
 
 This command replaces a :term:`version` of a :term:`module` with a new
-:term:`version`. All the data of the :term:`module` is copied. All
-:term:`modules` that used to depend on the old :term:`version` now depend on
-the new :term:`version`. If sourcespec is given, the command changes the
-source part according to this parameter. A sourcespec has the form "path PATH"
-or "darcs URL" or "darcs URL TAG". Both, URL or TAG may be "*", in this case
-the original URL or TAG remains unchanged.
+:term:`version`. All the data of the :term:`module` is copied. If sourcespec is
+given, the command changes the source part according to this parameter. A
+sourcespec has the form "path PATH" or "darcs URL" or "darcs URL TAG". Both,
+URL or TAG may be "*", in this case the original URL or TAG remains unchanged.
 
 clonemodule [OLD-MODULE] [NEW-MODULE] {VERSIONS}
 ++++++++++++++++++++++++++++++++++++++++++++++++
@@ -399,13 +349,13 @@ there are no :term:`versions` specified, the command copies all existing
 :term:`versions`. Note that this DOES NOT add the new :term:`module` as
 :term:`dependency` to any other :term:`modules`.
 
-dependency-delete MODULE:VERSION DEPENDENCYNAME:DEPENDENCYVERSION
-+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+dependency-delete MODULE:VERSION DEPENDENCYNAME
++++++++++++++++++++++++++++++++++++++++++++++++
 
 Delete a :term:`dependency` of a :term:`module`.
 
-dependency-add MODULE:VERSION DEPENDENCYNAME:DEPENDENCYVERSION STATE
-++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+dependency-add MODULE:VERSION DEPENDENCYNAME
+++++++++++++++++++++++++++++++++++++++++++++
 
 Add a :term:`dependency` to a :term:`module`.
 
@@ -458,9 +408,6 @@ Here is a short overview on command line options:
     in the configuration file.
 ``-b, --brief``
     Create a more brief output for some commands.
-``-M STATE, --maxstate STATE``
-    Specify the maximum state for some commands.  This option value is stored
-    in the configuration file.
 ``-P EXPRESSION, --source-patch EXPRESSION``
     Specify a source patchexpression. Such an expression consists of a tuple of
     2 python strings. The first is the match expression, the second one is the

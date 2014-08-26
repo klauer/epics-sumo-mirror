@@ -24,44 +24,6 @@ class Dependencies(sumo.JSON.Container):
     #                          Too many public methods
     # pylint: disable=R0913
     #                          Too many arguments
-    states_list= ["stable", "testing", "unstable"]
-    states_dict= dict(zip(states_list,range(len(states_list))))
-    SUM_MIN= 0
-    SUM_MAX= 1
-    SUM_FIRST= 2
-    @classmethod
-    def check_state(cls, state):
-        """checks if a state is allowed."""
-        if not cls.states_dict.has_key(state):
-            raise ValueError("unknown state: %s" % repr(state))
-    @classmethod
-    def _sum_state(cls, mode, state1, state2):
-        """return a sum state of a list of states.
-
-        known modes:
-          SUM_MIN: minimize state, "stable"<"testing"<"unstable"
-          SUM_MAX: maximize state, "stable"<"testing"<"unstable"
-          SUM_FIRST: just take state1
-        """
-        if mode==cls.SUM_FIRST:
-            if not cls.states_dict.has_key(state1):
-                raise KeyError("unknown state: %s" % repr(state1))
-            return state1
-        if mode==cls.SUM_MIN:
-            i= min(cls.states_dict[state1], cls.states_dict[state2])
-        elif mode==cls.SUM_MAX:
-            i= max(cls.states_dict[state1], cls.states_dict[state2])
-        else:
-            raise ValueError("unknown mode: %s" % repr(mode))
-        return cls.states_list[i]
-    @classmethod
-    def _allowed_states(cls, max_state):
-        """generate a list of allowed states from a maximum state.
-        """
-        idx= cls.states_dict.get(max_state)
-        if idx is None:
-            raise ValueError("invalid max_state: %s" % max_state)
-        return set( [x for x in cls.states_list if cls.states_dict[x]<=idx])
     @staticmethod
     def check_arch(arch_dict, arch_list):
         """check if all arch_list elements are keys in arch_dict."""
@@ -74,24 +36,6 @@ class Dependencies(sumo.JSON.Container):
             if not arch_dict.get(a):
                 return False
         return True
-    @classmethod
-    def _dependency_merge(cls, src_deps, dest_deps,
-                          constant_src_state,
-                          state_sum_mode):
-        """intelligent merge of dependency dicts.
-        """
-        for modulename, src_dep_dict in src_deps.items():
-            dest_dep_dict= dest_deps.setdefault(modulename, {})
-            for src_ver, src_state in src_dep_dict.items():
-                if constant_src_state is not None:
-                    src_state= constant_src_state
-                dest_state= dest_dep_dict.get(src_ver)
-                if dest_state is None:
-                    dest_dep_dict[src_ver]= src_state
-                    continue
-                dest_dep_dict[src_ver]= \
-                        cls._sum_state(state_sum_mode,
-                                       src_state, dest_state)
     def selfcheck(self, msg):
         """raise exception if obj doesn't look like a dependency database."""
         def _somevalue(d):
@@ -109,6 +53,10 @@ class Dependencies(sumo.JSON.Container):
             version= _somevalue(module)
             if not isinstance(version, dict):
                 break
+            deps= version.get("dependencies")
+            if deps is not None:
+                if not isinstance(deps, list):
+                    break
             src= version.get("source")
             if not src:
                 break
@@ -117,48 +65,23 @@ class Dependencies(sumo.JSON.Container):
     def __init__(self, dict_= None):
         """create the object."""
         super(Dependencies, self).__init__(dict_)
-    def merge(self, other,
-              constant_src_state,
-              state_sum_mode):
+    def merge(self, other):
         """merge another Dependencies object to self.
 
         parameters:
             self  - the object itself
             other - the other Dependencies object
-            constant_src_state -
-                    take this as exting state in "self" instead of the state
-                    that is actually stored there.
-            state_sum_mode -
-                    determine the mode states are combinde. Must be
-                    Dependencies.SUM_FIRST, Dependencies.SUM_MIN or
-                    Dependencies.SUM_MAX.
         """
         # pylint: disable=R0912
         #                          Too many branches
         for modulename in other.iter_modulenames():
             m= self.datadict().setdefault(modulename,{})
             # iterate on stable, testing and unstable versions:
-            for versionname in other.iter_versions(modulename, "unstable",
+            for versionname in other.iter_versions(modulename,
                                                    None, False):
                 vdict = m.setdefault(versionname,{})
                 vdict2= other.datadict()[modulename][versionname]
                 for dictname, dictval in vdict2.items():
-                    if dictname=="state":
-                        # pylint: disable=W0212
-                        #         Access to a protected member
-                        if constant_src_state is not None:
-                            src_state= constant_src_state
-                        else:
-                            src_state= vdict2[dictname]
-                        if vdict.has_key(dictname):
-                            vdict[dictname]= self.__class__._sum_state(
-                                    state_sum_mode,
-                                    src_state,
-                                    vdict[dictname])
-                        else:
-                            vdict[dictname]= src_state
-                        # pylint: enable=W0212
-                        continue
                     if dictname=="archs":
                         try:
                             sumo.utils.dict_update(
@@ -196,14 +119,16 @@ class Dependencies(sumo.JSON.Container):
                                  repr(vdict2[dictname])))
                         continue
                     if dictname=="dependencies":
-                        # pylint: disable=W0212
-                        #         Access to a protected member
-                        self.__class__._dependency_merge(
-                                dictval,
-                                vdict.setdefault(dictname,{}),
-                                constant_src_state,
-                                state_sum_mode)
-                        # pylint: enable=W0212
+                        if not vdict.has_key(dictname):
+                            vdict[dictname]= sorted(vdict2[dictname])
+                            continue
+                        if set(vdict[dictname])!=set(vdict2[dictname]):
+                            raise ValueError(
+                                "module %s version %s dependencies: "
+                                "contradiction %s %s" % \
+                                (modulename, versionname,
+                                 repr(vdict[dictname]),
+                                 repr(vdict2[dictname])))
                         continue
                     raise AssertionError("unexpected dictname %s" % dictname)
     def import_module(self, other, module_name, versionname):
@@ -215,7 +140,7 @@ class Dependencies(sumo.JSON.Container):
         m[versionname]= copy.deepcopy(
                             other.datadict()[module_name][versionname])
     def set_source(self, module_name, versionname, new):
-        """add a module with source spec, state and archs.
+        """add a module with source spec and archs.
 
         [new] must be a dictionary as it is used in key "source" in
         Dependencies objects. Examples:
@@ -268,62 +193,47 @@ class Dependencies(sumo.JSON.Container):
                     changes= True
         version["source"]= new
         return changes
-    def set_source_arch_state(self, module_name, versionname, archs, state,
+    def set_source_arch(self, module_name, versionname, archs,
                               repo_dict):
-        """add a module with source spec, state and archs."""
-        if not self.__class__.states_dict.has_key(state):
-            raise ValueError("invalid state: %s" % state)
+        """add a module with source spec and archs."""
         version_dict= self.datadict().setdefault(module_name,{})
         version= version_dict.setdefault(versionname, {})
-        if not version.has_key("state"):
-            version["state"]= state
         arch_dict= version.setdefault("archs", {})
         for arch in archs:
             arch_dict[arch]= True
         version["source"]= repo_dict
     def add_dependency(self, modulename, versionname,
-                       dep_modulename, dep_versionname, state):
+                       dep_modulename):
         """add dependency for a module:version.
         """
-        self.__class__.check_state(state)
         m_dict= self.datadict()[modulename]
-        dep_dict= m_dict[versionname].setdefault("dependencies",{})
-        dep_module_dict= dep_dict.setdefault(dep_modulename, {})
-        if dep_module_dict.has_key(dep_versionname):
-            raise ValueError("module '%s:%s' already has dependency "
-                             "'%s:%s'" % \
-                             (modulename, versionname,
-                              dep_modulename, dep_versionname))
-        dep_module_dict[dep_versionname]= state
+        dep_list= m_dict[versionname].setdefault("dependencies",[])
+        dep_list.append(dep_modulename)
+        dep_list.sort()
     def del_dependency(self, modulename, versionname,
-                       dep_modulename, dep_versionname):
+                       dep_modulename):
         """delete dependency for a module:version if it exists.
         """
         m_dict= self.datadict()[modulename]
-        dep_dict= m_dict[versionname].get("dependencies")
-        if dep_dict is None:
+        dep_list= m_dict[versionname].get("dependencies")
+        if dep_list is None:
             raise ValueError("Error, %s:%s has no dependencies" % \
                              (modulename, versionname))
-        dep_module_dict= dep_dict.get(dep_modulename)
-        if dep_module_dict is None:
+        dep_set= set(dep_list)
+        if not dep_modulename in dep_set:
             raise ValueError("Error, %s:%s doesn't depend on %s" % \
                              (modulename, versionname, dep_modulename))
-        if not dep_module_dict.has_key(dep_versionname):
-            raise ValueError("Error, %s:%s doesn't depend on %s:%s" % \
-                             (modulename, versionname,
-                              dep_modulename, dep_versionname))
-        del dep_module_dict[dep_versionname]
-        if not dep_module_dict:
-            # dict is now empty, delete the whole entry in "dependencies":
-            del dep_dict[dep_modulename]
-        if not dep_dict:
+        dep_set.discard(dep_modulename)
+        if not dep_set:
             # "dependencies" is now empty, remove it:
             del m_dict[versionname]["dependencies"]
+        else:
+            m_dict[versionname]["dependencies"]= sorted(list(dep_set))
     def check(self):
         """do a consistency check on the db."""
         msg= []
         for modulename in self.iter_modulenames():
-            for versionname in self.iter_versions(modulename, "unstable",
+            for versionname in self.iter_versions(modulename,
                                                   None, True):
                 archs= self.get_archs(modulename, versionname).keys()
                 if len(archs)==0:
@@ -331,16 +241,13 @@ class Dependencies(sumo.JSON.Container):
                                (modulename, versionname))
                 for dep_modulename in self.iter_dependencies(modulename,
                                                              versionname):
-                    for dep_version in self.sorted_dependency_versions(
-                            modulename, versionname, dep_modulename,
-                            "unstable", None):
-                        try:
-                            self.assert_module(dep_modulename, dep_version)
-                        except KeyError, e:
-                            msg.append("%s:%s: dependencies: %s" % \
-                                    (modulename, versionname, str(e)))
+                    try:
+                        self.assert_module(dep_modulename, None)
+                    except KeyError, e:
+                        msg.append("%s:%s: dependencies: %s" % \
+                                (modulename, versionname, str(e)))
         return msg
-    def search_modules(self, rx_object, max_state, archs):
+    def search_modules(self, rx_object, archs):
         """search module names and source URLS for a regexp.
 
         Returns a list of tuples (modulename, versionname).
@@ -349,12 +256,10 @@ class Dependencies(sumo.JSON.Container):
         for modulename in self.iter_modulenames():
             if rx_object.search(modulename):
                 for versionname in self.iter_versions(modulename,
-                                                      max_state,
                                                       archs, False):
                     results.append((modulename, versionname))
                 continue
             for versionname in self.iter_versions(modulename,
-                                                  max_state,
                                                   archs, False):
                 url= self.module_source_url(modulename, versionname)
                 if rx_object.search(url):
@@ -398,10 +303,14 @@ class Dependencies(sumo.JSON.Container):
         self.datadict()[modulename][versionname]["weight"]= new_weight
     def assert_module(self, modulename, versionname):
         """do nothing if the module is found, raise KeyError otherwise.
+
+        If versionname is None, just check that the modulename is known.
         """
         d= self.datadict().get(modulename)
         if d is None:
             raise KeyError("no data for module %s" % modulename)
+        if versionname is None:
+            return
         v= d.get(versionname)
         if v is None:
             raise KeyError("version %s not found for module %s" % \
@@ -432,19 +341,16 @@ class Dependencies(sumo.JSON.Container):
         deps= d.get("dependencies")
         if deps is None:
             return iter([])
-        return deps.iterkeys()
-    def depends_on(self, modulename, versionname,
-                   dependencyname, dependencyversion):
+        return iter(deps)
+    def depends_on_module(self, modulename, versionname,
+                          dependencyname):
         """returns True if given dependency is found.
         """
         d= self.datadict()[modulename][versionname]
         deps= d.get("dependencies")
         if deps is None:
             return False
-        dep_dict= deps.get(dependencyname)
-        if dep_dict is None:
-            return False
-        return dep_dict.has_key(dependencyversion)
+        return dependencyname in deps
     def sortby_weight(self, moduleversions, reverse= False):
         """sorts modules by weight.
 
@@ -479,6 +385,7 @@ class Dependencies(sumo.JSON.Container):
         #                          Too many local variables
         # pylint: disable=R0912
         #                          Too many branches
+        module_version_dict= dict(moduleversions)
         dependencies= {}
         weights= {}
         i=0
@@ -488,31 +395,26 @@ class Dependencies(sumo.JSON.Container):
 
         # collect all direct dependencies:
         modules_set= set(moduleversions)
-        for (modulename, versionname) in modules_set:
-            s= set()
-            dependencies[(modulename, versionname)]= s
-            for dep_name in self.iter_dependencies(modulename, versionname):
-                for dep_version in self.iter_dependency_versions(modulename,
-                                                                 versionname,
-                                                                 dep_name,
-                                                                 "unstable",
-                                                                 None):
-                    if not (dep_name,dep_version) in modules_set:
-                        continue
-                    s.add((dep_name,dep_version))
 
-        # add all indirect dependencies:
-        changes= True
-        while changes:
-            changes= False
-            for m in modules_set:
-                deps= dependencies[m]
-                for dep_m in list(deps):
-                    depdeps= dependencies[dep_m]
-                    for depdeps_m in depdeps:
-                        if depdeps_m not in deps:
-                            changes= True
-                            deps.add(depdeps_m)
+        # dependencies will map (modulename,versionname)->set(deps)
+        # with each dep: (dep_name, dep_version)
+        # we also include indirect dependencies, but only those that
+        # are part of the given moduleversions parameter.
+        test_modules_set= modules_set
+        while test_modules_set:
+            new_modules_set= set()
+            for (modulename, versionname) in test_modules_set:
+                s= dependencies.setdefault((modulename,versionname), set())
+                for dep_name in self.iter_dependencies(modulename,
+                                                       versionname):
+                    # ignore dependencies that are not part of the given
+                    # moduleversions parameter:
+                    if not module_version_dict.has_key(dep_name):
+                        continue
+                    dep_version= module_version_dict[dep_name]
+                    s.add((dep_name,dep_version))
+                    new_modules_set.add((dep_name, dep_version))
+            test_modules_set= new_modules_set
 
         # ensure that the "weight" of a module is always bigger than the
         # biggest weight of any of it's dependencies:
@@ -532,90 +434,11 @@ class Dependencies(sumo.JSON.Container):
                           reverse= reverse)
         # created a list of moduletuples from the result:
         return [m for (_,m) in sort_list]
-
-    def iter_dependency_versions(self, modulename, versionname,
-                                 dependencyname, max_state,
-                                 archs):
-        """return an iterator on dependency versions.
-
-        max_state :
-          This is the maximum allowed state:
-            "stable"  : return just stable
-            "testing" : return stable and testing
-            "unstable": return stable, testing and unstable
-
-        archs:
-          This is the desired architecture. Only dependencies with that
-          architecture are listed. If the architecture doesn't exist on at
-          least one of the dependencies or the module itself, a ValueError
-          exception is raised.
-          If arch is None do not check architectures.
-        """
-        # pylint: disable=W0212
-        #                          Access to a protected member of a
-        #                          client class
-        _states= self.__class__._allowed_states(max_state)
-        # pylint: enable=W0212
-        d= self.datadict()[modulename][versionname]
-        if archs is not None:
-            if not self.__class__.check_arch(d["archs"], archs):
-                raise ValueError("archs %s not supported in %s:%s" % \
-                                 (repr(archs),modulename, versionname))
-        deps= d.get("dependencies")
-        if deps is None:
-            raise StopIteration
-        dep_dict= deps.get(dependencyname,{})
-        if dep_dict is None:
-            raise StopIteration
-        found= False
-        for (dep_version, dep_state) in dep_dict.iteritems():
-            if dep_state not in _states:
-                continue
-            if archs is not None:
-                if not self.check_archs(dependencyname, dep_version, archs):
-                    #sys.stderr.write("check_archs(%s,%s,%s)==FALSE\n" % \
-                    #        (repr(dependencyname),repr(dep_version),
-                    #         repr(archs)))
-                    continue
-            found= True
-            yield dep_version
-        if not found:
-            raise ValueError("all dependencies excluded because of state "
-                             "or arch in module %s:%s. With given state "
-                             "and archs the module cannot be built." % \
-                                     (modulename, versionname))
-    def sorted_dependency_versions(self, modulename, versionname,
-                                   dependencyname, max_state, archs):
-        """return sorted dependency versions.
-
-        max_state is the maximum allowed state:
-          "stable"  : return just stable
-          "testing" : return stable and testing
-          "unstable": return stable, testing and unstable
-
-        archs:
-          This is the desired architecture. Only dependencies with that
-          architecture are listed. If the architecture doesn't exist on at
-          least one of the dependencies or the module itself, a ValueError
-          exception is raised.
-          If arch is None do not check architectures.
-        """
-        dep_list= list(self.iter_dependency_versions(modulename, versionname,
-                                                     dependencyname,
-                                                     max_state, archs))
-        dep_list.sort(key= sumo.utils.rev2key, reverse= True)
-        return dep_list
     def iter_modulenames(self):
         """return an iterator on module names."""
         return self.datadict().iterkeys()
-    def iter_versions(self, modulename, max_state, archs, must_exist):
+    def iter_versions(self, modulename, archs, must_exist):
         """return an iterator on versionnames of a module.
-
-        max_state:
-          This is the maximum allowed state:
-          "stable"  : return just stable
-          "testing" : return stable and testing
-          "unstable": return stable, testing and unstable
 
         archs:
           This is the desired architecture. Only versions with that
@@ -627,28 +450,21 @@ class Dependencies(sumo.JSON.Container):
           If True if no versions are found raise a ValueError exception,
           otherwise just return.
         """
-        # pylint: disable=W0212
-        #                          Access to a protected member of a
-        #                          client class
-        _states= self.__class__._allowed_states(max_state)
-        # pylint: enable=W0212
         found= False
         for versionname, versiondata in \
                 self.datadict()[modulename].iteritems():
-            if versiondata["state"] not in _states:
-                continue
             if not self.__class__.check_arch(versiondata["archs"], archs):
                 continue
             found= True
             yield versionname
         if must_exist and (not found):
             raise ValueError("All possible versions of module %s are "
-                             "excluded because of the required state or "
+                             "excluded because of the "
                              "set of archs" % \
                                      modulename)
-    def sorted_moduleversions(self, modulename, max_state, archs, must_exist):
+    def sorted_moduleversions(self, modulename, archs, must_exist):
         """return an iterator on sorted versionnames of a module."""
-        return sorted(self.iter_versions(modulename, max_state,
+        return sorted(self.iter_versions(modulename,
                                          archs, must_exist),
                       key= sumo.utils.rev2key,
                       reverse= True)
@@ -658,7 +474,6 @@ class Dependencies(sumo.JSON.Container):
         """add a new version to the database by copying the old one.
 
         do_replace: if True, replace the old version with the new one
-        Note: the state of the new version is always set to unstable.
         """
         # pylint: disable=R0912
         #                          Too many branches
@@ -667,28 +482,9 @@ class Dependencies(sumo.JSON.Container):
             raise ValueError("module %s: version %s already exists" % \
                     (modulename, newversionname))
         d= copy.deepcopy(self.datadict()[modulename][versionname])
-        d["state"]= "unstable"
         moduledata[newversionname]= d
         if do_replace:
             del moduledata[versionname]
-        # now scan all the references to modulename:versionname :
-        for l_modulename in self.iter_modulenames():
-            # scan stable, testing and unstable versions:
-            for l_versionname in self.iter_versions(l_modulename,
-                                                    "unstable", None, False):
-                vd= self.datadict()[l_modulename][l_versionname]
-                dep_dict= vd.get("dependencies")
-                if dep_dict is None:
-                    continue
-                dep_module_dict= dep_dict.get(modulename)
-                if dep_module_dict is None:
-                    continue
-                if not dep_module_dict.has_key(versionname):
-                    continue
-                if do_replace:
-                    del dep_module_dict[versionname]
-                # set the new dependency always to "unstable":
-                dep_module_dict[newversionname]= "unstable"
 
     def clonemodule(self, old_modulename, modulename, versions):
         """Take all versions of old_modulename to create modulename.
@@ -696,7 +492,6 @@ class Dependencies(sumo.JSON.Container):
         old_moduledata= self.datadict()[old_modulename]
         if not versions:
             versions= list(self.iter_versions(old_modulename,
-                                              max_state= "unstable",
                                               archs= None, must_exist= True))
         if self.datadict().has_key(modulename):
             raise ValueError("Error, module '%s' already exists" % \
@@ -721,7 +516,7 @@ class Dependencies(sumo.JSON.Container):
         for modulename, versionname in list_:
             d= new.datadict().setdefault(modulename, {})
             # scan stable, testing and unstable versions:
-            for version in self.iter_versions(modulename, "unstable",
+            for version in self.iter_versions(modulename,
                                               None, must_exist= True):
                 if not sumo.ModuleSpec.Spec.compare_versions(version,
                                                     versionname, "eq"):
@@ -753,7 +548,7 @@ class Dependencies(sumo.JSON.Container):
             archs= modulespec.archs
             d= new.datadict().setdefault(modulename, {})
             # scan stable, testing and unstable versions:
-            for version in self.iter_versions(modulename, "unstable",
+            for version in self.iter_versions(modulename,
                                               archs, must_exist= True):
                 if not modulespec.test(version):
                     continue
@@ -763,30 +558,21 @@ class Dependencies(sumo.JSON.Container):
         return new
     def remove_missing_deps(self):
         """remove dependencies that are not part of the database."""
-        modules= set()
+        modules= set(self.iter_modulenames())
         for modulename in self.iter_modulenames():
-            for versionname in self.iter_versions(modulename, "unstable",
-                                                  None, False):
-                modules.add((modulename, versionname))
-        for modulename in self.iter_modulenames():
-            for versionname in self.iter_versions(modulename, "unstable",
+            for versionname in self.iter_versions(modulename,
                                                   None, False):
                 if not self.dependencies_found(modulename, versionname):
                     continue
                 deletions= []
                 for dep_name in self.iter_dependencies(modulename,
                                                        versionname):
-                    for dep_ver in self.iter_dependency_versions(modulename,
-                                                                 versionname,
-                                                                 dep_name,
-                                                                 "unstable",
-                                                                 None):
-                        if not (dep_name,dep_ver) in modules:
-                            deletions.append((dep_name, dep_ver))
-                for (dep_name, dep_ver) in deletions:
+                    if dep_name not in modules:
+                        deletions.append(dep_name)
+                for dep_name in deletions:
                     try:
                         self.del_dependency(modulename, versionname,
-                                            dep_name, dep_ver)
+                                            dep_name)
                     except ValueError, _:
                         pass
 

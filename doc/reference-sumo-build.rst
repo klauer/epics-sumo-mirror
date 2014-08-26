@@ -4,8 +4,7 @@ sumo-build
 What the script does
 --------------------
 
-This script creates and manages builds and updates the :term:`state` of
-:term:`dependencies` in the :term:`DB` file.
+This script creates and manages builds.
 
 The script takes one or mode commands and has a number of options. Single
 character options always start with a single dash "-", long options start with
@@ -184,13 +183,6 @@ of the :term:`build` to "testing". If you want to skip this step, use option
 "--no-make". In order to provide arbitrary options to make use option
 "--makeopts".
 
-partialdb [BUILDTAG]
-++++++++++++++++++++
-
-This command creates a partial :term:`DB` from a complete :term:`DB` and a
-:term:`build`. The partial :term:`DB` contains just the modules of the
-:term:`build`.  The :term:`buildtag` may be given as argument or option.
-
 find [MODULESPECS]
 ++++++++++++++++++
 
@@ -330,9 +322,6 @@ Here is a short overview on command line options:
 ``--modules-from-build BUILDTAG``
     Take the module specifications from a build. If you use "--addmodules" you
     can modify single module specifications in order to create a new build.
-``--add-deps``
-    Add dependencies to the database in a way that the given collection of
-    modules is supported. Only for commands "new" and "try".
 ``-b, --brief``
     Create a more brief output for some commands.
 ``--no-make``
