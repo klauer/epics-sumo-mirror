@@ -14,7 +14,7 @@ echo -e "\n-> Test sumo-db check" >&2
 
 echo -e "sumo-db --db samples/DB check:"
 
-$PYTHON ../bin/sumo-db --db samples/DB check
+$PYTHON ../bin/sumo-db --db samples/DEPS.DB check
 
 echo -e "\nsumo-db --db samples/BUILDS check:"
 

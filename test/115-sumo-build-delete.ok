@@ -2322,7 +2322,7 @@ directory tree (without darcs)
 ./CSM/R4-3+MYAPP-001/documentation/_templates
 ./CSM/R4-3+MYAPP-001/documentation/_templates/layout.html
 ./CSM/R4-3+MYAPP-001/Makefile
-./DB
+./DEPS.DB
 ./EK
 ./EK/R2-2+MYAPP-001
 ./EK/R2-2+MYAPP-001/configure
@@ -5659,7 +5659,7 @@ directory tree (without darcs)
 ./CSM/R4-3+MYAPP-001/documentation/_templates
 ./CSM/R4-3+MYAPP-001/documentation/_templates/layout.html
 ./CSM/R4-3+MYAPP-001/Makefile
-./DB
+./DEPS.DB
 ./EK
 ./EK/R2-2+MYAPP-001
 ./EK/R2-2+MYAPP-001/configure
@@ -6406,7 +6406,7 @@ directory tree (without darcs)
 .
 ./BUILDS
 ./BUILDS.bak
-./DB
+./DEPS.DB
 ./IDCP.CONFIG
 
 contents of BUILDS file:

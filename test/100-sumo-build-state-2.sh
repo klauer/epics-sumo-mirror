@@ -22,10 +22,10 @@ cd $TESTDIR > /dev/null
 echo -e "\nBUILDS before:"
 cat BUILDS 
 
-cp DB DB-$ME.tmp
-cp BUILDS BUILDS-$ME.tmp
-$PYTHON ../../bin/sumo-build --db DB-$ME.tmp --builddb BUILDS-$ME.tmp state MYAPP-001 stable
+cp DEPS.DB $ME-DEPS.tmp
+cp BUILDS $ME-BUILDS.tmp
+$PYTHON ../../bin/sumo-build --db $ME-DEPS.tmp --builddb $ME-BUILDS.tmp state MYAPP-001 stable
 
 echo -e "\nBUILDS after:"
-cat BUILDS-$ME.tmp 
+cat $ME-BUILDS.tmp
 

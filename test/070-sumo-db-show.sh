@@ -12,6 +12,6 @@ PYTHON=$@
 
 echo -e "\n-> Test sumo-db show" >&2
 
-$PYTHON ../bin/sumo-db --db samples/DB list 
+$PYTHON ../bin/sumo-db --db samples/DEPS.DB list 
 
 

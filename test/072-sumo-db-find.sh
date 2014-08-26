@@ -12,12 +12,12 @@ PYTHON=$@
 
 echo -e "\n-> Test sumo-db find" >&2
 
-echo -e "find unstable mcan:"
-$PYTHON ../bin/sumo-db --arch vxWorks-68040 --arch vxWorks-ppc603 --db samples/DB --maxstate unstable find mcan 
+echo -e "find mcan:"
+$PYTHON ../bin/sumo-db --arch vxWorks-68040 --arch vxWorks-ppc603 --db samples/DEPS.DB find mcan 
 
-echo -e "\nfind unstable mcan -b:"
-$PYTHON ../bin/sumo-db --arch vxWorks-68040 --arch vxWorks-ppc603 --db samples/DB --maxstate unstable find mcan -b
+echo -e "\nfind mcan -b:"
+$PYTHON ../bin/sumo-db --arch vxWorks-68040 --arch vxWorks-ppc603 --db samples/DEPS.DB find mcan -b
 
-echo -e "\nfind unstable mcan.*patch -b:"
-$PYTHON ../bin/sumo-db --arch vxWorks-68040 --arch vxWorks-ppc603 --db samples/DB --maxstate unstable find mcan.*patch -b
+echo -e "\nfind mcan.*patch -b:"
+$PYTHON ../bin/sumo-db --arch vxWorks-68040 --arch vxWorks-ppc603 --db samples/DEPS.DB find mcan.*patch -b
 

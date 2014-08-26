@@ -12,9 +12,9 @@ PYTHON=$@
 
 echo -e "\n-> Test sumo-db weight" >&2
 
-cp samples/DB_IDCP DB_IDCP-$ME.tmp
+cp samples/IDCP-DEPS.DB $ME-DEPS.tmp
 
-$PYTHON ../bin/sumo-db --db DB_IDCP-$ME.tmp -- weight -1 MCAN MISC_DBC
-$PYTHON ../bin/sumo-db --db DB_IDCP-$ME.tmp weight 1 ALARM
-cat DB_IDCP-$ME.tmp 
+$PYTHON ../bin/sumo-db --db $ME-DEPS.tmp -- weight -1 MCAN MISC_DBC
+$PYTHON ../bin/sumo-db --db $ME-DEPS.tmp weight 1 ALARM
+cat $ME-DEPS.tmp 
 

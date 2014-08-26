@@ -17,17 +17,17 @@ TESTDIR=tmp-110-sumo-build-new-2
 cd $TESTDIR > /dev/null
 
 echo -e "sumo-build find MCAN -b:"
-$PYTHON ../../bin/sumo-build --db DB --builddb BUILDS find MCAN 
+$PYTHON ../../bin/sumo-build --db DEPS.DB --builddb BUILDS find MCAN 
 
 echo -e "\nsumo-build find MCAN BSPDEP_TIMER:R5-1"
-$PYTHON ../../bin/sumo-build --db DB --builddb BUILDS find MCAN BSPDEP_TIMER:R5-1 
+$PYTHON ../../bin/sumo-build --db DEPS.DB --builddb BUILDS find MCAN BSPDEP_TIMER:R5-1 
 
 
 echo -e "\nsumo-build find MCAN ALARM:-R3-7:"
-$PYTHON ../../bin/sumo-build --db DB --builddb BUILDS find MCAN ALARM:-R3-7 
+$PYTHON ../../bin/sumo-build --db DEPS.DB --builddb BUILDS find MCAN ALARM:-R3-7 
 
 
 echo -e "\nsumo-build find MCAN ALARM:+R3-8:"
-$PYTHON ../../bin/sumo-build --db DB --builddb BUILDS find MCAN ALARM:+R3-8 
+$PYTHON ../../bin/sumo-build --db DEPS.DB --builddb BUILDS find MCAN ALARM:+R3-8 
 
 
