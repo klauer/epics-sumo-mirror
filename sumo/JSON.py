@@ -16,7 +16,7 @@ import pprint
 import os.path
 import sumo.lock
 
-__version__="1.7.3" #VERSION#
+__version__="1.8" #VERSION#
 
 _pyver= (sys.version_info[0], sys.version_info[1])
 
