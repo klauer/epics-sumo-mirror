@@ -18,6 +18,39 @@ import sumo.JSON
 
 import sumo.utils
 
+class OldDependencies(sumo.JSON.Container):
+    """convert the old dependency database to the new format.
+
+    returns a BuildCache and a Dependency object.
+    """
+    def __init__(self, dict_= None):
+        """create the object."""
+        super(OldDependencies, self).__init__(dict_)
+    def convert(self):
+        """convert to a Dependencies and BuildCache object.
+        """
+        new= {}
+        for (modulename, moduledict) in self.datadict().items():
+            new_moduledict= new.setdefault(modulename, {})
+            for (versionname, versiondict) in moduledict.items():
+                new_versiondict= new_moduledict.setdefault(versionname, {})
+                for (propertyname, proptertydict) in versiondict.items():
+                    if propertyname=="state":
+                        continue
+                    if propertyname!="dependencies":
+                        new_versiondict[propertyname]= \
+                                copy.deepcopy(proptertydict)
+                        continue
+                    s= set()
+                    for (dep_name, dep_dict) in proptertydict.items():
+                        # a kind of self-dependency shouldn't be there but
+                        # sometimes it is:
+                        if dep_name==modulename:
+                            continue
+                        s.add(dep_name)
+                    new_versiondict["dependencies"]= sorted(list(s))
+        return Dependencies(new)
+
 class Dependencies(sumo.JSON.Container):
     """the dependency database."""
     # pylint: disable=R0904

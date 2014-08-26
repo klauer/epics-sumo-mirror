@@ -247,6 +247,13 @@ If SCANFILE is a dash "-", the program expects the scanfile on stdin.
 
 The dependency database file is always printed to the console.
 
+convert-old [OLDDB]
++++++++++++++++++++
+
+Convert a dependency database in the old format to the new format.
+Note that option "--db" is mandatory here, this specifies the name of the new
+dependency database.
+
 appconvert [SCANFILE]
 +++++++++++++++++++++
 
