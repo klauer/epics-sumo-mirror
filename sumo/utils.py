@@ -14,7 +14,7 @@ import re
 
 import sumo.JSON
 
-__version__="1.7.3" #VERSION#
+__version__="1.8" #VERSION#
 
 _pyver= (sys.version_info[0], sys.version_info[1])
 

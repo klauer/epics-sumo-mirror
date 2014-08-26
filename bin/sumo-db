@@ -26,7 +26,7 @@ import sumo.ModuleSpec
 import sumo.Databases
 
 # version of the program:
-my_version= "1.7.3" #VERSION#
+my_version= "1.8" #VERSION#
 
 sumo.lock.assert_version(my_version)
 sumo.JSON.assert_version(my_version)
