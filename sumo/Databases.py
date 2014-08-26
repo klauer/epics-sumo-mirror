@@ -384,6 +384,21 @@ class Dependencies(sumo.JSON.Container):
         if deps is None:
             return False
         return dependencyname in deps
+    def assert_complete_modulelist(self, moduledict):
+        """test if a set of modules is complete.
+
+        This means that all dependencies are part of the given modules.
+
+        moduledict is a dictionary mapping modulename-->versionname.
+        """
+        missing= set()
+        for modulename,versionname in moduledict.items():
+            for dep in self.iter_dependencies(modulename, versionname):
+                if not moduledict.has_key(dep):
+                    missing.add(dep)
+        if missing:
+            raise ValueError("error, set of modules is incomplete, these "
+                             "modules are missing: %s" % (" ".join(missing)))
     def sortby_weight(self, moduleversions, reverse= False):
         """sorts modules by weight.
 

@@ -372,6 +372,43 @@ class Specs(object):
         l= [modulespec for (_,modulespec) in sorted(module_dict.values()) \
                        if modulespec]
         return cls(l)
+    def assert_exact(self):
+        """raise ValueError exception if not all spec are *exact*.
+
+        An exact module specification is a specification where for each module
+        there is one version given.
+        """
+        for spec in self:
+            if spec.is_exact_spec():
+                continue
+            raise ValueError("error at specification '%s', all module "
+                             "specifications must be exact" % \
+                             spec.to_string())
+    def assert_unique(self):
+        """raise ValueError exception if a module is found more than once.
+
+        This ensures that the module specifications have only one specification
+        for each modulename.
+        """
+        modules= set()
+        for spec in self:
+            if spec.modulename not in modules:
+                modules.add(spec.modulename)
+                continue
+            raise ValueError("error, module '%s' is mentioned twice in "
+                             "module specifications" % spec.modulename)
+    def to_dist_dict(self):
+        """convert to a dict mapping modulename-->versionname.
+
+        May raise ValueError exception if the specs are not all exact and
+        unique.
+        """
+        self.assert_exact()
+        self.assert_unique()
+        d= {}
+        for spec in self:
+            d[spec.modulename]= spec.versionname
+        return d
 
 def _test():
     """perform internal tests."""
