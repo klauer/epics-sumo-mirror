@@ -660,7 +660,7 @@ def create_modules(dist_dict, db, builddb, build_tag, extra_lines,
         # the new build would contain only links, this is probably not wanted.
         if sumo.Databases.Builddb.is_generated_buildtag(build_tag):
             # we never want an autotag build that consists only of links
-            sys.exit("error, this build with an auto generated tag "
+            sys.exit("error: this build with an auto generated tag "
                      "would consist only of links. You can as well "
                      "use one of the existing builds. Just try "
                      "'sumo-build use'.")
@@ -701,7 +701,7 @@ def call_make(builddb_name, buildtag,
         # sys.stderr.write("CALLING MAKE: %s\n" % cmd)
         sumo.system.system(cmd, False, False, verbose, dry_run)
     except IOError, e:
-        sys.stderr.write("make failed, error: %s" % str(e))
+        sys.stderr.write("error: make failed, %s" % str(e))
         sys.exit(1)
 
     builddb= builddb_from_json_file(builddb_name, keep_locked= not dry_run)
@@ -814,9 +814,9 @@ def process(options, commands):
     try:
         config.load(options.config)
     except ValueError, e:
-        sys.exit("Error while loading config file,\n%s" % str(e))
+        sys.exit("error: loading the config file failed,\n%s" % str(e))
     except IOError, e:
-        sys.exit("Error while loading config file,\n%s" % str(e))
+        sys.exit("error: loading the config file failed,\n%s" % str(e))
     config.merge_options(options)
 
     if options.nolock:
@@ -870,7 +870,7 @@ def process(options, commands):
             sys.exit("--builddb is mandatory")
         builddb= builddb_from_json_file(options.builddb)
         if not builddb.has_build_tag(buildtag):
-            sys.exit("error, buildtag \"%s\" not found" % buildtag)
+            sys.exit("error: buildtag \"%s\" not found" % buildtag)
         new_builddb= sumo.Databases.Builddb()
         new_builddb.add_build(builddb, buildtag)
         new_builddb.json_print()
@@ -911,7 +911,7 @@ def process(options, commands):
                 keep_locked= not options.dry_run)
         if not builddb.has_build_tag(buildtag):
             # db and builddb __del__ method should remove lockfiles
-            sys.exit("error, buildtag \"%s\" not found" % buildtag)
+            sys.exit("error: buildtag \"%s\" not found" % buildtag)
         if not new_state:
             print "%-20s : %s" % (buildtag, builddb.state(buildtag))
         else:
@@ -941,7 +941,7 @@ def process(options, commands):
 
         builddb= builddb_from_json_file(options.builddb)
         if not builddb.has_build_tag(buildtag):
-            sys.exit("error, buildtag \"%s\" not found" % buildtag)
+            sys.exit("error: buildtag \"%s\" not found" % buildtag)
         try:
             delete_modules(builddb, buildtag,
                            options.verbose, options.dry_run)
@@ -1078,8 +1078,8 @@ def process(options, commands):
                         # remove modulename:versionname completely:
                         del mdict[versionname]
             if not mdict:
-                sys.exit("error, your '-X' option removes *ALL* "
-                         "versions of module '%s'. You may change "
+                sys.exit("error: your '--exclude-states' option removes "
+                         "*ALL* versions of module '%s'. You may change "
                          "the REGEXP or specify an exact version "
                          "for the module to avoid this error." % \
                          modulename)
@@ -1189,7 +1189,7 @@ def process(options, commands):
             sys.stderr.write("creating build with tag '%s'\n" % buildtag)
         if builddb.has_build_tag(buildtag):
             # builddb __del__ method should remove lockfiles
-            sys.exit("error, buildtag \"%s\" already taken" % buildtag)
+            sys.exit("error: buildtag \"%s\" already taken" % buildtag)
         # create a new build in builddb, initial state is "unstable":
         builddb.new_build(buildtag, "unstable")
         if options.supportdir:

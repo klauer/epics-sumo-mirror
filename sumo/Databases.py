@@ -107,7 +107,7 @@ class Dependencies(sumo.JSON.Container):
             if not src:
                 break
             return
-        raise ValueError("Error: Dependency data is invalid %s" % msg)
+        raise ValueError("error: dependency data is invalid %s" % msg)
     def __init__(self, dict_= None):
         """create the object."""
         super(Dependencies, self).__init__(dict_)
@@ -263,11 +263,11 @@ class Dependencies(sumo.JSON.Container):
         m_dict= self.datadict()[modulename]
         dep_list= m_dict[versionname].get("dependencies")
         if dep_list is None:
-            raise ValueError("Error, %s:%s has no dependencies" % \
+            raise ValueError("error: %s:%s has no dependencies" % \
                              (modulename, versionname))
         dep_set= set(dep_list)
         if not dep_modulename in dep_set:
-            raise ValueError("Error, %s:%s doesn't depend on %s" % \
+            raise ValueError("error: %s:%s doesn't depend on %s" % \
                              (modulename, versionname, dep_modulename))
         dep_set.discard(dep_modulename)
         if not dep_set:
@@ -410,7 +410,7 @@ class Dependencies(sumo.JSON.Container):
                 if not moduledict.has_key(dep):
                     missing.add(dep)
         if missing:
-            raise ValueError("error, set of modules is incomplete, these "
+            raise ValueError("error: set of modules is incomplete, these "
                              "modules are missing: %s" % (" ".join(missing)))
     def sortby_weight(self, moduleversions, reverse= False):
         """sorts modules by weight.
@@ -555,7 +555,7 @@ class Dependencies(sumo.JSON.Container):
             versions= list(self.iter_versions(old_modulename,
                                               archs= None, must_exist= True))
         if self.datadict().has_key(modulename):
-            raise ValueError("Error, module '%s' already exists" % \
+            raise ValueError("error: module '%s' already exists" % \
                              modulename)
         m= self.datadict().setdefault(modulename,{})
         for version in versions:
@@ -739,7 +739,7 @@ class Builddb(sumo.JSON.Container):
             if not (isinstance(module, str) or isinstance(module, unicode)):
                 break
             return
-        raise ValueError("Error: Builddb data is invalid %s" % msg)
+        raise ValueError("error: builddb data is invalid %s" % msg)
     def generate_buildtag(self, buildtag_stem):
         """generate a new buildtag.
 
