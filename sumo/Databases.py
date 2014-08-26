@@ -617,6 +617,71 @@ class Dependencies(sumo.JSON.Container):
                     continue
                 d[version]= self.datadict()[modulename][version]
         return new
+    def sets_dict(self, modulespecs):
+        """create a dict of sets according to modulespecs.
+
+        modulespecs must be a sumo.ModuleSpec.Specs object.
+
+        convert modulespecs to a sets dict:
+        { modulename1 : set(version1,version2),
+          modulename2 : set(version1,version2),
+        }
+
+        """
+        if not isinstance(modulespecs, sumo.ModuleSpec.Specs):
+            raise TypeError("wrong type: '%s'" % repr(modulespecs))
+        new= {}
+        for modulespec in modulespecs:
+            modulename= modulespec.modulename
+            archs= modulespec.archs
+            s= new.setdefault(modulename, set())
+            found= False
+            for version in self.iter_versions(modulename,
+                                              archs, must_exist= True):
+                if not modulespec.test(version):
+                    continue
+                if not self.check_archs(modulename, version, archs):
+                    continue
+                found= True
+                s.add(version)
+            if not found:
+                raise ValueError("error: no data found in dependency "
+                                 "database for module specification '%s'" % \
+                                 modulespec.to_string())
+        return new
+    def complete_sets_dict(self, sets_dict):
+        """makes a sets_dict complete with respect to dependencies.
+
+        A sets dict has this form:
+
+        convert modulespecs to a sets dict:
+        { modulename1 : set(version1,version2),
+          modulename2 : set(version1,version2),
+        }
+
+        For each dependency that is missing, this program creates a new entry
+        in the sets dict which contains all possible versions for the missing
+        module.
+
+        Returns a set of modulenames of added dependencies.
+        """
+        modules_added= set()
+        modlist= sets_dict.keys()
+        while modlist:
+            new_modlist= []
+            for modulename in modlist:
+                for versionname in sets_dict[modulename]:
+                    for dep_name in self.iter_dependencies(modulename,
+                                                           versionname):
+                        if not sets_dict.has_key(dep_name):
+                            modules_added.add(dep_name)
+                            sets_dict[dep_name]= \
+                                      set(self.iter_versions(dep_name,
+                                                          archs=None,
+                                                          must_exist= True))
+                            new_modlist.append(dep_name)
+            modlist= new_modlist
+        return modules_added
     def remove_missing_deps(self):
         """remove dependencies that are not part of the database."""
         modules= set(self.iter_modulenames())

@@ -166,8 +166,18 @@ This command must be followed by a *filename*.
 try [MODULES]
 +++++++++++++
 
-This command shows the modules and versions the program would take if the same
-options would be given to command "new".
+This command helps to create :term:`module` specifications for the "new"
+command.  You can specify an incomplete list of :term:`modules`,
+:term:`modules` without :term:`versions` or with :term:`version` ranges.  The
+program then shows which :term:`modules` you have to include in your list since
+other :term:`modules` depend on them and shows information on all
+:term:`versions` of all :term:`modules` that satisfy your :term:`module`
+specifications. It also shows if your :term:`module` specifications are
+*complete* and *exact* meaning that all :term:`dependencies` are included and
+all :term:`modules` are specified with exactly a single :term:`version`.  Note
+that you can use option "--scandb" in order to give additional information
+which :term:`versions` of :term:`modules` are compatible with each other.
+Options "--db" and "--builddb" are mandatory for this command.
 
 new [MODULES]
 +++++++++++++
@@ -175,11 +185,14 @@ new [MODULES]
 This command creates a new :term:`build`. If the :term:`buildtag` is not given
 as an option, the program generates a :term:`buildtag` in the form "AUTO-nnn".
 Note that options "--db" and "--builddb" are mandatory for this command. A new
-:term:`build` is created according to the :term:`modulespecs`. The
-:term:`modulespecs` must be exactly specified and complete with respect to
-dependencies.  This command calls "make" and, after successful completion, sets
-the state of the :term:`build` to "testing". If you want to skip this step, use
-option "--no-make". In order to provide arbitrary options to make use option
+:term:`build` is created according to the :term:`modulespecs`. Your
+modulespecifications must be *complete* and *exact* meaning that all
+:term:`dependencies` are included and all :term:`modules` are specified with
+exactly a single :term:`version`. Use command "try" in order to create
+:term:`module` specifications that can be used with command "new".  This
+command calls "make" and, after successful completion, sets the state of the
+:term:`build` to "testing". If you want to skip this step, use option
+"--no-make". In order to provide arbitrary options to make use option
 "--makeopts".
 
 find [MODULESPECS]
@@ -312,9 +325,6 @@ Here is a short overview on command line options:
     target architecture.  You can specify more than one of these by repeating
     this option or by joining values in a single string separated by spaces.
     This option value is stored in the configuration file.
-``-M, --maxstate``
-    Specify the maximum state for some commands. This option value is stored in
-    the configuration file.
 ``-m MODULE, --module MODULE``
     Define a :term:`modulespec`. If you specify modules with this option you
     don't have to put :term:`modulespecs` after some of the commands. You can
@@ -324,6 +334,9 @@ Here is a short overview on command line options:
 ``--modules-from-build BUILDTAG``
     Take the module specifications from a build. If you use "--addmodules" you
     can modify single module specifications in order to create a new build.
+``-X, --exclude-states``
+    For command 'try' exclude all 'dependents' whose state does match one of
+    the regular expressions (REGEXP).
 ``-b, --brief``
     Create a more brief output for some commands.
 ``--no-make``

@@ -328,167 +328,6 @@ def builddb_match(dist_dict, db, builddb, modulename, versionname):
     return
 
 # -----------------------------------------------
-# distribution creation
-# -----------------------------------------------
-
-def _distribution_add(db, dist, modulename, versionname,
-                      maxstate, archs, required_modules):
-    """add a module to the set.
-
-    required_modules: a dict mapping modulename->version that contains modules
-    that MUST be used.
-    """
-    # pylint: disable=R0914
-    #                          Too many local variables
-    # pylint: disable=R0912
-    #                          Too many branches
-    # pylint: disable=R0913
-    #                          Too many arguments
-    #print "_distribution_add(..,..,",modulename,",",versionname,")"
-    existing_versionname= dist.get(modulename)
-    if existing_versionname is not None:
-        if existing_versionname!= versionname:
-            raise ValueError("conflict: %s %s %s" % \
-                      (modulename, existing_versionname, versionname))
-        return dist
-    new_dist= dict(dist)
-    # ^^^ caution, not a deep copy
-    new_dist[modulename]= versionname
-    try:
-        if not db.dependencies_found(modulename, versionname):
-            return new_dist
-    except KeyError, e:
-        raise ValueError("no information for module %s version %s" % \
-                         (modulename, versionname))
-
-    if not db.check_archs(modulename, versionname, archs):
-        raise ValueError("no support for archs %s in module %s:%s" % \
-                         (repr(archs),modulename,versionname))
-
-    for dep_modulename in db.iter_dependencies(modulename, versionname):
-        required_version= required_modules.get(dep_modulename)
-        possible_dep_versions= []
-        if required_version:
-            if not db.depends_on(modulename, versionname,
-                                 dep_modulename, required_version):
-                raise ValueError("module %s:%s has no dependency of "
-                                 "%s:%s according to the dependency "
-                                 "database." % \
-                                 (modulename, versionname,
-                                  dep_modulename, required_version))
-            possible_dep_versions= [required_version]
-        else:
-            possible_dep_versions= db.sorted_dependency_versions(
-                modulename, versionname, dep_modulename, maxstate, archs)
-
-        for dep_version in possible_dep_versions:
-            errst= None
-            try:
-                new_dist= _distribution_add(db,
-                                            new_dist,
-                                            dep_modulename,
-                                            dep_version, maxstate, archs,
-                                            required_modules)
-                errst= None
-                break
-            except ValueError, e:
-                errst= str(e)
-        if errst:
-            raise ValueError("no module found, last error message: %s" % \
-                             errst)
-    return new_dist
-
-def distribution(db, modulespecs, maxstate, trace, tracemore):
-    """create a distribution.
-
-    modulespecs: a ModuleSpecs object.
-    """
-    # pylint: disable=R0913
-    #                          Too many arguments
-    # pylint: disable=R0914
-    #                          Too many local variables
-    # pylint: disable=R0912
-    #                          Too many branches
-    # pylint: disable=R0915
-    #                          Too many statements
-    if not isinstance(modulespecs, sumo.ModuleSpec.Specs):
-        raise TypeError("wrong type: '%s'" % modulespecs)
-    if trace:
-        sys.stderr.write("looking for modules, maxstate: %s\n\n" % \
-                         maxstate)
-
-    required_modules= {}
-    versioned_modules= []
-    versionless_modules= []
-    for modulespec in modulespecs:
-        modulename= modulespec.modulename
-        if modulespec.no_version_spec():
-            versionless_modules.append((modulename, modulespec.archs))
-        elif modulespec.is_exact_spec():
-            required_modules[modulename]= modulespec.versionname
-            versioned_modules.append((modulename,
-                                      modulespec.versionname,
-                                      modulespec.archs))
-        else:
-            raise ValueError("\"-version\" and \"+version\" not "
-                             "supported here")
-    dist= {}
-    m_list= []
-    for (modulename, versionname, archs) in versioned_modules:
-        if tracemore:
-            sys.stderr.write("dist: %s\n" % dist)
-            sys.stderr.write("examine %s:%s\n" % (modulename,versionname))
-        try:
-            dist= _distribution_add(db, dist, modulename, versionname,
-                                    maxstate, archs,
-                                    required_modules)
-        except ValueError, e:
-            if trace:
-                sys.stderr.write("modules added so far\n%s\n" % \
-                                 ("\n".join(m_list)))
-                sys.stderr.write("%s:%s\n" % \
-                                 (modulename, versionname))
-            raise
-        if trace:
-            m_list.append("\t%s:%s" % (modulename, versionname))
-
-    for (modulename, archs) in versionless_modules:
-        if tracemore:
-            sys.stderr.write("dist: %s\n" % dist)
-            sys.stderr.write("examine %s:*\n" % modulename)
-        if trace:
-            sys.stderr.write("module %s\n" % modulename)
-        try:
-            versionlist= db.sorted_moduleversions(modulename, maxstate,
-                                                  archs, True)
-        except KeyError, e:
-            raise ValueError("no data for module %s" % modulename)
-        except ValueError, e:
-            raise
-
-        found= False
-        for versionname in versionlist:
-            try:
-                dist= _distribution_add(db, dist, modulename, versionname,
-                                        maxstate, archs,
-                                        required_modules)
-                found= True
-                break
-            except ValueError, e:
-                if trace:
-                    sys.stderr.write("\t%-15s: %s\n" % \
-                                     (versionname, str(e)))
-        if not found:
-            raise ValueError("no non conflicting versions found for %s" % \
-                             modulename)
-        else:
-            if trace:
-                sys.stderr.write("\t%-15s --> found\n" % versionname)
-
-    # dist is now a map, mapping MODULE -> VERSION
-    return dist
-
-# -----------------------------------------------
 # file generation
 # -----------------------------------------------
 
@@ -526,6 +365,7 @@ def gen_RELEASE(db, builddb, buildtag,
             verbose, dry_run)
     utils.file_write(fh, "SUPPORT=%s\n" % supportdir, verbose, dry_run)
     deps= []
+
     for dep_name in db.iter_dependencies(modulename, versionname):
         dep_versionname= dist_dict[dep_name]
         deps.append((dep_name, dep_versionname))
@@ -904,6 +744,8 @@ def fullapprelease(build_path, build_tag, builddb, db, modules,
 def apprelease(build_path, build_tag, modulespecs, builddb, db,
                aliases, extra_lines):
     """create entries for an release file.
+
+    used in command "use".
     """
     # pylint: disable=R0913
     #                          Too many arguments
@@ -963,7 +805,7 @@ def process(options, commands):
                 CONFIG_NAME,
                 ( "#include",
                   "arch", "alias", "builddb", "buildtag_stem", "db", "extra",
-                  "makeopts", "maxstate", "module", "progress", "readonly",
+                  "makeopts", "module", "progress", "readonly",
                   "scandb",
                   "supportdir", "verbose",))
     if (not os.path.exists(CONFIG_NAME)) or options.no_default_config:
@@ -1134,8 +976,8 @@ def process(options, commands):
             sys.exit("--db is mandatory")
         if not options.builddb:
             sys.exit("--builddb is mandatory")
-        if not options.maxstate:
-            sys.exit("--maxstate is mandatory")
+
+        exclude_matcher= utils.RegexpMatcher(options.exclude_states)
 
         modulespecs= []
         if options.module:
@@ -1144,8 +986,6 @@ def process(options, commands):
             modulespecs.extend(commands[1:])
         if not modulespecs:
             sys.exit("error: module specs missing")
-
-        db= db_from_json_file(options.db, keep_locked= False)
 
         try:
             modulespecs_obj= sumo.ModuleSpec.Specs.from_strings(modulespecs,
@@ -1158,35 +998,142 @@ def process(options, commands):
             dump_modules(modulespecs_obj)
             sys.exit(0)
 
+        db= db_from_json_file(options.db, keep_locked= False)
+        if not os.path.exists(options.builddb):
+            builddb= sumo.Databases.Builddb()
+        else:
+            builddb= builddb_from_json_file(options.builddb,
+                                            keep_locked= False)
+
+        buildcache= init_buildcache(options.scandb,
+                                    builddb, db)
+
         # ensure that each module is only mentioned once in the modulelist:
         try:
             modulespecs_obj.assert_unique()
         except ValueError, e:
             sys.exit(str(e))
 
+        modules_not_exact_spec= []
+        for spec in modulespecs_obj:
+            if not spec.is_exact_spec():
+                modules_not_exact_spec.append(spec.modulename)
+
+        # convert modulespecs to a set dict:
+        # { modulename1 : set(version1,version2),
+        #   modulename2 : set(version1,version2),
+        # }
         try:
-            dist_dict= distribution(db, modulespecs_obj, options.maxstate,
-                                    options.trace, options.tracemore)
+            sets_dict= db.sets_dict(modulespecs_obj)
         except ValueError, e:
-            # db __del__ method should remove lockfiles
             sys.exit(str(e))
 
+        # add all missing dependencies:
+        added_modules= db.complete_sets_dict(sets_dict)
+
+        was_built= set()
+        needed_by_others= {}
+
+        for modulename in sets_dict.keys():
+            for versionname in sets_dict[modulename]:
+                if buildcache.was_built(modulename,versionname):
+                    was_built.add((modulename,versionname))
+                for depname in db.iter_dependencies(modulename, versionname):
+                    for dep_version in sets_dict[depname]:
+                        s= needed_by_others.setdefault((depname,dep_version),
+                                                       [])
+                        s.append((modulename,versionname,
+                                 buildcache.relation(modulename,versionname,
+                                                     depname, dep_version)))
+
+        # now build the report structure:
+        report= {}
+        for modulename in sets_dict.keys():
+            mdict= report.setdefault(modulename, {})
+            no_of_versions= len(sets_dict[modulename])
+            for versionname in sets_dict[modulename]:
+                d= {}
+                mdict[versionname]= d
+                d["built"]= (modulename,versionname) in was_built
+                l= needed_by_others.get((modulename,versionname))
+                if l is not None:
+                    dd= d.setdefault("dependents", {})
+                    depmods_versioncount= {}
+                    for (m,v,state) in l:
+                        depmods_versioncount.setdefault(m, 0)
+                        if state is None:
+                            state= "state: not tested"
+                        else:
+                            state= "state: %s" % state
+                        if no_of_versions>1:
+                            # do only apply the exclude_matcher when there is
+                            # more than ony possible version of module
+                            # 'modulename':
+                            if exclude_matcher.search(state):
+                                continue
+                        depmods_versioncount[m]+= 1
+                        dd["%s:%s" % (m,v)]= state
+                    if min(depmods_versioncount.values())==0:
+                        # all versions of a dependent were removed,
+                        # remove modulename:versionname completely:
+                        del mdict[versionname]
+            if not mdict:
+                sys.exit("error, your '-X' option removes *ALL* "
+                         "versions of module '%s'. You may change "
+                         "the REGEXP or specify an exact version "
+                         "for the module to avoid this error." % \
+                         modulename)
+
+        if modules_not_exact_spec:
+            print "Not all modules have exactly specified versions.",
+            print "These modules need an "
+            print "exact version specification:"
+            for m in sorted(modules_not_exact_spec):
+                versions= report[m].keys()
+                if len(versions)>1:
+                    print "    %s" % m
+                else:
+                    print "    %-20s -> suggested version: %s" % \
+                          (m,versions[0])
+            print
+
+        if added_modules:
+            print "Not all dependencies were included in module",
+            print "specifications, these modules"
+            print "have to be added:\n   ",
+            print "\n    ".join(sorted(added_modules))
+            print
+
+        if not modules_not_exact_spec and not added_modules:
+            # everything complete, show modules that are not needed by other
+            # modules:
+            needed_modules= set([m for (m,_) in needed_by_others.keys()])
+            not_needed_modules= set(report.keys()).difference(needed_modules)
+            print "The following modules are not needed by other modules",
+            print "in your module"
+            print "specification:\n   ",
+            print "\n    ".join(sorted(not_needed_modules))
+            print
+
+
+        print "List of modules that fullfill the given module specification:"
+        sumo.JSON.dump(report)
+
         if buildtag is None:
-            if not os.path.exists(options.builddb):
-                builddb= sumo.Databases.Builddb()
-            else:
-                builddb= builddb_from_json_file(options.builddb,
-                                                keep_locked= False)
             if not options.buildtag_stem:
                 options.buildtag_stem= "AUTO"
             buildtag= builddb.generate_buildtag(options.buildtag_stem)
-            sys.stderr.write("would create build with tag '%s'\n\n" % buildtag)
+            print "Command 'new' would create build with tag '%s'\n" % \
+                  buildtag
 
-        l= []
-        for (m,v) in dist_dict.items():
-            l.append("%s:%s" % (m,v))
-        l.sort()
-        sumo.JSON.dump({"module": l})
+        if not modules_not_exact_spec and not added_modules:
+            print "Your module specifications are complete. You can use",
+            print "these with command"
+            print "'new' to create a new build."
+        else:
+            print "Your module specifications are still incomplete,",
+            print "command 'new' can not"
+            print "be used with these."
         return
 
     if commands[0]=="new":
@@ -1412,19 +1359,31 @@ where command is:
           do this with this command. The file locking prevents other users to
           use the file at the same time you modify it.
   try [MODULES]
-          This command shows the modules and versions the program would take if
-          the same options would be given to command "new".
+          This command helps to create module specifications for the "new"
+          command.  You can specify an incomplete list of modules, modules
+          without versions or with version ranges.  The program then shows
+          which modules you have to include in your list since other modules
+          depend on them and shows information on all versions of all modules
+          that satisfy your module specifications. It also shows if your
+          module specifications are *complete* and *exact* meaning that all
+          dependencies are included and all modules are specified with exactly
+          a single version. Note that you can use option "--scandb" in order to
+          give additional information which versions of modules are compatible
+          with each other. Options "--db" and "--builddb" are mandatory for
+          this command.
   new [MODULES]
           This command creates a new build. If the buildtag is not given as an
           option, the program generates a buildtag in the form "AUTO-nnn". Note
           that options "--db" and "--builddb" are mandatory for this command. A
-          new build is created according to the modulespecs. Moduleversions may
-          be unspecified or exactly specified. The algorithm tries to find
-          matching moduleversions in the order they are specified for this
-          command.  This command calls "make" and, after successful completion,
-          sets the state of the build to "testing". If you want to skip this
-          step, use option "--no-make". In order to provide arbitrary options
-          to make use option "--makeopts".
+          new build is created according to the modulespecs. Your
+          modulespecifications must be *complete* and *exact* meaning that all
+          dependencies are included and all modules are specified with exactly
+          a single version. Use command "try" in order to create module
+          specifications that can be used with command "new".  This command
+          calls "make" and, after successful completion, sets the state of the
+          build to "testing". If you want to skip this step, use option
+          "--no-make". In order to provide arbitrary options to make use option
+          "--makeopts".
   find [MODULESPECS]
           This command is used to find matching builds for a given list of
           modulespecs. It prints a list of buildtags of matching builds on the
@@ -1610,14 +1569,6 @@ def main():
                            "configuration file.",
                       metavar="TARGETARCHITECTURE"
                       )
-    parser.add_option("-M", "--maxstate",
-                      action="store",
-                      type="string",
-                      help= "Specify the maximum state for some commands."
-                            "This option value is stored in the "
-                            "configuration file. ",
-                      metavar="STATE"
-                      )
     parser.add_option("-m", "--module",
                       action="append",
                       help= "Define a modulespec. If you specify modules "
@@ -1628,6 +1579,14 @@ def main():
                             "string separated by spaces.  This option value "
                             "is stored in the configuration file. ",
                       metavar="MODULESPEC"
+                      )
+    parser.add_option("-X", "--exclude-states",
+                      action="append",
+                      type="string",
+                      help="For command 'try' exclude all 'dependents' whose "
+                           "state does match one of the regular expressions "
+                           "(REGEXP).",
+                      metavar="REGEXP"
                       )
     parser.add_option("-b", "--brief",
                       action="store_true",
