@@ -4,9 +4,9 @@ sumo-db
 What the script does
 --------------------
 
-This program manages the dependency database or *DB* file. It is used to create
-this file from the output of :doc:`sumo-scan <reference-sumo-scan>` and to
-query and change that file.
+This program manages the dependency database or :term:`DB` file. It is used to
+create this file from the output of :doc:`sumo-scan <reference-sumo-scan>` and
+to query and change that file.
 
 The script takes one or mode commands and has a number of options. Single
 character options always start with a single dash "-", long options start with
@@ -154,11 +154,12 @@ part of the alias map, the *ALIASNAME* of the alias map is taken. The
 archdata
 ::::::::
 
-EPICS support modules may be architecture independent or they may support one
-or more target architectures. Each target architecture in EPICS has a unique
-name. The *archdata* map contains a key for each supported architecture. If a
-module is architecture independent, the *archdata* map contains the special key
-"ANY". This is the form of the *archdata* map::
+EPICS support modules may be :term:`architecture` independent or they may
+support one or more target architectures. Each target :term:`architecture` in
+EPICS has a unique name. The *archdata* map contains a key for each supported
+:term:`architecture`. If a module is :term:`architecture` independent, the
+*archdata* map contains the special key "ANY". This is the form of the
+*archdata* map::
 
   {
       ARCHNAME: true,
@@ -184,7 +185,12 @@ in the build database or :term:`BUILDDB`.  This is the form of the
 source data
 :::::::::::
 
-The *source data* describes where the sources of the module can be found. It is a map with a single key. The key either has the value "path" or "darcs". If the key is "path" the  value is a string, the path of the source. If the key is "darcs", the value is a map. This map has a key "url" whose value is the repository url. The map may also have a key "tag" which is the repository tag. Here is the structure of the *source data*::
+The *source data* describes where the :term:`sources` of the :term:`module` can
+be found. It is a map with a single key. The key either has the value "path" or
+"darcs". If the key is "path" the  value is a string, the path of the source.
+If the key is "darcs", the value is a map. This map has a key "url" whose value
+is the repository url. The map may also have a key "tag" which is the
+repository tag.  Here is the structure of the *source data*::
 
   {
       "path": PATH
@@ -207,10 +213,90 @@ or::
       }
   }
 
-state
-:::::
+The scan database
++++++++++++++++++
 
-This defines the *STATE* of the moduleversion. A *STATE* is one of the strings "stable", "testing" or "unstable". It describes how well the moduleversion is tested.
+When :doc:`"sumo-scan all"<reference-sumo-scan>` is used to scan an existing
+support directory it also gathers information on what version of a module
+depends on what version of another module. In order to keep this information
+although the dependency database doesn't contain versions of dependencies, this
+information is held in a separate file, the scan database or :term:`SCANDB`.
+This file is also created when a :term:`dependency database` is converted from
+the old to the new format with command "convert-old".
+
+Here is an example on how this file looks like::
+
+  {
+      "AGILENT": {
+          "R2-3": {
+              "BASE": {
+                  "R3-14-12-2-1": "scanned"
+              }
+          }
+      },
+      "AGILENT-SUPPORT": {
+          "R0-10": {
+              "BASE": {
+                  "R3-14-12-2-1": "scanned"
+              }
+          },
+          "R0-11": {
+              "BASE": {
+                  "R3-14-12-2-1": "scanned"
+              }
+          },
+          "R0-12": {
+              "BASE": {
+                  "R3-14-12-2-1": "scanned"
+              }
+          },
+          "R0-9-5": {
+              "BASE": {
+                  "R3-14-12-2-1": "scanned"
+              }
+          }
+      },
+      "ALARM": {
+          "R3-7": {
+              "BASE": {
+                  "R3-14-12-2-1": "scanned"
+              },
+              "BSPDEP_TIMER": {
+                  "R6-2": "scanned"
+              },
+              "MISC_DBC": {
+                  "R3-0": "scanned"
+              }
+          },
+          "R3-8": {
+              "BASE": {
+                  "R3-14-12-2-1": "scanned"
+              },
+              "BSPDEP_TIMER": {
+                  "R6-2": "scanned"
+              },
+              "MISC_DBC": {
+                  "R3-0": "scanned"
+              }
+          }
+      }
+  }
+
+  The basic datastructure is this::
+
+  {
+      MODULENAME: {
+          DEPENDENCY_MODULENAME: {
+              DEPENDENCY_VERSION: STATE
+              DEPENDENCY_VERSION: STATE
+              ...
+          }
+      }
+  }
+
+For each dependency of a module this structure contains the version of the
+dependency and a state. The state can be "stable" or "testing" or "scanned" but
+is always "scanned" if the file was generated with sumo-db.
 
 Commands
 --------
@@ -308,11 +394,20 @@ Optional parameter MODULES specifies which :term:`modules` are shown. If no
 :term:`modules` are given the command shows all :term:`versions` of all
 :term:`modules`.
 
+filter [MODULES]
+++++++++++++++++
+
+This command prints only the parts of the dependency database that contain the
+given modules. 
+
+Parameter MODULES is a list of :term:`modulespecs` that specifies the
+:term:`modules` and :term:`versions` to operate on. 
+
 find [REGEXP]
 +++++++++++++
 
-This command shows all :term:`modules` whose names or :term:`sources` match a regexp. 
-Parameter REGEXP is a perl compatible :term:`regular expression`.  
+This command shows all :term:`modules` whose names or :term:`sources` match a
+regexp.  Parameter REGEXP is a perl compatible :term:`regular expression`.  
 
 check
 +++++
@@ -327,15 +422,6 @@ This command merges a :term:`dependency database` with another
 :term:`dependency database`. The database that is modified must follow the
 command as parameter DB. The database that is added must be specified with the
 "--db" option.
-
-filter [MODULES]
-++++++++++++++++
-
-This command prints only the parts of the dependency database that contain the
-given modules. 
-
-Parameter MODULES is a list of :term:`modulespecs` that specifies the
-:term:`modules` and :term:`versions` to operate on. 
 
 cloneversion [MODULE] [OLD-VERSION] [NEW-VERSION] {SOURCESPEC}
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++

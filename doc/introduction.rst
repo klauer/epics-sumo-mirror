@@ -76,39 +76,39 @@ database.
 
 Sets of modules that are *complete* and *consistent* are created by a tool. The
 tool creates a makefile for each set that ensures that modules are compiled in
-the right order. Every set, which is also called a *build*, is identified by a
-unique name, a *buildtag*. Information on builds is stored in a build database.
+the right order. Every set, which is also called a :term:`build`, is identified
+by a unique name, a :term:`buildtag`. Information on builds is stored in a
+build database or :term:`BUILDDB`.
 
-Modules reside in directories whose names contain the module version tag and
-the buildtag. A module of the same version may exist in different builds with
-with different versions of dependency versions.
+Modules reside in directories whose names contain the :term:`module`
+:term:`version` tag and the :term:`buildtag`. A :term:`module` of the same
+version may exist in different :term:`builds` with with different versions of
+dependency versions.
 
-Some versions of modules may be part of more than one build in order to reduce
-compile time and optimize disk space. The tool ensures that all builds are
-still consistent and complete.
+Some versions of :term:`modules` may be part of more than one :term:`build` in
+order to reduce compile time and optimize disk space. The tool ensures that all
+:term:`builds` are still consistent and complete.
 
 Databases are always files in `JSON <http://www.json.org>`_ format.
 
 The concept of states
 ---------------------
 
-In order to distinguish the maturity of modules, dependencies and builds we
-distinguish 3 different states:
+In order to distinguish the maturity of :term:`builds` we distinguish 3
+different :term:`build` :term:`states`:
 
 stable
-  Stable means that the item is used in production and is not known to have
-  major faults.
+  Stable means that the :term:`build` is used in production and is not known to
+  have major faults.
 
 testing
-  Testing means that the item can be used on an IOC but it not yet tested. If
-  it runs on an IOC for some time without major problems, the item state should
-  be set to "stable".
+  Testing means that the :term:`build` could be compiled without errors. If it
+  is used on an IOC for some time without major problems, the :term:`build`
+  :term:`state` should be set to "stable".
 
 unstable
-  Unstable means that the item was just created. It is not guaranteed to work
-  and is not even guaranteed that this can be booted or even compiled. It it is
-  loaded and left on an IOC to run for a longer time it's state should be set
-  to "testing".
+  Unstable means that the :term:`build` is just created. This is also the state
+  of a build if it's compilation fails.
 
 The concept of architectures
 ----------------------------

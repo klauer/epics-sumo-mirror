@@ -4,11 +4,12 @@ sumo-scan
 What the script does
 --------------------
 
-This script scans an existing EPICS support module directory tree and collects all
-information necessary to generate a dependency database or *DB* file. The data
-is formatted in `JSON <http://www.json.org>`_ format and printed to the
-console. You can either save this output in a file or combine this script with
-:doc:`sumo-db <reference-sumo-db>` in a pipe to directly create a DB file.
+This script scans an existing EPICS support module directory tree and collects
+all information necessary to generate a dependency database or :term:`DB` file.
+The data is formatted in `JSON <http://www.json.org>`_ format and printed to
+the console. You can either save this output in a file or combine this script
+with :doc:`sumo-db <reference-sumo-db>` in a pipe to directly create a
+:term:`DB` file.
 
 The script takes one or mode commands and has a number of options. Single
 character options always start with a single dash "-", long options start with
@@ -44,13 +45,12 @@ RELEASE file::
   ALARM=$(SUPPORT)/alarm/3-1
   SOFT=$(SUPPORT)/soft/2-2
 
-The script calls the "make" program for each "RELEASE" file found and lets make
-report a list of all generated variables. By calling make it is ensured that
-all macros, e.g. "SUPPORT" in the example above, are resolved. By calling
-"make" twice, one time without and one time with the "RELEASE" file we can
-calculate a difference of the set of defined variables of both runs. This
-difference contains all the changes in variables that are caused by parsing the
-"RELEASE" file.
+The script calls "make" for each "RELEASE" file found to generate a list of all
+generated variables. By calling make it is ensured that all macros, e.g.
+"SUPPORT" in the example above, are resolved. By calling "make" twice, one time
+without and one time with the "RELEASE" file the script computes a difference
+of the set of defined variables of both runs. This difference contains all the
+changes in variables that are caused by parsing the "RELEASE" file.
 
 From this set of variable names and values the script removes names which match
 a given list. For example, "TOP" usually refers to a directory that is not an
