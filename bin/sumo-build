@@ -1214,8 +1214,6 @@ def process(options, commands):
             sys.exit("--db is mandatory")
         if not options.builddb:
             sys.exit("--builddb is mandatory")
-        if not options.maxstate:
-            sys.exit("--maxstate is mandatory")
 
         modulespecs= []
         if options.module:
@@ -1225,7 +1223,7 @@ def process(options, commands):
         if not modulespecs:
             sys.exit("error: module specs missing")
 
-        db= db_from_json_file(options.db, keep_locked= not options.dry_run)
+        db= db_from_json_file(options.db, keep_locked= False)
 
         try:
             modulespecs_obj= sumo.ModuleSpec.Specs.from_strings(modulespecs,
@@ -1237,14 +1235,14 @@ def process(options, commands):
         if options.dump_modules:
             dump_modules(modulespecs_obj)
             sys.exit(0)
+
         try:
-            dist_dict= distribution(db,
-                                    modulespecs_obj,
-                                    options.maxstate,
-                                    options.trace,
-                                    options.tracemore)
+            dist_dict= modulespecs_obj.to_dist_dict()
         except ValueError, e:
-            # db __del__ method should remove lockfiles
+            sys.exit(str(e))
+        try:
+            db.assert_complete_modulelist(dist_dict)
+        except ValueError, e:
             sys.exit(str(e))
 
         if not os.path.exists(options.builddb):

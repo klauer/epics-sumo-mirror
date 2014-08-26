@@ -175,12 +175,11 @@ new [MODULES]
 This command creates a new :term:`build`. If the :term:`buildtag` is not given
 as an option, the program generates a :term:`buildtag` in the form "AUTO-nnn".
 Note that options "--db" and "--builddb" are mandatory for this command. A new
-:term:`build` is created according to the :term:`modulespecs`. Moduleversions
-may be unspecified or exactly specified. The algorithm tries to find matching
-:term:`moduleversions` in the order they are specified for this command.  This
-command calls "make" and, after successful completion, sets the :term:`state`
-of the :term:`build` to "testing". If you want to skip this step, use option
-"--no-make". In order to provide arbitrary options to make use option
+:term:`build` is created according to the :term:`modulespecs`. The
+:term:`modulespecs` must be exactly specified and complete with respect to
+dependencies.  This command calls "make" and, after successful completion, sets
+the state of the :term:`build` to "testing". If you want to skip this step, use
+option "--no-make". In order to provide arbitrary options to make use option
 "--makeopts".
 
 find [MODULESPECS]
