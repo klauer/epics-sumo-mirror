@@ -17,7 +17,6 @@ import sys
 import os.path
 import os
 import re
-import copy
 
 import sumo.lock
 import sumo.JSON
@@ -37,7 +36,7 @@ KNOWN_COMMANDS=set(("alias-add", "appconvert", "check", "clonemodule",
                     "cloneversion", "convert", "edit", "filter", "find",
                     "list", "makeconfig", "merge", "dependency-add",
                     "dependency-delete", "replaceversion", "showall",
-                    "shownewest", "state", "weight"))
+                    "shownewest", "weight"))
 
 CONFIG_NAME="sumo-db.config"
 
@@ -128,7 +127,7 @@ def create_app_data(deps, repoinfo, groups):
     return {"alias": aliases, "module": modulespecs}
 
 
-def create_database(deps, repoinfo, groups, archs, state, source_patches):
+def create_database(deps, repoinfo, groups, archs, source_patches):
     """join the information of the three sources.
     """
     # pylint: disable=R0914
@@ -143,10 +142,6 @@ def create_database(deps, repoinfo, groups, archs, state, source_patches):
         """print something on stderr."""
         sys.stderr.write(msg+"\n")
 
-    try:
-        sumo.Databases.Dependencies.check_state(state)
-    except ValueError, e:
-        sys.exit(str(e))
     patcher= utils.RegexpPatcher()
     if source_patches:
         for p in source_patches:
@@ -218,9 +213,9 @@ def create_database(deps, repoinfo, groups, archs, state, source_patches):
                     #  module_archs list is empty:
                     errmsg("no archs for path %s" % \
                            versionedmodule_path)
-                db.set_source_arch_state(module_name, versionname,
-                                         module_archs, state,
-                                         {repotype: repodata})
+                db.set_source_arch(module_name, versionname,
+                                   module_archs,
+                                   {repotype: repodata})
 
                 _path2namevname[versionedmodule_path]= \
                         (module_name,versionname)
@@ -237,7 +232,7 @@ def create_database(deps, repoinfo, groups, archs, state, source_patches):
     # here we populate the versiondata with the dependency specifications:
     for modulename in db.iter_modulenames():
         # loop on stable, testing and unstable versions:
-        for versionname in db.iter_versions(modulename, "unstable",
+        for versionname in db.iter_versions(modulename,
                                             None, False):
             versionedmodule_paths= _namevname2path[(modulename, versionname)]
 
@@ -266,26 +261,8 @@ def create_database(deps, repoinfo, groups, archs, state, source_patches):
                             errmsg("alias error in module %s: %s" % \
                                    (modulename, str(e)))
                     db.add_dependency(modulename, versionname,
-                                      _dep_name, _dep_version, state)
+                                      _dep_name)
     return db
-
-def set_state(db, state, modulespecs):
-    """set the state for modules and dependencies."""
-    for modulespec in modulespecs:
-        if not modulespec.is_exact_spec():
-            # should also unlock the db:
-            sys.exit("error: modulespec '%s' is not an exact "
-                     "modulespec\n" % modulespec.to_string())
-
-    # due to the remove_missing_deps() command later on, we have to ensure that
-    # the partialdb is a deep copy:
-    partialdb= copy.deepcopy(db.partial_copy_by_modulespecs(modulespecs))
-    # remove dependencies that are not part of the partialdb:
-    partialdb.remove_missing_deps()
-    # this sets the states of modules and dependencies to the new value:
-    db.merge(partialdb,
-             constant_src_state=state,
-             state_sum_mode= sumo.Databases.Dependencies.SUM_FIRST)
 
 def set_weight(db, weight, modulespecs, trace):
     """set the weight for one or more modules."""
@@ -295,7 +272,7 @@ def set_weight(db, weight, modulespecs, trace):
             sys.stderr.write("%s\n" % modulespec.to_string())
 
         # scan stable, testing and unstable versions:
-        for version in db.iter_versions(modulename, "unstable",
+        for version in db.iter_versions(modulename,
                                         None, must_exist= False):
             if trace:
                 sys.stderr.write("test %s:%s\n" % (modulename,version))
@@ -327,7 +304,7 @@ def process(options, commands):
     config= sumo.Config.ConfigFile.from_optionlist(
                 CONFIG_NAME,
                 ( "#include",
-                  "arch", "db", "maxstate", "module", "progress",
+                  "arch", "db", "module", "progress",
                   "source_patch", "verbose"))
     if (not os.path.exists(CONFIG_NAME)) or options.no_default_config:
         config.disable_default()
@@ -364,15 +341,15 @@ def process(options, commands):
         return
 
     if commands[0]=="convert":
-        if len(commands)!=3:
-            sys.exit("a state and a filename must follow \"convert\"")
-        (state, filename)= commands[1:]
+        if len(commands)!=2:
+            sys.exit("a filename must follow \"convert\"")
+        filename= commands[1]
         scandata= sumo.JSON.loadfile(filename)
         deps= scandata["dependencies"]
         repoinfo= utils.PathSource(scandata["repos"])
         groups= scandata["groups"]
         archs= scandata["archs"]
-        db= create_database(deps, repoinfo, groups, archs, state,
+        db= create_database(deps, repoinfo, groups, archs,
                             options.source_patch)
         db.json_print()
         return
@@ -465,8 +442,7 @@ def process(options, commands):
         db = db_from_json_file(options.db,
                 keep_locked= not options.dumpdb and (not options.dry_run))
         db2= db_from_json_file(commands[1])
-        db.merge(db2, constant_src_state= None,
-                 state_sum_mode= sumo.Databases.Dependencies.SUM_MIN)
+        db.merge(db2)
         if options.dumpdb:
             db.json_print()
         else:
@@ -495,21 +471,18 @@ def process(options, commands):
         return
 
     if commands[0]=="dependency-add":
-        if len(commands)<4:
-            sys.exit("Three arguments must follow \"%s\"" % \
+        if len(commands)<3:
+            sys.exit("Two arguments must follow \"%s\"" % \
                      commands[0])
         if not options.db:
             sys.exit("error, --db is mandatory here")
         module_spec= sumo.ModuleSpec.Spec.from_string(commands[1])
-        dep_spec   = sumo.ModuleSpec.Spec.from_string(commands[2])
-        state      = commands[3]
+        dep        = commands[2]
         db = db_from_json_file(options.db,
                 keep_locked= not options.dumpdb and (not options.dry_run))
         db.add_dependency(module_spec.modulename,
                           module_spec.versionname,
-                          dep_spec.modulename,
-                          dep_spec.versionname,
-                          state)
+                          dep)
         if options.dumpdb:
             db.json_print()
         else:
@@ -524,18 +497,15 @@ def process(options, commands):
         if not options.db:
             sys.exit("error, --db is mandatory here")
         module_spec= sumo.ModuleSpec.Spec.from_string(commands[1])
-        dep_spec   = sumo.ModuleSpec.Spec.from_string(commands[2])
+        dep        = commands[2]
         if module_spec.no_version_spec():
             sys.exit("module has no version")
-        if dep_spec.no_version_spec():
-            sys.exit("dependency has no version")
 
         db = db_from_json_file(options.db,
                 keep_locked= not options.dumpdb and (not options.dry_run))
         db.del_dependency(module_spec.modulename,
                           module_spec.versionname,
-                          dep_spec.modulename,
-                          dep_spec.versionname)
+                          dep)
         if options.dumpdb:
             db.json_print()
         else:
@@ -616,44 +586,10 @@ def process(options, commands):
         sumo.JSON.dump(result)
         return
 
-    if commands[0]=="state":
-        if len(commands)<=1:
-            sys.exit("error: STATE and module missing")
-        if len(commands)<=2:
-            sys.exit("error: no modules specified")
-        if not options.db:
-            sys.exit("error, --db is mandatory here")
-        state= commands[1]
-        modulespecs= commands[2:]
-        db= db_from_json_file(options.db,
-                keep_locked= not options.dumpdb and (not options.dry_run))
-        try:
-            sumo.Databases.Dependencies.check_state(state)
-        except ValueError, e:
-            sys.exit(str(e))
-        try:
-            modulespecs_obj= sumo.ModuleSpec.Specs.from_strings(modulespecs,
-                                                                None)
-        except ValueError, e:
-            sys.exit(str(e))
-
-        if options.dump_modules:
-            dump_modules(modulespecs_obj)
-            sys.exit(0)
-        set_state(db, state, modulespecs_obj)
-        if options.dumpdb:
-            db.json_print()
-        else:
-            db.json_save(options.db, options.verbose, options.dry_run)
-            # ^^^ does also unlock the file
-        return
-
     if commands[0]=="shownewest" or commands[0]=="showall":
         showall= (commands[0]=="showall")
         if not options.db:
             sys.exit("error, --db is mandatory here")
-        if not options.maxstate:
-            sys.exit("error, --maxstate is mandatory here")
         db= db_from_json_file(options.db)
 
         modulespecs= []
@@ -679,9 +615,9 @@ def process(options, commands):
         for modulespec in modulespecs_obj:
             modulename= modulespec.modulename
 
-            versions= db.sorted_moduleversions(modulename, options.maxstate,
+            versions= db.sorted_moduleversions(modulename,
                                                options.arch, False)
-            if not versions: # no versions match maxstate criteria
+            if not versions: # no versions match criteria
                 continue
             versions= [v for v in versions \
                        if modulespec.test(v)]
@@ -696,8 +632,6 @@ def process(options, commands):
     if commands[0]=="find":
         if len(commands)<=1:
             sys.exit("error: REGEXP missing")
-        if not options.maxstate:
-            sys.exit("error, --maxstate is mandatory here")
         if not options.db:
             sys.exit("error, --db is mandatory here")
         db= db_from_json_file(options.db)
@@ -707,7 +641,7 @@ def process(options, commands):
         else:
             rx_flags= re.IGNORECASE
         rx= re.compile(regexp, rx_flags)
-        results= db.search_modules(rx, options.maxstate, options.arch)
+        results= db.search_modules(rx, options.arch)
         if options.brief:
             for (module,version) in results:
                 print "%s:%s" % (module,version)
@@ -741,17 +675,13 @@ where command is:
           If you want to edit a DB or BUILDDB file directly, you should always
           do it with this with this command. The file locking prevents other
           users to use the file at the same time you modify it.
-  convert [STATE] [SCANFILE]: 
-          Convert SCANFILE to a new DB. All dependencies are marked with state
-          STATE. STATE may be "stable", "testing" or "unstable".
+  convert [SCANFILE]: 
+          Convert SCANFILE to a new DB.
   appconvert [SCANFILE] 
           Convert a SCANFILE that was created by applying sumo-scan to an
           application to a list of aliases and modulespecs in JSON format. The
           result is printed to the console. It can be used with --config
           to put these in the configuration file of sumo-db or sumo-build.
-  state  [STATE] [modules]
-          Set the state for modules. This command sets the given STATE for all
-          the given modules and the dependencies between the modules.
   weight [WEIGHT] [modules]
           Set the weight factor for modules. Use
           modulename:{+-}versionname to select more versions of a module.
@@ -760,19 +690,16 @@ where command is:
   list:   list the names of all modules
   shownewest {MODULES}: 
           Show newest version for each module. If {modules} is missing, take
-          all modules of the database. Mandatory option "--maxstate" defines
-          the "maximum" state modules may have.
+          all modules of the database.
   showall {MODULES}: 
           Show all versions for each module. If {modules} is missing, take all
-          modules of the database. Mandatory option "--maxstate" defines
-          the "maximum" state modules may have.
+          modules of the database.
   filter [MODULES]
           Print the database for the given modules. If you want a specific
           version of a module use modulename:versioname instead of the
           modulename alone.
   find [REGEXP]
-          Show all modules whose names or sources match regexp. Mandatory
-          option "--maxstate" defines the "maximum" state modules may have.
+          Show all modules whose names or sources match regexp.
 
   check 
           do some consistency checks on the db specifed by --db
@@ -780,29 +707,27 @@ where command is:
           Merge the given db with the one specified by --db
   cloneversion [MODULE] [OLD-VERSION] [NEW-VERSION] {SOURCESPEC}
           Add a new version to the database by copying the old version. The
-          old-version data is copied for the new version data. All modules that
-          depend on module:old-version now alternatively depend on
-          module:new-version. If sourcespec is given, the command changes the
-          source part according to this parameter. A sourcespec has the form
-          "path PATH" or "darcs URL" or "darcs URL TAG". Both, URL or TAG may
-          be "*", in this case the original URL or TAG remains unchanged.
-  replaceversion [MODULE] [OLD-VERSION] [NEW-VERSION] {SOURCESPEC}
-          Replace a version to the database with a new one. The old-version
-          data is copied for the new version data. All modules that depend on
-          module:old-version now depend on module:new-version. If sourcespec
-          is given, the command changes the source part according to this
+          old-version data is copied for the new version data. If sourcespec is
+          given, the command changes the source part according to this
           parameter. A sourcespec has the form "path PATH" or "darcs URL" or
           "darcs URL TAG". Both, URL or TAG may be "*", in this case the
           original URL or TAG remains unchanged.
+  replaceversion [MODULE] [OLD-VERSION] [NEW-VERSION] {SOURCESPEC}
+          Replace a version to the database with a new one. The old-version
+          data is copied for the new version data. If sourcespec is given, the
+          command changes the source part according to this parameter. A
+          sourcespec has the form "path PATH" or "darcs URL" or "darcs URL
+          TAG". Both, URL or TAG may be "*", in this case the original URL or
+          TAG remains unchanged.
   clonemodule [OLD-MODULE] [NEW-MODULE] {VERSIONS}
           Copy all versions of the existing old module and add this with the
           name of thew new module to the dependency database. If there are no
           versions specified, the command copies all existing versions. Note
           that this DOES NOT add the new module as dependency to any other
           modules.
-  dependency-delete MODULE:VERSION DEPENDENCYNAME:DEPENDENCYVERSION
+  dependency-delete MODULE:VERSION DEPENDENCYNAME
           Delete a dependency of a module.
-  dependency-add MODULE:VERSION DEPENDENCYNAME:DEPENDENCYVERSION STATE
+  dependency-add MODULE:VERSION DEPENDENCYNAME
           Add a dependency to a module.
   alias-add MODULE:VERSION DEPENDENCYNAME ALIAS
           Add an alias to a module.
@@ -891,14 +816,6 @@ def main():
                             "string separated by spaces.  This option value "
                             "is stored in the configuration file. ",
                       metavar="MODULESPEC"
-                      )
-    parser.add_option("-M", "--maxstate",
-                      action="store",
-                      type="string",
-                      help= "Specify the maximum state for some commands."
-                            "This option value is stored in the "
-                            "configuration file. ",
-                      metavar="STATE"
                       )
     parser.add_option("-b", "--brief",
                       action="store_true",

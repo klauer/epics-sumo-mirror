@@ -34,7 +34,7 @@ utils.assert_version(my_version)
 KNOWN_COMMANDS=set(( "cleanup", "delete", "edit", "find", "list",
                      "makeconfig",
                      "new",
-                     "partialdb", "show", "state", "try", "use", "useall",
+                     "show", "state", "try", "use", "useall",
                   ))
 
 CONFIG_NAME="sumo-build.config"
@@ -242,6 +242,7 @@ def gather_dependencies(dist_dict, db, modulename, versionname,
         # archs==None:
         #   ignore architecture
         dep_version= None
+        # Note: iter_dependency_versions no longer exists!!
         for v in db.iter_dependency_versions(modulename, versionname,
                                              dep_name, "unstable", None):
             if dist_dict[dep_name]!= v:
@@ -274,7 +275,10 @@ def gather_dependencies(dist_dict, db, modulename, versionname,
 
 def _add_dependencies(module_dict, db, build_module_dict,
                       modulename, versionname):
-    """recursively add missing dependencies."""
+    """recursively add missing dependencies.
+
+    called by get_dependencies, command "use"
+    """
     try:
         db.assert_module(modulename, versionname)
     except KeyError, e:
@@ -283,17 +287,15 @@ def _add_dependencies(module_dict, db, build_module_dict,
         if module_dict.has_key(dep):
             continue
         version_present= build_module_dict[dep]
-        if not db.depends_on(modulename, versionname, dep, version_present):
-            str_= ("warning: dependency %s:%s is not in list "+ \
-                   "of dependecies of module %s:%s in db file\n") % \
-                   (dep,version_present,modulename,versionname)
-            sys.stderr.write(str_)
         module_dict[dep]= version_present
         _add_dependencies(module_dict, db, build_module_dict,
                           dep, version_present)
 
 def get_dependencies(module_dict, db, builddb, buildtag):
-    """recursively complete the module_dict for missing dependencies."""
+    """recursively complete the module_dict for missing dependencies.
+
+    called by apprelease, command "use"
+    """
     build_module_dict= builddb.modules(buildtag)
     modules= module_dict.items()
     for modulename, versionname in modules:
@@ -338,13 +340,11 @@ def builddb_match(dist_dict, db, builddb, modulename, versionname):
 # -----------------------------------------------
 
 def _distribution_add(db, dist, modulename, versionname,
-                      maxstate, archs, required_modules, force):
+                      maxstate, archs, required_modules):
     """add a module to the set.
 
     required_modules: a dict mapping modulename->version that contains modules
     that MUST be used.
-
-    If force is True the program adds missing dependencies to the db.
     """
     # pylint: disable=R0914
     #                          Too many local variables
@@ -379,16 +379,9 @@ def _distribution_add(db, dist, modulename, versionname,
         if required_version:
             if not db.depends_on(modulename, versionname,
                                  dep_modulename, required_version):
-                if not force:
-                    raise ValueError("module %s:%s has no dependency of "
-                                     "%s:%s according to the dependency "
-                                     "database." % \
-                                     (modulename, versionname,
-                                      dep_modulename, required_version))
-                db.add_dependency(modulename, versionname,
-                                  dep_modulename, required_version,
-                                  "unstable")
-                sys.stderr.write("%s:%s --> add dependency %s:%s\n" % \
+                raise ValueError("module %s:%s has no dependency of "
+                                 "%s:%s according to the dependency "
+                                 "database." % \
                                  (modulename, versionname,
                                   dep_modulename, required_version))
             possible_dep_versions= [required_version]
@@ -403,7 +396,7 @@ def _distribution_add(db, dist, modulename, versionname,
                                             new_dist,
                                             dep_modulename,
                                             dep_version, maxstate, archs,
-                                            required_modules, force)
+                                            required_modules)
                 errst= None
                 break
             except ValueError, e:
@@ -413,13 +406,10 @@ def _distribution_add(db, dist, modulename, versionname,
                              errst)
     return new_dist
 
-def distribution(db, modulespecs, maxstate, trace, tracemore, force):
+def distribution(db, modulespecs, maxstate, trace, tracemore):
     """create a distribution.
 
     modulespecs: a ModuleSpecs object.
-
-    If force is True, add dependencies to db inferred from modulespecs, when
-    they are missing.
     """
     # pylint: disable=R0913
     #                          Too many arguments
@@ -459,7 +449,7 @@ def distribution(db, modulespecs, maxstate, trace, tracemore, force):
         try:
             dist= _distribution_add(db, dist, modulename, versionname,
                                     maxstate, archs,
-                                    required_modules, force)
+                                    required_modules)
         except ValueError, e:
             if trace:
                 sys.stderr.write("modules added so far\n%s\n" % \
@@ -489,7 +479,7 @@ def distribution(db, modulespecs, maxstate, trace, tracemore, force):
             try:
                 dist= _distribution_add(db, dist, modulename, versionname,
                                         maxstate, archs,
-                                        required_modules, force)
+                                        required_modules)
                 found= True
                 break
             except ValueError, e:
@@ -547,6 +537,7 @@ def gen_RELEASE(db, builddb, buildtag,
         # get all depdendencies, even ones marked "unstable":
         # archs==None:
         #   ignore architecture
+        # Note: iter_dependency_versions no longer exists!!
         dep_versions= list(db.iter_dependency_versions(modulename,
                                                        versionname,
                                                        dep_name,
@@ -628,6 +619,7 @@ def create_makefile(db, builddb, build_tag, verbose, dry_run):
             # get all depdendencies, even the ones marked "unstable":
             # archs==None:
             #   ignore architecture
+            # Note: iter_dependency_versions no longer exists!!
             dep_versions= list(db.iter_dependency_versions(modulename,
                                                            versionname,
                                                            dep_name,
@@ -649,6 +641,7 @@ def create_makefile(db, builddb, build_tag, verbose, dry_run):
                                         dep_name, my_dep_versions[0])
             dep_stamps.append(os.path.join(dep_path,"stamp"))
 
+        dep_stamps.sort()
         if dep_stamps:
             utils.file_write(fh,
                              "\n%s: %s\n" % \
@@ -774,33 +767,6 @@ def add_modules(dist_dict, db, builddb, build_tag):
 
         builddb.add_module(build_tag, build_tag_used, modulename, versionname)
 
-def create_partialdb(db, builddb, buildtag):
-    """create a partial database from a build.
-
-    This function also ensures that each module has only one dependency version
-    for each dependency module.
-    """
-    new= sumo.Databases.Dependencies()
-    for modulename, versionname in builddb.iter_modules(buildtag):
-        new.import_module(db, modulename, versionname)
-        for dep_module in new.iter_dependencies(modulename, versionname):
-            # archs==None:
-            #   ignore architecture
-            # we have to ignore the architecture here since the Dependencies
-            # object "new" is beeing built bit by bit. When we iterate over the
-            # dependencies of a module the dependency modules are not yet part
-            # of the Dependencies object, so we cannot know their architecture.
-            dep_versions= list(new.iter_dependency_versions(modulename,
-                                                            versionname,
-                                                            dep_module,
-                                                            "unstable",
-                                                            None))
-            wanted_version= builddb.module_version(buildtag, dep_module)
-            for d in dep_versions:
-                if d!=wanted_version:
-                    new.del_dependency(modulename, versionname, dep_module, d)
-    return new
-
 # -----------------------------------------------
 # functions called by process()
 # -----------------------------------------------
@@ -907,7 +873,7 @@ def create_modules(dist_dict, db, builddb, build_tag, extra_lines,
                       archs,
                       verbose, dry_run)
 
-def call_make(db_name, builddb_name, buildtag,
+def call_make(builddb_name, buildtag,
               make_options,
               verbose, dry_run):
     """call "make", then mark the build "testing"."""
@@ -927,12 +893,6 @@ def call_make(db_name, builddb_name, buildtag,
     builddb= builddb_from_json_file(builddb_name, keep_locked= not dry_run)
     builddb.change_state(buildtag, "testing")
     builddb.json_save(builddb_name, verbose, dry_run)
-    # ^^^ does also unlock the file
-    db= db_from_json_file(db_name, keep_locked= not dry_run)
-    partialdb= create_partialdb(db, builddb, buildtag)
-    db.merge(partialdb, constant_src_state= "testing",
-             state_sum_mode= sumo.Databases.Dependencies.SUM_MIN)
-    db.json_save(db_name, verbose, dry_run)
     # ^^^ does also unlock the file
 
 def fullapprelease(build_path, build_tag, builddb, db, modules,
@@ -1146,11 +1106,6 @@ def process(options, commands):
             builddb.json_save(options.builddb,
                               options.verbose, options.dry_run)
             # ^^^ does also unlock the file
-            partialdb= create_partialdb(db, builddb, buildtag)
-            db.merge(partialdb, constant_src_state= new_state,
-                     state_sum_mode= sumo.Databases.Dependencies.SUM_MIN)
-            db.json_save(options.db, options.verbose, options.dry_run)
-            # ^^^ does also unlock the file
         return
 
     if commands[0]=="delete":
@@ -1226,8 +1181,7 @@ def process(options, commands):
             sys.exit(0)
         try:
             dist_dict= distribution(db, modulespecs_obj, options.maxstate,
-                                    options.trace, options.tracemore,
-                                    options.add_deps)
+                                    options.trace, options.tracemore)
         except ValueError, e:
             # db __del__ method should remove lockfiles
             sys.exit(str(e))
@@ -1288,8 +1242,7 @@ def process(options, commands):
                                     modulespecs_obj,
                                     options.maxstate,
                                     options.trace,
-                                    options.tracemore,
-                                    options.add_deps)
+                                    options.tracemore)
         except ValueError, e:
             # db __del__ method should remove lockfiles
             sys.exit(str(e))
@@ -1324,37 +1277,13 @@ def process(options, commands):
             builddb.unlock_file()
             raise
 
-        partialdb= create_partialdb(db, builddb, buildtag)
-        db.merge(partialdb, constant_src_state="unstable",
-                 state_sum_mode= sumo.Databases.Dependencies.SUM_MIN)
-        db.json_save(options.db, options.verbose, options.dry_run)
-        # ^^^ does also unlock the file
         builddb.json_save(options.builddb, options.verbose, options.dry_run)
         # ^^^ does also unlock the file
         rmcleanup(buildtag)
         if not options.no_make:
-            call_make(options.db, options.builddb, buildtag,
+            call_make(options.builddb, buildtag,
                       options.makeopts,
                       options.verbose, options.dry_run)
-        return
-    if commands[0]=="partialdb":
-        if len(commands)>2:
-            sys.exit("error: extra arguments following \"%s\"" % commands[0])
-
-        (_,buildtag)= get_buildtag(options, commands,
-                                   command_index=1,
-                                   optional= False,
-                                   check_conflict= True)
-
-        if not options.db:
-            sys.exit("--db is mandatory")
-        if not options.builddb:
-            sys.exit("--builddb is mandatory")
-        buildtag= commands[1]
-        db= db_from_json_file(options.db)
-        builddb= builddb_from_json_file(options.builddb)
-        new_db= create_partialdb(db, builddb, buildtag)
-        new_db.json_print()
         return
     if commands[0]=="find":
         if not options.builddb:
@@ -1513,10 +1442,6 @@ where command is:
           sets the state of the build to "testing". If you want to skip this
           step, use option "--no-make". In order to provide arbitrary options
           to make use option "--makeopts".
-  partialdb [BUILDTAG]
-          This command creates a partial DB from a complete DB and a build. The
-          partial DB contains just the modules of the build.  The buildtag may
-          be given as argument or option.
   find [MODULESPECS]
           This command is used to find matching builds for a given list of
           modulespecs. It prints a list of buildtags of matching builds on the
@@ -1711,12 +1636,6 @@ def main():
                             "string separated by spaces.  This option value "
                             "is stored in the configuration file. ",
                       metavar="MODULESPEC"
-                      )
-    parser.add_option("--add-deps",
-                      action="store_true",
-                      help="Add dependencies to the database in a way that "
-                           "the given collection of modules is supported. "
-                           "Only for commands \"new\" and \"try\". ",
                       )
     parser.add_option("-b", "--brief",
                       action="store_true",
