@@ -40,6 +40,9 @@ Here we define some of the terms used in the following text.
   moduleversions
       See :term:`version`.
   
+  moduleversion
+      See :term:`version`.
+  
   versionnames
       See :term:`versionname`.
 
@@ -47,6 +50,9 @@ Here we define some of the terms used in the following text.
       In sumo, each :term:`version` of a :term:`module` has a *versionname* that is
       unique for that :term:`module`. The :term:`modulename` together with the
       *versionname* identify a specific version of the :term:`module`. 
+
+  modulespecifications
+      See :term:`modulespec`.
 
   modulespecs
       See :term:`modulespec`.
@@ -119,6 +125,9 @@ Here we define some of the terms used in the following text.
       :term:`module` within the version control system. In sumo, a *versionname*
       is always the same as the *tag* if the *tag* exists.
   
+  states
+      See :term:`state`.
+
   state
       This is a string describing the maturity of a :term:`module` or a
       :term:`dependency`.  A *state* may be one of three strings:
@@ -163,6 +172,9 @@ Here we define some of the terms used in the following text.
   dependency database
       See :term:`DB`.
 
+  scan database
+      See :term:`SCANDB`.
+
   DB
       The dependency database is also called :term:`DB`. For further details see
       :ref:`reference-sumo-db-The-dependency-database`.
@@ -171,6 +183,17 @@ Here we define some of the terms used in the following text.
       The build database is also called :term:`BUILDDB`. It is a file in 
       `JSON <http://www.json.org>`_ format which contains information on which
       versions of which modules were built.
+
+  SCANDB
+      This scan database is also called :term:`SCANDB`. It is a file in `JSON
+      <http://www.json.org>`_ format which contains information on what
+      :term:`version` of a :term:`module` was used which what :term:`version`
+      of a :term:`dependency`. This file is not essential in order to use sumo.
+      It can be used when you start using sumo in order to see what
+      :term:`versions` of :term:`modules` are probably compatible with each
+      other. If you start creating :term:`builds`, this :term:`version`
+      information will also be gathered from your successful :term:`builds` and
+      at some point you will no longer need the scan database.
 
   commandline options
       See :term:`commandline option`.
