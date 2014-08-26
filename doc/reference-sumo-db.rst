@@ -240,19 +240,27 @@ convert [SCANFILE]
 ++++++++++++++++++
 
 Convert a :term:`scanfile` that was created by by 
-:doc:`"sumo-scan all"<reference-sumo-scan>` to a new depedency database or
-:term:`DB` file.
-
+:doc:`"sumo-scan all"<reference-sumo-scan>` to a new dependency database.
 If SCANFILE is a dash "-", the program expects the scanfile on stdin.
-
-The dependency database file is always printed to the console.
+Note that options "--db" and "--scandb" are
+mandatory here. With "--db" you specify the name of the new created 
+:ref:`dependency database <reference-sumo-db-The-dependency-database>`
+file, with "--scandb" you specify the name of the scan database file. The scan
+database file contains information on what moduleversion can be used with what
+dependency version.
 
 convert-old [OLDDB]
 +++++++++++++++++++
 
-Convert a dependency database in the old format to the new format.
-Note that option "--db" is mandatory here, this specifies the name of the new
-dependency database.
+Convert a 
+:ref:`dependency database <reference-sumo-db-The-dependency-database>` from the
+old to the new format. Note that options "--db" and "--scandb" are mandatory
+here. With "--db" you specify the name of the new created 
+:ref:`dependency database <reference-sumo-db-The-dependency-database>` file,
+with "--scandb" you specify the name of the scan database or :term:`SCANDB`
+file. The scan database file contains information on what :term:`version` of a
+:term:`module` is probably compatible with what version of a :term:`dependency`
+according to the data in the old dependency database.
 
 appconvert [SCANFILE]
 +++++++++++++++++++++
@@ -399,6 +407,9 @@ Here is a short overview on command line options:
 ``--db DB``
     Define the name of the DB file. This option value is stored in the
     configuration file. 
+``--scandb SCANDB``
+    Specify the :term:`SCANDB` file (only for 'convert' and 'convert-old'
+    command).
 ``--dumpdb``
     Dump the modified db on the console, currently only for the commands
     "weight", "merge", "cloneversion" and "replaceversion".
