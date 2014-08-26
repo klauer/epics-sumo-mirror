@@ -28,15 +28,15 @@ if [ ! -d $MYTESTDIR ]; then
 
     # copy the DB and BUILDS file where everything is marked "stable" (see also
     # test10.sh):
-    cp DB-100-sumo-build-state-2.tmp DB
-    cp BUILDS-100-sumo-build-state-2.tmp BUILDS
+    cp 100-sumo-build-state-2-DEPS.tmp DEPS.DB
+    cp 100-sumo-build-state-2-BUILDS.tmp BUILDS
 
     rm -f *.tmp
     rm -f *.bak
 
 
     # use an auto generated build tag:
-    $PYTHON ../../bin/sumo-build --arch vxWorks-ppc603 --maxstate stable --db DB --builddb BUILDS -m ':build:MYAPP-001 ALARM:R3-7 MCAN:R2-4-5' --no-make new 1>&2 
+    $PYTHON ../../bin/sumo-build --arch vxWorks-ppc603 --db DEPS.DB --builddb BUILDS -m ':build:MYAPP-001 ALARM:R3-7 MCAN:R2-4-5' --no-make new 1>&2 
 else
     echo -e "\t$MYTESTDIR already exists, effectively skipping this test..." 1>&2
     cd $MYTESTDIR > /dev/null
@@ -47,7 +47,7 @@ find . | egrep -v '_darcs|\.tmp|\.bak|\.coverage' | sort
 echo -e "\ncontents of RELEASE files\n"
 for f in `find . -name RELEASE | sort`; do echo -e "\nFILE: $f"; cat $f | sed -e "s#`pwd -P`##"; done
 echo -e "\n\ncontent of DB:"
-cat DB 
+cat DEPS.DB 
 echo -e "\ncontent of BUILDS"
 cat BUILDS 
 echo -e "\ncontent of Makefile-AUTO-001"

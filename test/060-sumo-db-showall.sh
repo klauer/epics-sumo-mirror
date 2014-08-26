@@ -12,6 +12,6 @@ PYTHON=$@
 
 echo -e "\n-> Test sumo-db showall" >&2
 
-$PYTHON ../bin/sumo-db --arch vxWorks-68040 --arch vxWorks-ppc603 --db samples/DB --maxstate stable showall ALARM 
+$PYTHON ../bin/sumo-db --arch vxWorks-68040 --arch vxWorks-ppc603 --db samples/DEPS.DB showall ALARM 
 
 

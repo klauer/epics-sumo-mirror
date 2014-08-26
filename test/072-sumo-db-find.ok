@@ -1,4 +1,4 @@
-find unstable mcan:
+find mcan:
 {
     "MCAN": {
         "R2-4-0": {
@@ -12,30 +12,19 @@ find unstable mcan:
                 "vxWorks-68040": true,
                 "vxWorks-ppc603": true
             },
-            "dependencies": {
-                "ALARM": {
-                    "R3-7": "stable"
-                },
-                "BASE": {
-                    "TAGLESS-3-14-12-2-1": "stable"
-                },
-                "MISC_DBC": {
-                    "R3-0": "stable"
-                },
-                "MISC_DEBUGMSG": {
-                    "R3-0": "stable"
-                },
-                "SOFT_DEVHWCLIENT": {
-                    "R3-0": "stable"
-                }
-            },
+            "dependencies": [
+                "ALARM",
+                "BASE",
+                "MISC_DBC",
+                "MISC_DEBUGMSG",
+                "SOFT_DEVHWCLIENT"
+            ],
             "source": {
                 "darcs": {
                     "tag": "R2-4-0",
                     "url": "rcsadm@aragon.acc.bessy.de:/opt/Epics/R3.14.12/support/mcan/2-4-0"
                 }
-            },
-            "state": "stable"
+            }
         },
         "R2-4-1": {
             "aliases": {
@@ -48,30 +37,19 @@ find unstable mcan:
                 "vxWorks-68040": true,
                 "vxWorks-ppc603": true
             },
-            "dependencies": {
-                "ALARM": {
-                    "R3-7": "stable"
-                },
-                "BASE": {
-                    "TAGLESS-3-14-12-2-1": "stable"
-                },
-                "MISC_DBC": {
-                    "R3-0": "stable"
-                },
-                "MISC_DEBUGMSG": {
-                    "R3-0": "stable"
-                },
-                "SOFT_DEVHWCLIENT": {
-                    "R3-0": "stable"
-                }
-            },
+            "dependencies": [
+                "ALARM",
+                "BASE",
+                "MISC_DBC",
+                "MISC_DEBUGMSG",
+                "SOFT_DEVHWCLIENT"
+            ],
             "source": {
                 "darcs": {
                     "tag": "R2-4-1",
                     "url": "rcsadm@aragon.acc.bessy.de:/opt/Epics/R3.14.12/support/mcan/2-4-0"
                 }
-            },
-            "state": "stable"
+            }
         },
         "R2-4-2": {
             "aliases": {
@@ -84,30 +62,19 @@ find unstable mcan:
                 "vxWorks-68040": true,
                 "vxWorks-ppc603": true
             },
-            "dependencies": {
-                "ALARM": {
-                    "R3-7": "stable"
-                },
-                "BASE": {
-                    "TAGLESS-3-14-12-2-1": "stable"
-                },
-                "MISC_DBC": {
-                    "R3-0": "stable"
-                },
-                "MISC_DEBUGMSG": {
-                    "R3-0": "stable"
-                },
-                "SOFT_DEVHWCLIENT": {
-                    "R3-0": "stable"
-                }
-            },
+            "dependencies": [
+                "ALARM",
+                "BASE",
+                "MISC_DBC",
+                "MISC_DEBUGMSG",
+                "SOFT_DEVHWCLIENT"
+            ],
             "source": {
                 "darcs": {
                     "tag": "R2-4-2",
                     "url": "rcsadm@aragon.acc.bessy.de:/opt/Epics/R3.14.12/support/mcan/2-4-1"
                 }
-            },
-            "state": "stable"
+            }
         },
         "R2-4-3": {
             "aliases": {
@@ -120,30 +87,19 @@ find unstable mcan:
                 "vxWorks-68040": true,
                 "vxWorks-ppc603": true
             },
-            "dependencies": {
-                "ALARM": {
-                    "R3-7": "stable"
-                },
-                "BASE": {
-                    "TAGLESS-3-14-12-2-1": "stable"
-                },
-                "MISC_DBC": {
-                    "R3-0": "stable"
-                },
-                "MISC_DEBUGMSG": {
-                    "R3-0": "stable"
-                },
-                "SOFT_DEVHWCLIENT": {
-                    "R3-0": "stable"
-                }
-            },
+            "dependencies": [
+                "ALARM",
+                "BASE",
+                "MISC_DBC",
+                "MISC_DEBUGMSG",
+                "SOFT_DEVHWCLIENT"
+            ],
             "source": {
                 "darcs": {
                     "tag": "R2-4-3",
                     "url": "rcsadm@aragon.acc.bessy.de:/opt/repositories/controls/darcs/epics/support/mcan/base-3-14-12"
                 }
-            },
-            "state": "stable"
+            }
         },
         "R2-4-4": {
             "aliases": {
@@ -159,33 +115,20 @@ find unstable mcan:
                 "vxWorks-68040": true,
                 "vxWorks-ppc603": true
             },
-            "dependencies": {
-                "ALARM": {
-                    "R3-7": "stable"
-                },
-                "BASE": {
-                    "TAGLESS-3-14-12-2-1": "stable"
-                },
-                "BSPDEP_VMETAS": {
-                    "R2-0": "stable"
-                },
-                "MISC_DBC": {
-                    "R3-0": "stable"
-                },
-                "MISC_DEBUGMSG": {
-                    "R3-0": "stable"
-                },
-                "SOFT_DEVHWCLIENT": {
-                    "R3-0": "stable"
-                }
-            },
+            "dependencies": [
+                "ALARM",
+                "BASE",
+                "BSPDEP_VMETAS",
+                "MISC_DBC",
+                "MISC_DEBUGMSG",
+                "SOFT_DEVHWCLIENT"
+            ],
             "source": {
                 "darcs": {
                     "tag": "R2-4-4",
                     "url": "rcsadm@aragon.acc.bessy.de:/opt/repositories/controls/darcs/epics/support/mcan/base-3-14-12"
                 }
-            },
-            "state": "stable"
+            }
         },
         "R2-4-5": {
             "aliases": {
@@ -201,33 +144,20 @@ find unstable mcan:
                 "vxWorks-68040": true,
                 "vxWorks-ppc603": true
             },
-            "dependencies": {
-                "ALARM": {
-                    "R3-7": "stable"
-                },
-                "BASE": {
-                    "TAGLESS-3-14-12-2-1": "stable"
-                },
-                "BSPDEP_VMETAS": {
-                    "R2-0": "stable"
-                },
-                "MISC_DBC": {
-                    "R3-0": "stable"
-                },
-                "MISC_DEBUGMSG": {
-                    "R3-0": "stable"
-                },
-                "SOFT_DEVHWCLIENT": {
-                    "R3-0": "stable"
-                }
-            },
+            "dependencies": [
+                "ALARM",
+                "BASE",
+                "BSPDEP_VMETAS",
+                "MISC_DBC",
+                "MISC_DEBUGMSG",
+                "SOFT_DEVHWCLIENT"
+            ],
             "source": {
                 "darcs": {
                     "tag": "R2-4-5",
                     "url": "rcsadm@aragon.acc.bessy.de:/opt/repositories/controls/darcs/epics/support/mcan/base-3-14-12"
                 }
-            },
-            "state": "stable"
+            }
         },
         "R2-5": {
             "aliases": {
@@ -243,33 +173,20 @@ find unstable mcan:
                 "vxWorks-68040": true,
                 "vxWorks-ppc603": true
             },
-            "dependencies": {
-                "ALARM": {
-                    "R3-8": "stable"
-                },
-                "BASE": {
-                    "TAGLESS-3-14-12-2-1": "stable"
-                },
-                "BSPDEP_VMETAS": {
-                    "R2-0": "stable"
-                },
-                "MISC_DBC": {
-                    "R3-0": "stable"
-                },
-                "MISC_DEBUGMSG": {
-                    "R3-0": "stable"
-                },
-                "SOFT_DEVHWCLIENT": {
-                    "R3-0": "stable"
-                }
-            },
+            "dependencies": [
+                "ALARM",
+                "BASE",
+                "BSPDEP_VMETAS",
+                "MISC_DBC",
+                "MISC_DEBUGMSG",
+                "SOFT_DEVHWCLIENT"
+            ],
             "source": {
                 "darcs": {
                     "tag": "R2-5",
                     "url": "rcsadm@aragon.acc.bessy.de:/opt/repositories/controls/darcs/epics/support/mcan/base-3-14-12"
                 }
-            },
-            "state": "stable"
+            }
         },
         "R2-6-1": {
             "aliases": {
@@ -285,33 +202,20 @@ find unstable mcan:
                 "vxWorks-68040": true,
                 "vxWorks-ppc603": true
             },
-            "dependencies": {
-                "ALARM": {
-                    "R3-8": "stable"
-                },
-                "BASE": {
-                    "TAGLESS-3-14-12-2-1": "stable"
-                },
-                "BSPDEP_VMETAS": {
-                    "R2-0": "stable"
-                },
-                "MISC_DBC": {
-                    "R3-0": "stable"
-                },
-                "MISC_DEBUGMSG": {
-                    "R3-0": "stable"
-                },
-                "SOFT_DEVHWCLIENT": {
-                    "R3-0": "stable"
-                }
-            },
+            "dependencies": [
+                "ALARM",
+                "BASE",
+                "BSPDEP_VMETAS",
+                "MISC_DBC",
+                "MISC_DEBUGMSG",
+                "SOFT_DEVHWCLIENT"
+            ],
             "source": {
                 "darcs": {
                     "tag": "R2-6-1",
                     "url": "rcsadm@aragon.acc.bessy.de:/opt/repositories/controls/darcs/epics/support/mcan/base-3-14-12"
                 }
-            },
-            "state": "stable"
+            }
         },
         "TAGLESS-2-6-2": {
             "aliases": {
@@ -327,32 +231,19 @@ find unstable mcan:
                 "vxWorks-68040": true,
                 "vxWorks-ppc603": true
             },
-            "dependencies": {
-                "ALARM": {
-                    "R3-8": "stable"
-                },
-                "BASE": {
-                    "TAGLESS-3-14-12-2-1": "stable"
-                },
-                "BSPDEP_VMETAS": {
-                    "R2-0": "stable"
-                },
-                "MISC_DBC": {
-                    "R3-0": "stable"
-                },
-                "MISC_DEBUGMSG": {
-                    "R3-0": "stable"
-                },
-                "SOFT_DEVHWCLIENT": {
-                    "R3-0": "stable"
-                }
-            },
+            "dependencies": [
+                "ALARM",
+                "BASE",
+                "BSPDEP_VMETAS",
+                "MISC_DBC",
+                "MISC_DEBUGMSG",
+                "SOFT_DEVHWCLIENT"
+            ],
             "source": {
                 "darcs": {
                     "url": "rcsadm@aragon.acc.bessy.de:/opt/Epics/R3.14.12/support/mcan/2-6-2"
                 }
-            },
-            "state": "stable"
+            }
         },
         "TAGLESS-2-6-3": {
             "aliases": {
@@ -368,33 +259,19 @@ find unstable mcan:
                 "vxWorks-68040": true,
                 "vxWorks-ppc603": true
             },
-            "dependencies": {
-                "ALARM": {
-                    "R3-8": "stable",
-                    "R3-9": "stable"
-                },
-                "BASE": {
-                    "TAGLESS-3-14-12-2-1": "stable"
-                },
-                "BSPDEP_VMETAS": {
-                    "R2-0": "stable"
-                },
-                "MISC_DBC": {
-                    "R3-0": "stable"
-                },
-                "MISC_DEBUGMSG": {
-                    "R3-0": "stable"
-                },
-                "SOFT_DEVHWCLIENT": {
-                    "R3-0": "stable"
-                }
-            },
+            "dependencies": [
+                "ALARM",
+                "BASE",
+                "BSPDEP_VMETAS",
+                "MISC_DBC",
+                "MISC_DEBUGMSG",
+                "SOFT_DEVHWCLIENT"
+            ],
             "source": {
                 "darcs": {
                     "url": "rcsadm@aragon.acc.bessy.de:/opt/Epics/R3.14.12/support/mcan/2-6-3"
                 }
-            },
-            "state": "stable"
+            }
         },
         "TAGLESS-2-6-3-test": {
             "aliases": {
@@ -407,38 +284,25 @@ find unstable mcan:
             "archs": {
                 "ANY": true
             },
-            "dependencies": {
-                "ALARM": {
-                    "R3-8": "stable"
-                },
-                "BASE": {
-                    "TAGLESS-3-14-12-2-1": "stable"
-                },
-                "BSPDEP_VMETAS": {
-                    "R2-0": "stable"
-                },
-                "MISC_DBC": {
-                    "R3-0": "stable"
-                },
-                "MISC_DEBUGMSG": {
-                    "R3-0": "stable"
-                },
-                "SOFT_DEVHWCLIENT": {
-                    "R3-0": "stable"
-                }
-            },
+            "dependencies": [
+                "ALARM",
+                "BASE",
+                "BSPDEP_VMETAS",
+                "MISC_DBC",
+                "MISC_DEBUGMSG",
+                "SOFT_DEVHWCLIENT"
+            ],
             "source": {
                 "darcs": {
                     "url": "rcsadm@aragon.acc.bessy.de:/opt/Epics/R3.14.12/support/mcan/2-6-3-test"
                 }
-            },
-            "state": "stable"
+            }
         }
     }
 }
 
 
-find unstable mcan -b:
+find mcan -b:
 MCAN:R2-4-0
 MCAN:R2-4-1
 MCAN:R2-4-2
@@ -451,4 +315,4 @@ MCAN:TAGLESS-2-6-2
 MCAN:TAGLESS-2-6-3
 MCAN:TAGLESS-2-6-3-test
 
-find unstable mcan.*patch -b:
+find mcan.*patch -b:

@@ -12,8 +12,8 @@ PYTHON=$@
 
 echo -e "\n-> Test sumo-db replaceversion." >&2
 
-cp samples/DB_IDCP DB_IDCP-$ME.tmp
+cp samples/IDCP-DEPS.DB $ME-DEPS.tmp
 
-$PYTHON ../bin/sumo-db --db DB_IDCP-$ME.tmp dependency-add ALARM:R3-8 CSM:R4.3 testing
-cat DB_IDCP-$ME.tmp 
+$PYTHON ../bin/sumo-db --db $ME-DEPS.tmp dependency-add ALARM:R3-8 CSM 
+cat $ME-DEPS.tmp 
 

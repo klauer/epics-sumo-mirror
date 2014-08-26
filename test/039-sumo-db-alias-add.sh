@@ -12,8 +12,8 @@ PYTHON=$@
 
 echo -e "\n-> Test sumo-db replaceversion." >&2
 
-cp samples/DB_IDCP DB_IDCP-$ME.tmp
+cp samples/IDCP-DEPS.DB $ME-DEPS.tmp
 
-$PYTHON ../bin/sumo-db --db DB_IDCP-$ME.tmp alias-add MCAN:TAGLESS-2-6-3-test ALARM MYALARM
-cat DB_IDCP-$ME.tmp 
+$PYTHON ../bin/sumo-db --db $ME-DEPS.tmp alias-add MCAN:TAGLESS-2-6-3-test ALARM MYALARM
+cat $ME-DEPS.tmp 
 

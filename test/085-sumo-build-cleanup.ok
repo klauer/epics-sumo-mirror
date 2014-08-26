@@ -517,7 +517,7 @@ directory tree (without darcs)
 ./ASYN/4-18-bessy1+001/testManagerApp/testManagerMain.cpp
 ./BASE
 ./cleanup-001
-./DB
+./DEPS.DB
 ./IDCP.CONFIG
 
 contents of cleanup file:
@@ -590,5 +590,5 @@ now do sumo-build cleanup 001
 
 directory tree now (without darcs)
 .
-./DB
+./DEPS.DB
 ./IDCP.CONFIG

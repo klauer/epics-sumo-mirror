@@ -2030,6 +2030,7 @@ directory tree (without darcs)
 ./SEQ/TAGLESS-2-1-12+MYAPP-001/src/Makefile
 ./SEQ/TAGLESS-2-1-12+MYAPP-001/Makefile
 ./BUILDS
+./DEPS.DB
 ./EK
 ./EK/R2-2+MYAPP-001
 ./EK/R2-2+MYAPP-001/ekIO32App
@@ -2988,7 +2989,6 @@ directory tree (without darcs)
 ./ASYN/4-18-bessy1+MYAPP-001/configure/Makefile
 ./ASYN/4-18-bessy1+MYAPP-001/configure/RULES
 ./ASYN/4-18-bessy1+MYAPP-001/Makefile
-./DB
 ./MISC_DEBUGMSG
 ./MISC_DEBUGMSG/R3-0+MYAPP-001
 ./MISC_DEBUGMSG/R3-0+MYAPP-001/debugmsgApp
@@ -3210,18 +3210,15 @@ content of DB:
                 "vxWorks-68040": true,
                 "vxWorks-ppc603": true
             },
-            "dependencies": {
-                "BASE": {
-                    "TAGLESS-3-14-12-2-1": "stable"
-                }
-            },
+            "dependencies": [
+                "BASE"
+            ],
             "source": {
                 "darcs": {
                     "tag": "R2-3",
                     "url": "rcsadm@aragon.acc.bessy.de:/opt/repositories/controls/darcs/epics/support/agilent/base-3-14"
                 }
-            },
-            "state": "stable"
+            }
         }
     },
     "AGILENT-SUPPORT": {
@@ -3232,18 +3229,15 @@ content of DB:
             "archs": {
                 "ANY": true
             },
-            "dependencies": {
-                "BASE": {
-                    "TAGLESS-3-14-12-2-1": "stable"
-                }
-            },
+            "dependencies": [
+                "BASE"
+            ],
             "source": {
                 "darcs": {
                     "tag": "R0-10",
                     "url": "rcsadm@aragon.acc.bessy.de:/opt/repositories/controls/darcs/epics/support/agilent-support"
                 }
-            },
-            "state": "stable"
+            }
         },
         "R0-11": {
             "aliases": {
@@ -3252,18 +3246,15 @@ content of DB:
             "archs": {
                 "ANY": true
             },
-            "dependencies": {
-                "BASE": {
-                    "TAGLESS-3-14-12-2-1": "stable"
-                }
-            },
+            "dependencies": [
+                "BASE"
+            ],
             "source": {
                 "darcs": {
                     "tag": "R0-11",
                     "url": "rcsadm@aragon.acc.bessy.de:/opt/repositories/controls/darcs/epics/support/agilent-support"
                 }
-            },
-            "state": "stable"
+            }
         },
         "R0-12": {
             "aliases": {
@@ -3272,18 +3263,15 @@ content of DB:
             "archs": {
                 "ANY": true
             },
-            "dependencies": {
-                "BASE": {
-                    "TAGLESS-3-14-12-2-1": "stable"
-                }
-            },
+            "dependencies": [
+                "BASE"
+            ],
             "source": {
                 "darcs": {
                     "tag": "R0-12",
                     "url": "rcsadm@aragon.acc.bessy.de:/opt/repositories/controls/darcs/epics/support/agilent-support"
                 }
-            },
-            "state": "stable"
+            }
         },
         "R0-9-5": {
             "aliases": {
@@ -3292,18 +3280,15 @@ content of DB:
             "archs": {
                 "ANY": true
             },
-            "dependencies": {
-                "BASE": {
-                    "TAGLESS-3-14-12-2-1": "stable"
-                }
-            },
+            "dependencies": [
+                "BASE"
+            ],
             "source": {
                 "darcs": {
                     "tag": "R0-9-5",
                     "url": "rcsadm@aragon.acc.bessy.de:/opt/repositories/controls/darcs/epics/support/agilent-support"
                 }
-            },
-            "state": "stable"
+            }
         }
     },
     "ALARM": {
@@ -3320,24 +3305,17 @@ content of DB:
                 "vxWorks-68040": true,
                 "vxWorks-ppc603": true
             },
-            "dependencies": {
-                "BASE": {
-                    "TAGLESS-3-14-12-2-1": "stable"
-                },
-                "BSPDEP_TIMER": {
-                    "R6-2": "stable"
-                },
-                "MISC_DBC": {
-                    "R3-0": "stable"
-                }
-            },
+            "dependencies": [
+                "BASE",
+                "BSPDEP_TIMER",
+                "MISC_DBC"
+            ],
             "source": {
                 "darcs": {
                     "tag": "R3-7",
                     "url": "rcsadm@aragon.acc.bessy.de:/opt/repositories/controls/darcs/epics/support/alarm/base-3-14"
                 }
-            },
-            "state": "stable"
+            }
         },
         "R3-8": {
             "aliases": {
@@ -3352,24 +3330,17 @@ content of DB:
                 "vxWorks-68040": true,
                 "vxWorks-ppc603": true
             },
-            "dependencies": {
-                "BASE": {
-                    "TAGLESS-3-14-12-2-1": "stable"
-                },
-                "BSPDEP_TIMER": {
-                    "R6-2": "stable"
-                },
-                "MISC_DBC": {
-                    "R3-0": "stable"
-                }
-            },
+            "dependencies": [
+                "BASE",
+                "BSPDEP_TIMER",
+                "MISC_DBC"
+            ],
             "source": {
                 "darcs": {
                     "tag": "R3-8",
                     "url": "rcsadm@aragon.acc.bessy.de:/opt/repositories/controls/darcs/epics/support/alarm/base-3-14"
                 }
-            },
-            "state": "stable"
+            }
         },
         "R3-9": {
             "aliases": {
@@ -3384,19 +3355,15 @@ content of DB:
                 "vxWorks-68040": true,
                 "vxWorks-ppc603": true
             },
-            "dependencies": {
-                "BASE": {
-                    "TAGLESS-3-14-12-2-1": "stable",
-                    "TAGLESS-3-14-12-2-2": "stable"
-                }
-            },
+            "dependencies": [
+                "BASE"
+            ],
             "source": {
                 "darcs": {
                     "tag": "R3-8",
                     "url": "rcsadm@aragon.acc.bessy.de:/opt/repositories/controls/darcs/epics/support/alarm/base-3-14"
                 }
-            },
-            "state": "stable"
+            }
         }
     },
     "APPS_CRATECTRL": {
@@ -3407,21 +3374,16 @@ content of DB:
             "archs": {
                 "ANY": true
             },
-            "dependencies": {
-                "BASE": {
-                    "TAGLESS-3-14-12-2-1": "stable"
-                },
-                "RULES": {
-                    "R2-1": "stable"
-                }
-            },
+            "dependencies": [
+                "BASE",
+                "RULES"
+            ],
             "source": {
                 "darcs": {
                     "tag": "R2-0",
                     "url": "rcsadm@aragon.acc.bessy.de:/opt/repositories/controls/darcs/epics/support/apps/crateCtrl"
                 }
-            },
-            "state": "stable"
+            }
         },
         "R3-0": {
             "archs": {
@@ -3432,8 +3394,7 @@ content of DB:
                     "tag": "R3-0",
                     "url": "rcsadm@aragon.acc.bessy.de:/opt/repositories/controls/darcs/epics/support/apps/crateCtrl"
                 }
-            },
-            "state": "stable"
+            }
         },
         "TAGLESS-2-1": {
             "aliases": {
@@ -3443,20 +3404,15 @@ content of DB:
             "archs": {
                 "ANY": true
             },
-            "dependencies": {
-                "BASE": {
-                    "TAGLESS-3-14-12-2-1": "stable"
-                },
-                "BESSYRULES": {
-                    "R2-5": "stable"
-                }
-            },
+            "dependencies": [
+                "BASE",
+                "BESSYRULES"
+            ],
             "source": {
                 "darcs": {
                     "url": "rcsadm@aragon.acc.bessy.de:/opt/Epics/R3.14.12/support/apps/crateCtrl/2-1"
                 }
-            },
-            "state": "stable"
+            }
         },
         "TAGLESS-3-1": {
             "archs": {
@@ -3466,8 +3422,7 @@ content of DB:
                 "darcs": {
                     "url": "rcsadm@aragon.acc.bessy.de:/opt/Epics/R3.14.12/support/apps/crateCtrl/3-1"
                 }
-            },
-            "state": "stable"
+            }
         }
     },
     "APPS_GENERICBOOT": {
@@ -3478,18 +3433,15 @@ content of DB:
             "archs": {
                 "linux-x86": true
             },
-            "dependencies": {
-                "BASE": {
-                    "TAGLESS-3-14-12-2-1": "stable"
-                }
-            },
+            "dependencies": [
+                "BASE"
+            ],
             "source": {
                 "darcs": {
                     "tag": "R0-3",
                     "url": "rcsadm@aragon.acc.bessy.de:/opt/repositories/controls/darcs/epics/support/apps/genericBoot/base-3-14-12"
                 }
-            },
-            "state": "stable"
+            }
         },
         "R0-4": {
             "aliases": {
@@ -3498,18 +3450,15 @@ content of DB:
             "archs": {
                 "linux-x86": true
             },
-            "dependencies": {
-                "BASE": {
-                    "TAGLESS-3-14-12-2-1": "stable"
-                }
-            },
+            "dependencies": [
+                "BASE"
+            ],
             "source": {
                 "darcs": {
                     "tag": "R0-4",
                     "url": "rcsadm@aragon.acc.bessy.de:/opt/repositories/controls/darcs/epics/support/apps/genericBoot/base-3-14-12"
                 }
-            },
-            "state": "stable"
+            }
         },
         "R0-7": {
             "aliases": {
@@ -3518,18 +3467,15 @@ content of DB:
             "archs": {
                 "linux-x86": true
             },
-            "dependencies": {
-                "BASE": {
-                    "TAGLESS-3-14-12-2-1": "stable"
-                }
-            },
+            "dependencies": [
+                "BASE"
+            ],
             "source": {
                 "darcs": {
                     "tag": "R0-7",
                     "url": "rcsadm@aragon.acc.bessy.de:/opt/repositories/controls/darcs/epics/support/apps/genericBoot/base-3-14-12"
                 }
-            },
-            "state": "stable"
+            }
         },
         "R0-8": {
             "aliases": {
@@ -3538,18 +3484,15 @@ content of DB:
             "archs": {
                 "linux-x86": true
             },
-            "dependencies": {
-                "BASE": {
-                    "TAGLESS-3-14-12-2-1": "stable"
-                }
-            },
+            "dependencies": [
+                "BASE"
+            ],
             "source": {
                 "darcs": {
                     "tag": "R0-8",
                     "url": "rcsadm@aragon.acc.bessy.de:/opt/repositories/controls/darcs/epics/support/apps/genericBoot/base-3-14-12"
                 }
-            },
-            "state": "stable"
+            }
         },
         "R0-8-1": {
             "aliases": {
@@ -3558,18 +3501,15 @@ content of DB:
             "archs": {
                 "linux-x86": true
             },
-            "dependencies": {
-                "BASE": {
-                    "TAGLESS-3-14-12-2-1": "stable"
-                }
-            },
+            "dependencies": [
+                "BASE"
+            ],
             "source": {
                 "darcs": {
                     "tag": "R0-8-1",
                     "url": "rcsadm@aragon.acc.bessy.de:/opt/repositories/controls/darcs/epics/support/apps/genericBoot/base-3-14-12"
                 }
-            },
-            "state": "stable"
+            }
         },
         "R0-8-2": {
             "aliases": {
@@ -3578,18 +3518,15 @@ content of DB:
             "archs": {
                 "linux-x86": true
             },
-            "dependencies": {
-                "BASE": {
-                    "TAGLESS-3-14-12-2-1": "stable"
-                }
-            },
+            "dependencies": [
+                "BASE"
+            ],
             "source": {
                 "darcs": {
                     "tag": "R0-8-2",
                     "url": "rcsadm@aragon.acc.bessy.de:/opt/repositories/controls/darcs/epics/support/apps/genericBoot/base-3-14-12"
                 }
-            },
-            "state": "stable"
+            }
         },
         "R0-8-3": {
             "aliases": {
@@ -3598,18 +3535,15 @@ content of DB:
             "archs": {
                 "linux-x86": true
             },
-            "dependencies": {
-                "BASE": {
-                    "TAGLESS-3-14-12-2-1": "stable"
-                }
-            },
+            "dependencies": [
+                "BASE"
+            ],
             "source": {
                 "darcs": {
                     "tag": "R0-8-3",
                     "url": "rcsadm@aragon.acc.bessy.de:/opt/repositories/controls/darcs/epics/support/apps/genericBoot/base-3-14-12"
                 }
-            },
-            "state": "stable"
+            }
         },
         "R0-9": {
             "aliases": {
@@ -3618,18 +3552,15 @@ content of DB:
             "archs": {
                 "linux-x86": true
             },
-            "dependencies": {
-                "BASE": {
-                    "TAGLESS-3-14-12-2-1": "stable"
-                }
-            },
+            "dependencies": [
+                "BASE"
+            ],
             "source": {
                 "darcs": {
                     "tag": "R0-9",
                     "url": "rcsadm@aragon.acc.bessy.de:/opt/repositories/controls/darcs/epics/support/apps/genericBoot/base-3-14-12"
                 }
-            },
-            "state": "stable"
+            }
         },
         "TAGLESS-0-9-1-this-version-is-broken": {
             "aliases": {
@@ -3638,17 +3569,14 @@ content of DB:
             "archs": {
                 "linux-x86": true
             },
-            "dependencies": {
-                "BASE": {
-                    "TAGLESS-3-14-12-2-1": "stable"
-                }
-            },
+            "dependencies": [
+                "BASE"
+            ],
             "source": {
                 "darcs": {
                     "url": "rcsadm@aragon.acc.bessy.de:/opt/Epics/R3.14.12/support/apps/genericBoot/0-9-1-this-version-is-broken"
                 }
-            },
-            "state": "stable"
+            }
         }
     },
     "APPS_GENERICTEMPLATE": {
@@ -3659,21 +3587,16 @@ content of DB:
             "archs": {
                 "ANY": true
             },
-            "dependencies": {
-                "BASE": {
-                    "TAGLESS-3-14-12-2-1": "stable"
-                },
-                "RULES": {
-                    "R2-1": "stable"
-                }
-            },
+            "dependencies": [
+                "BASE",
+                "RULES"
+            ],
             "source": {
                 "darcs": {
                     "tag": "R3-0",
                     "url": "rcsadm@aragon.acc.bessy.de:/opt/repositories/controls/darcs/epics/support/apps/genericTemplate/base-3-14-12"
                 }
-            },
-            "state": "stable"
+            }
         },
         "R3-2": {
             "aliases": {
@@ -3682,21 +3605,16 @@ content of DB:
             "archs": {
                 "ANY": true
             },
-            "dependencies": {
-                "BASE": {
-                    "TAGLESS-3-14-12-2-1": "stable"
-                },
-                "RULES": {
-                    "R2-1": "stable"
-                }
-            },
+            "dependencies": [
+                "BASE",
+                "RULES"
+            ],
             "source": {
                 "darcs": {
                     "tag": "R3-2",
                     "url": "rcsadm@aragon.acc.bessy.de:/opt/repositories/controls/darcs/epics/support/apps/genericTemplate/base-3-14-12"
                 }
-            },
-            "state": "stable"
+            }
         },
         "R3-2-1": {
             "aliases": {
@@ -3706,21 +3624,16 @@ content of DB:
             "archs": {
                 "ANY": true
             },
-            "dependencies": {
-                "BASE": {
-                    "TAGLESS-3-14-12-2-1": "stable"
-                },
-                "BESSYRULES": {
-                    "R2-5": "stable"
-                }
-            },
+            "dependencies": [
+                "BASE",
+                "BESSYRULES"
+            ],
             "source": {
                 "darcs": {
                     "tag": "R3-2-1",
                     "url": "rcsadm@aragon.acc.bessy.de:/opt/repositories/controls/darcs/epics/support/apps/genericTemplate/base-3-14-12"
                 }
-            },
-            "state": "stable"
+            }
         },
         "R3-6": {
             "aliases": {
@@ -3729,21 +3642,16 @@ content of DB:
             "archs": {
                 "ANY": true
             },
-            "dependencies": {
-                "BASE": {
-                    "TAGLESS-3-14-12-2-1": "stable"
-                },
-                "RULES": {
-                    "R2-1": "stable"
-                }
-            },
+            "dependencies": [
+                "BASE",
+                "RULES"
+            ],
             "source": {
                 "darcs": {
                     "tag": "R3-6",
                     "url": "rcsadm@aragon.acc.bessy.de:/opt/repositories/controls/darcs/epics/support/apps/genericTemplate/base-3-14-12"
                 }
-            },
-            "state": "stable"
+            }
         },
         "R3-7": {
             "aliases": {
@@ -3753,21 +3661,16 @@ content of DB:
             "archs": {
                 "ANY": true
             },
-            "dependencies": {
-                "BASE": {
-                    "TAGLESS-3-14-12-2-1": "stable"
-                },
-                "BESSYRULES": {
-                    "R2-5": "stable"
-                }
-            },
+            "dependencies": [
+                "BASE",
+                "BESSYRULES"
+            ],
             "source": {
                 "darcs": {
                     "tag": "R3-7",
                     "url": "rcsadm@aragon.acc.bessy.de:/opt/repositories/controls/darcs/epics/support/apps/genericTemplate/base-3-14-12"
                 }
-            },
-            "state": "stable"
+            }
         },
         "R4-0": {
             "aliases": {
@@ -3777,21 +3680,16 @@ content of DB:
             "archs": {
                 "ANY": true
             },
-            "dependencies": {
-                "BASE": {
-                    "TAGLESS-3-14-12-2-1": "stable"
-                },
-                "BESSYRULES": {
-                    "R2-5": "stable"
-                }
-            },
+            "dependencies": [
+                "BASE",
+                "BESSYRULES"
+            ],
             "source": {
                 "darcs": {
                     "tag": "R4-0",
                     "url": "rcsadm@aragon.acc.bessy.de:/opt/repositories/controls/darcs/epics/support/apps/genericTemplate/base-3-14-12"
                 }
-            },
-            "state": "stable"
+            }
         },
         "TAGLESS-head": {
             "aliases": {
@@ -3801,20 +3699,15 @@ content of DB:
             "archs": {
                 "ANY": true
             },
-            "dependencies": {
-                "BASE": {
-                    "TAGLESS-3-14-12-2-1": "stable"
-                },
-                "BESSYRULES": {
-                    "R2-5": "stable"
-                }
-            },
+            "dependencies": [
+                "BASE",
+                "BESSYRULES"
+            ],
             "source": {
                 "darcs": {
                     "url": "rcsadm@aragon.acc.bessy.de:/opt/Epics/R3.14.12/support/apps/genericTemplate/head"
                 }
-            },
-            "state": "stable"
+            }
         }
     },
     "APPS_IOCWATCH": {
@@ -3829,21 +3722,16 @@ content of DB:
                 "vxWorks-68040": true,
                 "vxWorks-ppc603": true
             },
-            "dependencies": {
-                "BASE": {
-                    "TAGLESS-3-14-12-2-1": "stable"
-                },
-                "RULES": {
-                    "R2-1": "stable"
-                }
-            },
+            "dependencies": [
+                "BASE",
+                "RULES"
+            ],
             "source": {
                 "darcs": {
                     "tag": "R3-0",
                     "url": "rcsadm@aragon.acc.bessy.de:/opt/repositories/controls/darcs/epics/support/apps/iocWatch"
                 }
-            },
-            "state": "stable"
+            }
         },
         "R3-1": {
             "aliases": {
@@ -3857,21 +3745,16 @@ content of DB:
                 "vxWorks-68040": true,
                 "vxWorks-ppc603": true
             },
-            "dependencies": {
-                "BASE": {
-                    "TAGLESS-3-14-12-2-1": "stable"
-                },
-                "BESSYRULES": {
-                    "R2-5": "stable"
-                }
-            },
+            "dependencies": [
+                "BASE",
+                "BESSYRULES"
+            ],
             "source": {
                 "darcs": {
                     "tag": "R3-1",
                     "url": "rcsadm@aragon.acc.bessy.de:/opt/repositories/controls/darcs/epics/support/apps/iocWatch"
                 }
-            },
-            "state": "stable"
+            }
         },
         "R3-2": {
             "aliases": {
@@ -3885,21 +3768,16 @@ content of DB:
                 "vxWorks-68040": true,
                 "vxWorks-ppc603": true
             },
-            "dependencies": {
-                "BASE": {
-                    "TAGLESS-3-14-12-2-1": "stable"
-                },
-                "BESSYRULES": {
-                    "R2-5": "stable"
-                }
-            },
+            "dependencies": [
+                "BASE",
+                "BESSYRULES"
+            ],
             "source": {
                 "darcs": {
                     "tag": "R3-2",
                     "url": "rcsadm@aragon.acc.bessy.de:/opt/repositories/controls/darcs/epics/support/apps/iocWatch"
                 }
-            },
-            "state": "stable"
+            }
         }
     },
     "APPS_MOTOR": {
@@ -3915,24 +3793,17 @@ content of DB:
                 "vxWorks-68040": true,
                 "vxWorks-ppc603": true
             },
-            "dependencies": {
-                "BASE": {
-                    "TAGLESS-3-14-12-2-1": "stable"
-                },
-                "RULES": {
-                    "R2-1": "stable"
-                },
-                "SEQ": {
-                    "seq-2-1-3": "stable"
-                }
-            },
+            "dependencies": [
+                "BASE",
+                "RULES",
+                "SEQ"
+            ],
             "source": {
                 "darcs": {
                     "tag": "R3-0",
                     "url": "rcsadm@aragon.acc.bessy.de:/opt/Epics/R3.14.12/support/apps/motor/3-0"
                 }
-            },
-            "state": "stable"
+            }
         },
         "R3-1": {
             "aliases": {
@@ -3946,24 +3817,17 @@ content of DB:
                 "vxWorks-68040": true,
                 "vxWorks-ppc603": true
             },
-            "dependencies": {
-                "BASE": {
-                    "TAGLESS-3-14-12-2-1": "stable"
-                },
-                "RULES": {
-                    "R2-1": "stable"
-                },
-                "SEQ": {
-                    "PATH-2-1-10": "stable"
-                }
-            },
+            "dependencies": [
+                "BASE",
+                "RULES",
+                "SEQ"
+            ],
             "source": {
                 "darcs": {
                     "tag": "R3-1",
                     "url": "rcsadm@aragon.acc.bessy.de:/opt/repositories/controls/darcs/epics/support/apps/motor/base-3-14-12"
                 }
-            },
-            "state": "stable"
+            }
         },
         "R3-1-1": {
             "aliases": {
@@ -3977,24 +3841,17 @@ content of DB:
                 "vxWorks-68040": true,
                 "vxWorks-ppc603": true
             },
-            "dependencies": {
-                "BASE": {
-                    "TAGLESS-3-14-12-2-1": "stable"
-                },
-                "RULES": {
-                    "R2-1": "stable"
-                },
-                "SEQ": {
-                    "TAGLESS-2-1-12": "stable"
-                }
-            },
+            "dependencies": [
+                "BASE",
+                "RULES",
+                "SEQ"
+            ],
             "source": {
                 "darcs": {
                     "tag": "R3-1-1",
                     "url": "rcsadm@aragon.acc.bessy.de:/opt/repositories/controls/darcs/epics/support/apps/motor/base-3-14-12"
                 }
-            },
-            "state": "stable"
+            }
         },
         "R3-1-2": {
             "aliases": {
@@ -4009,24 +3866,17 @@ content of DB:
                 "vxWorks-68040": true,
                 "vxWorks-ppc603": true
             },
-            "dependencies": {
-                "BASE": {
-                    "TAGLESS-3-14-12-2-1": "stable"
-                },
-                "BESSYRULES": {
-                    "R2-5": "stable"
-                },
-                "SEQ": {
-                    "TAGLESS-2-1-12": "stable"
-                }
-            },
+            "dependencies": [
+                "BASE",
+                "BESSYRULES",
+                "SEQ"
+            ],
             "source": {
                 "darcs": {
                     "tag": "R3-1-2",
                     "url": "rcsadm@aragon.acc.bessy.de:/opt/repositories/controls/darcs/epics/support/apps/motor/base-3-14-12"
                 }
-            },
-            "state": "stable"
+            }
         },
         "R3-2-beta": {
             "aliases": {
@@ -4036,24 +3886,17 @@ content of DB:
             "archs": {
                 "ANY": true
             },
-            "dependencies": {
-                "BASE": {
-                    "TAGLESS-3-14-12-2-1": "stable"
-                },
-                "RULES": {
-                    "R2-1": "stable"
-                },
-                "SEQ": {
-                    "TAGLESS-2-1-12": "stable"
-                }
-            },
+            "dependencies": [
+                "BASE",
+                "RULES",
+                "SEQ"
+            ],
             "source": {
                 "darcs": {
                     "tag": "R3-2-beta",
                     "url": "rcsadm@aragon.acc.bessy.de:/opt/repositories/controls/darcs/epics/support/apps/motor/base-3-14-12"
                 }
-            },
-            "state": "stable"
+            }
         },
         "R4-0": {
             "aliases": {
@@ -4068,24 +3911,17 @@ content of DB:
                 "vxWorks-68040": true,
                 "vxWorks-ppc603": true
             },
-            "dependencies": {
-                "BASE": {
-                    "TAGLESS-3-14-12-2-1": "stable"
-                },
-                "BESSYRULES": {
-                    "R2-5": "stable"
-                },
-                "SEQ": {
-                    "TAGLESS-2-1-12": "stable"
-                }
-            },
+            "dependencies": [
+                "BASE",
+                "BESSYRULES",
+                "SEQ"
+            ],
             "source": {
                 "darcs": {
                     "tag": "R4-0",
                     "url": "rcsadm@aragon.acc.bessy.de:/opt/repositories/controls/darcs/epics/support/apps/motor/base-3-14-12"
                 }
-            },
-            "state": "stable"
+            }
         },
         "TAGLESS-4-1-PRERELEASE": {
             "aliases": {
@@ -4100,23 +3936,16 @@ content of DB:
                 "vxWorks-68040": true,
                 "vxWorks-ppc603": true
             },
-            "dependencies": {
-                "BASE": {
-                    "TAGLESS-3-14-12-2-1": "stable"
-                },
-                "BESSYRULES": {
-                    "R2-5": "stable"
-                },
-                "SEQ": {
-                    "TAGLESS-2-1-12": "stable"
-                }
-            },
+            "dependencies": [
+                "BASE",
+                "BESSYRULES",
+                "SEQ"
+            ],
             "source": {
                 "darcs": {
                     "url": "rcsadm@aragon.acc.bessy.de:/opt/Epics/R3.14.12/support/apps/motor/4-1-PRERELEASE"
                 }
-            },
-            "state": "stable"
+            }
         }
     },
     "APPS_PNOZDEVICE": {
@@ -4127,21 +3956,16 @@ content of DB:
             "archs": {
                 "ANY": true
             },
-            "dependencies": {
-                "BASE": {
-                    "TAGLESS-3-14-12-2-1": "stable"
-                },
-                "RULES": {
-                    "R2-1": "stable"
-                }
-            },
+            "dependencies": [
+                "BASE",
+                "RULES"
+            ],
             "source": {
                 "darcs": {
                     "tag": "R2-0",
                     "url": "rcsadm@aragon.acc.bessy.de:/opt/repositories/controls/darcs/epics/support/apps/pnozDevice"
                 }
-            },
-            "state": "stable"
+            }
         },
         "R2-1": {
             "aliases": {
@@ -4151,21 +3975,16 @@ content of DB:
             "archs": {
                 "ANY": true
             },
-            "dependencies": {
-                "BASE": {
-                    "TAGLESS-3-14-12-2-1": "stable"
-                },
-                "BESSYRULES": {
-                    "R2-5": "stable"
-                }
-            },
+            "dependencies": [
+                "BASE",
+                "BESSYRULES"
+            ],
             "source": {
                 "darcs": {
                     "tag": "R2-1",
                     "url": "rcsadm@aragon.acc.bessy.de:/opt/repositories/controls/darcs/epics/support/apps/pnozDevice"
                 }
-            },
-            "state": "stable"
+            }
         }
     },
     "APPS_SCOPESAVERESTORE": {
@@ -4179,27 +3998,18 @@ content of DB:
                 "vxWorks-68040": true,
                 "vxWorks-ppc603": true
             },
-            "dependencies": {
-                "BASE": {
-                    "TAGLESS-3-14-12-2-1": "stable"
-                },
-                "GENSUB": {
-                    "R1-6-1": "stable"
-                },
-                "RULES": {
-                    "R2-1": "stable"
-                },
-                "VXI-11": {
-                    "R3-0": "stable"
-                }
-            },
+            "dependencies": [
+                "BASE",
+                "GENSUB",
+                "RULES",
+                "VXI-11"
+            ],
             "source": {
                 "darcs": {
                     "tag": "R2-0",
                     "url": "rcsadm@aragon.acc.bessy.de:/opt/repositories/controls/darcs/epics/support/apps/scopeSaveRestore"
                 }
-            },
-            "state": "stable"
+            }
         },
         "R2-1": {
             "aliases": {
@@ -4212,27 +4022,18 @@ content of DB:
                 "vxWorks-68040": true,
                 "vxWorks-ppc603": true
             },
-            "dependencies": {
-                "BASE": {
-                    "TAGLESS-3-14-12-2-1": "stable"
-                },
-                "BESSYRULES": {
-                    "R2-5": "stable"
-                },
-                "GENSUB": {
-                    "R1-6-1": "stable"
-                },
-                "VXI-11": {
-                    "R3-0": "stable"
-                }
-            },
+            "dependencies": [
+                "BASE",
+                "BESSYRULES",
+                "GENSUB",
+                "VXI-11"
+            ],
             "source": {
                 "darcs": {
                     "tag": "R2-1",
                     "url": "rcsadm@aragon.acc.bessy.de:/opt/repositories/controls/darcs/epics/support/apps/scopeSaveRestore"
                 }
-            },
-            "state": "stable"
+            }
         }
     },
     "APPS_STREAMTEMPLATESANDPROTOCOLS": {
@@ -4243,18 +4044,15 @@ content of DB:
             "archs": {
                 "ANY": true
             },
-            "dependencies": {
-                "BASE": {
-                    "TAGLESS-3-14-12-2-1": "stable"
-                }
-            },
+            "dependencies": [
+                "BASE"
+            ],
             "source": {
                 "darcs": {
                     "tag": "R2-0",
                     "url": "rcsadm@aragon.acc.bessy.de:/opt/repositories/controls/darcs/epics/support/apps/streamTemplatesAndProtocols"
                 }
-            },
-            "state": "stable"
+            }
         }
     },
     "APPS_VACUUM": {
@@ -4266,27 +4064,18 @@ content of DB:
             "archs": {
                 "linux-x86": true
             },
-            "dependencies": {
-                "ASYN": {
-                    "R4-17-2": "stable"
-                },
-                "BASE": {
-                    "TAGLESS-3-14-12-2-1": "stable"
-                },
-                "BESSYRULES": {
-                    "R2-2": "stable"
-                },
-                "STREAM": {
-                    "R2-4-0-3": "stable"
-                }
-            },
+            "dependencies": [
+                "ASYN",
+                "BASE",
+                "BESSYRULES",
+                "STREAM"
+            ],
             "source": {
                 "darcs": {
                     "tag": "R0-2",
                     "url": "rcsadm@aragon.acc.bessy.de:/opt/Epics/R3.14.12/support/apps/vacuum/0-2"
                 }
-            },
-            "state": "stable"
+            }
         },
         "R1-0": {
             "aliases": {
@@ -4296,27 +4085,18 @@ content of DB:
             "archs": {
                 "linux-x86": true
             },
-            "dependencies": {
-                "ASYN": {
-                    "4-18-bessy1": "stable"
-                },
-                "BASE": {
-                    "TAGLESS-3-14-12-2-1": "stable"
-                },
-                "BESSYRULES": {
-                    "R2-5": "stable"
-                },
-                "STREAM": {
-                    "R2-4-0-4": "stable"
-                }
-            },
+            "dependencies": [
+                "ASYN",
+                "BASE",
+                "BESSYRULES",
+                "STREAM"
+            ],
             "source": {
                 "darcs": {
                     "tag": "R1-0",
                     "url": "rcsadm@aragon.acc.bessy.de:/opt/Epics/R3.14.12/support/apps/vacuum/1-0"
                 }
-            },
-            "state": "stable"
+            }
         },
         "R1-0-1": {
             "aliases": {
@@ -4326,27 +4106,18 @@ content of DB:
             "archs": {
                 "linux-x86": true
             },
-            "dependencies": {
-                "ASYN": {
-                    "R4-17-2": "stable"
-                },
-                "BASE": {
-                    "TAGLESS-3-14-12-2-1": "stable"
-                },
-                "BESSYRULES": {
-                    "R2-5": "stable"
-                },
-                "STREAM": {
-                    "R2-4-0-3": "stable"
-                }
-            },
+            "dependencies": [
+                "ASYN",
+                "BASE",
+                "BESSYRULES",
+                "STREAM"
+            ],
             "source": {
                 "darcs": {
                     "tag": "R1-0-1",
                     "url": "rcsadm@aragon.acc.bessy.de:/opt/Epics/R3.14.12/support/apps/vacuum/1-0-1"
                 }
-            },
-            "state": "stable"
+            }
         },
         "R1-2": {
             "aliases": {
@@ -4356,27 +4127,18 @@ content of DB:
             "archs": {
                 "linux-x86": true
             },
-            "dependencies": {
-                "ASYN": {
-                    "R4-17-2": "stable"
-                },
-                "BASE": {
-                    "TAGLESS-3-14-12-2-1": "stable"
-                },
-                "BESSYRULES": {
-                    "R2-5": "stable"
-                },
-                "STREAM": {
-                    "R2-4-0-3": "stable"
-                }
-            },
+            "dependencies": [
+                "ASYN",
+                "BASE",
+                "BESSYRULES",
+                "STREAM"
+            ],
             "source": {
                 "darcs": {
                     "tag": "R1-2",
                     "url": "rcsadm@aragon.acc.bessy.de:/opt/repositories/controls/darcs/epics/support/apps/vacuum/base-3-14-12"
                 }
-            },
-            "state": "stable"
+            }
         },
         "R1-2-1": {
             "aliases": {
@@ -4386,27 +4148,18 @@ content of DB:
             "archs": {
                 "linux-x86": true
             },
-            "dependencies": {
-                "ASYN": {
-                    "R4-17-2": "stable"
-                },
-                "BASE": {
-                    "TAGLESS-3-14-12-2-1": "stable"
-                },
-                "BESSYRULES": {
-                    "R2-5": "stable"
-                },
-                "STREAM": {
-                    "R2-4-0-3": "stable"
-                }
-            },
+            "dependencies": [
+                "ASYN",
+                "BASE",
+                "BESSYRULES",
+                "STREAM"
+            ],
             "source": {
                 "darcs": {
                     "tag": "R1-2-1",
                     "url": "rcsadm@aragon.acc.bessy.de:/opt/repositories/controls/darcs/epics/support/apps/vacuum/base-3-14-12"
                 }
-            },
-            "state": "stable"
+            }
         },
         "TAGLESS-0-1": {
             "aliases": {
@@ -4420,26 +4173,17 @@ content of DB:
                 "vxWorks-68040": true,
                 "vxWorks-ppc603": true
             },
-            "dependencies": {
-                "ASYN": {
-                    "R4-17-2": "stable"
-                },
-                "BASE": {
-                    "TAGLESS-3-14-12-2-1": "stable"
-                },
-                "BESSYRULES": {
-                    "R2-2": "stable"
-                },
-                "STREAM": {
-                    "R2-4-0-3": "stable"
-                }
-            },
+            "dependencies": [
+                "ASYN",
+                "BASE",
+                "BESSYRULES",
+                "STREAM"
+            ],
             "source": {
                 "darcs": {
                     "url": "rcsadm@aragon.acc.bessy.de:/opt/Epics/R3.14.12/support/apps/vacuum/0-1"
                 }
-            },
-            "state": "stable"
+            }
         },
         "TAGLESS-1-1": {
             "aliases": {
@@ -4449,26 +4193,17 @@ content of DB:
             "archs": {
                 "linux-x86": true
             },
-            "dependencies": {
-                "ASYN": {
-                    "4-18-bessy1": "stable"
-                },
-                "BASE": {
-                    "TAGLESS-3-14-12-2-1": "stable"
-                },
-                "BESSYRULES": {
-                    "R2-5": "stable"
-                },
-                "STREAM": {
-                    "R2-4-0-4": "stable"
-                }
-            },
+            "dependencies": [
+                "ASYN",
+                "BASE",
+                "BESSYRULES",
+                "STREAM"
+            ],
             "source": {
                 "darcs": {
                     "url": "rcsadm@aragon.acc.bessy.de:/opt/Epics/R3.14.12/support/apps/vacuum/1-1"
                 }
-            },
-            "state": "stable"
+            }
         }
     },
     "ASYN": {
@@ -4483,19 +4218,15 @@ content of DB:
                 "vxWorks-68040": true,
                 "vxWorks-ppc603": true
             },
-            "dependencies": {
-                "BASE": {
-                    "TAGLESS-3-14-12-2-1": "stable",
-                    "TAGLESS-3-14-12-2-2": "stable"
-                }
-            },
+            "dependencies": [
+                "BASE"
+            ],
             "source": {
                 "darcs": {
                     "tag": "4-18-bessy1",
                     "url": "rcsadm@aragon.acc.bessy.de:/opt/repositories/controls/darcs/epics/support/asyn/4-18"
                 }
-            },
-            "state": "stable"
+            }
         },
         "PATH-4-18": {
             "aliases": {
@@ -4508,15 +4239,12 @@ content of DB:
                 "vxWorks-68040": true,
                 "vxWorks-ppc603": true
             },
-            "dependencies": {
-                "BASE": {
-                    "TAGLESS-3-14-12-2-1": "stable"
-                }
-            },
+            "dependencies": [
+                "BASE"
+            ],
             "source": {
                 "path": "rcsadm@aragon.acc.bessy.de:/opt/Epics/R3.14.12/support/asyn/4-18"
-            },
-            "state": "stable"
+            }
         },
         "R4-17-1": {
             "aliases": {
@@ -4530,21 +4258,16 @@ content of DB:
                 "vxWorks-68040": true,
                 "vxWorks-ppc603": true
             },
-            "dependencies": {
-                "BASE": {
-                    "TAGLESS-3-14-12-2-1": "stable"
-                },
-                "SEQ": {
-                    "seq-2-1-3": "stable"
-                }
-            },
+            "dependencies": [
+                "BASE",
+                "SEQ"
+            ],
             "source": {
                 "darcs": {
                     "tag": "R4-17-1",
                     "url": "rcsadm@aragon.acc.bessy.de:/opt/repositories/controls/darcs/epics/support/asyn/4-17"
                 }
-            },
-            "state": "stable"
+            }
         },
         "R4-17-2": {
             "aliases": {
@@ -4557,18 +4280,15 @@ content of DB:
                 "vxWorks-68040": true,
                 "vxWorks-ppc603": true
             },
-            "dependencies": {
-                "BASE": {
-                    "TAGLESS-3-14-12-2-1": "stable"
-                }
-            },
+            "dependencies": [
+                "BASE"
+            ],
             "source": {
                 "darcs": {
                     "tag": "R4-17-2",
                     "url": "rcsadm@aragon.acc.bessy.de:/opt/repositories/controls/darcs/epics/support/asyn/4-17"
                 }
-            },
-            "state": "stable"
+            }
         }
     },
     "AUTOSAVE": {
@@ -4583,18 +4303,15 @@ content of DB:
                 "vxWorks-68040": true,
                 "vxWorks-ppc603": true
             },
-            "dependencies": {
-                "BASE": {
-                    "TAGLESS-3-14-12-2-1": "stable"
-                }
-            },
+            "dependencies": [
+                "BASE"
+            ],
             "source": {
                 "darcs": {
                     "tag": "4-7-bessy2",
                     "url": "rcsadm@aragon.acc.bessy.de:/opt/repositories/controls/darcs/epics/support/autosave/4-7"
                 }
-            },
-            "state": "stable"
+            }
         },
         "R4-7-1": {
             "aliases": {
@@ -4607,18 +4324,15 @@ content of DB:
                 "vxWorks-68040": true,
                 "vxWorks-ppc603": true
             },
-            "dependencies": {
-                "BASE": {
-                    "TAGLESS-3-14-12-2-1": "stable"
-                }
-            },
+            "dependencies": [
+                "BASE"
+            ],
             "source": {
                 "darcs": {
                     "tag": "R4-7-1",
                     "url": "rcsadm@aragon.acc.bessy.de:/opt/repositories/controls/darcs/epics/support/autosave/4-7"
                 }
-            },
-            "state": "stable"
+            }
         },
         "R4-8-bessy3": {
             "aliases": {
@@ -4631,18 +4345,15 @@ content of DB:
                 "vxWorks-68040": true,
                 "vxWorks-ppc603": true
             },
-            "dependencies": {
-                "BASE": {
-                    "TAGLESS-3-14-12-2-1": "stable"
-                }
-            },
+            "dependencies": [
+                "BASE"
+            ],
             "source": {
                 "darcs": {
                     "tag": "R4-8-bessy3",
                     "url": "rcsadm@aragon.acc.bessy.de:/opt/repositories/controls/darcs/epics/support/autosave/4-8-base-3-14-12"
                 }
-            },
-            "state": "stable"
+            }
         },
         "R4-8-bessy4": {
             "aliases": {
@@ -4655,18 +4366,15 @@ content of DB:
                 "vxWorks-68040": true,
                 "vxWorks-ppc603": true
             },
-            "dependencies": {
-                "BASE": {
-                    "TAGLESS-3-14-12-2-1": "stable"
-                }
-            },
+            "dependencies": [
+                "BASE"
+            ],
             "source": {
                 "darcs": {
                     "tag": "R4-8-bessy4",
                     "url": "rcsadm@aragon.acc.bessy.de:/opt/repositories/controls/darcs/epics/support/autosave/4-8-base-3-14-12"
                 }
-            },
-            "state": "stable"
+            }
         }
     },
     "BASE": {
@@ -4682,8 +4390,7 @@ content of DB:
                 "darcs": {
                     "url": "rcsadm@aragon.acc.bessy.de:/opt/Epics/R3.14.12/base/3-14-12-2-1"
                 }
-            },
-            "state": "stable"
+            }
         },
         "TAGLESS-3-14-12-2-2": {
             "archs": {
@@ -4697,8 +4404,7 @@ content of DB:
                 "darcs": {
                     "url": "rcsadm@aragon.acc.bessy.de:/opt/Epics/R3.14.12/base/3-14-12-2-2"
                 }
-            },
-            "state": "stable"
+            }
         }
     },
     "BESSYRULES": {
@@ -4709,18 +4415,15 @@ content of DB:
             "archs": {
                 "ANY": true
             },
-            "dependencies": {
-                "BASE": {
-                    "TAGLESS-3-14-12-2-1": "stable"
-                }
-            },
+            "dependencies": [
+                "BASE"
+            ],
             "source": {
                 "darcs": {
                     "tag": "R2-2",
                     "url": "rcsadm@aragon.acc.bessy.de:/opt/repositories/controls/darcs/epics/support/bessyRules"
                 }
-            },
-            "state": "stable"
+            }
         },
         "R2-3": {
             "aliases": {
@@ -4729,18 +4432,15 @@ content of DB:
             "archs": {
                 "ANY": true
             },
-            "dependencies": {
-                "BASE": {
-                    "TAGLESS-3-14-12-2-1": "stable"
-                }
-            },
+            "dependencies": [
+                "BASE"
+            ],
             "source": {
                 "darcs": {
                     "tag": "R2-3",
                     "url": "rcsadm@aragon.acc.bessy.de:/opt/repositories/controls/darcs/epics/support/bessyRules"
                 }
-            },
-            "state": "stable"
+            }
         },
         "R2-4": {
             "aliases": {
@@ -4749,18 +4449,15 @@ content of DB:
             "archs": {
                 "ANY": true
             },
-            "dependencies": {
-                "BASE": {
-                    "TAGLESS-3-14-12-2-1": "stable"
-                }
-            },
+            "dependencies": [
+                "BASE"
+            ],
             "source": {
                 "darcs": {
                     "tag": "R2-4",
                     "url": "rcsadm@aragon.acc.bessy.de:/opt/repositories/controls/darcs/epics/support/bessyRules"
                 }
-            },
-            "state": "stable"
+            }
         },
         "R2-5": {
             "aliases": {
@@ -4769,18 +4466,15 @@ content of DB:
             "archs": {
                 "ANY": true
             },
-            "dependencies": {
-                "BASE": {
-                    "TAGLESS-3-14-12-2-1": "stable"
-                }
-            },
+            "dependencies": [
+                "BASE"
+            ],
             "source": {
                 "darcs": {
                     "tag": "R2-5",
                     "url": "rcsadm@aragon.acc.bessy.de:/opt/repositories/controls/darcs/epics/support/bessyRules"
                 }
-            },
-            "state": "stable"
+            }
         },
         "R2-6": {
             "aliases": {
@@ -4789,18 +4483,15 @@ content of DB:
             "archs": {
                 "ANY": true
             },
-            "dependencies": {
-                "BASE": {
-                    "TAGLESS-3-14-12-2-1": "stable"
-                }
-            },
+            "dependencies": [
+                "BASE"
+            ],
             "source": {
                 "darcs": {
                     "tag": "R2-6",
                     "url": "rcsadm@aragon.acc.bessy.de:/opt/repositories/controls/darcs/epics/support/bessyRules"
                 }
-            },
-            "state": "stable"
+            }
         }
     },
     "BINP": {
@@ -4813,24 +4504,17 @@ content of DB:
                 "vxWorks-68040": true,
                 "vxWorks-ppc603": true
             },
-            "dependencies": {
-                "ALARM": {
-                    "R3-7": "stable"
-                },
-                "BASE": {
-                    "TAGLESS-3-14-12-2-1": "stable"
-                },
-                "MISC_DBC": {
-                    "R3-0": "stable"
-                }
-            },
+            "dependencies": [
+                "ALARM",
+                "BASE",
+                "MISC_DBC"
+            ],
             "source": {
                 "darcs": {
                     "tag": "R2-4",
                     "url": "rcsadm@aragon.acc.bessy.de:/opt/repositories/controls/darcs/epics/support/binp"
                 }
-            },
-            "state": "stable"
+            }
         },
         "R2-5": {
             "aliases": {
@@ -4841,24 +4525,17 @@ content of DB:
                 "vxWorks-68040": true,
                 "vxWorks-ppc603": true
             },
-            "dependencies": {
-                "ALARM": {
-                    "R3-8": "stable"
-                },
-                "BASE": {
-                    "TAGLESS-3-14-12-2-1": "stable"
-                },
-                "MISC_DBC": {
-                    "R3-0": "stable"
-                }
-            },
+            "dependencies": [
+                "ALARM",
+                "BASE",
+                "MISC_DBC"
+            ],
             "source": {
                 "darcs": {
                     "tag": "R2-5",
                     "url": "rcsadm@aragon.acc.bessy.de:/opt/repositories/controls/darcs/epics/support/binp"
                 }
-            },
-            "state": "stable"
+            }
         }
     },
     "BSPDEP_CPUBOARDINIT": {
@@ -4873,18 +4550,15 @@ content of DB:
                 "vxWorks-68040": true,
                 "vxWorks-ppc603": true
             },
-            "dependencies": {
-                "BASE": {
-                    "TAGLESS-3-14-12-2-1": "stable"
-                }
-            },
+            "dependencies": [
+                "BASE"
+            ],
             "source": {
                 "darcs": {
                     "tag": "R4-1",
                     "url": "rcsadm@aragon.acc.bessy.de:/opt/repositories/controls/darcs/epics/support/bspDep/cpuBoardInit"
                 }
-            },
-            "state": "stable"
+            }
         }
     },
     "BSPDEP_ENABLED32": {
@@ -4899,18 +4573,15 @@ content of DB:
                 "vxWorks-68040": true,
                 "vxWorks-ppc603": true
             },
-            "dependencies": {
-                "BASE": {
-                    "TAGLESS-3-14-12-2-1": "stable"
-                }
-            },
+            "dependencies": [
+                "BASE"
+            ],
             "source": {
                 "darcs": {
                     "tag": "R4-2",
                     "url": "rcsadm@aragon.acc.bessy.de:/opt/repositories/controls/darcs/epics/support/bspDep/enableD32"
                 }
-            },
-            "state": "stable"
+            }
         }
     },
     "BSPDEP_TIMER": {
@@ -4924,18 +4595,15 @@ content of DB:
                 "vxWorks-68040": true,
                 "vxWorks-ppc603": true
             },
-            "dependencies": {
-                "BASE": {
-                    "TAGLESS-3-14-12-2-1": "stable"
-                }
-            },
+            "dependencies": [
+                "BASE"
+            ],
             "source": {
                 "darcs": {
                     "tag": "R6-2",
                     "url": "rcsadm@aragon.acc.bessy.de:/opt/repositories/controls/darcs/epics/support/bspDep/timer"
                 }
-            },
-            "state": "stable"
+            }
         }
     },
     "BSPDEP_VMETAS": {
@@ -4950,18 +4618,15 @@ content of DB:
                 "vxWorks-68040": true,
                 "vxWorks-ppc603": true
             },
-            "dependencies": {
-                "BASE": {
-                    "TAGLESS-3-14-12-2-1": "stable"
-                }
-            },
+            "dependencies": [
+                "BASE"
+            ],
             "source": {
                 "darcs": {
                     "tag": "R2-0",
                     "url": "rcsadm@aragon.acc.bessy.de:/opt/repositories/controls/darcs/epics/support/bspDep/VMEtas"
                 }
-            },
-            "state": "stable"
+            }
         }
     },
     "BUSY": {
@@ -4976,18 +4641,13 @@ content of DB:
                 "vxWorks-68040": true,
                 "vxWorks-ppc603": true
             },
-            "dependencies": {
-                "ASYN": {
-                    "PATH-4-18": "stable"
-                },
-                "BASE": {
-                    "TAGLESS-3-14-12-2-1": "stable"
-                }
-            },
+            "dependencies": [
+                "ASYN",
+                "BASE"
+            ],
             "source": {
                 "path": "rcsadm@aragon.acc.bessy.de:/opt/Epics/R3.14.12/support/busy/1-4"
-            },
-            "state": "stable"
+            }
         },
         "TAGLESS-1-3-1": {
             "aliases": {
@@ -5000,17 +4660,14 @@ content of DB:
                 "vxWorks-68040": true,
                 "vxWorks-ppc603": true
             },
-            "dependencies": {
-                "BASE": {
-                    "TAGLESS-3-14-12-2-1": "stable"
-                }
-            },
+            "dependencies": [
+                "BASE"
+            ],
             "source": {
                 "darcs": {
                     "url": "rcsadm@aragon.acc.bessy.de:/opt/Epics/R3.14.12/support/busy/1-3-1"
                 }
-            },
-            "state": "stable"
+            }
         },
         "TAGLESS-1-4-bessy1": {
             "aliases": {
@@ -5023,20 +4680,15 @@ content of DB:
                 "vxWorks-68040": true,
                 "vxWorks-ppc603": true
             },
-            "dependencies": {
-                "ASYN": {
-                    "4-18-bessy1": "stable"
-                },
-                "BASE": {
-                    "TAGLESS-3-14-12-2-1": "stable"
-                }
-            },
+            "dependencies": [
+                "ASYN",
+                "BASE"
+            ],
             "source": {
                 "darcs": {
                     "url": "rcsadm@aragon.acc.bessy.de:/opt/Epics/R3.14.12/support/busy/1-4-bessy1"
                 }
-            },
-            "state": "stable"
+            }
         }
     },
     "CALC": {
@@ -5051,18 +4703,15 @@ content of DB:
                 "vxWorks-68040": true,
                 "vxWorks-ppc603": true
             },
-            "dependencies": {
-                "BASE": {
-                    "TAGLESS-3-14-12-2-1": "stable"
-                }
-            },
+            "dependencies": [
+                "BASE"
+            ],
             "source": {
                 "darcs": {
                     "tag": "R3-1-bessy1",
                     "url": "rcsadm@aragon.acc.bessy.de:/opt/repositories/controls/darcs/epics/support/calc/3-1"
                 }
-            },
-            "state": "stable"
+            }
         }
     },
     "CAPUTLOG": {
@@ -5077,18 +4726,15 @@ content of DB:
                 "vxWorks-68040": true,
                 "vxWorks-ppc603": true
             },
-            "dependencies": {
-                "BASE": {
-                    "TAGLESS-3-14-12-2-1": "stable"
-                }
-            },
+            "dependencies": [
+                "BASE"
+            ],
             "source": {
                 "darcs": {
                     "tag": "R3-3-2",
                     "url": "rcsadm@aragon.acc.bessy.de:/opt/repositories/controls/darcs/epics/support/caPutLog"
                 }
-            },
-            "state": "stable"
+            }
         }
     },
     "CSM": {
@@ -5103,18 +4749,15 @@ content of DB:
                 "vxWorks-68040": true,
                 "vxWorks-ppc603": true
             },
-            "dependencies": {
-                "BASE": {
-                    "TAGLESS-3-14-12-2-1": "stable"
-                }
-            },
+            "dependencies": [
+                "BASE"
+            ],
             "source": {
                 "darcs": {
                     "tag": "R3-7",
                     "url": "rcsadm@aragon.acc.bessy.de:/opt/Epics/R3.14.12/support/csm/3-7"
                 }
-            },
-            "state": "stable"
+            }
         },
         "R4-1": {
             "aliases": {
@@ -5127,18 +4770,15 @@ content of DB:
                 "vxWorks-68040": true,
                 "vxWorks-ppc603": true
             },
-            "dependencies": {
-                "BASE": {
-                    "TAGLESS-3-14-12-2-1": "stable"
-                }
-            },
+            "dependencies": [
+                "BASE"
+            ],
             "source": {
                 "darcs": {
                     "tag": "R4-1",
                     "url": "rcsadm@aragon.acc.bessy.de:/opt/repositories/controls/darcs/epics/support/csm/base-3-14-12"
                 }
-            },
-            "state": "stable"
+            }
         },
         "R4-3": {
             "aliases": {
@@ -5151,18 +4791,15 @@ content of DB:
                 "vxWorks-68040": true,
                 "vxWorks-ppc603": true
             },
-            "dependencies": {
-                "BASE": {
-                    "TAGLESS-3-14-12-2-1": "stable"
-                }
-            },
+            "dependencies": [
+                "BASE"
+            ],
             "source": {
                 "darcs": {
                     "tag": "R4-3",
                     "url": "rcsadm@aragon.acc.bessy.de:/opt/repositories/controls/darcs/epics/support/csm/base-3-14-12"
                 }
-            },
-            "state": "stable"
+            }
         },
         "TAGLESS-4-0": {
             "aliases": {
@@ -5175,17 +4812,14 @@ content of DB:
                 "vxWorks-68040": true,
                 "vxWorks-ppc603": true
             },
-            "dependencies": {
-                "BASE": {
-                    "TAGLESS-3-14-12-2-1": "stable"
-                }
-            },
+            "dependencies": [
+                "BASE"
+            ],
             "source": {
                 "darcs": {
                     "url": "rcsadm@aragon.acc.bessy.de:/opt/Epics/R3.14.12/support/csm/4-0"
                 }
-            },
-            "state": "stable"
+            }
         }
     },
     "DEVGPIB": {
@@ -5200,21 +4834,16 @@ content of DB:
                 "vxWorks-68040": true,
                 "vxWorks-ppc603": true
             },
-            "dependencies": {
-                "ASYN": {
-                    "R4-17-1": "stable"
-                },
-                "BASE": {
-                    "TAGLESS-3-14-12-2-1": "stable"
-                }
-            },
+            "dependencies": [
+                "ASYN",
+                "BASE"
+            ],
             "source": {
                 "darcs": {
                     "tag": "R2-1-8-5",
                     "url": "rcsadm@aragon.acc.bessy.de:/opt/Epics/R3.14.12/support/devGpib/2-1-8-5"
                 }
-            },
-            "state": "stable"
+            }
         },
         "R2-2-0": {
             "aliases": {
@@ -5227,21 +4856,16 @@ content of DB:
                 "vxWorks-68040": true,
                 "vxWorks-ppc603": true
             },
-            "dependencies": {
-                "ASYN": {
-                    "R4-17-2": "stable"
-                },
-                "BASE": {
-                    "TAGLESS-3-14-12-2-1": "stable"
-                }
-            },
+            "dependencies": [
+                "ASYN",
+                "BASE"
+            ],
             "source": {
                 "darcs": {
                     "tag": "R2-2-0",
                     "url": "rcsadm@aragon.acc.bessy.de:/opt/repositories/controls/darcs/epics/support/devGpib/base-3-14-12"
                 }
-            },
-            "state": "stable"
+            }
         }
     },
     "DEVIOCSTATS": {
@@ -5256,15 +4880,12 @@ content of DB:
                 "vxWorks-68040": true,
                 "vxWorks-ppc603": true
             },
-            "dependencies": {
-                "BASE": {
-                    "TAGLESS-3-14-12-2-1": "stable"
-                }
-            },
+            "dependencies": [
+                "BASE"
+            ],
             "source": {
                 "path": "rcsadm@aragon.acc.bessy.de:/opt/Epics/R3.14.12/support/devIocStats/3-1-4-1"
-            },
-            "state": "stable"
+            }
         },
         "PATH-3-1-4-1-test": {
             "aliases": {
@@ -5277,15 +4898,12 @@ content of DB:
                 "vxWorks-68040": true,
                 "vxWorks-ppc603": true
             },
-            "dependencies": {
-                "BASE": {
-                    "TAGLESS-3-14-12-2-1": "stable"
-                }
-            },
+            "dependencies": [
+                "BASE"
+            ],
             "source": {
                 "path": "rcsadm@aragon.acc.bessy.de:/opt/Epics/R3.14.12/support/devIocStats/3-1-4-1-test"
-            },
-            "state": "stable"
+            }
         },
         "R3-1-6-1": {
             "aliases": {
@@ -5299,21 +4917,16 @@ content of DB:
                 "vxWorks-68040": true,
                 "vxWorks-ppc603": true
             },
-            "dependencies": {
-                "BASE": {
-                    "TAGLESS-3-14-12-2-1": "stable"
-                },
-                "SEQ": {
-                    "seq-2-1-3": "stable"
-                }
-            },
+            "dependencies": [
+                "BASE",
+                "SEQ"
+            ],
             "source": {
                 "darcs": {
                     "tag": "R3-1-6-1",
                     "url": "rcsadm@aragon.acc.bessy.de:/opt/repositories/controls/darcs/epics/support/devIocStats/3-1-6"
                 }
-            },
-            "state": "stable"
+            }
         },
         "R3-1-6-2": {
             "aliases": {
@@ -5327,21 +4940,16 @@ content of DB:
                 "vxWorks-68040": true,
                 "vxWorks-ppc603": true
             },
-            "dependencies": {
-                "BASE": {
-                    "TAGLESS-3-14-12-2-1": "stable"
-                },
-                "SEQ": {
-                    "PATH-2-1-10": "stable"
-                }
-            },
+            "dependencies": [
+                "BASE",
+                "SEQ"
+            ],
             "source": {
                 "darcs": {
                     "tag": "R3-1-6-2",
                     "url": "rcsadm@aragon.acc.bessy.de:/opt/repositories/controls/darcs/epics/support/devIocStats/3-1-6"
                 }
-            },
-            "state": "stable"
+            }
         },
         "R3-1-9-1": {
             "aliases": {
@@ -5355,21 +4963,16 @@ content of DB:
                 "vxWorks-68040": true,
                 "vxWorks-ppc603": true
             },
-            "dependencies": {
-                "BASE": {
-                    "TAGLESS-3-14-12-2-1": "stable"
-                },
-                "SEQ": {
-                    "seq-2-1-3": "stable"
-                }
-            },
+            "dependencies": [
+                "BASE",
+                "SEQ"
+            ],
             "source": {
                 "darcs": {
                     "tag": "R3-1-9-1",
                     "url": "rcsadm@aragon.acc.bessy.de:/opt/Epics/R3.14.12/support/devIocStats/vendor"
                 }
-            },
-            "state": "stable"
+            }
         },
         "R3-1-9-2": {
             "aliases": {
@@ -5382,18 +4985,15 @@ content of DB:
                 "vxWorks-68040": true,
                 "vxWorks-ppc603": true
             },
-            "dependencies": {
-                "BASE": {
-                    "TAGLESS-3-14-12-2-1": "stable"
-                }
-            },
+            "dependencies": [
+                "BASE"
+            ],
             "source": {
                 "darcs": {
                     "tag": "R3-1-9-2",
                     "url": "rcsadm@aragon.acc.bessy.de:/opt/repositories/controls/darcs/epics/support/devIocStats/3-1-9"
                 }
-            },
-            "state": "stable"
+            }
         },
         "R3-1-9-bessy3": {
             "aliases": {
@@ -5406,18 +5006,15 @@ content of DB:
                 "vxWorks-68040": true,
                 "vxWorks-ppc603": true
             },
-            "dependencies": {
-                "BASE": {
-                    "TAGLESS-3-14-12-2-1": "stable"
-                }
-            },
+            "dependencies": [
+                "BASE"
+            ],
             "source": {
                 "darcs": {
                     "tag": "R3-1-9-bessy3",
                     "url": "rcsadm@aragon.acc.bessy.de:/opt/repositories/controls/darcs/epics/support/devIocStats/3-1-9"
                 }
-            },
-            "state": "stable"
+            }
         },
         "TAGLESS-3-1-9-gp": {
             "aliases": {
@@ -5430,17 +5027,14 @@ content of DB:
                 "vxWorks-68040": true,
                 "vxWorks-ppc603": true
             },
-            "dependencies": {
-                "BASE": {
-                    "TAGLESS-3-14-12-2-1": "stable"
-                }
-            },
+            "dependencies": [
+                "BASE"
+            ],
             "source": {
                 "darcs": {
                     "url": "rcsadm@aragon.acc.bessy.de:/opt/Epics/R3.14.12/support/devIocStats/3-1-9-gp"
                 }
-            },
-            "state": "stable"
+            }
         }
     },
     "DEVLIB2": {
@@ -5455,18 +5049,15 @@ content of DB:
                 "vxWorks-68040": true,
                 "vxWorks-ppc603": true
             },
-            "dependencies": {
-                "BASE": {
-                    "TAGLESS-3-14-12-2-1": "stable"
-                }
-            },
+            "dependencies": [
+                "BASE"
+            ],
             "source": {
                 "darcs": {
                     "tag": "R2-3-1",
                     "url": "rcsadm@aragon.acc.bessy.de:/opt/repositories/controls/darcs/epics/support/devlib2/2-3"
                 }
-            },
-            "state": "stable"
+            }
         }
     },
     "DISTVERSION": {
@@ -5481,18 +5072,15 @@ content of DB:
                 "vxWorks-68040": true,
                 "vxWorks-ppc603": true
             },
-            "dependencies": {
-                "BASE": {
-                    "TAGLESS-3-14-12-2-1": "stable"
-                }
-            },
+            "dependencies": [
+                "BASE"
+            ],
             "source": {
                 "darcs": {
                     "tag": "R2-2",
                     "url": "rcsadm@aragon.acc.bessy.de:/opt/repositories/controls/darcs/epics/support/distVersion/base-3-14"
                 }
-            },
-            "state": "stable"
+            }
         }
     },
     "DYNCON": {
@@ -5508,21 +5096,16 @@ content of DB:
                 "vxWorks-68040": true,
                 "vxWorks-ppc603": true
             },
-            "dependencies": {
-                "BASE": {
-                    "TAGLESS-3-14-12-2-1": "stable"
-                },
-                "HIGHLAND_V375": {
-                    "R1-2-2": "stable"
-                }
-            },
+            "dependencies": [
+                "BASE",
+                "HIGHLAND_V375"
+            ],
             "source": {
                 "darcs": {
                     "tag": "R3-2",
                     "url": "rcsadm@aragon.acc.bessy.de:/opt/repositories/controls/darcs/epics/support/dyncon"
                 }
-            },
-            "state": "stable"
+            }
         }
     },
     "EK": {
@@ -5538,21 +5121,16 @@ content of DB:
                 "vxWorks-68040": true,
                 "vxWorks-ppc603": true
             },
-            "dependencies": {
-                "BASE": {
-                    "TAGLESS-3-14-12-2-1": "stable"
-                },
-                "MISC_DEBUGMSG": {
-                    "R3-0": "stable"
-                }
-            },
+            "dependencies": [
+                "BASE",
+                "MISC_DEBUGMSG"
+            ],
             "source": {
                 "darcs": {
                     "tag": "R2-2",
                     "url": "rcsadm@aragon.acc.bessy.de:/opt/repositories/controls/darcs/epics/support/ek/base-3-14-12"
                 }
-            },
-            "state": "stable"
+            }
         }
     },
     "ESD": {
@@ -5564,18 +5142,15 @@ content of DB:
                 "vxWorks-68040": true,
                 "vxWorks-ppc603": true
             },
-            "dependencies": {
-                "BASE": {
-                    "TAGLESS-3-14-12-2-1": "stable"
-                }
-            },
+            "dependencies": [
+                "BASE"
+            ],
             "source": {
                 "darcs": {
                     "tag": "R2-1",
                     "url": "rcsadm@aragon.acc.bessy.de:/opt/repositories/controls/darcs/epics/support/esd/base-3-14"
                 }
-            },
-            "state": "stable"
+            }
         }
     },
     "FUN": {
@@ -5590,18 +5165,15 @@ content of DB:
                 "vxWorks-68040": true,
                 "vxWorks-ppc603": true
             },
-            "dependencies": {
-                "BASE": {
-                    "TAGLESS-3-14-12-2-1": "stable"
-                }
-            },
+            "dependencies": [
+                "BASE"
+            ],
             "source": {
                 "darcs": {
                     "tag": "R0-5",
                     "url": "rcsadm@aragon.acc.bessy.de:/opt/repositories/controls/darcs/epics/support/fun"
                 }
-            },
-            "state": "stable"
+            }
         },
         "TAGLESS-0-5-test": {
             "aliases": {
@@ -5614,17 +5186,14 @@ content of DB:
                 "vxWorks-68040": true,
                 "vxWorks-ppc603": true
             },
-            "dependencies": {
-                "BASE": {
-                    "TAGLESS-3-14-12-2-1": "stable"
-                }
-            },
+            "dependencies": [
+                "BASE"
+            ],
             "source": {
                 "darcs": {
                     "url": "rcsadm@aragon.acc.bessy.de:/opt/Epics/R3.14.12/support/fun/0-5-test"
                 }
-            },
-            "state": "stable"
+            }
         }
     },
     "GENSUB": {
@@ -5639,18 +5208,15 @@ content of DB:
                 "vxWorks-68040": true,
                 "vxWorks-ppc603": true
             },
-            "dependencies": {
-                "BASE": {
-                    "TAGLESS-3-14-12-2-1": "stable"
-                }
-            },
+            "dependencies": [
+                "BASE"
+            ],
             "source": {
                 "darcs": {
                     "tag": "R1-6-1",
                     "url": "rcsadm@aragon.acc.bessy.de:/opt/repositories/controls/darcs/epics/support/genSub/1-6"
                 }
-            },
-            "state": "stable"
+            }
         }
     },
     "HIGHLAND_V375": {
@@ -5665,21 +5231,16 @@ content of DB:
                 "vxWorks-68040": true,
                 "vxWorks-ppc603": true
             },
-            "dependencies": {
-                "BASE": {
-                    "TAGLESS-3-14-12-2-1": "stable"
-                },
-                "RULES": {
-                    "R2-1": "stable"
-                }
-            },
+            "dependencies": [
+                "BASE",
+                "RULES"
+            ],
             "source": {
                 "darcs": {
                     "tag": "R1-2-2",
                     "url": "rcsadm@aragon.acc.bessy.de:/opt/repositories/controls/darcs/epics/support/highland/V375"
                 }
-            },
-            "state": "stable"
+            }
         }
     },
     "HIGHLAND_V680": {
@@ -5695,21 +5256,16 @@ content of DB:
                 "vxWorks-68040": true,
                 "vxWorks-ppc603": true
             },
-            "dependencies": {
-                "BASE": {
-                    "TAGLESS-3-14-12-2-1": "stable"
-                },
-                "MISC_DEBUGMSG": {
-                    "R3-0": "stable"
-                }
-            },
+            "dependencies": [
+                "BASE",
+                "MISC_DEBUGMSG"
+            ],
             "source": {
                 "darcs": {
                     "tag": "R1-3",
                     "url": "rcsadm@aragon.acc.bessy.de:/opt/repositories/controls/darcs/epics/support/highland/V680"
                 }
-            },
-            "state": "stable"
+            }
         }
     },
     "HIGHLAND_V850": {
@@ -5724,18 +5280,15 @@ content of DB:
                 "vxWorks-68040": true,
                 "vxWorks-ppc603": true
             },
-            "dependencies": {
-                "BASE": {
-                    "TAGLESS-3-14-12-2-1": "stable"
-                }
-            },
+            "dependencies": [
+                "BASE"
+            ],
             "source": {
                 "darcs": {
                     "tag": "R2-3-2",
                     "url": "rcsadm@aragon.acc.bessy.de:/opt/repositories/controls/darcs/epics/support/highland/V850"
                 }
-            },
-            "state": "stable"
+            }
         }
     },
     "IPAC": {
@@ -5750,15 +5303,12 @@ content of DB:
                 "vxWorks-68040": true,
                 "vxWorks-ppc603": true
             },
-            "dependencies": {
-                "BASE": {
-                    "TAGLESS-3-14-12-2-1": "stable"
-                }
-            },
+            "dependencies": [
+                "BASE"
+            ],
             "source": {
                 "path": "rcsadm@aragon.acc.bessy.de:/opt/Epics/R3.14.12/support/ipac/2-11"
-            },
-            "state": "stable"
+            }
         }
     },
     "MCAN": {
@@ -5773,30 +5323,19 @@ content of DB:
                 "vxWorks-68040": true,
                 "vxWorks-ppc603": true
             },
-            "dependencies": {
-                "ALARM": {
-                    "R3-7": "stable"
-                },
-                "BASE": {
-                    "TAGLESS-3-14-12-2-1": "stable"
-                },
-                "MISC_DBC": {
-                    "R3-0": "stable"
-                },
-                "MISC_DEBUGMSG": {
-                    "R3-0": "stable"
-                },
-                "SOFT_DEVHWCLIENT": {
-                    "R3-0": "stable"
-                }
-            },
+            "dependencies": [
+                "ALARM",
+                "BASE",
+                "MISC_DBC",
+                "MISC_DEBUGMSG",
+                "SOFT_DEVHWCLIENT"
+            ],
             "source": {
                 "darcs": {
                     "tag": "R2-4-0",
                     "url": "rcsadm@aragon.acc.bessy.de:/opt/Epics/R3.14.12/support/mcan/2-4-0"
                 }
-            },
-            "state": "stable"
+            }
         },
         "R2-4-1": {
             "aliases": {
@@ -5809,30 +5348,19 @@ content of DB:
                 "vxWorks-68040": true,
                 "vxWorks-ppc603": true
             },
-            "dependencies": {
-                "ALARM": {
-                    "R3-7": "stable"
-                },
-                "BASE": {
-                    "TAGLESS-3-14-12-2-1": "stable"
-                },
-                "MISC_DBC": {
-                    "R3-0": "stable"
-                },
-                "MISC_DEBUGMSG": {
-                    "R3-0": "stable"
-                },
-                "SOFT_DEVHWCLIENT": {
-                    "R3-0": "stable"
-                }
-            },
+            "dependencies": [
+                "ALARM",
+                "BASE",
+                "MISC_DBC",
+                "MISC_DEBUGMSG",
+                "SOFT_DEVHWCLIENT"
+            ],
             "source": {
                 "darcs": {
                     "tag": "R2-4-1",
                     "url": "rcsadm@aragon.acc.bessy.de:/opt/Epics/R3.14.12/support/mcan/2-4-0"
                 }
-            },
-            "state": "stable"
+            }
         },
         "R2-4-2": {
             "aliases": {
@@ -5845,30 +5373,19 @@ content of DB:
                 "vxWorks-68040": true,
                 "vxWorks-ppc603": true
             },
-            "dependencies": {
-                "ALARM": {
-                    "R3-7": "stable"
-                },
-                "BASE": {
-                    "TAGLESS-3-14-12-2-1": "stable"
-                },
-                "MISC_DBC": {
-                    "R3-0": "stable"
-                },
-                "MISC_DEBUGMSG": {
-                    "R3-0": "stable"
-                },
-                "SOFT_DEVHWCLIENT": {
-                    "R3-0": "stable"
-                }
-            },
+            "dependencies": [
+                "ALARM",
+                "BASE",
+                "MISC_DBC",
+                "MISC_DEBUGMSG",
+                "SOFT_DEVHWCLIENT"
+            ],
             "source": {
                 "darcs": {
                     "tag": "R2-4-2",
                     "url": "rcsadm@aragon.acc.bessy.de:/opt/Epics/R3.14.12/support/mcan/2-4-1"
                 }
-            },
-            "state": "stable"
+            }
         },
         "R2-4-3": {
             "aliases": {
@@ -5881,30 +5398,19 @@ content of DB:
                 "vxWorks-68040": true,
                 "vxWorks-ppc603": true
             },
-            "dependencies": {
-                "ALARM": {
-                    "R3-7": "stable"
-                },
-                "BASE": {
-                    "TAGLESS-3-14-12-2-1": "stable"
-                },
-                "MISC_DBC": {
-                    "R3-0": "stable"
-                },
-                "MISC_DEBUGMSG": {
-                    "R3-0": "stable"
-                },
-                "SOFT_DEVHWCLIENT": {
-                    "R3-0": "stable"
-                }
-            },
+            "dependencies": [
+                "ALARM",
+                "BASE",
+                "MISC_DBC",
+                "MISC_DEBUGMSG",
+                "SOFT_DEVHWCLIENT"
+            ],
             "source": {
                 "darcs": {
                     "tag": "R2-4-3",
                     "url": "rcsadm@aragon.acc.bessy.de:/opt/repositories/controls/darcs/epics/support/mcan/base-3-14-12"
                 }
-            },
-            "state": "stable"
+            }
         },
         "R2-4-4": {
             "aliases": {
@@ -5920,33 +5426,20 @@ content of DB:
                 "vxWorks-68040": true,
                 "vxWorks-ppc603": true
             },
-            "dependencies": {
-                "ALARM": {
-                    "R3-7": "stable"
-                },
-                "BASE": {
-                    "TAGLESS-3-14-12-2-1": "stable"
-                },
-                "BSPDEP_VMETAS": {
-                    "R2-0": "stable"
-                },
-                "MISC_DBC": {
-                    "R3-0": "stable"
-                },
-                "MISC_DEBUGMSG": {
-                    "R3-0": "stable"
-                },
-                "SOFT_DEVHWCLIENT": {
-                    "R3-0": "stable"
-                }
-            },
+            "dependencies": [
+                "ALARM",
+                "BASE",
+                "BSPDEP_VMETAS",
+                "MISC_DBC",
+                "MISC_DEBUGMSG",
+                "SOFT_DEVHWCLIENT"
+            ],
             "source": {
                 "darcs": {
                     "tag": "R2-4-4",
                     "url": "rcsadm@aragon.acc.bessy.de:/opt/repositories/controls/darcs/epics/support/mcan/base-3-14-12"
                 }
-            },
-            "state": "stable"
+            }
         },
         "R2-4-5": {
             "aliases": {
@@ -5962,33 +5455,20 @@ content of DB:
                 "vxWorks-68040": true,
                 "vxWorks-ppc603": true
             },
-            "dependencies": {
-                "ALARM": {
-                    "R3-7": "stable"
-                },
-                "BASE": {
-                    "TAGLESS-3-14-12-2-1": "stable"
-                },
-                "BSPDEP_VMETAS": {
-                    "R2-0": "stable"
-                },
-                "MISC_DBC": {
-                    "R3-0": "stable"
-                },
-                "MISC_DEBUGMSG": {
-                    "R3-0": "stable"
-                },
-                "SOFT_DEVHWCLIENT": {
-                    "R3-0": "stable"
-                }
-            },
+            "dependencies": [
+                "ALARM",
+                "BASE",
+                "BSPDEP_VMETAS",
+                "MISC_DBC",
+                "MISC_DEBUGMSG",
+                "SOFT_DEVHWCLIENT"
+            ],
             "source": {
                 "darcs": {
                     "tag": "R2-4-5",
                     "url": "rcsadm@aragon.acc.bessy.de:/opt/repositories/controls/darcs/epics/support/mcan/base-3-14-12"
                 }
-            },
-            "state": "stable"
+            }
         },
         "R2-5": {
             "aliases": {
@@ -6004,33 +5484,20 @@ content of DB:
                 "vxWorks-68040": true,
                 "vxWorks-ppc603": true
             },
-            "dependencies": {
-                "ALARM": {
-                    "R3-8": "stable"
-                },
-                "BASE": {
-                    "TAGLESS-3-14-12-2-1": "stable"
-                },
-                "BSPDEP_VMETAS": {
-                    "R2-0": "stable"
-                },
-                "MISC_DBC": {
-                    "R3-0": "stable"
-                },
-                "MISC_DEBUGMSG": {
-                    "R3-0": "stable"
-                },
-                "SOFT_DEVHWCLIENT": {
-                    "R3-0": "stable"
-                }
-            },
+            "dependencies": [
+                "ALARM",
+                "BASE",
+                "BSPDEP_VMETAS",
+                "MISC_DBC",
+                "MISC_DEBUGMSG",
+                "SOFT_DEVHWCLIENT"
+            ],
             "source": {
                 "darcs": {
                     "tag": "R2-5",
                     "url": "rcsadm@aragon.acc.bessy.de:/opt/repositories/controls/darcs/epics/support/mcan/base-3-14-12"
                 }
-            },
-            "state": "stable"
+            }
         },
         "R2-6-1": {
             "aliases": {
@@ -6046,33 +5513,20 @@ content of DB:
                 "vxWorks-68040": true,
                 "vxWorks-ppc603": true
             },
-            "dependencies": {
-                "ALARM": {
-                    "R3-8": "stable"
-                },
-                "BASE": {
-                    "TAGLESS-3-14-12-2-1": "stable"
-                },
-                "BSPDEP_VMETAS": {
-                    "R2-0": "stable"
-                },
-                "MISC_DBC": {
-                    "R3-0": "stable"
-                },
-                "MISC_DEBUGMSG": {
-                    "R3-0": "stable"
-                },
-                "SOFT_DEVHWCLIENT": {
-                    "R3-0": "stable"
-                }
-            },
+            "dependencies": [
+                "ALARM",
+                "BASE",
+                "BSPDEP_VMETAS",
+                "MISC_DBC",
+                "MISC_DEBUGMSG",
+                "SOFT_DEVHWCLIENT"
+            ],
             "source": {
                 "darcs": {
                     "tag": "R2-6-1",
                     "url": "rcsadm@aragon.acc.bessy.de:/opt/repositories/controls/darcs/epics/support/mcan/base-3-14-12"
                 }
-            },
-            "state": "stable"
+            }
         },
         "TAGLESS-2-6-2": {
             "aliases": {
@@ -6088,32 +5542,19 @@ content of DB:
                 "vxWorks-68040": true,
                 "vxWorks-ppc603": true
             },
-            "dependencies": {
-                "ALARM": {
-                    "R3-8": "stable"
-                },
-                "BASE": {
-                    "TAGLESS-3-14-12-2-1": "stable"
-                },
-                "BSPDEP_VMETAS": {
-                    "R2-0": "stable"
-                },
-                "MISC_DBC": {
-                    "R3-0": "stable"
-                },
-                "MISC_DEBUGMSG": {
-                    "R3-0": "stable"
-                },
-                "SOFT_DEVHWCLIENT": {
-                    "R3-0": "stable"
-                }
-            },
+            "dependencies": [
+                "ALARM",
+                "BASE",
+                "BSPDEP_VMETAS",
+                "MISC_DBC",
+                "MISC_DEBUGMSG",
+                "SOFT_DEVHWCLIENT"
+            ],
             "source": {
                 "darcs": {
                     "url": "rcsadm@aragon.acc.bessy.de:/opt/Epics/R3.14.12/support/mcan/2-6-2"
                 }
-            },
-            "state": "stable"
+            }
         },
         "TAGLESS-2-6-3": {
             "aliases": {
@@ -6129,33 +5570,19 @@ content of DB:
                 "vxWorks-68040": true,
                 "vxWorks-ppc603": true
             },
-            "dependencies": {
-                "ALARM": {
-                    "R3-8": "stable",
-                    "R3-9": "stable"
-                },
-                "BASE": {
-                    "TAGLESS-3-14-12-2-1": "stable"
-                },
-                "BSPDEP_VMETAS": {
-                    "R2-0": "stable"
-                },
-                "MISC_DBC": {
-                    "R3-0": "stable"
-                },
-                "MISC_DEBUGMSG": {
-                    "R3-0": "stable"
-                },
-                "SOFT_DEVHWCLIENT": {
-                    "R3-0": "stable"
-                }
-            },
+            "dependencies": [
+                "ALARM",
+                "BASE",
+                "BSPDEP_VMETAS",
+                "MISC_DBC",
+                "MISC_DEBUGMSG",
+                "SOFT_DEVHWCLIENT"
+            ],
             "source": {
                 "darcs": {
                     "url": "rcsadm@aragon.acc.bessy.de:/opt/Epics/R3.14.12/support/mcan/2-6-3"
                 }
-            },
-            "state": "stable"
+            }
         },
         "TAGLESS-2-6-3-test": {
             "aliases": {
@@ -6168,32 +5595,19 @@ content of DB:
             "archs": {
                 "ANY": true
             },
-            "dependencies": {
-                "ALARM": {
-                    "R3-8": "stable"
-                },
-                "BASE": {
-                    "TAGLESS-3-14-12-2-1": "stable"
-                },
-                "BSPDEP_VMETAS": {
-                    "R2-0": "stable"
-                },
-                "MISC_DBC": {
-                    "R3-0": "stable"
-                },
-                "MISC_DEBUGMSG": {
-                    "R3-0": "stable"
-                },
-                "SOFT_DEVHWCLIENT": {
-                    "R3-0": "stable"
-                }
-            },
+            "dependencies": [
+                "ALARM",
+                "BASE",
+                "BSPDEP_VMETAS",
+                "MISC_DBC",
+                "MISC_DEBUGMSG",
+                "SOFT_DEVHWCLIENT"
+            ],
             "source": {
                 "darcs": {
                     "url": "rcsadm@aragon.acc.bessy.de:/opt/Epics/R3.14.12/support/mcan/2-6-3-test"
                 }
-            },
-            "state": "stable"
+            }
         }
     },
     "MISC_DBC": {
@@ -6204,18 +5618,15 @@ content of DB:
             "archs": {
                 "ANY": true
             },
-            "dependencies": {
-                "BASE": {
-                    "TAGLESS-3-14-12-2-1": "stable"
-                }
-            },
+            "dependencies": [
+                "BASE"
+            ],
             "source": {
                 "darcs": {
                     "tag": "R3-0",
                     "url": "rcsadm@aragon.acc.bessy.de:/opt/repositories/controls/darcs/epics/support/misc/dbc"
                 }
-            },
-            "state": "stable"
+            }
         }
     },
     "MISC_DEBUGMSG": {
@@ -6226,18 +5637,15 @@ content of DB:
             "archs": {
                 "ANY": true
             },
-            "dependencies": {
-                "BASE": {
-                    "TAGLESS-3-14-12-2-1": "stable"
-                }
-            },
+            "dependencies": [
+                "BASE"
+            ],
             "source": {
                 "darcs": {
                     "tag": "R3-0",
                     "url": "rcsadm@aragon.acc.bessy.de:/opt/repositories/controls/darcs/epics/support/misc/debugmsg"
                 }
-            },
-            "state": "stable"
+            }
         }
     },
     "MOTOR": {
@@ -6253,27 +5661,16 @@ content of DB:
                 "vxWorks-68040": true,
                 "vxWorks-ppc603": true
             },
-            "dependencies": {
-                "ASYN": {
-                    "PATH-4-18": "stable"
-                },
-                "BASE": {
-                    "TAGLESS-3-14-12-2-1": "stable"
-                },
-                "BUSY": {
-                    "PATH-1-4": "stable"
-                },
-                "IPAC": {
-                    "PATH-2-11": "stable"
-                },
-                "SEQ": {
-                    "PATH-2-1-10": "stable"
-                }
-            },
+            "dependencies": [
+                "ASYN",
+                "BASE",
+                "BUSY",
+                "IPAC",
+                "SEQ"
+            ],
             "source": {
                 "path": "rcsadm@aragon.acc.bessy.de:/opt/Epics/R3.14.12/support/motor/6-7-1"
-            },
-            "state": "stable"
+            }
         },
         "R6-5-2-1": {
             "aliases": {
@@ -6287,24 +5684,17 @@ content of DB:
                 "vxWorks-68040": true,
                 "vxWorks-ppc603": true
             },
-            "dependencies": {
-                "ASYN": {
-                    "R4-17-1": "stable"
-                },
-                "BASE": {
-                    "TAGLESS-3-14-12-2-1": "stable"
-                },
-                "SEQ": {
-                    "seq-2-1-3": "stable"
-                }
-            },
+            "dependencies": [
+                "ASYN",
+                "BASE",
+                "SEQ"
+            ],
             "source": {
                 "darcs": {
                     "tag": "R6-5-2-1",
                     "url": "rcsadm@aragon.acc.bessy.de:/opt/repositories/controls/darcs/epics/support/motor/6-5-2"
                 }
-            },
-            "state": "stable"
+            }
         },
         "R6-5-2-2": {
             "aliases": {
@@ -6317,21 +5707,16 @@ content of DB:
                 "vxWorks-68040": true,
                 "vxWorks-ppc603": true
             },
-            "dependencies": {
-                "ASYN": {
-                    "R4-17-2": "stable"
-                },
-                "BASE": {
-                    "TAGLESS-3-14-12-2-1": "stable"
-                }
-            },
+            "dependencies": [
+                "ASYN",
+                "BASE"
+            ],
             "source": {
                 "darcs": {
                     "tag": "R6-5-2-2",
                     "url": "rcsadm@aragon.acc.bessy.de:/opt/repositories/controls/darcs/epics/support/motor/6-5-2"
                 }
-            },
-            "state": "stable"
+            }
         },
         "R6-7-1-bessy1": {
             "aliases": {
@@ -6344,21 +5729,16 @@ content of DB:
                 "vxWorks-68040": true,
                 "vxWorks-ppc603": true
             },
-            "dependencies": {
-                "ASYN": {
-                    "PATH-4-18": "stable"
-                },
-                "BASE": {
-                    "TAGLESS-3-14-12-2-1": "stable"
-                }
-            },
+            "dependencies": [
+                "ASYN",
+                "BASE"
+            ],
             "source": {
                 "darcs": {
                     "tag": "R6-7-1-bessy1",
                     "url": "rcsadm@aragon.acc.bessy.de:/opt/repositories/controls/darcs/epics/support/motor/6-7-1"
                 }
-            },
-            "state": "stable"
+            }
         },
         "R6-7-1-bessy2": {
             "aliases": {
@@ -6371,21 +5751,16 @@ content of DB:
                 "vxWorks-68040": true,
                 "vxWorks-ppc603": true
             },
-            "dependencies": {
-                "ASYN": {
-                    "4-18-bessy1": "stable"
-                },
-                "BASE": {
-                    "TAGLESS-3-14-12-2-1": "stable"
-                }
-            },
+            "dependencies": [
+                "ASYN",
+                "BASE"
+            ],
             "source": {
                 "darcs": {
                     "tag": "R6-7-1-bessy2",
                     "url": "rcsadm@aragon.acc.bessy.de:/opt/repositories/controls/darcs/epics/support/motor/6-7-1"
                 }
-            },
-            "state": "stable"
+            }
         },
         "R6-7-1-bessy3": {
             "aliases": {
@@ -6398,21 +5773,16 @@ content of DB:
                 "vxWorks-68040": true,
                 "vxWorks-ppc603": true
             },
-            "dependencies": {
-                "ASYN": {
-                    "4-18-bessy1": "stable"
-                },
-                "BASE": {
-                    "TAGLESS-3-14-12-2-1": "stable"
-                }
-            },
+            "dependencies": [
+                "ASYN",
+                "BASE"
+            ],
             "source": {
                 "darcs": {
                     "tag": "R6-7-1-bessy3",
                     "url": "rcsadm@aragon.acc.bessy.de:/opt/repositories/controls/darcs/epics/support/motor/6-7-1"
                 }
-            },
-            "state": "stable"
+            }
         },
         "R6-8-bessy1": {
             "aliases": {
@@ -6425,21 +5795,16 @@ content of DB:
                 "vxWorks-68040": true,
                 "vxWorks-ppc603": true
             },
-            "dependencies": {
-                "ASYN": {
-                    "4-18-bessy1": "stable"
-                },
-                "BASE": {
-                    "TAGLESS-3-14-12-2-1": "stable"
-                }
-            },
+            "dependencies": [
+                "ASYN",
+                "BASE"
+            ],
             "source": {
                 "darcs": {
                     "tag": "R6-8-bessy1",
                     "url": "rcsadm@aragon.acc.bessy.de:/opt/repositories/controls/darcs/epics/support/motor/6-8"
                 }
-            },
-            "state": "stable"
+            }
         },
         "TAGLESS-6-8-bessy2": {
             "aliases": {
@@ -6452,20 +5817,15 @@ content of DB:
                 "vxWorks-68040": true,
                 "vxWorks-ppc603": true
             },
-            "dependencies": {
-                "ASYN": {
-                    "4-18-bessy1": "stable"
-                },
-                "BASE": {
-                    "TAGLESS-3-14-12-2-1": "stable"
-                }
-            },
+            "dependencies": [
+                "ASYN",
+                "BASE"
+            ],
             "source": {
                 "darcs": {
                     "url": "rcsadm@aragon.acc.bessy.de:/opt/Epics/R3.14.12/support/motor/6-8-bessy2"
                 }
-            },
-            "state": "stable"
+            }
         }
     },
     "MUXV": {
@@ -6480,18 +5840,15 @@ content of DB:
                 "vxWorks-68040": true,
                 "vxWorks-ppc603": true
             },
-            "dependencies": {
-                "BASE": {
-                    "TAGLESS-3-14-12-2-1": "stable"
-                }
-            },
+            "dependencies": [
+                "BASE"
+            ],
             "source": {
                 "darcs": {
                     "tag": "R2-3",
                     "url": "rcsadm@aragon.acc.bessy.de:/opt/repositories/controls/darcs/epics/support/muxv/base-3-14-12"
                 }
-            },
-            "state": "stable"
+            }
         }
     },
     "OPCAPPSUPPORT": {
@@ -6505,21 +5862,16 @@ content of DB:
                 "vxWorks-68040": true,
                 "vxWorks-ppc603": true
             },
-            "dependencies": {
-                "APPS_GENERICTEMPLATE": {
-                    "R3-0": "stable"
-                },
-                "BASE": {
-                    "TAGLESS-3-14-12-2-1": "stable"
-                }
-            },
+            "dependencies": [
+                "APPS_GENERICTEMPLATE",
+                "BASE"
+            ],
             "source": {
                 "darcs": {
                     "tag": "R3-0",
                     "url": "rcsadm@aragon.acc.bessy.de:/opt/repositories/controls/darcs/epics/support/opcAppSupport"
                 }
-            },
-            "state": "stable"
+            }
         }
     },
     "RFM2G": {
@@ -6530,18 +5882,15 @@ content of DB:
             "archs": {
                 "ANY": true
             },
-            "dependencies": {
-                "BASE": {
-                    "TAGLESS-3-14-12-2-1": "stable"
-                }
-            },
+            "dependencies": [
+                "BASE"
+            ],
             "source": {
                 "darcs": {
                     "tag": "R1-2",
                     "url": "rcsadm@aragon.acc.bessy.de:/opt/repositories/controls/darcs/epics/support/rfm2g/base-3-14"
                 }
-            },
-            "state": "stable"
+            }
         }
     },
     "RFM2G-OSI": {
@@ -6556,21 +5905,16 @@ content of DB:
                 "vxWorks-68040": true,
                 "vxWorks-ppc603": true
             },
-            "dependencies": {
-                "BASE": {
-                    "TAGLESS-3-14-12-2-1": "stable"
-                },
-                "DEVLIB2": {
-                    "R2-3-1": "stable"
-                }
-            },
+            "dependencies": [
+                "BASE",
+                "DEVLIB2"
+            ],
             "source": {
                 "darcs": {
                     "tag": "R1-0",
                     "url": "rcsadm@aragon.acc.bessy.de:/opt/Epics/R3.14.12/support/rfm2g-osi/1-0"
                 }
-            },
-            "state": "stable"
+            }
         },
         "TAGLESS-1-1": {
             "aliases": {
@@ -6583,20 +5927,15 @@ content of DB:
                 "vxWorks-68040": true,
                 "vxWorks-ppc603": true
             },
-            "dependencies": {
-                "BASE": {
-                    "TAGLESS-3-14-12-2-1": "stable"
-                },
-                "DEVLIB2": {
-                    "R2-3-1": "stable"
-                }
-            },
+            "dependencies": [
+                "BASE",
+                "DEVLIB2"
+            ],
             "source": {
                 "darcs": {
                     "url": "rcsadm@aragon.acc.bessy.de:/opt/Epics/R3.14.12/support/rfm2g-osi/1-1"
                 }
-            },
-            "state": "stable"
+            }
         }
     },
     "RULES": {
@@ -6607,18 +5946,15 @@ content of DB:
             "archs": {
                 "ANY": true
             },
-            "dependencies": {
-                "BASE": {
-                    "TAGLESS-3-14-12-2-1": "stable"
-                }
-            },
+            "dependencies": [
+                "BASE"
+            ],
             "source": {
                 "darcs": {
                     "tag": "R2-1",
                     "url": "rcsadm@aragon.acc.bessy.de:/opt/repositories/controls/darcs/epics/support/rules/base-3-14-12"
                 }
-            },
-            "state": "stable"
+            }
         }
     },
     "S7PLC": {
@@ -6629,18 +5965,15 @@ content of DB:
             "archs": {
                 "linux-x86": true
             },
-            "dependencies": {
-                "BASE": {
-                    "TAGLESS-3-14-12-2-1": "stable"
-                }
-            },
+            "dependencies": [
+                "BASE"
+            ],
             "source": {
                 "darcs": {
                     "tag": "R1-1",
                     "url": "rcsadm@aragon.acc.bessy.de:/opt/repositories/controls/darcs/epics/support/s7plc"
                 }
-            },
-            "state": "stable"
+            }
         }
     },
     "SEQ": {
@@ -6655,15 +5988,12 @@ content of DB:
                 "vxWorks-68040": true,
                 "vxWorks-ppc603": true
             },
-            "dependencies": {
-                "BASE": {
-                    "TAGLESS-3-14-12-2-1": "stable"
-                }
-            },
+            "dependencies": [
+                "BASE"
+            ],
             "source": {
                 "path": "rcsadm@aragon.acc.bessy.de:/opt/Epics/R3.14.12/support/seq/2-1-10"
-            },
-            "state": "stable"
+            }
         },
         "TAGLESS-2-1-12": {
             "aliases": {
@@ -6676,17 +6006,14 @@ content of DB:
                 "vxWorks-68040": true,
                 "vxWorks-ppc603": true
             },
-            "dependencies": {
-                "BASE": {
-                    "TAGLESS-3-14-12-2-1": "stable"
-                }
-            },
+            "dependencies": [
+                "BASE"
+            ],
             "source": {
                 "darcs": {
                     "url": "rcsadm@aragon.acc.bessy.de:/opt/Epics/R3.14.12/support/seq/2-1-12"
                 }
-            },
-            "state": "stable"
+            }
         },
         "seq-2-1-3": {
             "aliases": {
@@ -6699,18 +6026,15 @@ content of DB:
                 "vxWorks-68040": true,
                 "vxWorks-ppc603": true
             },
-            "dependencies": {
-                "BASE": {
-                    "TAGLESS-3-14-12-2-1": "stable"
-                }
-            },
+            "dependencies": [
+                "BASE"
+            ],
             "source": {
                 "darcs": {
                     "tag": "seq-2-1-3",
                     "url": "rcsadm@aragon.acc.bessy.de:/opt/repositories/controls/darcs/epics/support/seq/branch-2-1"
                 }
-            },
-            "state": "stable"
+            }
         },
         "seq-2-1-6": {
             "aliases": {
@@ -6723,18 +6047,15 @@ content of DB:
                 "vxWorks-68040": true,
                 "vxWorks-ppc603": true
             },
-            "dependencies": {
-                "BASE": {
-                    "TAGLESS-3-14-12-2-1": "stable"
-                }
-            },
+            "dependencies": [
+                "BASE"
+            ],
             "source": {
                 "darcs": {
                     "tag": "seq-2-1-6",
                     "url": "rcsadm@aragon.acc.bessy.de:/opt/repositories/controls/darcs/epics/support/seq/branch-2-1"
                 }
-            },
-            "state": "stable"
+            }
         }
     },
     "SOFT_DEVHWCLIENT": {
@@ -6749,18 +6070,15 @@ content of DB:
                 "vxWorks-68040": true,
                 "vxWorks-ppc603": true
             },
-            "dependencies": {
-                "BASE": {
-                    "TAGLESS-3-14-12-2-1": "stable"
-                }
-            },
+            "dependencies": [
+                "BASE"
+            ],
             "source": {
                 "darcs": {
                     "tag": "R3-0",
                     "url": "rcsadm@aragon.acc.bessy.de:/opt/repositories/controls/darcs/epics/support/soft/devHwClient"
                 }
-            },
-            "state": "stable"
+            }
         }
     },
     "SOFT_SWFRECORD": {
@@ -6775,18 +6093,15 @@ content of DB:
                 "vxWorks-68040": true,
                 "vxWorks-ppc603": true
             },
-            "dependencies": {
-                "BASE": {
-                    "TAGLESS-3-14-12-2-1": "stable"
-                }
-            },
+            "dependencies": [
+                "BASE"
+            ],
             "source": {
                 "darcs": {
                     "tag": "R3-0",
                     "url": "rcsadm@aragon.acc.bessy.de:/opt/repositories/controls/darcs/epics/support/soft/swfRecord"
                 }
-            },
-            "state": "stable"
+            }
         }
     },
     "SSCAN": {
@@ -6801,15 +6116,12 @@ content of DB:
                 "vxWorks-68040": true,
                 "vxWorks-ppc603": true
             },
-            "dependencies": {
-                "BASE": {
-                    "TAGLESS-3-14-12-2-1": "stable"
-                }
-            },
+            "dependencies": [
+                "BASE"
+            ],
             "source": {
                 "path": "rcsadm@aragon.acc.bessy.de:/opt/Epics/R3.14.12/support/sscan/2-8-1"
-            },
-            "state": "stable"
+            }
         },
         "R2-8-1-bessy1": {
             "aliases": {
@@ -6822,18 +6134,15 @@ content of DB:
                 "vxWorks-68040": true,
                 "vxWorks-ppc603": true
             },
-            "dependencies": {
-                "BASE": {
-                    "TAGLESS-3-14-12-2-1": "stable"
-                }
-            },
+            "dependencies": [
+                "BASE"
+            ],
             "source": {
                 "darcs": {
                     "tag": "R2-8-1-bessy1",
                     "url": "rcsadm@aragon.acc.bessy.de:/opt/repositories/controls/darcs/epics/support/sscan/2-8-1"
                 }
-            },
-            "state": "stable"
+            }
         }
     },
     "STD": {
@@ -6849,24 +6158,17 @@ content of DB:
                 "vxWorks-68040": true,
                 "vxWorks-ppc603": true
             },
-            "dependencies": {
-                "ASYN": {
-                    "R4-17-1": "stable"
-                },
-                "BASE": {
-                    "TAGLESS-3-14-12-2-1": "stable"
-                },
-                "SEQ": {
-                    "seq-2-1-3": "stable"
-                }
-            },
+            "dependencies": [
+                "ASYN",
+                "BASE",
+                "SEQ"
+            ],
             "source": {
                 "darcs": {
                     "tag": "R2-8-1",
                     "url": "rcsadm@aragon.acc.bessy.de:/opt/repositories/controls/darcs/epics/support/std/2-8"
                 }
-            },
-            "state": "stable"
+            }
         },
         "R2-8-bessy2": {
             "aliases": {
@@ -6880,24 +6182,17 @@ content of DB:
                 "vxWorks-68040": true,
                 "vxWorks-ppc603": true
             },
-            "dependencies": {
-                "ASYN": {
-                    "R4-17-2": "stable"
-                },
-                "BASE": {
-                    "TAGLESS-3-14-12-2-1": "stable"
-                },
-                "SEQ": {
-                    "TAGLESS-2-1-12": "stable"
-                }
-            },
+            "dependencies": [
+                "ASYN",
+                "BASE",
+                "SEQ"
+            ],
             "source": {
                 "darcs": {
                     "tag": "R2-8-bessy2",
                     "url": "rcsadm@aragon.acc.bessy.de:/opt/repositories/controls/darcs/epics/support/std/2-8"
                 }
-            },
-            "state": "stable"
+            }
         }
     },
     "STREAM": {
@@ -6912,21 +6207,16 @@ content of DB:
                 "vxWorks-68040": true,
                 "vxWorks-ppc603": true
             },
-            "dependencies": {
-                "ASYN": {
-                    "R4-17-1": "stable"
-                },
-                "BASE": {
-                    "TAGLESS-3-14-12-2-1": "stable"
-                }
-            },
+            "dependencies": [
+                "ASYN",
+                "BASE"
+            ],
             "source": {
                 "darcs": {
                     "tag": "R2-4-0-1",
                     "url": "rcsadm@aragon.acc.bessy.de:/opt/repositories/controls/darcs/epics/support/stream/withtop/head"
                 }
-            },
-            "state": "stable"
+            }
         },
         "R2-4-0-2": {
             "aliases": {
@@ -6939,21 +6229,16 @@ content of DB:
                 "vxWorks-68040": true,
                 "vxWorks-ppc603": true
             },
-            "dependencies": {
-                "ASYN": {
-                    "R4-17-1": "stable"
-                },
-                "BASE": {
-                    "TAGLESS-3-14-12-2-1": "stable"
-                }
-            },
+            "dependencies": [
+                "ASYN",
+                "BASE"
+            ],
             "source": {
                 "darcs": {
                     "tag": "R2-4-0-2",
                     "url": "rcsadm@aragon.acc.bessy.de:/opt/repositories/controls/darcs/epics/support/stream/withtop/head"
                 }
-            },
-            "state": "stable"
+            }
         },
         "R2-4-0-3": {
             "aliases": {
@@ -6966,21 +6251,16 @@ content of DB:
                 "vxWorks-68040": true,
                 "vxWorks-ppc603": true
             },
-            "dependencies": {
-                "ASYN": {
-                    "R4-17-2": "stable"
-                },
-                "BASE": {
-                    "TAGLESS-3-14-12-2-1": "stable"
-                }
-            },
+            "dependencies": [
+                "ASYN",
+                "BASE"
+            ],
             "source": {
                 "darcs": {
                     "tag": "R2-4-0-3",
                     "url": "rcsadm@aragon.acc.bessy.de:/opt/repositories/controls/darcs/epics/support/stream/withtop/head"
                 }
-            },
-            "state": "stable"
+            }
         },
         "R2-4-0-4": {
             "aliases": {
@@ -6993,21 +6273,16 @@ content of DB:
                 "vxWorks-68040": true,
                 "vxWorks-ppc603": true
             },
-            "dependencies": {
-                "ASYN": {
-                    "4-18-bessy1": "stable"
-                },
-                "BASE": {
-                    "TAGLESS-3-14-12-2-1": "stable"
-                }
-            },
+            "dependencies": [
+                "ASYN",
+                "BASE"
+            ],
             "source": {
                 "darcs": {
                     "tag": "R2-4-0-4",
                     "url": "rcsadm@aragon.acc.bessy.de:/opt/repositories/controls/darcs/epics/support/stream/withtop/head"
                 }
-            },
-            "state": "stable"
+            }
         }
     },
     "TDU": {
@@ -7022,21 +6297,16 @@ content of DB:
                 "vxWorks-68040": true,
                 "vxWorks-ppc603": true
             },
-            "dependencies": {
-                "BASE": {
-                    "TAGLESS-3-14-12-2-1": "stable"
-                },
-                "SEQ": {
-                    "seq-2-1-3": "stable"
-                }
-            },
+            "dependencies": [
+                "BASE",
+                "SEQ"
+            ],
             "source": {
                 "darcs": {
                     "tag": "R3-3",
                     "url": "rcsadm@aragon.acc.bessy.de:/opt/repositories/controls/darcs/epics/support/tdu/base-3-14-12"
                 }
-            },
-            "state": "stable"
+            }
         },
         "R3-3-1": {
             "aliases": {
@@ -7049,21 +6319,16 @@ content of DB:
                 "vxWorks-68040": true,
                 "vxWorks-ppc603": true
             },
-            "dependencies": {
-                "BASE": {
-                    "TAGLESS-3-14-12-2-1": "stable"
-                },
-                "SEQ": {
-                    "seq-2-1-3": "stable"
-                }
-            },
+            "dependencies": [
+                "BASE",
+                "SEQ"
+            ],
             "source": {
                 "darcs": {
                     "tag": "R3-3-1",
                     "url": "rcsadm@aragon.acc.bessy.de:/opt/repositories/controls/darcs/epics/support/tdu/base-3-14-12"
                 }
-            },
-            "state": "stable"
+            }
         },
         "R3-3-3": {
             "aliases": {
@@ -7077,21 +6342,16 @@ content of DB:
                 "vxWorks-68040": true,
                 "vxWorks-ppc603": true
             },
-            "dependencies": {
-                "BASE": {
-                    "TAGLESS-3-14-12-2-1": "stable"
-                },
-                "SEQ": {
-                    "TAGLESS-2-1-12": "stable"
-                }
-            },
+            "dependencies": [
+                "BASE",
+                "SEQ"
+            ],
             "source": {
                 "darcs": {
                     "tag": "R3-3-3",
                     "url": "rcsadm@aragon.acc.bessy.de:/opt/Epics/R3.14.12/support/tdu/3-3-2"
                 }
-            },
-            "state": "stable"
+            }
         },
         "R4-0-1": {
             "aliases": {
@@ -7104,21 +6364,16 @@ content of DB:
                 "vxWorks-68040": true,
                 "vxWorks-ppc603": true
             },
-            "dependencies": {
-                "BASE": {
-                    "TAGLESS-3-14-12-2-1": "stable"
-                },
-                "SEQ": {
-                    "seq-2-1-3": "stable"
-                }
-            },
+            "dependencies": [
+                "BASE",
+                "SEQ"
+            ],
             "source": {
                 "darcs": {
                     "tag": "R4-0-1",
                     "url": "rcsadm@aragon.acc.bessy.de:/opt/repositories/controls/darcs/epics/support/tdu/base-3-14-12"
                 }
-            },
-            "state": "stable"
+            }
         },
         "TAGLESS-3-3-2": {
             "aliases": {
@@ -7132,20 +6387,15 @@ content of DB:
                 "vxWorks-68040": true,
                 "vxWorks-ppc603": true
             },
-            "dependencies": {
-                "BASE": {
-                    "TAGLESS-3-14-12-2-1": "stable"
-                },
-                "SEQ": {
-                    "TAGLESS-2-1-12": "stable"
-                }
-            },
+            "dependencies": [
+                "BASE",
+                "SEQ"
+            ],
             "source": {
                 "darcs": {
                     "url": "rcsadm@aragon.acc.bessy.de:/opt/Epics/R3.14.12/support/tdu/3-3-2"
                 }
-            },
-            "state": "stable"
+            }
         }
     },
     "VCT6": {
@@ -7162,24 +6412,17 @@ content of DB:
                 "vxWorks-68040": true,
                 "vxWorks-ppc603": true
             },
-            "dependencies": {
-                "BASE": {
-                    "TAGLESS-3-14-12-2-1": "stable"
-                },
-                "BSPDEP_ENABLED32": {
-                    "R4-2": "stable"
-                },
-                "MISC_DEBUGMSG": {
-                    "R3-0": "stable"
-                }
-            },
+            "dependencies": [
+                "BASE",
+                "BSPDEP_ENABLED32",
+                "MISC_DEBUGMSG"
+            ],
             "source": {
                 "darcs": {
                     "tag": "R2-3",
                     "url": "rcsadm@aragon.acc.bessy.de:/opt/repositories/controls/darcs/epics/support/vct6"
                 }
-            },
-            "state": "stable"
+            }
         }
     },
     "VHQ": {
@@ -7192,24 +6435,17 @@ content of DB:
                 "vxWorks-68040": true,
                 "vxWorks-ppc603": true
             },
-            "dependencies": {
-                "BASE": {
-                    "TAGLESS-3-14-12-2-1": "stable"
-                },
-                "BSPDEP_CPUBOARDINIT": {
-                    "R4-1": "stable"
-                },
-                "RULES": {
-                    "R2-1": "stable"
-                }
-            },
+            "dependencies": [
+                "BASE",
+                "BSPDEP_CPUBOARDINIT",
+                "RULES"
+            ],
             "source": {
                 "darcs": {
                     "tag": "2-2",
                     "url": "rcsadm@aragon.acc.bessy.de:/opt/Epics/R3.14.12/support/vhq/2-2"
                 }
-            },
-            "state": "stable"
+            }
         },
         "R2-0": {
             "aliases": {
@@ -7220,24 +6456,17 @@ content of DB:
                 "vxWorks-68040": true,
                 "vxWorks-ppc603": true
             },
-            "dependencies": {
-                "BASE": {
-                    "TAGLESS-3-14-12-2-1": "stable"
-                },
-                "BSPDEP_CPUBOARDINIT": {
-                    "R4-1": "stable"
-                },
-                "RULES": {
-                    "R2-1": "stable"
-                }
-            },
+            "dependencies": [
+                "BASE",
+                "BSPDEP_CPUBOARDINIT",
+                "RULES"
+            ],
             "source": {
                 "darcs": {
                     "tag": "R2-0",
                     "url": "rcsadm@aragon.acc.bessy.de:/opt/Epics/R3.14.12/support/vhq/2-0"
                 }
-            },
-            "state": "stable"
+            }
         },
         "R2-1": {
             "aliases": {
@@ -7248,24 +6477,17 @@ content of DB:
                 "vxWorks-68040": true,
                 "vxWorks-ppc603": true
             },
-            "dependencies": {
-                "BASE": {
-                    "TAGLESS-3-14-12-2-1": "stable"
-                },
-                "BSPDEP_CPUBOARDINIT": {
-                    "R4-1": "stable"
-                },
-                "RULES": {
-                    "R2-1": "stable"
-                }
-            },
+            "dependencies": [
+                "BASE",
+                "BSPDEP_CPUBOARDINIT",
+                "RULES"
+            ],
             "source": {
                 "darcs": {
                     "tag": "R2-1",
                     "url": "rcsadm@aragon.acc.bessy.de:/opt/repositories/controls/darcs/epics/support/vhq/base-3-14-12"
                 }
-            },
-            "state": "stable"
+            }
         },
         "R2-3": {
             "aliases": {
@@ -7278,24 +6500,17 @@ content of DB:
                 "vxWorks-68040": true,
                 "vxWorks-ppc603": true
             },
-            "dependencies": {
-                "BASE": {
-                    "TAGLESS-3-14-12-2-1": "stable"
-                },
-                "BSPDEP_CPUBOARDINIT": {
-                    "R4-1": "stable"
-                },
-                "RULES": {
-                    "R2-1": "stable"
-                }
-            },
+            "dependencies": [
+                "BASE",
+                "BSPDEP_CPUBOARDINIT",
+                "RULES"
+            ],
             "source": {
                 "darcs": {
                     "tag": "R2-3",
                     "url": "rcsadm@aragon.acc.bessy.de:/opt/repositories/controls/darcs/epics/support/vhq/base-3-14-12"
                 }
-            },
-            "state": "stable"
+            }
         },
         "R3-1": {
             "aliases": {
@@ -7309,24 +6524,17 @@ content of DB:
                 "vxWorks-68040": true,
                 "vxWorks-ppc603": true
             },
-            "dependencies": {
-                "BASE": {
-                    "TAGLESS-3-14-12-2-1": "stable"
-                },
-                "BESSYRULES": {
-                    "R2-5": "stable"
-                },
-                "BSPDEP_CPUBOARDINIT": {
-                    "R4-1": "stable"
-                }
-            },
+            "dependencies": [
+                "BASE",
+                "BESSYRULES",
+                "BSPDEP_CPUBOARDINIT"
+            ],
             "source": {
                 "darcs": {
                     "tag": "R3-1",
                     "url": "rcsadm@aragon.acc.bessy.de:/opt/repositories/controls/darcs/epics/support/vhq/base-3-14-12"
                 }
-            },
-            "state": "stable"
+            }
         },
         "R3-2": {
             "aliases": {
@@ -7340,24 +6548,17 @@ content of DB:
                 "vxWorks-68040": true,
                 "vxWorks-ppc603": true
             },
-            "dependencies": {
-                "BASE": {
-                    "TAGLESS-3-14-12-2-1": "stable"
-                },
-                "BESSYRULES": {
-                    "R2-5": "stable"
-                },
-                "BSPDEP_CPUBOARDINIT": {
-                    "R4-1": "stable"
-                }
-            },
+            "dependencies": [
+                "BASE",
+                "BESSYRULES",
+                "BSPDEP_CPUBOARDINIT"
+            ],
             "source": {
                 "darcs": {
                     "tag": "R3-2",
                     "url": "rcsadm@aragon.acc.bessy.de:/opt/repositories/controls/darcs/epics/support/vhq/base-3-14-12"
                 }
-            },
-            "state": "stable"
+            }
         }
     },
     "VPDU": {
@@ -7373,21 +6574,16 @@ content of DB:
                 "vxWorks-68040": true,
                 "vxWorks-ppc603": true
             },
-            "dependencies": {
-                "BASE": {
-                    "TAGLESS-3-14-12-2-1": "stable"
-                },
-                "MISC_DEBUGMSG": {
-                    "R3-0": "stable"
-                }
-            },
+            "dependencies": [
+                "BASE",
+                "MISC_DEBUGMSG"
+            ],
             "source": {
                 "darcs": {
                     "tag": "R2-3",
                     "url": "rcsadm@aragon.acc.bessy.de:/opt/repositories/controls/darcs/epics/support/vpdu"
                 }
-            },
-            "state": "stable"
+            }
         }
     },
     "VXBOOTPARAMS": {
@@ -7399,18 +6595,15 @@ content of DB:
                 "vxWorks-68040": true,
                 "vxWorks-ppc603": true
             },
-            "dependencies": {
-                "BASE": {
-                    "TAGLESS-3-14-12-2-1": "stable"
-                }
-            },
+            "dependencies": [
+                "BASE"
+            ],
             "source": {
                 "darcs": {
                     "tag": "R2-2",
                     "url": "rcsadm@aragon.acc.bessy.de:/opt/repositories/controls/darcs/epics/support/vxBootParams/base-3-14"
                 }
-            },
-            "state": "stable"
+            }
         },
         "R2-3": {
             "aliases": {
@@ -7422,18 +6615,15 @@ content of DB:
                 "vxWorks-68040": true,
                 "vxWorks-ppc603": true
             },
-            "dependencies": {
-                "BASE": {
-                    "TAGLESS-3-14-12-2-1": "stable"
-                }
-            },
+            "dependencies": [
+                "BASE"
+            ],
             "source": {
                 "darcs": {
                     "tag": "R2-3",
                     "url": "rcsadm@aragon.acc.bessy.de:/opt/repositories/controls/darcs/epics/support/vxBootParams/base-3-14"
                 }
-            },
-            "state": "stable"
+            }
         },
         "R2-4": {
             "aliases": {
@@ -7445,18 +6635,15 @@ content of DB:
                 "vxWorks-68040": true,
                 "vxWorks-ppc603": true
             },
-            "dependencies": {
-                "BASE": {
-                    "TAGLESS-3-14-12-2-1": "stable"
-                }
-            },
+            "dependencies": [
+                "BASE"
+            ],
             "source": {
                 "darcs": {
                     "tag": "R2-4",
                     "url": "rcsadm@aragon.acc.bessy.de:/opt/repositories/controls/darcs/epics/support/vxBootParams/base-3-14"
                 }
-            },
-            "state": "stable"
+            }
         }
     },
     "VXI-11": {
@@ -7468,18 +6655,15 @@ content of DB:
                 "vxWorks-68040": true,
                 "vxWorks-ppc603": true
             },
-            "dependencies": {
-                "BASE": {
-                    "TAGLESS-3-14-12-2-1": "stable"
-                }
-            },
+            "dependencies": [
+                "BASE"
+            ],
             "source": {
                 "darcs": {
                     "tag": "R3-0",
                     "url": "rcsadm@aragon.acc.bessy.de:/opt/repositories/controls/darcs/epics/support/vxi-11/base-3-14"
                 }
-            },
-            "state": "stable"
+            }
         }
     },
     "VXSTATS": {
@@ -7491,18 +6675,15 @@ content of DB:
                 "vxWorks-68040": true,
                 "vxWorks-ppc603": true
             },
-            "dependencies": {
-                "BASE": {
-                    "TAGLESS-3-14-12-2-1": "stable"
-                }
-            },
+            "dependencies": [
+                "BASE"
+            ],
             "source": {
                 "darcs": {
                     "tag": "R3-0",
                     "url": "rcsadm@aragon.acc.bessy.de:/opt/repositories/controls/darcs/epics/support/vxStats/base-3-14-12"
                 }
-            },
-            "state": "stable"
+            }
         }
     },
     "WAVEPROC": {
@@ -7517,18 +6698,15 @@ content of DB:
                 "vxWorks-68040": true,
                 "vxWorks-ppc603": true
             },
-            "dependencies": {
-                "BASE": {
-                    "TAGLESS-3-14-12-2-1": "stable"
-                }
-            },
+            "dependencies": [
+                "BASE"
+            ],
             "source": {
                 "darcs": {
                     "tag": "R1-0-1",
                     "url": "rcsadm@aragon.acc.bessy.de:/opt/repositories/controls/darcs/epics/support/waveProc/base-3-14-12"
                 }
-            },
-            "state": "stable"
+            }
         }
     }
 }
@@ -7613,9 +6791,9 @@ SEQ/TAGLESS-2-1-12+MYAPP-001/stamp: BASE/TAGLESS-3-14-12-2-1+MYAPP-001/stamp
 
 BSPDEP_CPUBOARDINIT/R4-1+MYAPP-001/stamp: BASE/TAGLESS-3-14-12-2-1+MYAPP-001/stamp
 
-ALARM/R3-8+MYAPP-001/stamp: MISC_DBC/R3-0+MYAPP-001/stamp BASE/TAGLESS-3-14-12-2-1+MYAPP-001/stamp BSPDEP_TIMER/R6-2+MYAPP-001/stamp
+ALARM/R3-8+MYAPP-001/stamp: BASE/TAGLESS-3-14-12-2-1+MYAPP-001/stamp BSPDEP_TIMER/R6-2+MYAPP-001/stamp MISC_DBC/R3-0+MYAPP-001/stamp
 
-MCAN/TAGLESS-2-6-3-test+MYAPP-001/stamp: ALARM/R3-8+MYAPP-001/stamp BSPDEP_VMETAS/R2-0+MYAPP-001/stamp BASE/TAGLESS-3-14-12-2-1+MYAPP-001/stamp MISC_DEBUGMSG/R3-0+MYAPP-001/stamp MISC_DBC/R3-0+MYAPP-001/stamp SOFT_DEVHWCLIENT/R3-0+MYAPP-001/stamp
+MCAN/TAGLESS-2-6-3-test+MYAPP-001/stamp: ALARM/R3-8+MYAPP-001/stamp BASE/TAGLESS-3-14-12-2-1+MYAPP-001/stamp BSPDEP_VMETAS/R2-0+MYAPP-001/stamp MISC_DBC/R3-0+MYAPP-001/stamp MISC_DEBUGMSG/R3-0+MYAPP-001/stamp SOFT_DEVHWCLIENT/R3-0+MYAPP-001/stamp
 
 BSPDEP_VMETAS/R2-0+MYAPP-001/stamp: BASE/TAGLESS-3-14-12-2-1+MYAPP-001/stamp
 

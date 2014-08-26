@@ -1,20 +1,311 @@
+Not all modules have exactly specified versions. These modules need an 
+exact version specification:
+    ASYN
+    BSPDEP_CPUBOARDINIT  -> suggested version: R4-1
+    BSPDEP_TIMER         -> suggested version: R6-2
+    CSM
+    EK                   -> suggested version: R2-2
+    GENSUB               -> suggested version: R1-6-1
+    MCAN
+    SEQ
+    VXSTATS              -> suggested version: R3-0
+
+Not all dependencies were included in module specifications, these modules
+have to be added:
+    BASE
+    BSPDEP_VMETAS
+    MISC_DBC
+    MISC_DEBUGMSG
+    SOFT_DEVHWCLIENT
+
+List of modules that fullfill the given module specification:
 {
-    "module": [
-        "ALARM:R3-8",
-        "ASYN:4-18-bessy1",
-        "BASE:TAGLESS-3-14-12-2-1",
-        "BSPDEP_CPUBOARDINIT:R4-1",
-        "BSPDEP_TIMER:R6-2",
-        "BSPDEP_VMETAS:R2-0",
-        "CSM:R4-3",
-        "EK:R2-2",
-        "GENSUB:R1-6-1",
-        "MCAN:TAGLESS-2-6-3-test",
-        "MISC_DBC:R3-0",
-        "MISC_DEBUGMSG:R3-0",
-        "SEQ:TAGLESS-2-1-12",
-        "SOFT_DEVHWCLIENT:R3-0",
-        "VXSTATS:R3-0"
-    ]
+    "ALARM": {
+        "R3-8": {
+            "built": true,
+            "dependents": {
+                "MCAN:R2-4-0": "state: not tested",
+                "MCAN:R2-4-1": "state: not tested",
+                "MCAN:R2-4-2": "state: not tested",
+                "MCAN:R2-4-3": "state: not tested",
+                "MCAN:R2-4-4": "state: not tested",
+                "MCAN:R2-4-5": "state: not tested",
+                "MCAN:R2-5": "state: scanned",
+                "MCAN:R2-6-1": "state: scanned",
+                "MCAN:TAGLESS-2-6-2": "state: scanned",
+                "MCAN:TAGLESS-2-6-3": "state: scanned",
+                "MCAN:TAGLESS-2-6-3-test": "state: scanned"
+            }
+        }
+    },
+    "ASYN": {
+        "4-18-bessy1": {
+            "built": true
+        },
+        "PATH-4-18": {
+            "built": true
+        },
+        "R4-17-1": {
+            "built": true
+        },
+        "R4-17-2": {
+            "built": true
+        }
+    },
+    "BASE": {
+        "TAGLESS-3-14-12-2-1": {
+            "built": false,
+            "dependents": {
+                "ALARM:R3-8": "state: scanned",
+                "ASYN:4-18-bessy1": "state: scanned",
+                "ASYN:PATH-4-18": "state: scanned",
+                "ASYN:R4-17-1": "state: scanned",
+                "ASYN:R4-17-2": "state: scanned",
+                "BSPDEP_CPUBOARDINIT:R4-1": "state: scanned",
+                "BSPDEP_TIMER:R6-2": "state: scanned",
+                "BSPDEP_VMETAS:R2-0": "state: scanned",
+                "CSM:R3-7": "state: scanned",
+                "CSM:R4-1": "state: scanned",
+                "CSM:R4-3": "state: scanned",
+                "CSM:TAGLESS-4-0": "state: scanned",
+                "EK:R2-2": "state: scanned",
+                "GENSUB:R1-6-1": "state: scanned",
+                "MCAN:R2-4-0": "state: scanned",
+                "MCAN:R2-4-1": "state: scanned",
+                "MCAN:R2-4-2": "state: scanned",
+                "MCAN:R2-4-3": "state: scanned",
+                "MCAN:R2-4-4": "state: scanned",
+                "MCAN:R2-4-5": "state: scanned",
+                "MCAN:R2-5": "state: scanned",
+                "MCAN:R2-6-1": "state: scanned",
+                "MCAN:TAGLESS-2-6-2": "state: scanned",
+                "MCAN:TAGLESS-2-6-3": "state: scanned",
+                "MCAN:TAGLESS-2-6-3-test": "state: scanned",
+                "MISC_DBC:R3-0": "state: scanned",
+                "MISC_DEBUGMSG:R3-0": "state: scanned",
+                "SEQ:PATH-2-1-10": "state: scanned",
+                "SEQ:TAGLESS-2-1-12": "state: scanned",
+                "SEQ:seq-2-1-3": "state: scanned",
+                "SEQ:seq-2-1-6": "state: scanned",
+                "SOFT_DEVHWCLIENT:R3-0": "state: scanned",
+                "VXSTATS:R3-0": "state: scanned"
+            }
+        },
+        "TAGLESS-3-14-12-2-2": {
+            "built": false,
+            "dependents": {
+                "ALARM:R3-8": "state: not tested",
+                "ASYN:4-18-bessy1": "state: scanned",
+                "ASYN:PATH-4-18": "state: not tested",
+                "ASYN:R4-17-1": "state: not tested",
+                "ASYN:R4-17-2": "state: not tested",
+                "BSPDEP_CPUBOARDINIT:R4-1": "state: not tested",
+                "BSPDEP_TIMER:R6-2": "state: not tested",
+                "BSPDEP_VMETAS:R2-0": "state: not tested",
+                "CSM:R3-7": "state: not tested",
+                "CSM:R4-1": "state: not tested",
+                "CSM:R4-3": "state: not tested",
+                "CSM:TAGLESS-4-0": "state: not tested",
+                "EK:R2-2": "state: not tested",
+                "GENSUB:R1-6-1": "state: not tested",
+                "MCAN:R2-4-0": "state: not tested",
+                "MCAN:R2-4-1": "state: not tested",
+                "MCAN:R2-4-2": "state: not tested",
+                "MCAN:R2-4-3": "state: not tested",
+                "MCAN:R2-4-4": "state: not tested",
+                "MCAN:R2-4-5": "state: not tested",
+                "MCAN:R2-5": "state: not tested",
+                "MCAN:R2-6-1": "state: not tested",
+                "MCAN:TAGLESS-2-6-2": "state: not tested",
+                "MCAN:TAGLESS-2-6-3": "state: not tested",
+                "MCAN:TAGLESS-2-6-3-test": "state: not tested",
+                "MISC_DBC:R3-0": "state: not tested",
+                "MISC_DEBUGMSG:R3-0": "state: not tested",
+                "SEQ:PATH-2-1-10": "state: not tested",
+                "SEQ:TAGLESS-2-1-12": "state: not tested",
+                "SEQ:seq-2-1-3": "state: not tested",
+                "SEQ:seq-2-1-6": "state: not tested",
+                "SOFT_DEVHWCLIENT:R3-0": "state: not tested",
+                "VXSTATS:R3-0": "state: not tested"
+            }
+        }
+    },
+    "BSPDEP_CPUBOARDINIT": {
+        "R4-1": {
+            "built": true
+        }
+    },
+    "BSPDEP_TIMER": {
+        "R6-2": {
+            "built": true,
+            "dependents": {
+                "ALARM:R3-8": "state: scanned"
+            }
+        }
+    },
+    "BSPDEP_VMETAS": {
+        "R2-0": {
+            "built": true,
+            "dependents": {
+                "MCAN:R2-4-4": "state: scanned",
+                "MCAN:R2-4-5": "state: scanned",
+                "MCAN:R2-5": "state: scanned",
+                "MCAN:R2-6-1": "state: scanned",
+                "MCAN:TAGLESS-2-6-2": "state: scanned",
+                "MCAN:TAGLESS-2-6-3": "state: scanned",
+                "MCAN:TAGLESS-2-6-3-test": "state: scanned"
+            }
+        }
+    },
+    "CSM": {
+        "R3-7": {
+            "built": true
+        },
+        "R4-1": {
+            "built": true
+        },
+        "R4-3": {
+            "built": true
+        },
+        "TAGLESS-4-0": {
+            "built": true
+        }
+    },
+    "EK": {
+        "R2-2": {
+            "built": true
+        }
+    },
+    "GENSUB": {
+        "R1-6-1": {
+            "built": true
+        }
+    },
+    "MCAN": {
+        "R2-4-0": {
+            "built": true
+        },
+        "R2-4-1": {
+            "built": true
+        },
+        "R2-4-2": {
+            "built": true
+        },
+        "R2-4-3": {
+            "built": true
+        },
+        "R2-4-4": {
+            "built": true
+        },
+        "R2-4-5": {
+            "built": true
+        },
+        "R2-5": {
+            "built": true
+        },
+        "R2-6-1": {
+            "built": true
+        },
+        "TAGLESS-2-6-2": {
+            "built": true
+        },
+        "TAGLESS-2-6-3": {
+            "built": true
+        },
+        "TAGLESS-2-6-3-test": {
+            "built": true
+        }
+    },
+    "MISC_DBC": {
+        "R3-0": {
+            "built": true,
+            "dependents": {
+                "ALARM:R3-8": "state: scanned",
+                "MCAN:R2-4-0": "state: scanned",
+                "MCAN:R2-4-1": "state: scanned",
+                "MCAN:R2-4-2": "state: scanned",
+                "MCAN:R2-4-3": "state: scanned",
+                "MCAN:R2-4-4": "state: scanned",
+                "MCAN:R2-4-5": "state: scanned",
+                "MCAN:R2-5": "state: scanned",
+                "MCAN:R2-6-1": "state: scanned",
+                "MCAN:TAGLESS-2-6-2": "state: scanned",
+                "MCAN:TAGLESS-2-6-3": "state: scanned",
+                "MCAN:TAGLESS-2-6-3-test": "state: scanned"
+            }
+        }
+    },
+    "MISC_DEBUGMSG": {
+        "R3-0": {
+            "built": true,
+            "dependents": {
+                "EK:R2-2": "state: scanned",
+                "MCAN:R2-4-0": "state: scanned",
+                "MCAN:R2-4-1": "state: scanned",
+                "MCAN:R2-4-2": "state: scanned",
+                "MCAN:R2-4-3": "state: scanned",
+                "MCAN:R2-4-4": "state: scanned",
+                "MCAN:R2-4-5": "state: scanned",
+                "MCAN:R2-5": "state: scanned",
+                "MCAN:R2-6-1": "state: scanned",
+                "MCAN:TAGLESS-2-6-2": "state: scanned",
+                "MCAN:TAGLESS-2-6-3": "state: scanned",
+                "MCAN:TAGLESS-2-6-3-test": "state: scanned"
+            }
+        }
+    },
+    "SEQ": {
+        "PATH-2-1-10": {
+            "built": true,
+            "dependents": {
+                "ASYN:R4-17-1": "state: not tested"
+            }
+        },
+        "TAGLESS-2-1-12": {
+            "built": true,
+            "dependents": {
+                "ASYN:R4-17-1": "state: not tested"
+            }
+        },
+        "seq-2-1-3": {
+            "built": true,
+            "dependents": {
+                "ASYN:R4-17-1": "state: scanned"
+            }
+        },
+        "seq-2-1-6": {
+            "built": true,
+            "dependents": {
+                "ASYN:R4-17-1": "state: not tested"
+            }
+        }
+    },
+    "SOFT_DEVHWCLIENT": {
+        "R3-0": {
+            "built": true,
+            "dependents": {
+                "MCAN:R2-4-0": "state: scanned",
+                "MCAN:R2-4-1": "state: scanned",
+                "MCAN:R2-4-2": "state: scanned",
+                "MCAN:R2-4-3": "state: scanned",
+                "MCAN:R2-4-4": "state: scanned",
+                "MCAN:R2-4-5": "state: scanned",
+                "MCAN:R2-5": "state: scanned",
+                "MCAN:R2-6-1": "state: scanned",
+                "MCAN:TAGLESS-2-6-2": "state: scanned",
+                "MCAN:TAGLESS-2-6-3": "state: scanned",
+                "MCAN:TAGLESS-2-6-3-test": "state: scanned"
+            }
+        }
+    },
+    "VXSTATS": {
+        "R3-0": {
+            "built": true
+        }
+    }
 }
 
+Command 'new' would create build with tag 'AUTO-001'
+
+Your module specifications are still incomplete, command 'new' can not
+be used with these.

@@ -12,9 +12,9 @@ PYTHON=$@
 
 echo -e "\n-> Test sumo-db cloneversion." >&2
 
-cp samples/DB_IDCP DB_IDCP-$ME.tmp
+cp samples/IDCP-DEPS.DB $ME-DEPS.tmp
 
-$PYTHON ../bin/sumo-db --db DB_IDCP-$ME.tmp clonemodule ALARM ALARM3-8 R3-8 
-$PYTHON ../bin/sumo-db --db DB_IDCP-$ME.tmp clonemodule MCAN MCAN-COPY
-cat DB_IDCP-$ME.tmp 
+$PYTHON ../bin/sumo-db --db $ME-DEPS.tmp clonemodule ALARM ALARM3-8 R3-8 
+$PYTHON ../bin/sumo-db --db $ME-DEPS.tmp clonemodule MCAN MCAN-COPY
+cat $ME-DEPS.tmp 
 

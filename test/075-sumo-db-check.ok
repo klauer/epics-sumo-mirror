@@ -2,4 +2,4 @@ sumo-db --db samples/DB check:
 
 
 sumo-db --db samples/BUILDS check:
-Error: Dependency data is invalid (created from JSON file samples/BUILDS)
+error: dependency data is invalid (created from JSON file samples/BUILDS)
