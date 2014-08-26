@@ -1,6 +1,6 @@
 #!/bin/sh
 
-curr_ver=`grep '^my_version' ../setup.py | sed -e 's/^[^"]*//;s/"//g'`
+curr_ver=`grep '#VERSION#' ../setup.py | sed -e 's/^[^"]\+"\([^"]\+\).*$/\1/'`
 
 rm -f ../dist/sumo.tar.gz
 rm -f ../dist/sumo.zip
