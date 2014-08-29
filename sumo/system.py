@@ -7,7 +7,7 @@
 import sys
 import subprocess
 
-__version__="1.8" #VERSION#
+__version__="1.8.1" #VERSION#
 
 # -----------------------------------------------
 # ensure a certain module version

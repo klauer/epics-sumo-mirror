@@ -15,7 +15,7 @@ if __name__ == "__main__":
 import os
 import sumo.system
 
-__version__="1.8" #VERSION#
+__version__="1.8.1" #VERSION#
 
 try:
     import lockfile
