@@ -48,6 +48,24 @@
                     "url": "rcsadm@aragon.acc.bessy.de:/opt/repositories/controls/darcs/epics/support/asyn/4-18"
                 }
             }
+        },
+        "PATH-4-18": {
+            "aliases": {
+                "BASE": "EPICS_BASE"
+            },
+            "archs": {
+                "RTEMS-mvme2100": true,
+                "RTEMS-mvme5500": true,
+                "linux-x86": true,
+                "vxWorks-68040": true,
+                "vxWorks-ppc603": true
+            },
+            "dependencies": [
+                "BASE"
+            ],
+            "source": {
+                "path": "rcsadm@aragon.acc.bessy.de:/opt/Epics/R3.14.12/support/asyn/4-18"
+            }
         }
     },
     "BASE": {

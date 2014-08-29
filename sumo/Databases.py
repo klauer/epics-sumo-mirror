@@ -217,27 +217,33 @@ class Dependencies(sumo.JSON.Container):
         if not source:
             version["source"]= new
             return True
-        (source_type,source_dict)= sumo.utils.single_key_item(source)
-        (new_type,new_dict)= sumo.utils.single_key_item(new)
+
+        (source_type,source_val)= sumo.utils.single_key_item(source)
+        # note: source_val may be a dict or a string
+
+        (new_type,new_val)= sumo.utils.single_key_item(new)
+        # note: new_val may be a dict or a string
 
         # if source_type!=new_type we know that there are changes:
-        changes= (source_type!=new_type)
-        for (k,v) in new_dict.items():
-            v_old= source_dict.get(k)
+        if source_type!=new_type:
+            # just copy
+            version["source"]= new
+            return True
+
+        # here we know that the source types are equal
+        changes= False
+        for (k,v) in new_val.items():
+            # replace wildcards:
+            v_old= source_val.get(k)
             if v=="*":
-                if source_type!=new_type:
-                    raise ValueError("sourcespec: '*' wildcard not allowed "
-                                     "for different source types "
-                                     "('%s'!='%s' here)" % \
-                                     (source_type, new_type))
                 if v_old is None:
                     raise ValueError("sourcespec: no data found to replace "
                                      "'%s=*'" % k)
-                new_dict[k]= v_old
+                new_val[k]= v_old
             else:
                 if v_old!=v:
                     changes= True
-        version["source"]= new
+            version["source"]= new
         return changes
     def set_source_arch(self, module_name, versionname, archs,
                               repo_dict):
