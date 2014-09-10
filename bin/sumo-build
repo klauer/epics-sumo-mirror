@@ -897,20 +897,12 @@ def process(options, commands):
         else:
             new_state= commands[state_idx]
 
-        if new_state:
-            if not options.db:
-                sys.exit("--db is mandatory")
         if not options.builddb:
             sys.exit("--builddb is mandatory")
-        if new_state:
-            db= db_from_json_file(options.db,
-                                  keep_locked= not options.dry_run)
-        else:
-            db= None
         builddb= builddb_from_json_file(options.builddb,
                 keep_locked= not options.dry_run)
         if not builddb.has_build_tag(buildtag):
-            # db and builddb __del__ method should remove lockfiles
+            # builddb __del__ method should remove lockfiles
             sys.exit("error: buildtag \"%s\" not found" % buildtag)
         if not new_state:
             print "%-20s : %s" % (buildtag, builddb.state(buildtag))
@@ -918,7 +910,7 @@ def process(options, commands):
             try:
                 builddb.change_state(buildtag, new_state)
             except ValueError, e:
-                # db and builddb __del__ method should remove lockfiles
+                # builddb __del__ method should remove lockfiles
                 sys.exit(str(e))
             builddb.json_save(options.builddb,
                               options.verbose, options.dry_run)
