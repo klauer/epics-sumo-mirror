@@ -389,6 +389,14 @@ class Dependencies(sumo.JSON.Container):
                     (tp, modulename, versionname))
     def iter_dependencies(self, modulename, versionname):
         """return an iterator on dependency modulenames of a module."""
+        md= self.datadict().get(modulename)
+        if md is None:
+            raise KeyError("error: module %s not found in dependency "
+                           "database" % modulename)
+        d= md.get(versionname)
+        if d is None:
+            raise KeyError("error: module %s:%s not found in dependency "
+                           "database" % (modulename,versionname))
         d= self.datadict()[modulename][versionname]
         deps= d.get("dependencies")
         if deps is None:
