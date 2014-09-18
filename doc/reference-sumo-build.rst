@@ -290,6 +290,12 @@ Here is a short overview on command line options:
     default configuration file sumo-build.config.
 ``--no-default-config``
     If this option is given the program doesn't load the default configuration.
+``--mergeoption OPTIONNAME``
+    If an option with name OPTIONNAME is given here and it is a list option,
+    the lists from the config file and the command line are merged. The new
+    list is the sum of both lists where it is ensured that for all elements the
+    string up to the first colon ":" is unique (this is usefule for module
+    specifications that have the form "module:version").
 ``--#include FILE`` 
     Specify a an '#include' directive in the configuration file.  This option
     has only a meaning if a configuration file is created with the 'makeconfig'
