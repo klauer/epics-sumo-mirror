@@ -397,6 +397,12 @@ class Specs(object):
                 continue
             raise ValueError("error, module '%s' is mentioned twice in "
                              "module specifications" % spec.modulename)
+    def to_stringlist(self):
+        """convert back to a list of strings."""
+        l= []
+        for spec in self:
+            l.append(spec.to_string())
+        return sorted(l)
     def to_dist_dict(self):
         """convert to a dict mapping modulename-->versionname.
 
