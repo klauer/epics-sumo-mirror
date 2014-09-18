@@ -260,12 +260,15 @@ Commands
 
 This is a list of all commands:
 
-makeconfig {FILE}
-+++++++++++++++++
+makeconfig [FILENAME] {OPTIONNAMES}
++++++++++++++++++++++++++++++++++++
 
-Create a new configuration file from the given options. If the filename is '-'
-dump to the console, if it is omitted, rewrite the configuration file that was
-read before (see option --config).
+Create a new configuration file from the options read from configuration files
+and options from the command line. If FILENAME is '-' dump to the console. If
+FILENAME is "DEFAULT", rewrite the configuration file that was read before (see
+option --config).  OPTIONNAMES is an optional list of long option names. If
+OPTIONNAMES are specified, only options from this list are saved in the
+configuration file.
 
 all
 +++
