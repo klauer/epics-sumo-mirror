@@ -1,0 +1,14 @@
+"/&$%"/ no longer needed
+# definitions for sumo contrib files:
+
+# path of sumo directory:
+SUMODIR="$HOME/net/project/delme/sumo-test/sumo"
+
+# share directory where data files from "contrib" are installed:
+SHARE="$HOME/net/project/delme/sumo-test/share"
+# bin directory where scripts from "contrib" are installed:
+BIN="$HOME/net/project/delme/sumo-test/bin"
+
+# some scripts are EPICS version specific get a number at
+# the end of their filenames:
+VERSIONS="3.14.8 3.14.12"

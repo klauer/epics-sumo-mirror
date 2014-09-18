@@ -9,19 +9,21 @@ source $SHARE/sumo.vars
 
 LOCAL_SUMO_SUBDIR=sumo-local
 
-if [ -z "$3" ];then
-    echo "usage: $SCRIPT MODULE OLDVERSION NEWVERSION {extra modulespecs}"
-    echo "        extra modulespecs is a space separated list of "
-    echo "        MODULENAME:MODULEVERSION items."
+if [ -z "$3" ]; then
+    echo "usage: $SCRIPT [support-name] [support-version] [build-name]"
     exit 1
 fi
 
 module="$1"
-shift
-oldversion="$1"
-shift
-newversion="$1"
-shift
+version="$2"
+build="$3"
+
+dir=$SUMODIR/build/$module/$version+$build
+
+if [ ! -d $dir ]; then
+    echo "error, directory '$dir' not found"
+    exit 1
+fi
 
 if [ -e $LOCAL_SUMO_SUBDIR ]; then
     echo "error, directory $LOCAL_SUMO_SUBDIR already exists"
@@ -36,20 +38,21 @@ LOCAL_SUMODIR=`pwd`
 mkdir build
 mkdir database
 
-cp $SUMODIR/database/DEPS.DB .
+cp $SUMODIR/database/DEPS.DB database
 
-$SUMO_DB --maxstate unstable --db $LOCAL_SUMODIR/database/DEPS.DB makeconfig
-$SUMO_BUILD --db $LOCAL_SUMODIR/database/DEPS.DB --builddb $LOCAL_SUMODIR/build/BUILDS.DB --supportdir $LOCAL_SUMODIR/build --maxstate unstable --makeopts "-s" makeconfig
+sumo-db --db $LOCAL_SUMODIR/database/DEPS.DB makeconfig DEFAULT
+sumo-build --db $LOCAL_SUMODIR/database/DEPS.DB --builddb $LOCAL_SUMODIR/build/BUILDS.DB --supportdir $LOCAL_SUMODIR/build --makeopts "-s" makeconfig DEFAULT
 
-$SUMO_DB cloneversion $module $oldversion $newversion
+cp -a $dir $module-TEST
 
-echo "trying to build the support and all dependencies"
+sumo-db cloneversion $module $version TEST path $LOCAL_SUMODIR/$module-TEST
 
-$SUMO_BUILD --maxstate unstable new $@ $module:$newversion
+sumo-build --builddb $SUMODIR/build/BUILDS.DB makeconfig MODULES.tmp module -m ":build:$build" -m $module:TEST
 
-echo "$module:$newversion is now compiled."
-echo "Remember that this is still identical with $module:$oldversion."
-echo "You may now start to modify it. If finished do not forget to"
-echo "change the 'source' part of this module in DEPS.DB"
-echo "Do also not forget to apply the changes in your local copy "
-echo "of DEPS.DB to $SUMODIR/database/DEPS.DB".
+echo "you can re-create a build with:"
+echo 'sumo-build new ":load:MODULES.tmp"'
+
+
+echo 'sumo-build new ":load:MODULES.tmp"' > new-build.sh
+chmod u+x new-build.sh
+

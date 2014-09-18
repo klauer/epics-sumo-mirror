@@ -2,11 +2,15 @@
 
 set -e
 
+# the following two variables are patched by install.sh:
 SHARE=../share
+VERSION=1.2.3
 
 # define some environment variables:
 source $SHARE/sumo.vars
-source $SHARE/sumo-xx.vars
+
+SUMO_SCAN_CONFIG="$SHARE/sumo-scan-$VERSION.config"
+SUMO_DB_CONFIG="$SHARE/sumo-db.config"
 
 if [ "$1" = "-h" ]; then
     echo "This script scans an existing EPICS support tree and"
@@ -22,7 +26,7 @@ fi
 
 NOW=`date -Iseconds`
 
-$SUMO_SCAN -c $SUMO_SCAN_CONFIG all > SUMO-SCAN-$NOW.SCAN
+sumo-scan -c $SUMO_SCAN_CONFIG all > SUMO-SCAN-$NOW.SCAN
 
-$SUMO_DB -c $SUMO_DB_CONFIG convert stable SUMO-SCAN-$NOW.SCAN > SUMO-SCAN-$NOW.DB
+sumo-db -c $SUMO_DB_CONFIG convert SUMO-SCAN-$NOW.SCAN --db SUMO-SCAN-DEPS-$NOW.DB --scandb SUMO-SCAN-SCAN-$NOW.DB
 

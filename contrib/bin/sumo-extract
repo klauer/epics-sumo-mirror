@@ -37,11 +37,11 @@ echo "$dir" was copied to $module
 
 cd $module > /dev/null
 
-$SUMO_SCAN -c $SUMO_SCAN_CONFIG -d . all | $SUMO_DB --no-default-config appconvert - > $MODULES
+sumo-scan -c $SUMO_SCAN_CONFIG -d . all | sumo-db --no-default-config appconvert - > $MODULES
 
-$SUMO_DB --maxstate unstable --db $SUMODIR/database/DEPS.DB -c $MODULES makeconfig
-$SUMO_BUILD --maxstate unstable --db $SUMODIR/database/DEPS.DB --builddb $SUMODIR/build/BUILDS.DB --supportdir $SUMODIR/build -c $MODULES makeconfig
+sumo-db --db $SUMODIR/database/DEPS.DB -c $MODULES makeconfig DEFAULT
+sumo-build --db $SUMODIR/database/DEPS.DB --builddb $SUMODIR/build/BUILDS.DB --supportdir $SUMODIR/build -c $MODULES makeconfig DEFAULT
 
 echo "creating configure/RELEASE"
-$SUMO_BUILD use 
+sumo-build use 
 

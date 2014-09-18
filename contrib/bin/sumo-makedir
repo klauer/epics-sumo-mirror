@@ -15,18 +15,25 @@ if [ -z "$1" ]; then
 fi
 
 dir="$1"
+dir_3_14_8="$dir-3.14.8"
+dir_3_14_12="$dir-3.14.12"
 
 if [ -d $dir ]; then 
     echo "error, directory $dir already exists"
 fi
+if [ -d $dir_3_14_8 ]; then 
+    echo "error, directory $dir_3_14_8 already exists"
+fi
+if [ -d $dir_3_14_12 ]; then 
+    echo "error, directory $dir_3_14_12 already exists"
+fi
 
-TMP="$dir-3.14.8"
 HERE=`pwd`
 
-sumo-makedir-3.14.8  $TMP
-sumo-makedir-3.14.12 $dir
+sumo-makedir-3.14.8  $dir_3_14_8
+sumo-makedir-3.14.12 $dir_3_14_12
 
-cd $TMP > /dev/null
+cd $dir_3_14_8
 
 sumo-db replaceversion APPS_GENERICTEMPLATE R3-6 R3-6-EPICS-3-14-8 
 sumo-db replaceversion APPS_GENERICBOOT R0-9 R0-9-EPICS-3-14-8 
@@ -35,19 +42,18 @@ sumo-db replaceversion APPS_GENERICBOOT R0-4 R0-4-EPICS-3-14-8
 sumo-db replaceversion APPS_GENERICBOOT R0-7 R0-7-EPICS-3-14-8
 sumo-db replaceversion APPS_VACUUM TAGLESS-1-1 TAGLESS-1-1-EPICS-3-14-8
 
-TMP=`pwd`
-
 cd $HERE > /dev/null
-cd $dir > /dev/null
 
-sumo-db merge $TMP/DEPS.DB
+mkdir $dir
+mkdir $dir/build
+mkdir $dir/database
+cp -a $dir_3_14_8/database/* $dir/database
+cp -a $dir_3_14_12/database/* $dir/database
 
-mv $TMP/SUMO*.DB .
-mv $TMP/SUMO*.SCAN .
+sumo-db --db $dir/database/DEPS.DB merge $dir_3_14_8/database/DEPS.DB
 
-rm $TMP/DEPS*
-rm $TMP/*.config
-rmdir $TMP
+rm -rf $dir_3_14_8
+rm -rf $dir_3_14_12
 
 echo
 echo "Finished"

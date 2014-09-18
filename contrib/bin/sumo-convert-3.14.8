@@ -4,9 +4,10 @@ set -e
 
 SHARE=../share
 
-# define some environment variables:
+# Define some environment variables:
 source $SHARE/sumo.vars
-source $SHARE/sumo-3.14.8.vars
+
+SUMO_SCAN_CONFIG="$SHARE/sumo-scan-3.14.8.config"
 
 MODULES=configure/MODULES
 
@@ -20,10 +21,14 @@ fi
 
 stem="$1"
 
+# Ensure that the convert tool is not run twice:
+
 if [ -e "$MODULES" ]; then
     echo "File $MODULES exists, you app is already converted"
     exit 0
 fi
+
+# Ensure that there is an EPICS application here:
 
 if [ ! -e "configure/RELEASE" ]; then
     echo "File 'configure/RELEASE' not found, this doesn't seem to be an "
@@ -31,11 +36,17 @@ if [ ! -e "configure/RELEASE" ]; then
     exit 1
 fi
 
+# The RULES definition must be placed in configure/RELEASE in order to be
+# recognized by sumo-scan:
+
 if grep -q '^RULES *=' configure/CONFIG; then
     echo "Error: you have to move the definition of 'RULES' from"
     echo "configure/CONFIG to configure/RELEASE before you can proceed."
     exit 1
 fi
+
+# The check-release utility is not compatible with sumo and must be
+# deactivated:
 
 if grep -q '^CHECK_RELEASE *= *YES' configure/Makefile ;then
     echo "Error: in configure/Makefile you have to change the setting of"
@@ -43,19 +54,87 @@ if grep -q '^CHECK_RELEASE *= *YES' configure/Makefile ;then
     exit 1
 fi
         
-$SUMO_SCAN -c $SUMO_SCAN_CONFIG -d . all | $SUMO_DB --no-default-config appconvert - > $MODULES
+# Create the configure/MODULES file with sumo-scan and sumo-db:
 
-sed -e 's/\(BASE\):R3-14-8-2-0/\1:R3-14-8-2-1/' -i $MODULES
-sed -e 's/\(APPS_GENERICTEMPLATE\):R3-6/\1:R3-6-RULES-1-1/' -i $MODULES
-sed -e 's/\(APPS_IOCWATCH\):R2-2/\1:R2-2-RULES-1-1/' -i $MODULES
-sed -e 's/\(APPS_MOTOR\):TAGLESS-2-6-2-2/\1:TAGLESS-2-6-2-2-RULES-1-5/' -i $MODULES
-sed -e 's/\(APPS_SCOPESAVERESTORE\):R1-1/\1:R1-1-RULES-1-4-1/' -i $MODULES
-sed -e 's/\(APPS_VACUUM\):TAGLESS-1-1-1/\1:TAGLESS-1-1-1-RULES-1-15/' -i $MODULES
-sed -e 's/\(HIGHLAND-V375\):TAGLESS-1-2/\1:TAGLESS-1-2-RULES-1-9/' -i $MODULES
+sumo-scan -c $SUMO_SCAN_CONFIG -d . all | sumo-db --no-default-config appconvert - > $MODULES
 
-$SUMO_DB --no-default-config --maxstate unstable --db $SUMODIR/database/DEPS.DB --#include $MODULES makeconfig
+# We must use BASE:R-3-14-8-2-1 instead of BASE:R-3-14-8-2-0:
 
-$SUMO_BUILD --no-default-config --maxstate unstable --buildtag-stem "$stem" --db $SUMODIR/database/DEPS.DB --builddb $SUMODIR/build/BUILDS.DB --supportdir $SUMODIR/build --#include $MODULES makeconfig
+if grep -q BASE:R3-14-8-2-0 $MODULES; then
+    sumo-build -c $MODULES --mergeoption "alias module" \
+            -m BASE:R3-14-8-2-1 \
+            makeconfig $MODULES alias module 
+fi
+
+# Patch some used supports that use different sets of the RULES support at the
+# same time. This is an inconsistency of our EPICS 3.14.8 installation here at
+# the HZB:
+
+if grep -q APPS_GENERICTEMPLATE:R3-6 $MODULES; then
+    sumo-build -c $MODULES --mergeoption "alias module" \
+            -m "APPS_GENERICTEMPLATE:R3-6-RULES-1-1 RULES-1-1:R1-1" \
+            makeconfig $MODULES alias module 
+fi
+
+if grep -q APPS_IOCWATCH:R2-2 $MODULES; then
+    sumo-build -c $MODULES --mergeoption "alias module" \
+            -m "APPS_IOCWATCH:R2-2-RULES-1-1 RULES-1-1:R1-1" \
+            makeconfig $MODULES alias module 
+fi
+
+if grep -q APPS_MOTOR:TAGLESS-2-6-2-2 $MODULES; then
+    sumo-build -c $MODULES --mergeoption "alias module" \
+            -m "APPS_MOTOR:TAGLESS-2-6-2-2-RULES-1-5 RULES-1-5:R1-5" \
+            makeconfig $MODULES alias module 
+fi
+
+if grep -q APPS_SCOPESAVERESTORE:R1-1 $MODULES; then
+    sumo-build -c $MODULES --mergeoption "alias module" \
+            -m "APPS_SCOPESAVERESTORE:R1-1-RULES-1-4-1 RULES-1-4-1:R1-4-1" \
+            makeconfig $MODULES alias module 
+fi
+
+if grep -q APPS_VACUUM:TAGLESS-1-1-1 $MODULES; then
+    sumo-build -c $MODULES --mergeoption "alias module" \
+            -m "APPS_VACUUM:TAGLESS-1-1-1-RULES-1-15 RULES-1-15:R1-15" \
+            makeconfig $MODULES alias module 
+fi
+
+if grep -q HIGHLAND-V375:TAGLESS-1-2 $MODULES; then
+    sumo-build -c $MODULES --mergeoption "alias module" \
+            -m "HIGHLAND-V375:TAGLESS-1-2-RULES-1-9 RULES-1-9:R1-9" \
+            makeconfig $MODULES alias module 
+fi
+
+#if grep -q STD:PATH-2-6-2 $MODULES; then
+#    sumo-build -c $MODULES --mergeoption "alias module" \
+#            -m "STD:R2-8-bessy2" \
+#            makeconfig $MODULES alias module 
+#fi
+
+# STD:PATH-2-6-2 needs a special GENSUB support:
+
+if grep -q STD:PATH-2-6-2 $MODULES; then
+    sumo-build -c $MODULES --mergeoption "alias module" \
+            -m "SYNAPPS_5-2-0-1_SUPPORT_GENSUB:PATH-1-6a" \
+            makeconfig $MODULES alias module 
+fi
+
+# We must use a special version of APPS_GENERICBOOT:
+
+if grep -q APPS_GENERICBOOT:R0-9 $MODULES; then
+    sumo-build -c $MODULES --mergeoption "alias module" \
+            -m "APPS_GENERICBOOT:R0-9-EPICS-3-14-8" \
+            makeconfig $MODULES alias module 
+fi
+
+# Write the sumo-db configuration file:
+
+sumo-db --no-default-config --db $SUMODIR/database/DEPS.DB --#include $MODULES makeconfig DEFAULT
+
+# Write the sumo-build configuration file:
+
+sumo-build --no-default-config --buildtag-stem "$stem" --db $SUMODIR/database/DEPS.DB --builddb $SUMODIR/build/BUILDS.DB --supportdir $SUMODIR/build --#include $MODULES makeconfig DEFAULT
 
 echo "A file '$MODULES' containing the module dependencies was created in "
 echo "directory 'configure'. You may review or modify that file."
