@@ -577,7 +577,12 @@ def process(options, commands):
 
         db = db_from_json_file(options.db,
                 keep_locked= not options.dumpdb and (not options.dry_run))
-        db.patch_version(modulename, oldversion, newversion, do_replace)
+        try:
+            db.patch_version(modulename, oldversion, newversion,
+                             do_replace)
+        except ValueError, e:
+            sys.exit(str(e))
+
         if sourcespec:
             try:
                 source_spec_dict= utils.scan_source_spec(sourcespec)
