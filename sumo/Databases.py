@@ -552,9 +552,13 @@ class Dependencies(sumo.JSON.Container):
         """
         # pylint: disable=R0912
         #                          Too many branches
-        moduledata= self.datadict()[modulename]
+        moduledata= self.datadict().get(modulename)
+        if moduledata is None:
+            raise ValueError("error, module with name '%s' not found "
+                             "in dependency database" % modulename)
+
         if moduledata.has_key(newversionname):
-            raise ValueError("module %s: version %s already exists" % \
+            raise ValueError("error, module %s: version %s already exists" % \
                     (modulename, newversionname))
         d= copy.deepcopy(self.datadict()[modulename][versionname])
         moduledata[newversionname]= d
