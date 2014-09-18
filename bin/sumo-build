@@ -1099,20 +1099,21 @@ def process(options, commands):
             print "\n    ".join(sorted(added_modules))
             print
 
-        if not modules_not_exact_spec and not added_modules:
-            # everything complete, show modules that are not needed by other
-            # modules:
-            needed_modules= set([m for (m,_) in needed_by_others.keys()])
-            not_needed_modules= set(report.keys()).difference(needed_modules)
-            print "The following modules are not needed by other modules",
-            print "in your module"
-            print "specification:\n   ",
-            print "\n    ".join(sorted(not_needed_modules))
-            print
-
-
-        print "List of modules that fullfill the given module specification:"
-        sumo.JSON.dump(report)
+        if not options.brief:
+            if not modules_not_exact_spec and not added_modules:
+                # everything complete, show modules that are not needed by
+                # other modules:
+                needed_modules= set([m for (m,_) in needed_by_others.keys()])
+                not_needed_modules= \
+                        set(report.keys()).difference(needed_modules)
+                print "The following modules are not needed by other modules",
+                print "in your module"
+                print "specification:\n   ",
+                print "\n    ".join(sorted(not_needed_modules))
+                print
+            print "List of modules that fullfill the given "+\
+                  "module specification:"
+            sumo.JSON.dump(report)
 
         if buildtag is None:
             if not options.buildtag_stem:
@@ -1589,7 +1590,8 @@ def main():
                       )
     parser.add_option("-b", "--brief",
                       action="store_true",
-                      help="Create a more brief output for some commands. ",
+                      help="Create a more brief output for commands "
+                           "\"find\" and \"try\".",
                       )
     parser.add_option("--no-checkout",
                       action="store_true",

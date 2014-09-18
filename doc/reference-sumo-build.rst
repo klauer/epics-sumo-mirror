@@ -342,7 +342,7 @@ Here is a short overview on command line options:
     For command 'try' exclude all 'dependents' whose state does match one of
     the regular expressions (REGEXP).
 ``-b, --brief``
-    Create a more brief output for some commands.
+    Create a more brief output for commands "find" and "try".
 ``--no-checkout``
     With this option, "new" does not check out sources of support modules. This
     option is only here for test purposes.
@@ -382,7 +382,12 @@ command "try"
 
 Since the report of the "try" command is a bit complex, here is an example.
 
-The output of "try" is in most cases very long, so you probably want to redirect it to a file transfer it to a pager program like "less". In the following examples we use "less". Note that in "less" you go back with "b", forward with <space> and quit the program with "q". There are many other commands, use "man less" to learn more. "less" is not available on windows platforms.
+The output of "try" is in most cases very long, so you probably want to
+redirect it to a file transfer it to a pager program like "less". You can skip
+the detailed report with option "-b" or "--brief". In the following examples we
+use "less". Note that in "less" you go back with "b", forward with <space> and
+quit the program with "q". There are many other commands, use "man less" to
+learn more. "less" is not available on windows platforms.
 
 We assume that you have a configuration file "sumo-build.config" which contains
 the settings for all needed command line options and a list of modules. Then we
