@@ -503,7 +503,12 @@ def process(options, commands):
         sys.exit("Error while loading config file,\n%s" % str(e))
     except IOError, e:
         sys.exit("Error while loading config file,\n%s" % str(e))
-    config.merge_options(options)
+    try:
+        config.merge_options(options, options.mergeoption)
+    except ValueError, e:
+        sys.exit(str(e))
+    except TypeError, e:
+        sys.exit(str(e))
 
     if not commands:
         sys.exit("command missing")
@@ -536,10 +541,11 @@ def process(options, commands):
         if not options.group_basedir:
             sys.exit("error, option -g is mandatory here")
 
-    options.dir= utils.opt_join(options.dir)
-    options.ignore_name= utils.opt_join(options.ignore_name)
+    options.dir          = utils.opt_join(options.dir)
+    options.ignore_name  = utils.opt_join(options.ignore_name)
     options.group_basedir= utils.opt_join(options.group_basedir)
-    options.exclude_path= utils.opt_join(options.exclude_path)
+    options.exclude_path = utils.opt_join(options.exclude_path)
+    options.mergeoption  = utils.opt_join(options.mergeoption)
 
     if options.dir:
         (deps, archs)= get_configuration(options)
@@ -648,6 +654,19 @@ def main():
                       action="store_true",
                       help="If this option is given the program doesn't load "
                            "the default configuration.",
+                      )
+    parser.add_option("--mergeoption",
+                      action="append",
+                      type="string",
+                      help= "If an option with name OPTIONNAME is given "
+                            "here and it is a list option, the lists from "
+                            "the config file and the command line are "
+                            "merged. The new list is the sum of both lists "
+                            "where it is ensured that for all elements the "
+                            "string up to the first colon \":\" is unique "
+                            "(this is usefule for module specifications "
+                            "that have the form \"module:version\").",
+                      metavar="OPTIONNAME"
                       )
     parser.add_option("--#include",
                       action="append",
