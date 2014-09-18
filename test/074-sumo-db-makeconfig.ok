@@ -1,0 +1,39 @@
+generated config file:
+{
+    "#include": [
+        "074-sumo-db-makeconfig-MODULES.tmp"
+    ],
+    "arch": [
+        "vxWorks-68040",
+        "vxWorks-ppc603"
+    ],
+    "db": "DEPS.DB",
+    "progress": true,
+    "scandb": "SCAN",
+    "source_patch": [
+        "r\"^/srv/csr/Epics\",r\"rcsadm@aragon.acc.bessy.de:/opt/Epics\""
+    ],
+    "verbose": true
+}
+generated modules file:
+{
+    "module": [
+        "BASE:R3-14-12-2-1",
+        "MCAN:R2-6-1",
+        "ALARM:R3-7",
+        "BSPDEP_TIMER:R6-2",
+        "BSPDEP_VMETAS:R2-0",
+        "MISC_DBC:R3-0",
+        "MISC_DEBUGMSG:R3-0",
+        "SOFT_DEVHWCLIENT:R3-0"
+    ]
+}
+read modulespecs from config and modules file:
+BASE:R3-14-12-2-1
+MCAN:R2-6-1
+ALARM:R3-7
+BSPDEP_TIMER:R6-2
+BSPDEP_VMETAS:R2-0
+MISC_DBC:R3-0
+MISC_DEBUGMSG:R3-0
+SOFT_DEVHWCLIENT:R3-0

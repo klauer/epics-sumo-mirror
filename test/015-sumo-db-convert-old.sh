@@ -8,15 +8,16 @@ if [ "$1" = "deps" ]; then
         exit
 fi
 
-PYTHON=$@
+if [ -z "$1" ]; then
+        PYTHON="python"
+else
+        PYTHON=$1
+fi
 
 echo -e "\n-> Test sumo-db convert-old." >&2
 
-# the following is a trick to remove the "no dependency info" messages
-# from standard error and leave standard out untouched:
-
 set +o posix
-$PYTHON ../bin/sumo-db convert-old samples/DB_IDCP_OLD --db $ME-DEPS.tmp --scandb $ME-SCAN.tmp 
+$PYTHON ../bin/sumo-db convert-old data/samples/DB_IDCP_OLD --db $ME-DEPS.tmp --scandb $ME-SCAN.tmp 
 echo "DB file:"
 cat $ME-DEPS.tmp
 echo

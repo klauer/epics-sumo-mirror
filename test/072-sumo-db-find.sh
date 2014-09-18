@@ -3,21 +3,29 @@
 ME=`basename $0 .sh`
 
 if [ "$1" = "deps" ]; then
-        echo "$ME.tst: $ME.sh $ME.out $ME.ok"
+        echo "$ME.tst: $ME.sh $ME.out $ME.ok 020-sumo-db-convert.tst"
         echo
         exit
 fi
 
-PYTHON=$@
+if [ -z "$1" ]; then
+        PYTHON="python"
+else
+        PYTHON=$1
+fi
+
+PWD_NICE=`pwd`
 
 echo -e "\n-> Test sumo-db find" >&2
 
+DEPS=tmp-020-sumo-db-convert/DEPS.DB
+
 echo -e "find mcan:"
-$PYTHON ../bin/sumo-db --arch vxWorks-68040 --arch vxWorks-ppc603 --db samples/DEPS.DB find mcan 
+$PYTHON ../bin/sumo-db --arch vxWorks-68040 --arch vxWorks-ppc603 --db $DEPS find mcan | sed -e s#$PWD_NICE##
 
 echo -e "\nfind mcan -b:"
-$PYTHON ../bin/sumo-db --arch vxWorks-68040 --arch vxWorks-ppc603 --db samples/DEPS.DB find mcan -b
+$PYTHON ../bin/sumo-db --arch vxWorks-68040 --arch vxWorks-ppc603 --db $DEPS find mcan -b | sed -e s#$PWD_NICE##
 
-echo -e "\nfind mcan.*patch -b:"
-$PYTHON ../bin/sumo-db --arch vxWorks-68040 --arch vxWorks-ppc603 --db samples/DEPS.DB find mcan.*patch -b
+echo -e "\nfind '^A' -b:"
+$PYTHON ../bin/sumo-db --arch vxWorks-68040 --arch vxWorks-ppc603 --db $DEPS find '^A' -b | sed -e s#$PWD_NICE##
 

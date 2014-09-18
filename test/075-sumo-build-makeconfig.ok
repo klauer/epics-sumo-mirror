@@ -1,0 +1,48 @@
+generated config file:
+{
+    "#include": [
+        "075-sumo-build-makeconfig-MODULES.tmp"
+    ],
+    "alias": [
+        "ALARM:BSPDEP_ALARM",
+        "MCAN:MULTICAN"
+    ],
+    "arch": [
+        "vxWorks-68040",
+        "vxWorks-ppc603"
+    ],
+    "builddb": "BUILDS.DB",
+    "buildtag_stem": "MYAPP",
+    "db": "DEPS.DB",
+    "extra": [
+        "extra line"
+    ],
+    "makeopts": [
+        "-sj"
+    ],
+    "progress": true,
+    "readonly": true,
+    "scandb": "SCAN",
+    "supportdir": "/supports",
+    "verbose": true
+}
+generated modules file:
+{
+    "module": [
+        "MCAN:R2-6-1",
+        "ALARM:R3-7",
+        "BSPDEP_TIMER:R6-2",
+        "BSPDEP_VMETAS:R2-0",
+        "MISC_DBC:R3-0",
+        "MISC_DEBUGMSG:R3-0",
+        "SOFT_DEVHWCLIENT:R3-0"
+    ]
+}
+read modulespecs from config and modules file:
+MCAN:R2-6-1:vxWorks-68040:vxWorks-ppc603
+ALARM:R3-7:vxWorks-68040:vxWorks-ppc603
+BSPDEP_TIMER:R6-2:vxWorks-68040:vxWorks-ppc603
+BSPDEP_VMETAS:R2-0:vxWorks-68040:vxWorks-ppc603
+MISC_DBC:R3-0:vxWorks-68040:vxWorks-ppc603
+MISC_DEBUGMSG:R3-0:vxWorks-68040:vxWorks-ppc603
+SOFT_DEVHWCLIENT:R3-0:vxWorks-68040:vxWorks-ppc603

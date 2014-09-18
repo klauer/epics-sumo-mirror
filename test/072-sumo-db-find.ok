@@ -1,193 +1,6 @@
 find mcan:
 {
     "MCAN": {
-        "R2-4-0": {
-            "aliases": {
-                "BASE": "EPICS_BASE",
-                "MISC_DBC": "DBC",
-                "MISC_DEBUGMSG": "DEBUGMSG",
-                "SOFT_DEVHWCLIENT": "DEVHWCLIENT"
-            },
-            "archs": {
-                "vxWorks-68040": true,
-                "vxWorks-ppc603": true
-            },
-            "dependencies": [
-                "ALARM",
-                "BASE",
-                "MISC_DBC",
-                "MISC_DEBUGMSG",
-                "SOFT_DEVHWCLIENT"
-            ],
-            "source": {
-                "darcs": {
-                    "tag": "R2-4-0",
-                    "url": "rcsadm@aragon.acc.bessy.de:/opt/Epics/R3.14.12/support/mcan/2-4-0"
-                }
-            }
-        },
-        "R2-4-1": {
-            "aliases": {
-                "BASE": "EPICS_BASE",
-                "MISC_DBC": "DBC",
-                "MISC_DEBUGMSG": "DEBUGMSG",
-                "SOFT_DEVHWCLIENT": "DEVHWCLIENT"
-            },
-            "archs": {
-                "vxWorks-68040": true,
-                "vxWorks-ppc603": true
-            },
-            "dependencies": [
-                "ALARM",
-                "BASE",
-                "MISC_DBC",
-                "MISC_DEBUGMSG",
-                "SOFT_DEVHWCLIENT"
-            ],
-            "source": {
-                "darcs": {
-                    "tag": "R2-4-1",
-                    "url": "rcsadm@aragon.acc.bessy.de:/opt/Epics/R3.14.12/support/mcan/2-4-0"
-                }
-            }
-        },
-        "R2-4-2": {
-            "aliases": {
-                "BASE": "EPICS_BASE",
-                "MISC_DBC": "DBC",
-                "MISC_DEBUGMSG": "DEBUGMSG",
-                "SOFT_DEVHWCLIENT": "DEVHWCLIENT"
-            },
-            "archs": {
-                "vxWorks-68040": true,
-                "vxWorks-ppc603": true
-            },
-            "dependencies": [
-                "ALARM",
-                "BASE",
-                "MISC_DBC",
-                "MISC_DEBUGMSG",
-                "SOFT_DEVHWCLIENT"
-            ],
-            "source": {
-                "darcs": {
-                    "tag": "R2-4-2",
-                    "url": "rcsadm@aragon.acc.bessy.de:/opt/Epics/R3.14.12/support/mcan/2-4-1"
-                }
-            }
-        },
-        "R2-4-3": {
-            "aliases": {
-                "BASE": "EPICS_BASE",
-                "MISC_DBC": "DBC",
-                "MISC_DEBUGMSG": "DEBUGMSG",
-                "SOFT_DEVHWCLIENT": "DEVHWCLIENT"
-            },
-            "archs": {
-                "vxWorks-68040": true,
-                "vxWorks-ppc603": true
-            },
-            "dependencies": [
-                "ALARM",
-                "BASE",
-                "MISC_DBC",
-                "MISC_DEBUGMSG",
-                "SOFT_DEVHWCLIENT"
-            ],
-            "source": {
-                "darcs": {
-                    "tag": "R2-4-3",
-                    "url": "rcsadm@aragon.acc.bessy.de:/opt/repositories/controls/darcs/epics/support/mcan/base-3-14-12"
-                }
-            }
-        },
-        "R2-4-4": {
-            "aliases": {
-                "BASE": "EPICS_BASE",
-                "BSPDEP_VMETAS": "VMETAS",
-                "MISC_DBC": "DBC",
-                "MISC_DEBUGMSG": "DEBUGMSG",
-                "SOFT_DEVHWCLIENT": "DEVHWCLIENT"
-            },
-            "archs": {
-                "RTEMS-mvme2100": true,
-                "RTEMS-mvme5500": true,
-                "vxWorks-68040": true,
-                "vxWorks-ppc603": true
-            },
-            "dependencies": [
-                "ALARM",
-                "BASE",
-                "BSPDEP_VMETAS",
-                "MISC_DBC",
-                "MISC_DEBUGMSG",
-                "SOFT_DEVHWCLIENT"
-            ],
-            "source": {
-                "darcs": {
-                    "tag": "R2-4-4",
-                    "url": "rcsadm@aragon.acc.bessy.de:/opt/repositories/controls/darcs/epics/support/mcan/base-3-14-12"
-                }
-            }
-        },
-        "R2-4-5": {
-            "aliases": {
-                "BASE": "EPICS_BASE",
-                "BSPDEP_VMETAS": "VMETAS",
-                "MISC_DBC": "DBC",
-                "MISC_DEBUGMSG": "DEBUGMSG",
-                "SOFT_DEVHWCLIENT": "DEVHWCLIENT"
-            },
-            "archs": {
-                "RTEMS-mvme2100": true,
-                "RTEMS-mvme5500": true,
-                "vxWorks-68040": true,
-                "vxWorks-ppc603": true
-            },
-            "dependencies": [
-                "ALARM",
-                "BASE",
-                "BSPDEP_VMETAS",
-                "MISC_DBC",
-                "MISC_DEBUGMSG",
-                "SOFT_DEVHWCLIENT"
-            ],
-            "source": {
-                "darcs": {
-                    "tag": "R2-4-5",
-                    "url": "rcsadm@aragon.acc.bessy.de:/opt/repositories/controls/darcs/epics/support/mcan/base-3-14-12"
-                }
-            }
-        },
-        "R2-5": {
-            "aliases": {
-                "BASE": "EPICS_BASE",
-                "BSPDEP_VMETAS": "VMETAS",
-                "MISC_DBC": "DBC",
-                "MISC_DEBUGMSG": "DEBUGMSG",
-                "SOFT_DEVHWCLIENT": "DEVHWCLIENT"
-            },
-            "archs": {
-                "RTEMS-mvme2100": true,
-                "RTEMS-mvme5500": true,
-                "vxWorks-68040": true,
-                "vxWorks-ppc603": true
-            },
-            "dependencies": [
-                "ALARM",
-                "BASE",
-                "BSPDEP_VMETAS",
-                "MISC_DBC",
-                "MISC_DEBUGMSG",
-                "SOFT_DEVHWCLIENT"
-            ],
-            "source": {
-                "darcs": {
-                    "tag": "R2-5",
-                    "url": "rcsadm@aragon.acc.bessy.de:/opt/repositories/controls/darcs/epics/support/mcan/base-3-14-12"
-                }
-            }
-        },
         "R2-6-1": {
             "aliases": {
                 "BASE": "EPICS_BASE",
@@ -213,11 +26,11 @@ find mcan:
             "source": {
                 "darcs": {
                     "tag": "R2-6-1",
-                    "url": "rcsadm@aragon.acc.bessy.de:/opt/repositories/controls/darcs/epics/support/mcan/base-3-14-12"
+                    "url": "/data/repos/support/mcan"
                 }
             }
         },
-        "TAGLESS-2-6-2": {
+        "R2-6-3-gp": {
             "aliases": {
                 "BASE": "EPICS_BASE",
                 "BSPDEP_VMETAS": "VMETAS",
@@ -241,60 +54,8 @@ find mcan:
             ],
             "source": {
                 "darcs": {
-                    "url": "rcsadm@aragon.acc.bessy.de:/opt/Epics/R3.14.12/support/mcan/2-6-2"
-                }
-            }
-        },
-        "TAGLESS-2-6-3": {
-            "aliases": {
-                "BASE": "EPICS_BASE",
-                "BSPDEP_VMETAS": "VMETAS",
-                "MISC_DBC": "DBC",
-                "MISC_DEBUGMSG": "DEBUGMSG",
-                "SOFT_DEVHWCLIENT": "DEVHWCLIENT"
-            },
-            "archs": {
-                "RTEMS-mvme2100": true,
-                "RTEMS-mvme5500": true,
-                "vxWorks-68040": true,
-                "vxWorks-ppc603": true
-            },
-            "dependencies": [
-                "ALARM",
-                "BASE",
-                "BSPDEP_VMETAS",
-                "MISC_DBC",
-                "MISC_DEBUGMSG",
-                "SOFT_DEVHWCLIENT"
-            ],
-            "source": {
-                "darcs": {
-                    "url": "rcsadm@aragon.acc.bessy.de:/opt/Epics/R3.14.12/support/mcan/2-6-3"
-                }
-            }
-        },
-        "TAGLESS-2-6-3-test": {
-            "aliases": {
-                "BASE": "EPICS_BASE",
-                "BSPDEP_VMETAS": "VMETAS",
-                "MISC_DBC": "DBC",
-                "MISC_DEBUGMSG": "DEBUGMSG",
-                "SOFT_DEVHWCLIENT": "DEVHWCLIENT"
-            },
-            "archs": {
-                "ANY": true
-            },
-            "dependencies": [
-                "ALARM",
-                "BASE",
-                "BSPDEP_VMETAS",
-                "MISC_DBC",
-                "MISC_DEBUGMSG",
-                "SOFT_DEVHWCLIENT"
-            ],
-            "source": {
-                "darcs": {
-                    "url": "rcsadm@aragon.acc.bessy.de:/opt/Epics/R3.14.12/support/mcan/2-6-3-test"
+                    "tag": "R2-6-3-gp",
+                    "url": "/data/repos/support/mcan"
                 }
             }
         }
@@ -303,16 +64,12 @@ find mcan:
 
 
 find mcan -b:
-MCAN:R2-4-0
-MCAN:R2-4-1
-MCAN:R2-4-2
-MCAN:R2-4-3
-MCAN:R2-4-4
-MCAN:R2-4-5
-MCAN:R2-5
 MCAN:R2-6-1
-MCAN:TAGLESS-2-6-2
-MCAN:TAGLESS-2-6-3
-MCAN:TAGLESS-2-6-3-test
+MCAN:R2-6-3-gp
 
-find mcan.*patch -b:
+find '^A' -b:
+ALARM:R3-7
+ALARM:TAGLESS-3-8
+APPS_GENERICTEMPLATE:PATH-3-0
+APPS_IOCWATCH:R3-0
+ASYN:R4-17-2

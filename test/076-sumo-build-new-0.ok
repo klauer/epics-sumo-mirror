@@ -1,0 +1,37 @@
+BUILD file:
+{
+    "AUTO-001": {
+        "modules": {
+            "ALARM": "R3-7",
+            "BASE": "R3-14-12-2-1",
+            "BSPDEP_TIMER": "R6-2",
+            "BSPDEP_VMETAS": "R2-0",
+            "MCAN": "R2-6-1",
+            "MISC_DBC": "R3-0",
+            "MISC_DEBUGMSG": "R3-0",
+            "SOFT_DEVHWCLIENT": "R3-0"
+        },
+        "state": "stable"
+    },
+    "AUTO-002": {
+        "linked": {
+            "BASE": "AUTO-001",
+            "BSPDEP_TIMER": "AUTO-001",
+            "BSPDEP_VMETAS": "AUTO-001",
+            "MISC_DBC": "AUTO-001",
+            "MISC_DEBUGMSG": "AUTO-001",
+            "SOFT_DEVHWCLIENT": "AUTO-001"
+        },
+        "modules": {
+            "ALARM": "TAGLESS-3-8",
+            "BASE": "R3-14-12-2-1",
+            "BSPDEP_TIMER": "R6-2",
+            "BSPDEP_VMETAS": "R2-0",
+            "MCAN": "R2-6-1",
+            "MISC_DBC": "R3-0",
+            "MISC_DEBUGMSG": "R3-0",
+            "SOFT_DEVHWCLIENT": "R3-0"
+        },
+        "state": "unstable"
+    }
+}
