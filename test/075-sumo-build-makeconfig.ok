@@ -29,20 +29,20 @@ generated config file:
 generated modules file:
 {
     "module": [
-        "MCAN:R2-6-1",
         "ALARM:R3-7",
         "BSPDEP_TIMER:R6-2",
         "BSPDEP_VMETAS:R2-0",
+        "MCAN:R2-6-1",
         "MISC_DBC:R3-0",
         "MISC_DEBUGMSG:R3-0",
         "SOFT_DEVHWCLIENT:R3-0"
     ]
 }
 read modulespecs from config and modules file:
-MCAN:R2-6-1:vxWorks-68040:vxWorks-ppc603
 ALARM:R3-7:vxWorks-68040:vxWorks-ppc603
 BSPDEP_TIMER:R6-2:vxWorks-68040:vxWorks-ppc603
 BSPDEP_VMETAS:R2-0:vxWorks-68040:vxWorks-ppc603
+MCAN:R2-6-1:vxWorks-68040:vxWorks-ppc603
 MISC_DBC:R3-0:vxWorks-68040:vxWorks-ppc603
 MISC_DEBUGMSG:R3-0:vxWorks-68040:vxWorks-ppc603
 SOFT_DEVHWCLIENT:R3-0:vxWorks-68040:vxWorks-ppc603

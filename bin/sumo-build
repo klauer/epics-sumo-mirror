@@ -840,6 +840,15 @@ def process(options, commands):
     if commands[0]=="makeconfig":
         if len(commands)<=1:
             sys.exit("filename for command \"makeconfig\" is missing")
+        if options.module:
+            try:
+                modulespecs_obj= sumo.ModuleSpec.Specs.from_strings(
+                                                         options.module,
+                                                         options.builddb,
+                                                         options.arch)
+            except ValueError, e:
+                sys.exit(str(e))
+            config.set("module", modulespecs_obj.to_stringlist())
         config.save(commands[1], commands[2:])
         return
 
