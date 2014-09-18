@@ -208,8 +208,9 @@ find [MODULESPECS]
 This command is used to find matching :term:`builds` for a given list of
 :term:`modulespecs`. It prints a list of :term:`buildtags` of matching
 :term:`builds` on the console. Note that the :term:`versions` in
-:term:`modulespecs` may be *unspecified*, *specified exactly* or 
-*specifed by relation*.
+:term:`modulespecs` may be *unspecified*, *specified exactly* or *specifed
+by relation*. If option --brief is given, the program just shows the
+buildtags.
 
 useall [BUILDTAG]
 +++++++++++++++++
