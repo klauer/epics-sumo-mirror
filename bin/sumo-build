@@ -1243,17 +1243,14 @@ def process(options, commands):
             dump_modules(modulespecs_obj)
             sys.exit(0)
         new_builddb= builddb.filter_by_modulespecs(modulespecs_obj, db)
-        if not options.brief:
-            new_builddb.json_print()
+        if new_builddb.is_empty():
+            print "no matching buildtrees found"
         else:
-            if new_builddb.is_empty():
-                print "no matching buildtrees found"
+            if options.brief:
+                for buildtag in builddb.iter_builds():
+                    print buildtag
             else:
-                print "matches:"
-                d= {}
-                for b in new_builddb.iter_builds():
-                    d[b]= new_builddb.modules(b)
-                sumo.JSON.dump(d)
+                new_builddb.json_print()
         return
     if commands[0]=="useall":
         if len(commands)>2:
@@ -1393,7 +1390,8 @@ where command is:
           This command is used to find matching builds for a given list of
           modulespecs. It prints a list of buildtags of matching builds on the
           console.  Note that the versions in modulespecs may be *unspecified*,
-          *specified exactly* or *specifed by relation*.
+          *specified exactly* or *specifed by relation*. If option --brief is
+          given, the program just shows the buildtags.
   useall [BUILDTAG]
           This command creates a configure/RELEASE file for an application. The
           command must be followed by buildtag. The release file created
