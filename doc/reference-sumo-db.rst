@@ -433,7 +433,10 @@ This command adds a new :term:`version` of a :term:`module` to the
 :term:`dependency database` by copying the old :term:`version`. If sourcespec
 is given, the command changes the source part according to this parameter. A
 sourcespec has the form "path PATH" or "darcs URL" or "darcs URL TAG". Both,
-URL or TAG may be "*", in this case the original URL or TAG remains unchanged.
+URL or TAG may be "*", in this case the original URL or TAG remain unchanged.
+If sourcespec is not given, the command adds NEW-VERSION as new tag to the
+source specification. The command always asks for a confirmation of the action
+unless option "-y" is used.
 
 replaceversion [MODULE] [OLD-VERSION] [NEW-VERSION]
 +++++++++++++++++++++++++++++++++++++++++++++++++++
