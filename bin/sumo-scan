@@ -517,13 +517,9 @@ def process(options, commands):
             sys.exit("unknown command: %s" % c)
 
     if commands[0]=="makeconfig":
-        if len(commands)>2:
-            sys.exit("error: extra arguments following \"makeconfig\"")
         if len(commands)<=1:
-            configfile= None
-        else:
-            configfile= commands[1]
-        config.save(configfile)
+            sys.exit("filename for command \"makeconfig\" is missing")
+        config.save(commands[1], commands[2:])
         return
 
     # evaluate the --hint command line option:
@@ -611,7 +607,17 @@ where command is:
   all   : do commands "deps", "repos" and "groups"
   name2paths: return a map mapping names to paths
   path2names: return a map mapping paths to names
-commands can be combined!
+
+The commands above can be combined!
+
+  makeconfig [FILENAME] {OPTIONNAMES}
+          Create a new configuration file from the options read from
+          configuration files and options from the command line. If FILENAME is
+          '-' dump to the console. If FILENAME is "DEFAULT", rewrite the
+          configuration file that was read before (see option --config).
+          OPTIONNAMES is an optional list of long option names. If OPTIONNAMES
+          are specified, only options from this list are saved in the
+          configuration file.
 """
 
 def main():

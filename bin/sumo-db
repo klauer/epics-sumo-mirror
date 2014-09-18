@@ -337,13 +337,9 @@ def process(options, commands):
         sys.exit("unknown command: %s" % commands[0])
 
     if commands[0]=="makeconfig":
-        if len(commands)>2:
-            sys.exit("error: extra arguments following \"makeconfig\"")
         if len(commands)<=1:
-            configfile= None
-        else:
-            configfile= commands[1]
-        config.save(configfile)
+            sys.exit("filename for command \"makeconfig\" is missing")
+        config.save(commands[1], commands[2:])
         return
 
     if commands[0]=="edit":
@@ -713,10 +709,14 @@ def _test():
 
 usage = """usage: %prog [options] command
 where command is:
-  makeconfig {FILE}
-          Create a new configuration file from the given options. If the
-          filename is '-' dump to the console, if it is omitted, rewrite the
+  makeconfig [FILENAME] {OPTIONNAMES}
+          Create a new configuration file from the options read from
+          configuration files and options from the command line. If FILENAME is
+          '-' dump to the console. If FILENAME is "DEFAULT", rewrite the
           configuration file that was read before (see option --config).
+          OPTIONNAMES is an optional list of long option names. If OPTIONNAMES
+          are specified, only options from this list are saved in the
+          configuration file.
   edit [FILE]
           Start the editor specified by the environment variable "VISUAL" or
           "EDITOR" with that file. This command first aquires a file-lock on

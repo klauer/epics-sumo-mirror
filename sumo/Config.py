@@ -83,18 +83,23 @@ class ConfigFile(object):
             lst.extend(filenames)
         for filename in lst:
             self._load_file(filename)
-    def save(self, filename= None):
+    def save(self, filename, keys):
         """dump in json format"""
         # do not include "None" values:
         dump= {}
-        for (k,v) in self._dict.items():
+        if not keys:
+            keys= self._dict.keys()
+        for k in keys:
+            # we do not distinguish here between items that don't exist
+            # and items that have value "None":
+            v= self._dict.get(k)
             if v is None:
                 continue
             dump[k]= v
         if filename=="-":
             sumo.JSON.dump(dump)
             return
-        if not filename:
+        if filename=="DEFAULT":
             filename= self._filename
         sumo.JSON.dump_file(filename, dump)
 
