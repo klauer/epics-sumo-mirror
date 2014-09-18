@@ -1,35 +1,48 @@
 #!/bin/sh
 
-versions="3.14.8 3.14.12"
-
-if [ -z "$2" ]; then
+if [ "$1" = "-h" ]; then
     echo "This script installs files from the sumo contrib directory"
-    echo "usage: $0 [bin-directory] [share-directory]"
+    echo "usage: $0 <sumodir> <sharedir> <bindir>"
+    echo "  before you run the script configure variables in file 'config'"
     exit 0
 fi
 
-bindir="$1"
+if [ -z "$1" ]; then
+    echo "Error, <sumodir> missing"
+    exit 1
+fi
+SUMODIR="$1"
+shift
+if [ -z "$1" ]; then
+    echo "Error, <sharedir> missing"
+    exit 1
+fi
+SHARE="$1"
+shift
+if [ -z "$1" ]; then
+    echo "Error, <bindir> missing"
+    exit 1
+fi
+BIN="$1"
+shift
 
-if [ ! -d "$bindir" ]; then
-    echo "error: $bindir not found"
+# some scripts are EPICS version specific get a number at
+# the end of their filenames:
+VERSIONS="3.14.8 3.14.12"
+
+if [ ! -d "$BIN" ]; then
+    echo "error: variable 'BIN': $BIN not found"
     exit 1
 fi
 
-sharedir="$2"
-
-if [[ "$sharedir" != *sumo ]]; then
-    echo "error: $sharedir should end with 'sumo'"
+if [ ! -d "$SHARE" ]; then
+    echo "error: variable 'SHARE': $SHARE not found"
     exit 1
 fi
 
-if [ ! -d "$sharedir" ]; then
-    if [ -d `dirname $sharedir` ]; then
-        echo "creating $sharedir..."
-        mkdir $sharedir
-    else
-        echo "error: $sharedir not found"
-        exit 1
-    fi
+if [ ! -d "$SUMODIR" ]; then
+    echo "error: variable 'SUMODIR': $SUMODIR not found"
+    exit 1
 fi
 
 # scripts with an EPICS base version in their names:
@@ -43,47 +56,31 @@ script_templates=`cd bin > /dev/null && ls *-`
 generic_scripts=`cd bin > /dev/null && ls *[a-z]`
 
 # copy all version specific scripts:
-for src in $versioned_scripts; do
-    cp -a bin/$src $bindir
+for file in $versioned_scripts; do
+    sed -e "s#^SHARE=.*#SHARE=$SHARE#" <bin/$file >$BIN/$file
+    chmod 755 $BIN/$file
 done
 
 # copy all generic scripts:
-for src in $generic_scripts; do
-    cp -a bin/$src $bindir
+for file in $generic_scripts; do
+    sed -e "s#^SHARE=.*#SHARE=$SHARE#" <bin/$file >$BIN/$file
+    chmod 755 $BIN/$file
 done
 
-all_scripts="$versioned_scripts $generic_scripts"
-
-# create version specific scripts from generic scripts
+# create version specific scripts from script templates
 for file in $script_templates; do
-    for ver in $versions; do
-        src=bin/$file
-        dst=$bindir/$file$ver
-        all_scripts="$all_scripts $file$ver"
-        cp $src $dst
-        sed -i -e "s#^source \$SHARE/sumo-.*#source $sharedir/sumo-$ver.vars#" $dst
+    for ver in $VERSIONS; do
+        sed -e "s#^SHARE=.*#SHARE=$SHARE#;s#^VERSION=.*#VERSION=$ver#" <bin/$file >$BIN/$file$ver
+    chmod 755 $BIN/$file$ver
     done
 done
 
-cp -a share/*.config $sharedir
+cp -a share/*.config $SHARE
 
-# for all *.vars files,
-# if the file already exists keep the definition of SUMODIR:
-for src in share/*.vars; do
-    file=`basename $src`
-    dst=$sharedir/$file
-    if [ ! -e $dst ]; then
-        cp $src $dst
-    else
-        SUMODIR=""
-        source $dst
-        cp $src $dst
-        sed -i -e "s#^\( *SUMODIR\)=.*#\1=$SUMODIR#" $dst
-    fi
-done
+echo "# common variable definitions for contrib scripts" > $SHARE/sumo.vars
+echo "SUMODIR=$SUMODIR" >> $SHARE/sumo.vars
+echo "SHARE=$SHARE"     >> $SHARE/sumo.vars
+cat share/sumo.vars     >> $SHARE/sumo.vars
 
-# patch location of share directory in all scripts:
-for script in $all_scripts; do
-    sed -i -e "s#^SHARE=.*#SHARE=$sharedir#" $bindir/$script
-done
+echo "export PATH=$BIN:\$PATH" > PATH.sh
 

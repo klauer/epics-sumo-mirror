@@ -6,7 +6,7 @@ SHARE=../share
 
 # define some environment variables:
 source $SHARE/sumo.vars
-source $SHARE/sumo-3.14.8.vars
+# note: SUMODIR as it is defined in sumo.vars is ignored here
 
 if [ -z "$1" ]; then 
     echo "This script creates a new SUMO support directory for EPICS 3.14.8"
@@ -28,67 +28,70 @@ SUMODIR=`pwd`
 mkdir database
 mkdir build
 
+cd database > /dev/null
+
 echo "* scanning existing EPICS 3.14.8 support directory"
 sumo-scan-3.14.8
-ORIG_DB=`ls *.DB`
+ORIG_DB=`ls *-DEPS-*.DB`
 DB=DEPS.DB
 
 echo "* creating the Sumo dependency database"
 cp $ORIG_DB $DB
 
+cd .. > /dev/null
+
 echo "* creating Sumo configuration files"
-$SUMO_DB --maxstate testing --db $SUMODIR/database/$DB makeconfig
-$SUMO_BUILD --db $SUMODIR/database/$DB --builddb $SUMODIR/build/BUILDS.DB --supportdir $SUMODIR/build --maxstate testing --makeopts "-s" makeconfig
+sumo-db --db $SUMODIR/database/$DB makeconfig
+sumo-build --db $SUMODIR/database/$DB --builddb $SUMODIR/build/BUILDS.DB --supportdir $SUMODIR/build --makeopts "-s" makeconfig
 
 echo "* adding BASE 3.14.8.2.1 to the dependency database"
-$SUMO_DB cloneversion BASE R3-14-8-2-0 R3-14-8-2-1 darcs rcsadm@aragon.acc.bessy.de:/opt/Epics/R3.14.8/base/3-14-8-2-1 R3-14-8-2-1
-$SUMO_DB state stable BASE:R3-14-8-2-1
+sumo-db cloneversion BASE R3-14-8-2-0 R3-14-8-2-1 darcs rcsadm@repo:/opt/Epics/R3.14.8/base/3-14-8-2-1 R3-14-8-2-1
 
 echo "* creating clones needed for BII-Controls of the RULES support"
-$SUMO_DB clonemodule RULES RULES-1-1 R1-1
-$SUMO_DB clonemodule RULES RULES-1-4-1 R1-4-1
-$SUMO_DB clonemodule RULES RULES-1-5 R1-5
-$SUMO_DB clonemodule RULES RULES-1-9 R1-9
-$SUMO_DB clonemodule RULES RULES-1-15 R1-15
+sumo-db clonemodule RULES RULES-1-1 R1-1
+sumo-db clonemodule RULES RULES-1-4-1 R1-4-1
+sumo-db clonemodule RULES RULES-1-5 R1-5
+sumo-db clonemodule RULES RULES-1-9 R1-9
+sumo-db clonemodule RULES RULES-1-15 R1-15
 
 echo "* creating clone of APPS_GENERICTEMPLATE R3-6 for RULES-1-1"
-$SUMO_DB cloneversion APPS_GENERICTEMPLATE R3-6 R3-6-RULES-1-1
-$SUMO_DB dependency-delete APPS_GENERICTEMPLATE:R3-6-RULES-1-1 RULES:R1-1
-$SUMO_DB dependency-add    APPS_GENERICTEMPLATE:R3-6-RULES-1-1 RULES-1-1:R1-1 stable
-$SUMO_DB alias-add         APPS_GENERICTEMPLATE:R3-6-RULES-1-1 RULES-1-1 RULES
+sumo-db cloneversion -y APPS_GENERICTEMPLATE R3-6 R3-6-RULES-1-1
+sumo-db dependency-delete APPS_GENERICTEMPLATE:R3-6-RULES-1-1 RULES
+sumo-db dependency-add    APPS_GENERICTEMPLATE:R3-6-RULES-1-1 RULES-1-1
+sumo-db alias-add         APPS_GENERICTEMPLATE:R3-6-RULES-1-1 RULES-1-1 RULES
 
 echo "* creating clone of APPS_IOCWATCH R2-2 for RULES-1-1"
-$SUMO_DB cloneversion APPS_IOCWATCH R2-2 R2-2-RULES-1-1
-$SUMO_DB dependency-delete APPS_IOCWATCH:R2-2-RULES-1-1 RULES:R1-1
-$SUMO_DB dependency-add    APPS_IOCWATCH:R2-2-RULES-1-1 RULES-1-1:R1-1 stable
-$SUMO_DB alias-add         APPS_IOCWATCH:R2-2-RULES-1-1 RULES-1-1 RULES
+sumo-db cloneversion -y APPS_IOCWATCH R2-2 R2-2-RULES-1-1
+sumo-db dependency-delete APPS_IOCWATCH:R2-2-RULES-1-1 RULES
+sumo-db dependency-add    APPS_IOCWATCH:R2-2-RULES-1-1 RULES-1-1
+sumo-db alias-add         APPS_IOCWATCH:R2-2-RULES-1-1 RULES-1-1 RULES
 
 echo "* creating clone of APPS_MOTOR TAGLESS-2-6-2-2 for RULES-1-5"
-$SUMO_DB cloneversion APPS_MOTOR TAGLESS-2-6-2-2 TAGLESS-2-6-2-2-RULES-1-5
-$SUMO_DB dependency-delete APPS_MOTOR:TAGLESS-2-6-2-2-RULES-1-5 RULES:R1-5 
-$SUMO_DB dependency-add    APPS_MOTOR:TAGLESS-2-6-2-2-RULES-1-5 RULES-1-5:R1-5 stable
-$SUMO_DB alias-add         APPS_MOTOR:TAGLESS-2-6-2-2-RULES-1-5 RULES-1-5 RULES
+sumo-db cloneversion -y APPS_MOTOR TAGLESS-2-6-2-2 TAGLESS-2-6-2-2-RULES-1-5
+sumo-db dependency-delete APPS_MOTOR:TAGLESS-2-6-2-2-RULES-1-5 RULES
+sumo-db dependency-add    APPS_MOTOR:TAGLESS-2-6-2-2-RULES-1-5 RULES-1-5
+sumo-db alias-add         APPS_MOTOR:TAGLESS-2-6-2-2-RULES-1-5 RULES-1-5 RULES
 
 echo "* creating clone of APPS_SCOPESAVERESTORE R1-1 for RULES-1-4-1"
-$SUMO_DB cloneversion APPS_SCOPESAVERESTORE R1-1 R1-1-RULES-1-4-1
-$SUMO_DB dependency-delete APPS_SCOPESAVERESTORE:R1-1-RULES-1-4-1 RULES:R1-4-1
-$SUMO_DB dependency-add    APPS_SCOPESAVERESTORE:R1-1-RULES-1-4-1 RULES-1-4-1:R1-4-1 stable
-$SUMO_DB alias-add         APPS_SCOPESAVERESTORE:R1-1-RULES-1-4-1 RULES-1-4-1 RULES
+sumo-db cloneversion -y APPS_SCOPESAVERESTORE R1-1 R1-1-RULES-1-4-1
+sumo-db dependency-delete APPS_SCOPESAVERESTORE:R1-1-RULES-1-4-1 RULES
+sumo-db dependency-add    APPS_SCOPESAVERESTORE:R1-1-RULES-1-4-1 RULES-1-4-1
+sumo-db alias-add         APPS_SCOPESAVERESTORE:R1-1-RULES-1-4-1 RULES-1-4-1 RULES
 
 echo "* creating clone of APPS_VACUUM TAGLESS-1-1-1 for RULES-1-15"
-$SUMO_DB cloneversion APPS_VACUUM TAGLESS-1-1-1 TAGLESS-1-1-1-RULES-1-15
-$SUMO_DB dependency-delete APPS_VACUUM:TAGLESS-1-1-1-RULES-1-15 RULES:R1-15
-$SUMO_DB dependency-add    APPS_VACUUM:TAGLESS-1-1-1-RULES-1-15 RULES-1-15:R1-15 stable
-$SUMO_DB alias-add         APPS_VACUUM:TAGLESS-1-1-1-RULES-1-15 RULES-1-15 RULES
+sumo-db cloneversion -y APPS_VACUUM TAGLESS-1-1-1 TAGLESS-1-1-1-RULES-1-15
+sumo-db dependency-delete APPS_VACUUM:TAGLESS-1-1-1-RULES-1-15 RULES
+sumo-db dependency-add    APPS_VACUUM:TAGLESS-1-1-1-RULES-1-15 RULES-1-15
+sumo-db alias-add         APPS_VACUUM:TAGLESS-1-1-1-RULES-1-15 RULES-1-15 RULES
 
 echo "* creating clone of HIGHLAND TAGLESS-1-2 for RULES-1-9"
-$SUMO_DB cloneversion HIGHLAND-V375 TAGLESS-1-2 TAGLESS-1-2-RULES-1-9
-$SUMO_DB dependency-delete HIGHLAND-V375:TAGLESS-1-2-RULES-1-9 RULES:R1-9
-$SUMO_DB dependency-add    HIGHLAND-V375:TAGLESS-1-2-RULES-1-9 RULES-1-9:R1-9 stable
-$SUMO_DB alias-add         HIGHLAND-V375:TAGLESS-1-2-RULES-1-9 RULES-1-9 RULES
+sumo-db cloneversion -y HIGHLAND-V375 TAGLESS-1-2 TAGLESS-1-2-RULES-1-9
+sumo-db dependency-delete HIGHLAND-V375:TAGLESS-1-2-RULES-1-9 RULES
+sumo-db dependency-add    HIGHLAND-V375:TAGLESS-1-2-RULES-1-9 RULES-1-9
+sumo-db alias-add         HIGHLAND-V375:TAGLESS-1-2-RULES-1-9 RULES-1-9 RULES
 
 #echo "* creating a BUILD containing just BASE R-3-14-8-2-1"
-#$SUMO_BUILD new BASE:R3-14-8-2-1 -t BASE-R3-14-8-2-1
+#sumo-build new BASE:R3-14-8-2-1 -t BASE-R3-14-8-2-1
 
 echo
 echo "You may now edit the definition of 'SUMODIR' in $SHARE/sumo.vars"
