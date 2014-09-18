@@ -1,3 +1,34 @@
+Added module:
+{
+    "ALARM": {
+        "R3-4": {
+            "aliases": {
+                "BASE": "EPICS_BASE",
+                "BSPDEP_TIMER": "TIMER",
+                "MISC_DBC": "DBC"
+            },
+            "archs": {
+                "RTEMS-mvme2100": true,
+                "RTEMS-mvme5500": true,
+                "linux-x86": true,
+                "vxWorks-68040": true,
+                "vxWorks-ppc603": true
+            },
+            "dependencies": [
+                "BASE",
+                "BSPDEP_TIMER",
+                "MISC_DBC"
+            ],
+            "source": {
+                "darcs": {
+                    "tag": "R3-4",
+                    "url": "/tmp-010-sumo-scan-all/support/alarm/3-8"
+                }
+            }
+        }
+    }
+}
+
 DB file:
 {
     "ALARM": {

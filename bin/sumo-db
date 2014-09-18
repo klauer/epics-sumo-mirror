@@ -565,16 +565,6 @@ def process(options, commands):
             sourcespec= commands[4:]
         if not options.db:
             sys.exit("error, --db is mandatory here")
-        # prepare a warning text:
-        ident_warning= "Warning: you would create a module '%s' with " \
-                       "version '%s' that is completely identical " \
-                       "with version '%s' (same source specification). " % \
-                       (modulename, newversion, oldversion)
-        if not sourcespec and not do_replace:
-            # the following function may abort the program:
-            utils.ask_abort(ident_warning + "Maybe you have just "
-                            "forgotten to add a source specification ?",
-                            options.yes)
 
         db = db_from_json_file(options.db,
                 keep_locked= not options.dumpdb and (not options.dry_run))
@@ -584,18 +574,27 @@ def process(options, commands):
         except ValueError, e:
             sys.exit(str(e))
 
-        if sourcespec:
+        if not sourcespec:
+            # guess tag from versionname
+            changed= db.set_source_spec_by_tag(modulename, newversion,
+                                               newversion)
+        else:
             try:
-                source_spec_dict= utils.scan_source_spec(sourcespec)
+                source_spec_obj= \
+                        utils.SourceSpec.from_source_spec(sourcespec)
             except ValueError, e:
                 sys.exit("Error: "+str(e))
-            if not db.set_source(modulename, newversion,
-                                 source_spec_dict):
-                # no changes in the source spec, this may be an error
-                # the following function may abort the program:
-                utils.ask_abort(ident_warning + "Is this really "
-                                "your intention ?",
-                                options.yes)
+            changed= db.set_source_spec(modulename, newversion,
+                                        source_spec_obj)
+        print "Added module:"
+        report_db= db.partial_copy_by_list([(modulename, newversion)])
+        report_db.json_print()
+        if not changed:
+            print ("\nCAUTION: source specification of this module is "
+                   "identical with that of \n"
+                   "%s:%s, this is probably not what you want!") % \
+                   (modulename, oldversion)
+        utils.ask_abort("Proceed ? ", options.yes)
         if options.dumpdb:
             db.json_print()
         else:
@@ -774,7 +773,10 @@ where command is:
           given, the command changes the source part according to this
           parameter. A sourcespec has the form "path PATH" or "darcs URL" or
           "darcs URL TAG". Both, URL or TAG may be "*", in this case the
-          original URL or TAG remains unchanged.
+          original URL or TAG remain unchanged. If sourcespec is not given, the
+          command adds NEW-VERSION as new tag to the source specification. The
+          command always asks for a confirmation of the action unless option
+          "-y" is used.
   replaceversion [MODULE] [OLD-VERSION] [NEW-VERSION] {SOURCESPEC}
           Replace a version to the database with a new one. The old-version
           data is copied for the new version data. If sourcespec is given, the

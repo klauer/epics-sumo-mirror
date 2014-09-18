@@ -185,66 +185,43 @@ class Dependencies(sumo.JSON.Container):
         m= self.datadict().setdefault(module_name,{})
         m[versionname]= copy.deepcopy(
                             other.datadict()[module_name][versionname])
-    def set_source(self, module_name, versionname, new):
-        """add a module with source spec and archs.
+    def set_source_spec(self, module_name, versionname, sourcespec):
+        """set sourcespec of a module, creates if it does not yet exist.
 
-        [new] must be a dictionary as it is used in key "source" in
-        Dependencies objects. Examples:
-            {'path': 'ab'}
-            {'darcs': {'url': 'abc'}}
-            {'darcs': {'url': 'abc', 'tag': 'R1-2'}}
+        returns True if the spec was changed, False if it wasn't.
+        """
+        if not isinstance(sourcespec, sumo.utils.SourceSpec):
+            raise TypeError("error: sourcespec '%s' is of wrong "
+                            "type" % repr(sourcespec))
+        version_dict= self.datadict().setdefault(module_name,{})
+        version= version_dict.setdefault(versionname, {})
+        old_source= version.get("source")
+        if old_source is None:
+            version["source"]= sourcespec.to_dict()
+            return True
+        old_spec= sumo.utils.SourceSpec(old_source)
+        return old_spec.change_source(sourcespec)
+    def set_source_spec_by_tag(self, module_name, versionname, tag):
+        """try to change sourcespec by providing a tag.
 
-        The dictionary has a single key that is called the source type that
-        maps to property dictionary.
-
-        The property dictionary in [new] may contain the special wildcard
-        string "*".
-
-        If the source type for the module and the source type in [new] are
-        different, this function just sets the module source to [new].
-
-        If the source type for the module and the source type in [new] are the
-        same, the property string is updated from the property string in [new].
-        Where the property string in [new] contains the string "*", the
-        property of the module remains unchanged.
-
-        This function returns "True" when the source specification was changed
-        and False if the source specification was not changed.
+        returns True if the spec was changed, False if it wasn't.
         """
         version_dict= self.datadict().setdefault(module_name,{})
         version= version_dict.setdefault(versionname, {})
-        source= version.get("source")
-        if not source:
-            version["source"]= new
-            return True
+        old_source= version.get("source")
+        if old_source is None:
+            raise ValueError("error, %s:%s source specification is empty, "
+                             "cannot simply change the tag." % \
+                             (module_name, versionname))
+        old_spec= sumo.utils.SourceSpec(old_source)
+        try:
+            ret= old_spec.change_source_by_tag(tag)
+        except ValueError, e:
+            raise ValueError("error, %s:%s %s" % \
+                             (module_name, versionname, str(e)))
+        version["source"]= old_spec.to_dict()
+        return ret
 
-        (source_type,source_val)= sumo.utils.single_key_item(source)
-        # note: source_val may be a dict or a string
-
-        (new_type,new_val)= sumo.utils.single_key_item(new)
-        # note: new_val may be a dict or a string
-
-        # if source_type!=new_type we know that there are changes:
-        if source_type!=new_type:
-            # just copy
-            version["source"]= new
-            return True
-
-        # here we know that the source types are equal
-        changes= False
-        for (k,v) in new_val.items():
-            # replace wildcards:
-            v_old= source_val.get(k)
-            if v=="*":
-                if v_old is None:
-                    raise ValueError("sourcespec: no data found to replace "
-                                     "'%s=*'" % k)
-                new_val[k]= v_old
-            else:
-                if v_old!=v:
-                    changes= True
-            version["source"]= new
-        return changes
     def set_source_arch(self, module_name, versionname, archs,
                               repo_dict):
         """add a module with source spec and archs."""

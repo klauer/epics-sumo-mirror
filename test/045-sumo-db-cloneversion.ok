@@ -1,7 +1,7 @@
-DB file:
+Added module:
 {
     "ALARM": {
-        "R3-4": {
+        "R3-8-1": {
             "aliases": {
                 "BASE": "EPICS_BASE",
                 "BSPDEP_TIMER": "TIMER",
@@ -21,8 +21,93 @@ DB file:
             ],
             "source": {
                 "darcs": {
-                    "tag": "R3-4",
-                    "url": "/tmp-010-sumo-scan-all/support/alarm/3-8"
+                    "tag": "R3-8-1",
+                    "url": "/data/repos/support/alarm"
+                }
+            }
+        }
+    }
+}
+
+Added module:
+{
+    "ALARM": {
+        "R3-10": {
+            "aliases": {
+                "BASE": "EPICS_BASE",
+                "BSPDEP_TIMER": "TIMER",
+                "MISC_DBC": "DBC"
+            },
+            "archs": {
+                "RTEMS-mvme2100": true,
+                "RTEMS-mvme5500": true,
+                "linux-x86": true,
+                "vxWorks-68040": true,
+                "vxWorks-ppc603": true
+            },
+            "dependencies": [
+                "BASE",
+                "BSPDEP_TIMER",
+                "MISC_DBC"
+            ],
+            "source": {
+                "darcs": {
+                    "tag": "R3-10",
+                    "url": "/data/repos/support/alarm"
+                }
+            }
+        }
+    }
+}
+
+Added module:
+{
+    "APPS_GENERICTEMPLATE": {
+        "R3-1": {
+            "aliases": {
+                "BASE": "EPICS_BASE"
+            },
+            "archs": {
+                "ANY": true
+            },
+            "dependencies": [
+                "BASE"
+            ],
+            "source": {
+                "darcs": {
+                    "tag": "R3-1",
+                    "url": "/myrepo/apps/generictemplate"
+                }
+            }
+        }
+    }
+}
+
+DB file:
+{
+    "ALARM": {
+        "R3-10": {
+            "aliases": {
+                "BASE": "EPICS_BASE",
+                "BSPDEP_TIMER": "TIMER",
+                "MISC_DBC": "DBC"
+            },
+            "archs": {
+                "RTEMS-mvme2100": true,
+                "RTEMS-mvme5500": true,
+                "linux-x86": true,
+                "vxWorks-68040": true,
+                "vxWorks-ppc603": true
+            },
+            "dependencies": [
+                "BASE",
+                "BSPDEP_TIMER",
+                "MISC_DBC"
+            ],
+            "source": {
+                "darcs": {
+                    "tag": "R3-10",
+                    "url": "/data/repos/support/alarm"
                 }
             }
         },
@@ -47,6 +132,31 @@ DB file:
             "source": {
                 "darcs": {
                     "tag": "R3-7",
+                    "url": "/data/repos/support/alarm"
+                }
+            }
+        },
+        "R3-8-1": {
+            "aliases": {
+                "BASE": "EPICS_BASE",
+                "BSPDEP_TIMER": "TIMER",
+                "MISC_DBC": "DBC"
+            },
+            "archs": {
+                "RTEMS-mvme2100": true,
+                "RTEMS-mvme5500": true,
+                "linux-x86": true,
+                "vxWorks-68040": true,
+                "vxWorks-ppc603": true
+            },
+            "dependencies": [
+                "BASE",
+                "BSPDEP_TIMER",
+                "MISC_DBC"
+            ],
+            "source": {
+                "darcs": {
+                    "tag": "R3-8-1",
                     "url": "/data/repos/support/alarm"
                 }
             }
