@@ -314,7 +314,12 @@ class Specs(object):
                     if isinstance(builddb, str):
                         builddb= sumo.Databases.Builddb.from_json_file(
                                                                   builddb)
-                    build_specs= builddb.module_specs(special[1])
+                    try:
+                        build_specs= builddb.module_specs(special[1])
+                    except KeyError,_:
+                        raise ValueError("error, buildtag '%s' not found" % \
+                                         special[1])
+
                     idx= Specs._from_strings(module_dict, idx,
                                                    build_specs,
                                                    builddb,
