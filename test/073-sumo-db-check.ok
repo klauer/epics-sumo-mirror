@@ -1,0 +1,5 @@
+sumo-db --db samples/DB check:
+
+
+sumo-db --db samples/BUILDS check:
+error: dependency data is invalid (created from JSON file 073-sumo-db-check-DEPS.tmp)

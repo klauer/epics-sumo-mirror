@@ -3,16 +3,18 @@
 ME=`basename $0 .sh`
 
 if [ "$1" = "deps" ]; then
-        echo "$ME.tst: $ME.sh $ME.out $ME.ok 110-sumo-build-new-2.tst"
+        echo "$ME.tst: $ME.sh $ME.out $ME.ok 110-sumo-build--new.tst"
         echo
         exit
 fi
 
-PYTHON=$@
+if [ -z "$1" ]; then
+        PYTHON="python"
+else
+        PYTHON=$1
+fi
 
-# needed since sumo-scan call EPICS make:
-EPICS_HOST_ARCH=`scripts/EpicsHostArch.pl`
-export EPICS_HOST_ARCH
+PWD_NICE=`pwd`
 
 echo -e "\n-> Test sumo-scan all with buildtree" >&2
 

@@ -11,16 +11,20 @@
 ^MANIFEST$
 ^build$
 
-# test directories:
-^test/tmp-.*
-^test/.*\.out
-^test/.*\.tmp
-^test/.*\.bak
-^test/deps
-^test/.coverage
-
 # generated coverage data:
 ^coverage
+
+# newtest directories:
+^test/data/src/stamp
+^test/data/src/base
+^test/data/src/support
+^test/data/repos/stamp
+^test/data/repos/base
+^test/data/repos/support
+^test/tmp-.*
+^test/.*\.tmp
+^test/.*\.bak
+^test/.*\.out
 
 # samples directory:
 ^samples/IDCP.DB

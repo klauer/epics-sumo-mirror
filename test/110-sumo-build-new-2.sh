@@ -3,16 +3,24 @@
 ME=`basename $0 .sh`
 
 if [ "$1" = "deps" ]; then
-        echo "$ME.tst: $ME.sh $ME.out $ME.ok 080-sumo-build-new.tst 100-sumo-build-state-2.tst"
+        echo "$ME.tst: $ME.sh $ME.out $ME.ok 020-sumo-db-convert.tst 080-sumo-build-new.tst"
         echo
         exit
 fi
-PYTHON=$@
+
+if [ -z "$1" ]; then
+        PYTHON="python"
+else
+        PYTHON=$1
+fi
+
+PWD_NICE=`pwd`
 
 echo -e "\n-> Test sumo-build new (use existing tree)" >&2
 
+DEPS=tmp-020-sumo-db-convert/DEPS.DB
+
 TESTDIR=tmp-080-sumo-build-new
-# this directory must exist
 MYTESTDIR=tmp-$ME
 
 if [ ! -d $MYTESTDIR ]; then
@@ -26,30 +34,27 @@ if [ ! -d $MYTESTDIR ]; then
         sed -i $f -e "s#$TESTDIR#$MYTESTDIR#g"
     done
 
-    # copy the DB and BUILDS file where everything is marked "stable" (see also
-    # test10.sh):
-    cp 100-sumo-build-state-2-DEPS.tmp DEPS.DB
-    cp 100-sumo-build-state-2-BUILDS.tmp BUILDS
-
     rm -f *.tmp
     rm -f *.bak
 
-
     # use an auto generated build tag:
-    $PYTHON ../../bin/sumo-build --arch vxWorks-ppc603 --db DEPS.DB --builddb BUILDS -m ':build:MYAPP-001 ALARM:R3-7 MCAN:R2-4-5' --no-make new 1>&2 
+    $PYTHON ../../bin/sumo-build --arch vxWorks-ppc603 --db DEPS.DB --builddb BUILDS.DB -m ':build:MYAPP-001 ALARM:R3-7' --buildtag MYAPP-002 --no-make new 1>&2 
 else
     echo -e "\t$MYTESTDIR already exists, effectively skipping this test..." 1>&2
     cd $MYTESTDIR > /dev/null
 fi
 
-echo -e "\ndirectory tree (without darcs)"
-find . | egrep -v '_darcs|\.tmp|\.bak|\.coverage' | sort
-echo -e "\ncontents of RELEASE files\n"
-for f in `find . -name RELEASE | sort`; do echo -e "\nFILE: $f"; cat $f | sed -e "s#`pwd -P`##"; done
-echo -e "\n\ncontent of DB:"
-cat DEPS.DB 
-echo -e "\ncontent of BUILDS"
-cat BUILDS 
-echo -e "\ncontent of Makefile-AUTO-001"
-cat Makefile-AUTO-001
+echo -e "\ndirectory tree"
+echo "> ls $MYTESTDIR:"
+ls  
+echo
+echo "> ls $MYTESTDIR/ALARM:"
+ls  ALARM
+echo
+echo "> ls $MYTESTDIR/MCAN:"
+ls  MCAN
+echo -e "\ncontent of BUILDS.DB:"
+cat BUILDS.DB 
+echo -e "\ncontent of Makefile-MYAPP-002"
+cat Makefile-MYAPP-002
 

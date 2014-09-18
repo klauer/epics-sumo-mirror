@@ -1,0 +1,6 @@
+010-sumo-scan-all.tst: 010-sumo-scan-all.sh 010-sumo-scan-all.out 010-sumo-scan-all.ok
+
+020-sumo-db-convert.tst: 020-sumo-db-convert.sh 020-sumo-db-convert.out 020-sumo-db-convert.ok 010-sumo-scan-all.tst
+
+030-sumo-db-dependency-delete.tst: 030-sumo-db-dependency-delete.sh 030-sumo-db-dependency-delete.out 030-sumo-db-dependency-delete.ok 020-sumo-db-convert.tst
+

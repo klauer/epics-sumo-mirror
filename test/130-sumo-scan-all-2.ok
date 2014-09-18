@@ -1,15 +1,9 @@
 {
     "archs": {
-        "/tmp-110-sumo-build-new-2/ALARM/R3-8+MYAPP-001": [
+        "/tmp-110-sumo-build-new-2/ALARM/TAGLESS-3-8+MYAPP-001": [
             "ANY"
         ],
-        "/tmp-110-sumo-build-new-2/ASYN/4-18-bessy1+MYAPP-001": [
-            "ANY"
-        ],
-        "/tmp-110-sumo-build-new-2/BASE/TAGLESS-3-14-12-2-1+MYAPP-001": [
-            "ANY"
-        ],
-        "/tmp-110-sumo-build-new-2/BSPDEP_CPUBOARDINIT/R4-1+MYAPP-001": [
+        "/tmp-110-sumo-build-new-2/BASE/R3-14-12-2-1+BASE-001": [
             "ANY"
         ],
         "/tmp-110-sumo-build-new-2/BSPDEP_TIMER/R6-2+MYAPP-001": [
@@ -18,16 +12,7 @@
         "/tmp-110-sumo-build-new-2/BSPDEP_VMETAS/R2-0+MYAPP-001": [
             "ANY"
         ],
-        "/tmp-110-sumo-build-new-2/CSM/R4-3+MYAPP-001": [
-            "ANY"
-        ],
-        "/tmp-110-sumo-build-new-2/EK/R2-2+MYAPP-001": [
-            "ANY"
-        ],
-        "/tmp-110-sumo-build-new-2/GENSUB/R1-6-1+MYAPP-001": [
-            "ANY"
-        ],
-        "/tmp-110-sumo-build-new-2/MCAN/TAGLESS-2-6-3-test+MYAPP-001": [
+        "/tmp-110-sumo-build-new-2/MCAN/R2-6-3-gp+MYAPP-001": [
             "ANY"
         ],
         "/tmp-110-sumo-build-new-2/MISC_DBC/R3-0+MYAPP-001": [
@@ -36,88 +21,50 @@
         "/tmp-110-sumo-build-new-2/MISC_DEBUGMSG/R3-0+MYAPP-001": [
             "ANY"
         ],
-        "/tmp-110-sumo-build-new-2/SEQ/TAGLESS-2-1-12+MYAPP-001": [
-            "ANY"
-        ],
         "/tmp-110-sumo-build-new-2/SOFT_DEVHWCLIENT/R3-0+MYAPP-001": [
-            "ANY"
-        ],
-        "/tmp-110-sumo-build-new-2/VXSTATS/R3-0+MYAPP-001": [
             "ANY"
         ]
     },
     "dependencies": {
-        "/tmp-110-sumo-build-new-2/ALARM/R3-8+MYAPP-001": {
+        "/tmp-110-sumo-build-new-2/ALARM/TAGLESS-3-8+MYAPP-001": {
             "DBC": "/tmp-110-sumo-build-new-2/MISC_DBC/R3-0+MYAPP-001",
-            "EPICS_BASE": "/tmp-110-sumo-build-new-2/BASE/TAGLESS-3-14-12-2-1+MYAPP-001",
+            "EPICS_BASE": "/tmp-110-sumo-build-new-2/BASE/R3-14-12-2-1+BASE-001",
             "TIMER": "/tmp-110-sumo-build-new-2/BSPDEP_TIMER/R6-2+MYAPP-001"
         },
-        "/tmp-110-sumo-build-new-2/ASYN/4-18-bessy1+MYAPP-001": {
-            "EPICS_BASE": "/tmp-110-sumo-build-new-2/BASE/TAGLESS-3-14-12-2-1+MYAPP-001"
-        },
-        "/tmp-110-sumo-build-new-2/BASE/TAGLESS-3-14-12-2-1+MYAPP-001": {},
-        "/tmp-110-sumo-build-new-2/BSPDEP_CPUBOARDINIT/R4-1+MYAPP-001": {
-            "EPICS_BASE": "/tmp-110-sumo-build-new-2/BASE/TAGLESS-3-14-12-2-1+MYAPP-001"
-        },
+        "/tmp-110-sumo-build-new-2/BASE/R3-14-12-2-1+BASE-001": {},
         "/tmp-110-sumo-build-new-2/BSPDEP_TIMER/R6-2+MYAPP-001": {
-            "EPICS_BASE": "/tmp-110-sumo-build-new-2/BASE/TAGLESS-3-14-12-2-1+MYAPP-001"
+            "EPICS_BASE": "/tmp-110-sumo-build-new-2/BASE/R3-14-12-2-1+BASE-001"
         },
         "/tmp-110-sumo-build-new-2/BSPDEP_VMETAS/R2-0+MYAPP-001": {
-            "EPICS_BASE": "/tmp-110-sumo-build-new-2/BASE/TAGLESS-3-14-12-2-1+MYAPP-001"
+            "EPICS_BASE": "/tmp-110-sumo-build-new-2/BASE/R3-14-12-2-1+BASE-001"
         },
-        "/tmp-110-sumo-build-new-2/CSM/R4-3+MYAPP-001": {
-            "EPICS_BASE": "/tmp-110-sumo-build-new-2/BASE/TAGLESS-3-14-12-2-1+MYAPP-001"
-        },
-        "/tmp-110-sumo-build-new-2/EK/R2-2+MYAPP-001": {
-            "EPICS_BASE": "/tmp-110-sumo-build-new-2/BASE/TAGLESS-3-14-12-2-1+MYAPP-001",
-            "MISC": "/tmp-110-sumo-build-new-2/MISC_DEBUGMSG/R3-0+MYAPP-001"
-        },
-        "/tmp-110-sumo-build-new-2/GENSUB/R1-6-1+MYAPP-001": {
-            "EPICS_BASE": "/tmp-110-sumo-build-new-2/BASE/TAGLESS-3-14-12-2-1+MYAPP-001"
-        },
-        "/tmp-110-sumo-build-new-2/MCAN/TAGLESS-2-6-3-test+MYAPP-001": {
-            "ALARM": "/tmp-110-sumo-build-new-2/ALARM/R3-8+MYAPP-001",
+        "/tmp-110-sumo-build-new-2/MCAN/R2-6-3-gp+MYAPP-001": {
+            "ALARM": "/tmp-110-sumo-build-new-2/ALARM/TAGLESS-3-8+MYAPP-001",
             "DBC": "/tmp-110-sumo-build-new-2/MISC_DBC/R3-0+MYAPP-001",
             "DEBUGMSG": "/tmp-110-sumo-build-new-2/MISC_DEBUGMSG/R3-0+MYAPP-001",
             "DEVHWCLIENT": "/tmp-110-sumo-build-new-2/SOFT_DEVHWCLIENT/R3-0+MYAPP-001",
-            "EPICS_BASE": "/tmp-110-sumo-build-new-2/BASE/TAGLESS-3-14-12-2-1+MYAPP-001",
+            "EPICS_BASE": "/tmp-110-sumo-build-new-2/BASE/R3-14-12-2-1+BASE-001",
             "VMETAS": "/tmp-110-sumo-build-new-2/BSPDEP_VMETAS/R2-0+MYAPP-001"
         },
         "/tmp-110-sumo-build-new-2/MISC_DBC/R3-0+MYAPP-001": {
-            "EPICS_BASE": "/tmp-110-sumo-build-new-2/BASE/TAGLESS-3-14-12-2-1+MYAPP-001"
+            "EPICS_BASE": "/tmp-110-sumo-build-new-2/BASE/R3-14-12-2-1+BASE-001"
         },
         "/tmp-110-sumo-build-new-2/MISC_DEBUGMSG/R3-0+MYAPP-001": {
-            "EPICS_BASE": "/tmp-110-sumo-build-new-2/BASE/TAGLESS-3-14-12-2-1+MYAPP-001"
-        },
-        "/tmp-110-sumo-build-new-2/SEQ/TAGLESS-2-1-12+MYAPP-001": {
-            "EPICS_BASE": "/tmp-110-sumo-build-new-2/BASE/TAGLESS-3-14-12-2-1+MYAPP-001"
+            "EPICS_BASE": "/tmp-110-sumo-build-new-2/BASE/R3-14-12-2-1+BASE-001"
         },
         "/tmp-110-sumo-build-new-2/SOFT_DEVHWCLIENT/R3-0+MYAPP-001": {
-            "EPICS_BASE": "/tmp-110-sumo-build-new-2/BASE/TAGLESS-3-14-12-2-1+MYAPP-001"
-        },
-        "/tmp-110-sumo-build-new-2/VXSTATS/R3-0+MYAPP-001": {
-            "EPICS_BASE": "/tmp-110-sumo-build-new-2/BASE/TAGLESS-3-14-12-2-1+MYAPP-001"
+            "EPICS_BASE": "/tmp-110-sumo-build-new-2/BASE/R3-14-12-2-1+BASE-001"
         }
     },
     "groups": {
         "ALARM": {
             "/tmp-110-sumo-build-new-2/ALARM": [
-                "R3-8+MYAPP-001"
-            ]
-        },
-        "ASYN": {
-            "/tmp-110-sumo-build-new-2/ASYN": [
-                "4-18-bessy1+MYAPP-001"
+                "TAGLESS-3-8+MYAPP-001"
             ]
         },
         "BASE": {
             "/tmp-110-sumo-build-new-2/BASE": [
-                "TAGLESS-3-14-12-2-1+MYAPP-001"
-            ]
-        },
-        "BSPDEP_CPUBOARDINIT": {
-            "/tmp-110-sumo-build-new-2/BSPDEP_CPUBOARDINIT": [
-                "R4-1+MYAPP-001"
+                "R3-14-12-2-1+BASE-001"
             ]
         },
         "BSPDEP_TIMER": {
@@ -130,24 +77,9 @@
                 "R2-0+MYAPP-001"
             ]
         },
-        "CSM": {
-            "/tmp-110-sumo-build-new-2/CSM": [
-                "R4-3+MYAPP-001"
-            ]
-        },
-        "EK": {
-            "/tmp-110-sumo-build-new-2/EK": [
-                "R2-2+MYAPP-001"
-            ]
-        },
-        "GENSUB": {
-            "/tmp-110-sumo-build-new-2/GENSUB": [
-                "R1-6-1+MYAPP-001"
-            ]
-        },
         "MCAN": {
             "/tmp-110-sumo-build-new-2/MCAN": [
-                "TAGLESS-2-6-3-test+MYAPP-001"
+                "R2-6-3-gp+MYAPP-001"
             ]
         },
         "MISC_DBC": {
@@ -160,109 +92,58 @@
                 "R3-0+MYAPP-001"
             ]
         },
-        "SEQ": {
-            "/tmp-110-sumo-build-new-2/SEQ": [
-                "TAGLESS-2-1-12+MYAPP-001"
-            ]
-        },
         "SOFT_DEVHWCLIENT": {
             "/tmp-110-sumo-build-new-2/SOFT_DEVHWCLIENT": [
-                "R3-0+MYAPP-001"
-            ]
-        },
-        "VXSTATS": {
-            "/tmp-110-sumo-build-new-2/VXSTATS": [
                 "R3-0+MYAPP-001"
             ]
         }
     },
     "repos": {
-        "/tmp-110-sumo-build-new-2/ALARM/R3-8+MYAPP-001": {
+        "/tmp-110-sumo-build-new-2/ALARM/TAGLESS-3-8+MYAPP-001": {
             "darcs": {
-                "tag": "R3-8",
-                "url": "rcsadm@aragon.acc.bessy.de:/opt/repositories/controls/darcs/epics/support/alarm/base-3-14"
+                "url": "/tmp-110-sumo-build-new-2/ALARM/TAGLESS-3-8+MYAPP-001"
             }
         },
-        "/tmp-110-sumo-build-new-2/ASYN/4-18-bessy1+MYAPP-001": {
-            "darcs": {
-                "tag": "4-18-bessy1",
-                "url": "rcsadm@aragon.acc.bessy.de:/opt/repositories/controls/darcs/epics/support/asyn/4-18"
-            }
-        },
-        "/tmp-110-sumo-build-new-2/BASE/TAGLESS-3-14-12-2-1+MYAPP-001": {
+        "/tmp-110-sumo-build-new-2/BASE/R3-14-12-2-1+BASE-001": {
             "darcs": {
                 "tag": "R3-14-12-2-1",
-                "url": "rcsadm@aragon.acc.bessy.de:/opt/Epics/R3.14.12/base/3-14-12-2-1"
-            }
-        },
-        "/tmp-110-sumo-build-new-2/BSPDEP_CPUBOARDINIT/R4-1+MYAPP-001": {
-            "darcs": {
-                "tag": "R4-1",
-                "url": "rcsadm@aragon.acc.bessy.de:/opt/repositories/controls/darcs/epics/support/bspDep/cpuBoardInit"
+                "url": "/data/repos/base/3-14-12-2-1"
             }
         },
         "/tmp-110-sumo-build-new-2/BSPDEP_TIMER/R6-2+MYAPP-001": {
             "darcs": {
                 "tag": "R6-2",
-                "url": "rcsadm@aragon.acc.bessy.de:/opt/repositories/controls/darcs/epics/support/bspDep/timer"
+                "url": "/data/repos/support/bspDep/timer"
             }
         },
         "/tmp-110-sumo-build-new-2/BSPDEP_VMETAS/R2-0+MYAPP-001": {
             "darcs": {
                 "tag": "R2-0",
-                "url": "rcsadm@aragon.acc.bessy.de:/opt/repositories/controls/darcs/epics/support/bspDep/VMEtas"
+                "url": "/data/repos/support/bspDep/VMEtas"
             }
         },
-        "/tmp-110-sumo-build-new-2/CSM/R4-3+MYAPP-001": {
+        "/tmp-110-sumo-build-new-2/MCAN/R2-6-3-gp+MYAPP-001": {
             "darcs": {
-                "tag": "R4-3",
-                "url": "rcsadm@aragon.acc.bessy.de:/opt/repositories/controls/darcs/epics/support/csm/base-3-14-12"
-            }
-        },
-        "/tmp-110-sumo-build-new-2/EK/R2-2+MYAPP-001": {
-            "darcs": {
-                "tag": "R2-2",
-                "url": "rcsadm@aragon.acc.bessy.de:/opt/repositories/controls/darcs/epics/support/ek/base-3-14-12"
-            }
-        },
-        "/tmp-110-sumo-build-new-2/GENSUB/R1-6-1+MYAPP-001": {
-            "darcs": {
-                "tag": "R1-6-1",
-                "url": "rcsadm@aragon.acc.bessy.de:/opt/repositories/controls/darcs/epics/support/genSub/1-6"
-            }
-        },
-        "/tmp-110-sumo-build-new-2/MCAN/TAGLESS-2-6-3-test+MYAPP-001": {
-            "darcs": {
-                "url": "/tmp-110-sumo-build-new-2/MCAN/TAGLESS-2-6-3-test+MYAPP-001"
+                "tag": "R2-6-3-gp",
+                "url": "/data/repos/support/mcan"
             }
         },
         "/tmp-110-sumo-build-new-2/MISC_DBC/R3-0+MYAPP-001": {
             "darcs": {
                 "tag": "R3-0",
-                "url": "rcsadm@aragon.acc.bessy.de:/opt/repositories/controls/darcs/epics/support/misc/dbc"
+                "url": "/data/repos/support/misc/dbc"
             }
         },
         "/tmp-110-sumo-build-new-2/MISC_DEBUGMSG/R3-0+MYAPP-001": {
             "darcs": {
                 "tag": "R3-0",
-                "url": "rcsadm@aragon.acc.bessy.de:/opt/repositories/controls/darcs/epics/support/misc/debugmsg"
-            }
-        },
-        "/tmp-110-sumo-build-new-2/SEQ/TAGLESS-2-1-12+MYAPP-001": {
-            "darcs": {
-                "url": "/tmp-110-sumo-build-new-2/SEQ/TAGLESS-2-1-12+MYAPP-001"
+                "url": "/data/repos/support/misc/debugmsg"
             }
         },
         "/tmp-110-sumo-build-new-2/SOFT_DEVHWCLIENT/R3-0+MYAPP-001": {
             "darcs": {
                 "tag": "R3-0",
-                "url": "rcsadm@aragon.acc.bessy.de:/opt/repositories/controls/darcs/epics/support/soft/devHwClient"
-            }
-        },
-        "/tmp-110-sumo-build-new-2/VXSTATS/R3-0+MYAPP-001": {
-            "darcs": {
-                "tag": "R3-0",
-                "url": "rcsadm@aragon.acc.bessy.de:/opt/repositories/controls/darcs/epics/support/vxStats/base-3-14-12"
+                "url": "/data/repos/support/soft/devHwClient"
             }
         }
     }

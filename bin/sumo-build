@@ -632,6 +632,7 @@ def cleanup_modules(build_tag, verbose, dry_run):
 
 def create_modules(dist_dict, db, builddb, build_tag, extra_lines,
                    archs,
+                   no_checkout,
                    verbose, dry_run):
     """create all modules.
 
@@ -676,8 +677,10 @@ def create_modules(dist_dict, db, builddb, build_tag, extra_lines,
         module_list.append({"modulename" : modulename,
                             "versionname": versionname})
 
-    if not dry_run:
+    if not dry_run and not no_checkout:
         savecleanup(build_tag, cleanup_struc)
+    if no_checkout:
+        return
     for module_dict in module_list:
         create_module(db, builddb, build_tag,
                       dist_dict,
@@ -1191,9 +1194,13 @@ def process(options, commands):
             create_modules(dist_dict, db, builddb, buildtag,
                            options.extra,
                            options.arch,
-                           options.verbose, options.dry_run)
-            create_makefile(dist_dict, db, builddb, buildtag,
-                            options.verbose, options.dry_run)
+                           options.no_checkout,
+                           options.verbose,
+                           options.dry_run)
+            if not options.no_checkout:
+                create_makefile(dist_dict, db, builddb, buildtag,
+                                options.verbose,
+                                options.dry_run)
         except IOError, e:
             db.unlock_file()
             builddb.unlock_file()
@@ -1202,7 +1209,7 @@ def process(options, commands):
         builddb.json_save(options.builddb, options.verbose, options.dry_run)
         # ^^^ does also unlock the file
         rmcleanup(buildtag)
-        if not options.no_make:
+        if not options.no_make and not options.no_checkout:
             call_make(options.builddb, buildtag,
                       options.makeopts,
                       options.verbose, options.dry_run)
@@ -1583,6 +1590,12 @@ def main():
     parser.add_option("-b", "--brief",
                       action="store_true",
                       help="Create a more brief output for some commands. ",
+                      )
+    parser.add_option("--no-checkout",
+                      action="store_true",
+                      help="With this option, \"new\" does not check out "
+                           "sources of support modules. This option is "
+                           "only here for test purposes.",
                       )
     parser.add_option("--no-make",
                       action="store_true",

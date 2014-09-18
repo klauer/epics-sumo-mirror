@@ -3,18 +3,25 @@
 ME=`basename $0 .sh`
 
 if [ "$1" = "deps" ]; then
-        echo "$ME.tst: $ME.sh $ME.out $ME.ok 080-sumo-build-new.tst"
+        echo "$ME.tst: $ME.sh $ME.out $ME.ok 076-sumo-build-new-0.tst"
         echo
         exit
 fi
 
-PYTHON=$@
+if [ -z "$1" ]; then
+        PYTHON="python"
+else
+        PYTHON=$1
+fi
+
+PWD_NICE=`pwd`
 
 echo -e "\n-> Test sumo-build state (query)" >&2
 
-TESTDIR=tmp-080-sumo-build-new
-# this directory must exist
+BUILDS=076-sumo-build-new-0-BUILD.tmp
 
-cd $TESTDIR > /dev/null
-
-$PYTHON ../../bin/sumo-build --builddb BUILDS state MYAPP-001 
+echo "state of AUTO-001:"
+$PYTHON ../bin/sumo-build --builddb $BUILDS state AUTO-001
+echo
+echo "state of AUTO-002:"
+$PYTHON ../bin/sumo-build --builddb $BUILDS state AUTO-002

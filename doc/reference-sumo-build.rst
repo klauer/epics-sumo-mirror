@@ -343,6 +343,9 @@ Here is a short overview on command line options:
     the regular expressions (REGEXP).
 ``-b, --brief``
     Create a more brief output for some commands.
+``--no-checkout``
+    With this option, "new" does not check out sources of support modules. This
+    option is only here for test purposes.
 ``--no-make``
     With this option, "new" does not call "make".j
 ``--makeopts MAKEOPTIONS``
