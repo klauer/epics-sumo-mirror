@@ -34,7 +34,7 @@ import sumo.makefile_scan
 makefile_scan_pre= {}
 
 # version of the program:
-my_version= "1.8.1" #VERSION#
+my_version= "1.9" #VERSION#
 
 sumo.system.assert_version(my_version)
 utils.assert_version(my_version)
