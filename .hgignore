@@ -21,6 +21,9 @@
 ^test/data/repos/stamp
 ^test/data/repos/base
 ^test/data/repos/support
+^test/data/epics/stamp
+^test/data/epics/base
+^test/data/epics/support
 ^test/tmp-.*
 ^test/.*\.tmp
 ^test/.*\.bak

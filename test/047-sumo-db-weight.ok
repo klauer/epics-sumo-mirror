@@ -46,7 +46,7 @@
             ],
             "source": {
                 "darcs": {
-                    "url": "/tmp-010-sumo-scan-all/support/alarm/3-8"
+                    "url": "/data/epics/support/alarm/3-8"
                 }
             },
             "weight": 1
@@ -64,7 +64,7 @@
                 "BASE"
             ],
             "source": {
-                "path": "/tmp-010-sumo-scan-all/support/apps/genericTemplate/3-0"
+                "path": "/data/epics/support/apps/genericTemplate/3-0"
             }
         }
     },
@@ -190,7 +190,7 @@
             "source": {
                 "darcs": {
                     "tag": "R6-2",
-                    "url": "/data/repos/support/bspDep/timer"
+                    "url": "/data/epics/support/bspDep/timer/6-2"
                 }
             }
         }
@@ -265,7 +265,7 @@
         }
     },
     "EK": {
-        "R2-2": {
+        "TAGLESS-2-2": {
             "aliases": {
                 "BASE": "EPICS_BASE",
                 "MISC_DEBUGMSG": "MISC"
@@ -283,8 +283,7 @@
             ],
             "source": {
                 "darcs": {
-                    "tag": "R2-2",
-                    "url": "/data/repos/support/ek"
+                    "url": "/data/epics/support/ek/2-2"
                 }
             }
         }

@@ -10,7 +10,7 @@
     "BSPDEP_VMETAS": "R2-0",
     "CSM": "R4-1",
     "DEVIOCSTATS": "R3-1-9-bessy3",
-    "EK": "R2-2",
+    "EK": "TAGLESS-2-2",
     "GENSUB": "R1-6-1",
     "MCAN": "R2-6-3-gp",
     "MISC_DBC": "R3-0",

@@ -113,7 +113,7 @@
         "/tmp-110-sumo-build-new-2/BSPDEP_TIMER/R6-2+MYAPP-001": {
             "darcs": {
                 "tag": "R6-2",
-                "url": "/data/repos/support/bspDep/timer"
+                "url": "/data/epics/support/bspDep/timer/6-2"
             }
         },
         "/tmp-110-sumo-build-new-2/BSPDEP_VMETAS/R2-0+MYAPP-001": {
