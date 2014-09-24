@@ -24,5 +24,5 @@ $PYTHON ../bin/sumo-db --db $ME-DEPS.tmp -y cloneversion ALARM R3-7 R3-8-1 darcs
 $PYTHON ../bin/sumo-db --db $ME-DEPS.tmp -y cloneversion ALARM R3-7 R3-10 | sed -e s#$PWD_NICE##
 $PYTHON ../bin/sumo-db --db $ME-DEPS.tmp -y cloneversion APPS_GENERICTEMPLATE PATH-3-0 R3-1 darcs /myrepo/apps/generictemplate R3-1 | sed -e s#$PWD_NICE##
 echo "DB file:"
-cat $ME-DEPS.tmp | sed -e s#$PWD_NICE##
+cat $ME-DEPS.tmp | sed -e "s#$PWD_NICE##;s#\"[0-9a-f]\{12\}\"#\"ABCDABCDABCD\"#"
  

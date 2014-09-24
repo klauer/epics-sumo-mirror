@@ -29,7 +29,7 @@ contents of cleanup file:
         },
         {
             "modulename": "BSPDEP_VMETAS",
-            "versionname": "R2-0"
+            "versionname": "TAGLESS-2-1-modified"
         },
         {
             "modulename": "MCAN",
@@ -37,7 +37,7 @@ contents of cleanup file:
         },
         {
             "modulename": "MISC_DBC",
-            "versionname": "R3-0"
+            "versionname": "PATH-3-0"
         },
         {
             "modulename": "MISC_DEBUGMSG",

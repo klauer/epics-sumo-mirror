@@ -24,6 +24,6 @@ cp tmp-020-sumo-db-convert/DEPS.DB $ME-DEPS.tmp
 
 $PYTHON ../bin/sumo-db --db $ME-DEPS.tmp dependency-delete ALARM:R3-8-modified BSPDEP_TIMER
 echo "DB file:"
-cat $ME-DEPS.tmp | sed -e s#$PWD_NICE##
+cat $ME-DEPS.tmp | sed -e "s#$PWD_NICE##;s#\"[0-9a-f]\{12\}\"#\"ABCDABCDABCD\"#"
 
 

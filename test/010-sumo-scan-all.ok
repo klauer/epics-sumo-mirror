@@ -48,6 +48,20 @@
             "vxWorks-68040",
             "vxWorks-ppc603"
         ],
+        "/data/epics/support/bspDep/VMEtas/2-1": [
+            "RTEMS-mvme2100",
+            "RTEMS-mvme5500",
+            "linux-x86",
+            "vxWorks-68040",
+            "vxWorks-ppc603"
+        ],
+        "/data/epics/support/bspDep/VMEtas/2-1-modified": [
+            "RTEMS-mvme2100",
+            "RTEMS-mvme5500",
+            "linux-x86",
+            "vxWorks-68040",
+            "vxWorks-ppc603"
+        ],
         "/data/epics/support/bspDep/cpuBoardInit/4-1": [
             "RTEMS-mvme2100",
             "RTEMS-mvme5500",
@@ -149,6 +163,12 @@
         "/data/epics/support/bspDep/VMEtas/2-0": {
             "EPICS_BASE": "/data/epics/base/3-14-12-2-1"
         },
+        "/data/epics/support/bspDep/VMEtas/2-1": {
+            "EPICS_BASE": "/data/epics/base/3-14-12-2-1"
+        },
+        "/data/epics/support/bspDep/VMEtas/2-1-modified": {
+            "EPICS_BASE": "/data/epics/base/3-14-12-2-1"
+        },
         "/data/epics/support/bspDep/cpuBoardInit/4-1": {
             "EPICS_BASE": "/data/epics/base/3-14-12-2-1"
         },
@@ -241,7 +261,9 @@
         },
         "BSPDEP_VMETAS": {
             "/data/epics/support/bspDep/VMEtas": [
-                "2-0"
+                "2-0",
+                "2-1",
+                "2-1-modified"
             ]
         },
         "CSM": {
@@ -332,9 +354,21 @@
             }
         },
         "/data/epics/support/bspDep/VMEtas/2-0": {
-            "darcs": {
+            "hg": {
                 "tag": "R2-0",
                 "url": "/data/repos/support/bspDep/VMEtas"
+            }
+        },
+        "/data/epics/support/bspDep/VMEtas/2-1": {
+            "hg": {
+                "tag": "R2-1",
+                "url": "/data/repos/support/bspDep/VMEtas"
+            }
+        },
+        "/data/epics/support/bspDep/VMEtas/2-1-modified": {
+            "hg": {
+                "rev": "ABCDABCDABCD",
+                "url": "/data/epics/support/bspDep/VMEtas/2-1-modified"
             }
         },
         "/data/epics/support/bspDep/cpuBoardInit/4-1": {
@@ -385,10 +419,7 @@
             }
         },
         "/data/epics/support/misc/dbc/3-0": {
-            "darcs": {
-                "tag": "R3-0",
-                "url": "/data/repos/support/misc/dbc"
-            }
+            "path": "/data/epics/support/misc/dbc/3-0"
         },
         "/data/epics/support/misc/debugmsg/3-0": {
             "darcs": {

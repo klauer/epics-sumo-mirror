@@ -4,15 +4,13 @@
 # pylint: disable=C0103
 #                          Invalid name for type variable
 
-import re
 import sumo.system
 import sumo.utils
 import sumo.path
 import sumo.darcs
+import sumo.mercurial # "hg"
 
-rx_darcs_ssh_url= re.compile(r'^([\w_\.]+)@([\w_\.]+):(.*)$')
-
-known_repos=set(("darcs",))
+known_repos=set(("darcs","hg"))
 known_sources= set(("path",)).union(known_repos)
 
 # ---------------------------------------------------------
@@ -52,6 +50,9 @@ def repo_from_dir(directory, hints, verbose, dry_run):
     obj= sumo.darcs.Repo.scan_dir(directory, hints, verbose, dry_run)
     if obj is not None:
         return obj
+    obj= sumo.mercurial.Repo.scan_dir(directory, hints, verbose, dry_run)
+    if obj is not None:
+        return obj
     # insert other repo supports here
     return sumo.path.Repo.scan_dir(directory, hints, verbose, dry_run)
 
@@ -65,6 +66,8 @@ def checkout(repotype, spec, destdir, verbose, dry_run):
     #                          Too many arguments
     if repotype == "darcs":
         sumo.darcs.Repo.checkout(spec, destdir, verbose, dry_run)
+    elif repotype == "hg":
+        sumo.mercurial.Repo.checkout(spec, destdir, verbose, dry_run)
     elif repotype== "path":
         sumo.path.Repo.checkout(spec, destdir, verbose, dry_run)
     else:
@@ -82,9 +85,12 @@ class SourceSpec(sumo.JSON.Container):
         """create the object."""
         super(SourceSpec, self).__init__(dict_)
     @classmethod
-    def from_param(cls, sourcetype, url=None, tag=None, path=None):
+    def from_param(cls, sourcetype, url=None, tag=None,
+                   rev=None, path=None):
         """create by parameters.
         """
+        # pylint: disable=R0913
+        #                          Too many arguments
         if sourcetype not in known_sources:
             raise ValueError("unknown source type: '%s'" % sourcetype)
         if sourcetype=="path":
@@ -97,6 +103,17 @@ class SourceSpec(sumo.JSON.Container):
             d= {"url": url}
             if tag:
                 d["tag"]= tag
+            return cls({sourcetype: d})
+        if sourcetype=="hg":
+            if not url:
+                raise ValueError("'url' missing for sourcetype 'hg'")
+            d= {"url": url}
+            if tag and rev:
+                raise ValueError("you cannot specify tag AND revision")
+            if tag:
+                d["tag"]= tag
+            if rev:
+                d["rev"]= rev
             return cls({sourcetype: d})
         raise AssertionError("unknown sourcetype: %s" % sourcetype)
     @classmethod
@@ -155,25 +172,42 @@ class SourceSpec(sumo.JSON.Container):
         """return if SourceSpec refers to a repository.
         """
         return self.sourcetype() in known_repos
-    def tag(self):
+    @staticmethod
+    def _set_get(dict_, name, new_val= None):
+        """get or set a property."""
+        if new_val is None:
+            return dict_.get(name)
+        dict_[name]= new_val
+        return new_val
+    def tag(self, new_val= None):
         """return the tag."""
-        d= self.datadict()
-        type_= sumo.utils.single_key(d)
-        return d[type_].get("tag")
-    def path(self):
+        (_, _, pars)= self.unpack()
+        # pylint: disable=W0212
+        #                          Access to protected member
+        return self.__class__._set_get(pars, "tag", new_val)
+    def rev(self, new_val= None):
+        """return the revision number."""
+        (_, _, pars)= self.unpack()
+        # pylint: disable=W0212
+        #                          Access to protected member
+        return self.__class__._set_get(pars, "rev", new_val)
+    def path(self, new_val= None):
         """return the path if the type is "path"."""
-        (_, type_, pars)= self.unpack()
+        (d, type_, pars)= self.unpack()
         if type_!= "path":
             raise TypeError("error, 'path()' can only be called for "
                             "SourceSpec objects of type 'path'")
-        return pars
-    def url(self):
+        if new_val is None:
+            return pars
+        d[type_]= new_val
+        return new_val
+    def url(self, new_val= None):
         """return the path if the type is "path"."""
         (_, type_, pars)= self.unpack()
         if type_== "path":
             raise TypeError("error, 'url()' cannot be called for "
                             "SourceSpec objects of type 'path'")
-        return pars["url"]
+        return self._set_get(pars, "url", new_val)
     def unpack(self):
         """return the internal dict, the sourcetype and the parameters.
         """

@@ -211,9 +211,51 @@ DB file:
                 "BASE"
             ],
             "source": {
-                "darcs": {
+                "hg": {
                     "tag": "R2-0",
                     "url": "/data/repos/support/bspDep/VMEtas"
+                }
+            }
+        },
+        "R2-1": {
+            "aliases": {
+                "BASE": "EPICS_BASE"
+            },
+            "archs": {
+                "RTEMS-mvme2100": true,
+                "RTEMS-mvme5500": true,
+                "linux-x86": true,
+                "vxWorks-68040": true,
+                "vxWorks-ppc603": true
+            },
+            "dependencies": [
+                "BASE"
+            ],
+            "source": {
+                "hg": {
+                    "tag": "R2-1",
+                    "url": "/data/repos/support/bspDep/VMEtas"
+                }
+            }
+        },
+        "TAGLESS-2-1-modified": {
+            "aliases": {
+                "BASE": "EPICS_BASE"
+            },
+            "archs": {
+                "RTEMS-mvme2100": true,
+                "RTEMS-mvme5500": true,
+                "linux-x86": true,
+                "vxWorks-68040": true,
+                "vxWorks-ppc603": true
+            },
+            "dependencies": [
+                "BASE"
+            ],
+            "source": {
+                "hg": {
+                    "rev": "ABCDABCDABCD",
+                    "url": "/data/epics/support/bspDep/VMEtas/2-1-modified"
                 }
             }
         }
@@ -372,7 +414,7 @@ DB file:
         }
     },
     "MISC_DBC": {
-        "R3-0": {
+        "PATH-3-0": {
             "aliases": {
                 "BASE": "EPICS_BASE"
             },
@@ -383,10 +425,7 @@ DB file:
                 "BASE"
             ],
             "source": {
-                "darcs": {
-                    "tag": "R3-0",
-                    "url": "/data/repos/support/misc/dbc"
-                }
+                "path": "/data/epics/support/misc/dbc/3-0"
             }
         }
     },
@@ -468,7 +507,7 @@ SCANDB file:
                 "R6-2": "scanned"
             },
             "MISC_DBC": {
-                "R3-0": "scanned"
+                "PATH-3-0": "scanned"
             }
         },
         "R3-8-modified": {
@@ -479,7 +518,7 @@ SCANDB file:
                 "R6-2": "scanned"
             },
             "MISC_DBC": {
-                "R3-0": "scanned"
+                "PATH-3-0": "scanned"
             }
         }
     },
@@ -530,6 +569,16 @@ SCANDB file:
             "BASE": {
                 "R3-14-12-2-1": "scanned"
             }
+        },
+        "R2-1": {
+            "BASE": {
+                "R3-14-12-2-1": "scanned"
+            }
+        },
+        "TAGLESS-2-1-modified": {
+            "BASE": {
+                "R3-14-12-2-1": "scanned"
+            }
         }
     },
     "CSM": {
@@ -575,7 +624,7 @@ SCANDB file:
                 "R2-0": "scanned"
             },
             "MISC_DBC": {
-                "R3-0": "scanned"
+                "PATH-3-0": "scanned"
             },
             "MISC_DEBUGMSG": {
                 "R3-0": "scanned"
@@ -595,7 +644,7 @@ SCANDB file:
                 "R2-0": "scanned"
             },
             "MISC_DBC": {
-                "R3-0": "scanned"
+                "PATH-3-0": "scanned"
             },
             "MISC_DEBUGMSG": {
                 "R3-0": "scanned"
@@ -606,7 +655,7 @@ SCANDB file:
         }
     },
     "MISC_DBC": {
-        "R3-0": {
+        "PATH-3-0": {
             "BASE": {
                 "R3-14-12-2-1": "scanned"
             }

@@ -38,6 +38,37 @@ function MK_DARCS
     cd $old > /dev/null
   }
 
+# create mercurial repositories
+function MK_HG
+  { 
+    old=`pwd`
+    sourcepath="$1"
+    destpath="$2"
+    tag="$3"
+    if [ ! -d $destpath ]; then
+        mkdir -p $destpath
+    fi
+    cd $destpath > /dev/null
+    cp -a $sourcepath/* .
+    #echo "DIR : $sourcepath"
+    if [ ! -e .hg ]; then
+        hg init
+        cp $SRCDIR/hgignore .hgignore
+    fi
+    if [ -n "$EPICSBASE" ]; then
+        sed -i configure/RELEASE -e "s#^\(EPICS_BASE\) *=.*#\1=$EPICSBASE#"
+        sed -i configure/RELEASE -e "s#^\(SUPPORT\) *=.*#\1=$SUPPORTDIR#"
+        sed -i configure/RELEASE -e "s#^\(EPICS_SUPPORT\) *=.*#\1=$SUPPORTDIR#"
+    fi
+    # run "hg add" when there seem to be new files:
+    if hg status -u | grep '?' -q; then
+        hg status -u -n | xargs hg add
+    fi
+    hg commit -m 'dummy mercurial commit' 
+    hg tag $tag
+    cd $old > /dev/null
+  }
+
 mkdir base
 mkdir -p support/apps
 
@@ -56,7 +87,8 @@ MK_DARCS $SRCDIR/support/asyn/4-17-2              support/asyn             R4-17
 MK_DARCS $SRCDIR/support/bessyRules/2-5           support/bessyRules       R2-5
 MK_DARCS $SRCDIR/support/bspDep/cpuBoardInit/4-1  support/bspDep/cpuBoardInit      R4-1
 MK_DARCS $SRCDIR/support/bspDep/timer/6-2         support/bspDep/timer     R6-2
-MK_DARCS $SRCDIR/support/bspDep/VMEtas/2-0        support/bspDep/VMEtas    R2-0
+MK_HG    $SRCDIR/support/bspDep/VMEtas/2-0        support/bspDep/VMEtas    R2-0
+MK_HG    $SRCDIR/support/bspDep/VMEtas/2-1        support/bspDep/VMEtas    R2-1
 MK_DARCS $SRCDIR/support/csm/4-1                  support/csm              R4-1
 MK_DARCS $SRCDIR/support/devIocStats/3-1-9-bessy3 support/devIocStats      R3-1-9-bessy3
 MK_DARCS $SRCDIR/support/ek/2-2                   support/ek               R2-2

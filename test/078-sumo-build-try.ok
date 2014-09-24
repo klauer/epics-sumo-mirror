@@ -3,9 +3,9 @@ try with modules missing:
 Not all modules have exactly specified versions. These modules need an 
 exact version specification:
     BSPDEP_TIMER         -> suggested version: R6-2
-    BSPDEP_VMETAS        -> suggested version: R2-0
+    BSPDEP_VMETAS
     MCAN
-    MISC_DBC             -> suggested version: R3-0
+    MISC_DBC             -> suggested version: PATH-3-0
 
 Not all dependencies were included in module specifications, these modules
 have to be added:
@@ -31,9 +31,11 @@ List of modules that fullfill the given module specification:
                 "ALARM:R3-8-modified": "state: not tested",
                 "BSPDEP_TIMER:R6-2": "state: stable",
                 "BSPDEP_VMETAS:R2-0": "state: stable",
+                "BSPDEP_VMETAS:R2-1": "state: not tested",
+                "BSPDEP_VMETAS:TAGLESS-2-1-modified": "state: not tested",
                 "MCAN:R2-6-1": "state: stable",
                 "MCAN:R2-6-3-gp": "state: not tested",
-                "MISC_DBC:R3-0": "state: stable",
+                "MISC_DBC:PATH-3-0": "state: stable",
                 "MISC_DEBUGMSG:R3-0": "state: stable",
                 "SOFT_DEVHWCLIENT:R3-0": "state: stable"
             }
@@ -54,6 +56,20 @@ List of modules that fullfill the given module specification:
                 "MCAN:R2-6-1": "state: stable",
                 "MCAN:R2-6-3-gp": "state: not tested"
             }
+        },
+        "R2-1": {
+            "built": false,
+            "dependents": {
+                "MCAN:R2-6-1": "state: not tested",
+                "MCAN:R2-6-3-gp": "state: not tested"
+            }
+        },
+        "TAGLESS-2-1-modified": {
+            "built": false,
+            "dependents": {
+                "MCAN:R2-6-1": "state: not tested",
+                "MCAN:R2-6-3-gp": "state: not tested"
+            }
         }
     },
     "MCAN": {
@@ -65,7 +81,7 @@ List of modules that fullfill the given module specification:
         }
     },
     "MISC_DBC": {
-        "R3-0": {
+        "PATH-3-0": {
             "built": true,
             "dependents": {
                 "ALARM:R3-8-modified": "state: not tested",
@@ -107,9 +123,9 @@ Not all modules have exactly specified versions. These modules need an
 exact version specification:
     BASE                 -> suggested version: R3-14-12-2-1
     BSPDEP_TIMER         -> suggested version: R6-2
-    BSPDEP_VMETAS        -> suggested version: R2-0
+    BSPDEP_VMETAS
     MCAN
-    MISC_DBC             -> suggested version: R3-0
+    MISC_DBC             -> suggested version: PATH-3-0
     MISC_DEBUGMSG        -> suggested version: R3-0
     SOFT_DEVHWCLIENT     -> suggested version: R3-0
 
@@ -131,9 +147,11 @@ List of modules that fullfill the given module specification:
                 "ALARM:R3-8-modified": "state: not tested",
                 "BSPDEP_TIMER:R6-2": "state: stable",
                 "BSPDEP_VMETAS:R2-0": "state: stable",
+                "BSPDEP_VMETAS:R2-1": "state: not tested",
+                "BSPDEP_VMETAS:TAGLESS-2-1-modified": "state: not tested",
                 "MCAN:R2-6-1": "state: stable",
                 "MCAN:R2-6-3-gp": "state: not tested",
-                "MISC_DBC:R3-0": "state: stable",
+                "MISC_DBC:PATH-3-0": "state: stable",
                 "MISC_DEBUGMSG:R3-0": "state: stable",
                 "SOFT_DEVHWCLIENT:R3-0": "state: stable"
             }
@@ -154,6 +172,20 @@ List of modules that fullfill the given module specification:
                 "MCAN:R2-6-1": "state: stable",
                 "MCAN:R2-6-3-gp": "state: not tested"
             }
+        },
+        "R2-1": {
+            "built": false,
+            "dependents": {
+                "MCAN:R2-6-1": "state: not tested",
+                "MCAN:R2-6-3-gp": "state: not tested"
+            }
+        },
+        "TAGLESS-2-1-modified": {
+            "built": false,
+            "dependents": {
+                "MCAN:R2-6-1": "state: not tested",
+                "MCAN:R2-6-3-gp": "state: not tested"
+            }
         }
     },
     "MCAN": {
@@ -165,7 +197,7 @@ List of modules that fullfill the given module specification:
         }
     },
     "MISC_DBC": {
-        "R3-0": {
+        "PATH-3-0": {
             "built": true,
             "dependents": {
                 "ALARM:R3-8-modified": "state: not tested",
@@ -223,9 +255,9 @@ List of modules that fullfill the given module specification:
             "dependents": {
                 "ALARM:R3-8-modified": "state: not tested",
                 "BSPDEP_TIMER:R6-2": "state: stable",
-                "BSPDEP_VMETAS:R2-0": "state: stable",
+                "BSPDEP_VMETAS:TAGLESS-2-1-modified": "state: not tested",
                 "MCAN:R2-6-1": "state: stable",
-                "MISC_DBC:R3-0": "state: stable",
+                "MISC_DBC:PATH-3-0": "state: stable",
                 "MISC_DEBUGMSG:R3-0": "state: stable",
                 "SOFT_DEVHWCLIENT:R3-0": "state: stable"
             }
@@ -240,10 +272,10 @@ List of modules that fullfill the given module specification:
         }
     },
     "BSPDEP_VMETAS": {
-        "R2-0": {
-            "built": true,
+        "TAGLESS-2-1-modified": {
+            "built": false,
             "dependents": {
-                "MCAN:R2-6-1": "state: stable"
+                "MCAN:R2-6-1": "state: not tested"
             }
         }
     },
@@ -253,7 +285,7 @@ List of modules that fullfill the given module specification:
         }
     },
     "MISC_DBC": {
-        "R3-0": {
+        "PATH-3-0": {
             "built": true,
             "dependents": {
                 "ALARM:R3-8-modified": "state: not tested",

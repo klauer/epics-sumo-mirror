@@ -9,13 +9,13 @@
         "/tmp-110-sumo-build-new-2/BSPDEP_TIMER/R6-2+MYAPP-001": [
             "ANY"
         ],
-        "/tmp-110-sumo-build-new-2/BSPDEP_VMETAS/R2-0+MYAPP-001": [
+        "/tmp-110-sumo-build-new-2/BSPDEP_VMETAS/TAGLESS-2-1-modified+MYAPP-001": [
             "ANY"
         ],
         "/tmp-110-sumo-build-new-2/MCAN/R2-6-3-gp+MYAPP-001": [
             "ANY"
         ],
-        "/tmp-110-sumo-build-new-2/MISC_DBC/R3-0+MYAPP-001": [
+        "/tmp-110-sumo-build-new-2/MISC_DBC/PATH-3-0+MYAPP-001": [
             "ANY"
         ],
         "/tmp-110-sumo-build-new-2/MISC_DEBUGMSG/R3-0+MYAPP-001": [
@@ -27,7 +27,7 @@
     },
     "dependencies": {
         "/tmp-110-sumo-build-new-2/ALARM/R3-8-modified+MYAPP-001": {
-            "DBC": "/tmp-110-sumo-build-new-2/MISC_DBC/R3-0+MYAPP-001",
+            "DBC": "/tmp-110-sumo-build-new-2/MISC_DBC/PATH-3-0+MYAPP-001",
             "EPICS_BASE": "/tmp-110-sumo-build-new-2/BASE/R3-14-12-2-1+BASE-001",
             "TIMER": "/tmp-110-sumo-build-new-2/BSPDEP_TIMER/R6-2+MYAPP-001"
         },
@@ -35,18 +35,18 @@
         "/tmp-110-sumo-build-new-2/BSPDEP_TIMER/R6-2+MYAPP-001": {
             "EPICS_BASE": "/tmp-110-sumo-build-new-2/BASE/R3-14-12-2-1+BASE-001"
         },
-        "/tmp-110-sumo-build-new-2/BSPDEP_VMETAS/R2-0+MYAPP-001": {
+        "/tmp-110-sumo-build-new-2/BSPDEP_VMETAS/TAGLESS-2-1-modified+MYAPP-001": {
             "EPICS_BASE": "/tmp-110-sumo-build-new-2/BASE/R3-14-12-2-1+BASE-001"
         },
         "/tmp-110-sumo-build-new-2/MCAN/R2-6-3-gp+MYAPP-001": {
             "ALARM": "/tmp-110-sumo-build-new-2/ALARM/R3-8-modified+MYAPP-001",
-            "DBC": "/tmp-110-sumo-build-new-2/MISC_DBC/R3-0+MYAPP-001",
+            "DBC": "/tmp-110-sumo-build-new-2/MISC_DBC/PATH-3-0+MYAPP-001",
             "DEBUGMSG": "/tmp-110-sumo-build-new-2/MISC_DEBUGMSG/R3-0+MYAPP-001",
             "DEVHWCLIENT": "/tmp-110-sumo-build-new-2/SOFT_DEVHWCLIENT/R3-0+MYAPP-001",
             "EPICS_BASE": "/tmp-110-sumo-build-new-2/BASE/R3-14-12-2-1+BASE-001",
-            "VMETAS": "/tmp-110-sumo-build-new-2/BSPDEP_VMETAS/R2-0+MYAPP-001"
+            "VMETAS": "/tmp-110-sumo-build-new-2/BSPDEP_VMETAS/TAGLESS-2-1-modified+MYAPP-001"
         },
-        "/tmp-110-sumo-build-new-2/MISC_DBC/R3-0+MYAPP-001": {
+        "/tmp-110-sumo-build-new-2/MISC_DBC/PATH-3-0+MYAPP-001": {
             "EPICS_BASE": "/tmp-110-sumo-build-new-2/BASE/R3-14-12-2-1+BASE-001"
         },
         "/tmp-110-sumo-build-new-2/MISC_DEBUGMSG/R3-0+MYAPP-001": {
@@ -74,7 +74,7 @@
         },
         "BSPDEP_VMETAS": {
             "/tmp-110-sumo-build-new-2/BSPDEP_VMETAS": [
-                "R2-0+MYAPP-001"
+                "TAGLESS-2-1-modified+MYAPP-001"
             ]
         },
         "MCAN": {
@@ -84,7 +84,7 @@
         },
         "MISC_DBC": {
             "/tmp-110-sumo-build-new-2/MISC_DBC": [
-                "R3-0+MYAPP-001"
+                "PATH-3-0+MYAPP-001"
             ]
         },
         "MISC_DEBUGMSG": {
@@ -117,10 +117,10 @@
                 "url": "/data/epics/support/bspDep/timer/6-2"
             }
         },
-        "/tmp-110-sumo-build-new-2/BSPDEP_VMETAS/R2-0+MYAPP-001": {
-            "darcs": {
-                "tag": "R2-0",
-                "url": "/data/repos/support/bspDep/VMEtas"
+        "/tmp-110-sumo-build-new-2/BSPDEP_VMETAS/TAGLESS-2-1-modified+MYAPP-001": {
+            "hg": {
+                "rev": "ABCDABCDABCD",
+                "url": "/data/epics/support/bspDep/VMEtas/2-1-modified"
             }
         },
         "/tmp-110-sumo-build-new-2/MCAN/R2-6-3-gp+MYAPP-001": {
@@ -129,11 +129,8 @@
                 "url": "/data/repos/support/mcan"
             }
         },
-        "/tmp-110-sumo-build-new-2/MISC_DBC/R3-0+MYAPP-001": {
-            "darcs": {
-                "tag": "R3-0",
-                "url": "/data/repos/support/misc/dbc"
-            }
+        "/tmp-110-sumo-build-new-2/MISC_DBC/PATH-3-0+MYAPP-001": {
+            "path": "/tmp-110-sumo-build-new-2/MISC_DBC/PATH-3-0+MYAPP-001"
         },
         "/tmp-110-sumo-build-new-2/MISC_DEBUGMSG/R3-0+MYAPP-001": {
             "darcs": {
