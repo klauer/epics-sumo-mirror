@@ -1,120 +1,120 @@
 {
     "archs": {
-        "/tmp-010-sumo-scan-all/base/3-14-12-2-1": [
+        "/data/epics/base/3-14-12-2-1": [
             "RTEMS-mvme2100",
             "RTEMS-mvme5500",
             "linux-x86",
             "vxWorks-68040",
             "vxWorks-ppc603"
         ],
-        "/tmp-010-sumo-scan-all/support/alarm/3-7": [
+        "/data/epics/support/alarm/3-7": [
             "RTEMS-mvme2100",
             "RTEMS-mvme5500",
             "linux-x86",
             "vxWorks-68040",
             "vxWorks-ppc603"
         ],
-        "/tmp-010-sumo-scan-all/support/alarm/3-8": [
+        "/data/epics/support/alarm/3-8": [
             "RTEMS-mvme2100",
             "RTEMS-mvme5500",
             "linux-x86",
             "vxWorks-68040",
             "vxWorks-ppc603"
         ],
-        "/tmp-010-sumo-scan-all/support/apps/genericTemplate/3-0": [
+        "/data/epics/support/apps/genericTemplate/3-0": [
             "ANY"
         ],
-        "/tmp-010-sumo-scan-all/support/apps/iocWatch/3-0": [
+        "/data/epics/support/apps/iocWatch/3-0": [
             "RTEMS-mvme2100",
             "RTEMS-mvme5500",
             "linux-x86",
             "vxWorks-68040",
             "vxWorks-ppc603"
         ],
-        "/tmp-010-sumo-scan-all/support/asyn/4-17-2": [
+        "/data/epics/support/asyn/4-17-2": [
             "RTEMS-mvme2100",
             "RTEMS-mvme5500",
             "linux-x86",
             "vxWorks-68040",
             "vxWorks-ppc603"
         ],
-        "/tmp-010-sumo-scan-all/support/bessyRules/2-5": [
+        "/data/epics/support/bessyRules/2-5": [
             "ANY"
         ],
-        "/tmp-010-sumo-scan-all/support/bspDep/VMEtas/2-0": [
+        "/data/epics/support/bspDep/VMEtas/2-0": [
             "RTEMS-mvme2100",
             "RTEMS-mvme5500",
             "linux-x86",
             "vxWorks-68040",
             "vxWorks-ppc603"
         ],
-        "/tmp-010-sumo-scan-all/support/bspDep/cpuBoardInit/4-1": [
+        "/data/epics/support/bspDep/cpuBoardInit/4-1": [
             "RTEMS-mvme2100",
             "RTEMS-mvme5500",
             "linux-x86",
             "vxWorks-68040",
             "vxWorks-ppc603"
         ],
-        "/tmp-010-sumo-scan-all/support/bspDep/timer/6-2": [
+        "/data/epics/support/bspDep/timer/6-2": [
             "RTEMS-mvme2100",
             "RTEMS-mvme5500",
             "vxWorks-68040",
             "vxWorks-ppc603"
         ],
-        "/tmp-010-sumo-scan-all/support/csm/4-1": [
-            "RTEMS-mvme2100",
-            "RTEMS-mvme5500",
-            "linux-x86",
-            "vxWorks-68040",
-            "vxWorks-ppc603"
-        ],
-        "/tmp-010-sumo-scan-all/support/devIocStats/3-1-9-bessy3": [
+        "/data/epics/support/csm/4-1": [
             "RTEMS-mvme2100",
             "RTEMS-mvme5500",
             "linux-x86",
             "vxWorks-68040",
             "vxWorks-ppc603"
         ],
-        "/tmp-010-sumo-scan-all/support/ek/2-2": [
+        "/data/epics/support/devIocStats/3-1-9-bessy3": [
             "RTEMS-mvme2100",
             "RTEMS-mvme5500",
             "linux-x86",
             "vxWorks-68040",
             "vxWorks-ppc603"
         ],
-        "/tmp-010-sumo-scan-all/support/genSub/1-6-1": [
+        "/data/epics/support/ek/2-2": [
             "RTEMS-mvme2100",
             "RTEMS-mvme5500",
             "linux-x86",
             "vxWorks-68040",
             "vxWorks-ppc603"
         ],
-        "/tmp-010-sumo-scan-all/support/mcan/2-6-1": [
+        "/data/epics/support/genSub/1-6-1": [
+            "RTEMS-mvme2100",
+            "RTEMS-mvme5500",
+            "linux-x86",
+            "vxWorks-68040",
+            "vxWorks-ppc603"
+        ],
+        "/data/epics/support/mcan/2-6-1": [
             "RTEMS-mvme2100",
             "RTEMS-mvme5500",
             "vxWorks-68040",
             "vxWorks-ppc603"
         ],
-        "/tmp-010-sumo-scan-all/support/mcan/2-6-3-gp": [
+        "/data/epics/support/mcan/2-6-3-gp": [
             "RTEMS-mvme2100",
             "RTEMS-mvme5500",
             "vxWorks-68040",
             "vxWorks-ppc603"
         ],
-        "/tmp-010-sumo-scan-all/support/misc/dbc/3-0": [
+        "/data/epics/support/misc/dbc/3-0": [
             "ANY"
         ],
-        "/tmp-010-sumo-scan-all/support/misc/debugmsg/3-0": [
+        "/data/epics/support/misc/debugmsg/3-0": [
             "ANY"
         ],
-        "/tmp-010-sumo-scan-all/support/seq/2-1-10": [
+        "/data/epics/support/seq/2-1-10": [
             "RTEMS-mvme2100",
             "RTEMS-mvme5500",
             "linux-x86",
             "vxWorks-68040",
             "vxWorks-ppc603"
         ],
-        "/tmp-010-sumo-scan-all/support/soft/devHwClient/3-0": [
+        "/data/epics/support/soft/devHwClient/3-0": [
             "RTEMS-mvme2100",
             "RTEMS-mvme5500",
             "linux-x86",
@@ -123,286 +123,285 @@
         ]
     },
     "dependencies": {
-        "/tmp-010-sumo-scan-all/base/3-14-12-2-1": {},
-        "/tmp-010-sumo-scan-all/support/alarm/3-7": {
-            "DBC": "/tmp-010-sumo-scan-all/support/misc/dbc/3-0",
-            "EPICS_BASE": "/tmp-010-sumo-scan-all/base/3-14-12-2-1",
-            "TIMER": "/tmp-010-sumo-scan-all/support/bspDep/timer/6-2"
+        "/data/epics/base/3-14-12-2-1": {},
+        "/data/epics/support/alarm/3-7": {
+            "DBC": "/data/epics/support/misc/dbc/3-0",
+            "EPICS_BASE": "/data/epics/base/3-14-12-2-1",
+            "TIMER": "/data/epics/support/bspDep/timer/6-2"
         },
-        "/tmp-010-sumo-scan-all/support/alarm/3-8": {
-            "DBC": "/tmp-010-sumo-scan-all/support/misc/dbc/3-0",
-            "EPICS_BASE": "/tmp-010-sumo-scan-all/base/3-14-12-2-1",
-            "TIMER": "/tmp-010-sumo-scan-all/support/bspDep/timer/6-2"
+        "/data/epics/support/alarm/3-8": {
+            "DBC": "/data/epics/support/misc/dbc/3-0",
+            "EPICS_BASE": "/data/epics/base/3-14-12-2-1",
+            "TIMER": "/data/epics/support/bspDep/timer/6-2"
         },
-        "/tmp-010-sumo-scan-all/support/apps/genericTemplate/3-0": {
-            "EPICS_BASE": "/tmp-010-sumo-scan-all/base/3-14-12-2-1"
+        "/data/epics/support/apps/genericTemplate/3-0": {
+            "EPICS_BASE": "/data/epics/base/3-14-12-2-1"
         },
-        "/tmp-010-sumo-scan-all/support/apps/iocWatch/3-0": {
-            "EPICS_BASE": "/tmp-010-sumo-scan-all/base/3-14-12-2-1"
+        "/data/epics/support/apps/iocWatch/3-0": {
+            "EPICS_BASE": "/data/epics/base/3-14-12-2-1"
         },
-        "/tmp-010-sumo-scan-all/support/asyn/4-17-2": {
-            "EPICS_BASE": "/tmp-010-sumo-scan-all/base/3-14-12-2-1"
+        "/data/epics/support/asyn/4-17-2": {
+            "EPICS_BASE": "/data/epics/base/3-14-12-2-1"
         },
-        "/tmp-010-sumo-scan-all/support/bessyRules/2-5": {
-            "EPICS_BASE": "/tmp-010-sumo-scan-all/base/3-14-12-2-1"
+        "/data/epics/support/bessyRules/2-5": {
+            "EPICS_BASE": "/data/epics/base/3-14-12-2-1"
         },
-        "/tmp-010-sumo-scan-all/support/bspDep/VMEtas/2-0": {
-            "EPICS_BASE": "/tmp-010-sumo-scan-all/base/3-14-12-2-1"
+        "/data/epics/support/bspDep/VMEtas/2-0": {
+            "EPICS_BASE": "/data/epics/base/3-14-12-2-1"
         },
-        "/tmp-010-sumo-scan-all/support/bspDep/cpuBoardInit/4-1": {
-            "EPICS_BASE": "/tmp-010-sumo-scan-all/base/3-14-12-2-1"
+        "/data/epics/support/bspDep/cpuBoardInit/4-1": {
+            "EPICS_BASE": "/data/epics/base/3-14-12-2-1"
         },
-        "/tmp-010-sumo-scan-all/support/bspDep/timer/6-2": {
-            "EPICS_BASE": "/tmp-010-sumo-scan-all/base/3-14-12-2-1"
+        "/data/epics/support/bspDep/timer/6-2": {
+            "EPICS_BASE": "/data/epics/base/3-14-12-2-1"
         },
-        "/tmp-010-sumo-scan-all/support/csm/4-1": {
-            "EPICS_BASE": "/tmp-010-sumo-scan-all/base/3-14-12-2-1"
+        "/data/epics/support/csm/4-1": {
+            "EPICS_BASE": "/data/epics/base/3-14-12-2-1"
         },
-        "/tmp-010-sumo-scan-all/support/devIocStats/3-1-9-bessy3": {
-            "EPICS_BASE": "/tmp-010-sumo-scan-all/base/3-14-12-2-1"
+        "/data/epics/support/devIocStats/3-1-9-bessy3": {
+            "EPICS_BASE": "/data/epics/base/3-14-12-2-1"
         },
-        "/tmp-010-sumo-scan-all/support/ek/2-2": {
-            "EPICS_BASE": "/tmp-010-sumo-scan-all/base/3-14-12-2-1",
-            "MISC": "/tmp-010-sumo-scan-all/support/misc/debugmsg/3-0"
+        "/data/epics/support/ek/2-2": {
+            "EPICS_BASE": "/data/epics/base/3-14-12-2-1",
+            "MISC": "/data/epics/support/misc/debugmsg/3-0"
         },
-        "/tmp-010-sumo-scan-all/support/genSub/1-6-1": {
-            "EPICS_BASE": "/tmp-010-sumo-scan-all/base/3-14-12-2-1"
+        "/data/epics/support/genSub/1-6-1": {
+            "EPICS_BASE": "/data/epics/base/3-14-12-2-1"
         },
-        "/tmp-010-sumo-scan-all/support/mcan/2-6-1": {
-            "ALARM": "/tmp-010-sumo-scan-all/support/alarm/3-8",
-            "DBC": "/tmp-010-sumo-scan-all/support/misc/dbc/3-0",
-            "DEBUGMSG": "/tmp-010-sumo-scan-all/support/misc/debugmsg/3-0",
-            "DEVHWCLIENT": "/tmp-010-sumo-scan-all/support/soft/devHwClient/3-0",
-            "EPICS_BASE": "/tmp-010-sumo-scan-all/base/3-14-12-2-1",
-            "VMETAS": "/tmp-010-sumo-scan-all/support/bspDep/VMEtas/2-0"
+        "/data/epics/support/mcan/2-6-1": {
+            "ALARM": "/data/epics/support/alarm/3-8",
+            "DBC": "/data/epics/support/misc/dbc/3-0",
+            "DEBUGMSG": "/data/epics/support/misc/debugmsg/3-0",
+            "DEVHWCLIENT": "/data/epics/support/soft/devHwClient/3-0",
+            "EPICS_BASE": "/data/epics/base/3-14-12-2-1",
+            "VMETAS": "/data/epics/support/bspDep/VMEtas/2-0"
         },
-        "/tmp-010-sumo-scan-all/support/mcan/2-6-3-gp": {
-            "ALARM": "/tmp-010-sumo-scan-all/support/alarm/3-7",
-            "DBC": "/tmp-010-sumo-scan-all/support/misc/dbc/3-0",
-            "DEBUGMSG": "/tmp-010-sumo-scan-all/support/misc/debugmsg/3-0",
-            "DEVHWCLIENT": "/tmp-010-sumo-scan-all/support/soft/devHwClient/3-0",
-            "EPICS_BASE": "/tmp-010-sumo-scan-all/base/3-14-12-2-1",
-            "VMETAS": "/tmp-010-sumo-scan-all/support/bspDep/VMEtas/2-0"
+        "/data/epics/support/mcan/2-6-3-gp": {
+            "ALARM": "/data/epics/support/alarm/3-7",
+            "DBC": "/data/epics/support/misc/dbc/3-0",
+            "DEBUGMSG": "/data/epics/support/misc/debugmsg/3-0",
+            "DEVHWCLIENT": "/data/epics/support/soft/devHwClient/3-0",
+            "EPICS_BASE": "/data/epics/base/3-14-12-2-1",
+            "VMETAS": "/data/epics/support/bspDep/VMEtas/2-0"
         },
-        "/tmp-010-sumo-scan-all/support/misc/dbc/3-0": {
-            "EPICS_BASE": "/tmp-010-sumo-scan-all/base/3-14-12-2-1"
+        "/data/epics/support/misc/dbc/3-0": {
+            "EPICS_BASE": "/data/epics/base/3-14-12-2-1"
         },
-        "/tmp-010-sumo-scan-all/support/misc/debugmsg/3-0": {
-            "EPICS_BASE": "/tmp-010-sumo-scan-all/base/3-14-12-2-1"
+        "/data/epics/support/misc/debugmsg/3-0": {
+            "EPICS_BASE": "/data/epics/base/3-14-12-2-1"
         },
-        "/tmp-010-sumo-scan-all/support/seq/2-1-10": {
-            "EPICS_BASE": "/tmp-010-sumo-scan-all/base/3-14-12-2-1"
+        "/data/epics/support/seq/2-1-10": {
+            "EPICS_BASE": "/data/epics/base/3-14-12-2-1"
         },
-        "/tmp-010-sumo-scan-all/support/soft/devHwClient/3-0": {
-            "EPICS_BASE": "/tmp-010-sumo-scan-all/base/3-14-12-2-1"
+        "/data/epics/support/soft/devHwClient/3-0": {
+            "EPICS_BASE": "/data/epics/base/3-14-12-2-1"
         }
     },
     "groups": {
         "ALARM": {
-            "/tmp-010-sumo-scan-all/support/alarm": [
+            "/data/epics/support/alarm": [
                 "3-7",
                 "3-8"
             ]
         },
         "APPS_GENERICTEMPLATE": {
-            "/tmp-010-sumo-scan-all/support/apps/genericTemplate": [
+            "/data/epics/support/apps/genericTemplate": [
                 "3-0"
             ]
         },
         "APPS_IOCWATCH": {
-            "/tmp-010-sumo-scan-all/support/apps/iocWatch": [
+            "/data/epics/support/apps/iocWatch": [
                 "3-0"
             ]
         },
         "ASYN": {
-            "/tmp-010-sumo-scan-all/support/asyn": [
+            "/data/epics/support/asyn": [
                 "4-17-2"
             ]
         },
         "BASE": {
-            "/tmp-010-sumo-scan-all/base": [
+            "/data/epics/base": [
                 "3-14-12-2-1"
             ]
         },
         "BESSYRULES": {
-            "/tmp-010-sumo-scan-all/support/bessyRules": [
+            "/data/epics/support/bessyRules": [
                 "2-5"
             ]
         },
         "BSPDEP_CPUBOARDINIT": {
-            "/tmp-010-sumo-scan-all/support/bspDep/cpuBoardInit": [
+            "/data/epics/support/bspDep/cpuBoardInit": [
                 "4-1"
             ]
         },
         "BSPDEP_TIMER": {
-            "/tmp-010-sumo-scan-all/support/bspDep/timer": [
+            "/data/epics/support/bspDep/timer": [
                 "6-2"
             ]
         },
         "BSPDEP_VMETAS": {
-            "/tmp-010-sumo-scan-all/support/bspDep/VMEtas": [
+            "/data/epics/support/bspDep/VMEtas": [
                 "2-0"
             ]
         },
         "CSM": {
-            "/tmp-010-sumo-scan-all/support/csm": [
+            "/data/epics/support/csm": [
                 "4-1"
             ]
         },
         "DEVIOCSTATS": {
-            "/tmp-010-sumo-scan-all/support/devIocStats": [
+            "/data/epics/support/devIocStats": [
                 "3-1-9-bessy3"
             ]
         },
         "EK": {
-            "/tmp-010-sumo-scan-all/support/ek": [
+            "/data/epics/support/ek": [
                 "2-2"
             ]
         },
         "GENSUB": {
-            "/tmp-010-sumo-scan-all/support/genSub": [
+            "/data/epics/support/genSub": [
                 "1-6-1"
             ]
         },
         "MCAN": {
-            "/tmp-010-sumo-scan-all/support/mcan": [
+            "/data/epics/support/mcan": [
                 "2-6-1",
                 "2-6-3-gp"
             ]
         },
         "MISC_DBC": {
-            "/tmp-010-sumo-scan-all/support/misc/dbc": [
+            "/data/epics/support/misc/dbc": [
                 "3-0"
             ]
         },
         "MISC_DEBUGMSG": {
-            "/tmp-010-sumo-scan-all/support/misc/debugmsg": [
+            "/data/epics/support/misc/debugmsg": [
                 "3-0"
             ]
         },
         "SEQ": {
-            "/tmp-010-sumo-scan-all/support/seq": [
+            "/data/epics/support/seq": [
                 "2-1-10"
             ]
         },
         "SOFT_DEVHWCLIENT": {
-            "/tmp-010-sumo-scan-all/support/soft/devHwClient": [
+            "/data/epics/support/soft/devHwClient": [
                 "3-0"
             ]
         }
     },
     "repos": {
-        "/tmp-010-sumo-scan-all/base/3-14-12-2-1": {
+        "/data/epics/base/3-14-12-2-1": {
             "darcs": {
                 "tag": "R3-14-12-2-1",
                 "url": "/data/repos/base/3-14-12-2-1"
             }
         },
-        "/tmp-010-sumo-scan-all/support/alarm/3-7": {
+        "/data/epics/support/alarm/3-7": {
             "darcs": {
                 "tag": "R3-7",
                 "url": "/data/repos/support/alarm"
             }
         },
-        "/tmp-010-sumo-scan-all/support/alarm/3-8": {
+        "/data/epics/support/alarm/3-8": {
             "darcs": {
-                "url": "/tmp-010-sumo-scan-all/support/alarm/3-8"
+                "url": "/data/epics/support/alarm/3-8"
             }
         },
-        "/tmp-010-sumo-scan-all/support/apps/genericTemplate/3-0": {
-            "path": "/tmp-010-sumo-scan-all/support/apps/genericTemplate/3-0"
+        "/data/epics/support/apps/genericTemplate/3-0": {
+            "path": "/data/epics/support/apps/genericTemplate/3-0"
         },
-        "/tmp-010-sumo-scan-all/support/apps/iocWatch/3-0": {
+        "/data/epics/support/apps/iocWatch/3-0": {
             "darcs": {
                 "tag": "R3-0",
                 "url": "/data/repos/support/apps/iocWatch"
             }
         },
-        "/tmp-010-sumo-scan-all/support/asyn/4-17-2": {
+        "/data/epics/support/asyn/4-17-2": {
             "darcs": {
                 "tag": "R4-17-2",
                 "url": "/data/repos/support/asyn"
             }
         },
-        "/tmp-010-sumo-scan-all/support/bessyRules/2-5": {
+        "/data/epics/support/bessyRules/2-5": {
             "darcs": {
                 "tag": "R2-5",
                 "url": "/data/repos/support/bessyRules"
             }
         },
-        "/tmp-010-sumo-scan-all/support/bspDep/VMEtas/2-0": {
+        "/data/epics/support/bspDep/VMEtas/2-0": {
             "darcs": {
                 "tag": "R2-0",
                 "url": "/data/repos/support/bspDep/VMEtas"
             }
         },
-        "/tmp-010-sumo-scan-all/support/bspDep/cpuBoardInit/4-1": {
+        "/data/epics/support/bspDep/cpuBoardInit/4-1": {
             "darcs": {
                 "tag": "R4-1",
                 "url": "/data/repos/support/bspDep/cpuBoardInit"
             }
         },
-        "/tmp-010-sumo-scan-all/support/bspDep/timer/6-2": {
+        "/data/epics/support/bspDep/timer/6-2": {
             "darcs": {
                 "tag": "R6-2",
-                "url": "/data/repos/support/bspDep/timer"
+                "url": "/data/epics/support/bspDep/timer/6-2"
             }
         },
-        "/tmp-010-sumo-scan-all/support/csm/4-1": {
+        "/data/epics/support/csm/4-1": {
             "darcs": {
                 "tag": "R4-1",
                 "url": "/data/repos/support/csm"
             }
         },
-        "/tmp-010-sumo-scan-all/support/devIocStats/3-1-9-bessy3": {
+        "/data/epics/support/devIocStats/3-1-9-bessy3": {
             "darcs": {
                 "tag": "R3-1-9-bessy3",
                 "url": "/data/repos/support/devIocStats"
             }
         },
-        "/tmp-010-sumo-scan-all/support/ek/2-2": {
+        "/data/epics/support/ek/2-2": {
             "darcs": {
-                "tag": "R2-2",
-                "url": "/data/repos/support/ek"
+                "url": "/data/epics/support/ek/2-2"
             }
         },
-        "/tmp-010-sumo-scan-all/support/genSub/1-6-1": {
+        "/data/epics/support/genSub/1-6-1": {
             "darcs": {
                 "tag": "R1-6-1",
                 "url": "/data/repos/support/genSub"
             }
         },
-        "/tmp-010-sumo-scan-all/support/mcan/2-6-1": {
+        "/data/epics/support/mcan/2-6-1": {
             "darcs": {
                 "tag": "R2-6-1",
                 "url": "/data/repos/support/mcan"
             }
         },
-        "/tmp-010-sumo-scan-all/support/mcan/2-6-3-gp": {
+        "/data/epics/support/mcan/2-6-3-gp": {
             "darcs": {
                 "tag": "R2-6-3-gp",
                 "url": "/data/repos/support/mcan"
             }
         },
-        "/tmp-010-sumo-scan-all/support/misc/dbc/3-0": {
+        "/data/epics/support/misc/dbc/3-0": {
             "darcs": {
                 "tag": "R3-0",
                 "url": "/data/repos/support/misc/dbc"
             }
         },
-        "/tmp-010-sumo-scan-all/support/misc/debugmsg/3-0": {
+        "/data/epics/support/misc/debugmsg/3-0": {
             "darcs": {
                 "tag": "R3-0",
                 "url": "/data/repos/support/misc/debugmsg"
             }
         },
-        "/tmp-010-sumo-scan-all/support/seq/2-1-10": {
+        "/data/epics/support/seq/2-1-10": {
             "darcs": {
                 "tag": "R2-1-10",
                 "url": "/data/repos/support/seq"
             }
         },
-        "/tmp-010-sumo-scan-all/support/soft/devHwClient/3-0": {
+        "/data/epics/support/soft/devHwClient/3-0": {
             "darcs": {
                 "tag": "R3-0",
                 "url": "/data/repos/support/soft/devHwClient"

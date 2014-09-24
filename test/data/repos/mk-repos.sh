@@ -1,7 +1,6 @@
 #!/bin/sh
 
-# creates darcs repositories. Note that the directories also contain binaries
-# that are ignored by darcs.
+# creates darcs repositories. 
 
 
 SRCDIR=`(cd ../src >/dev/null && pwd)`
@@ -44,8 +43,10 @@ mkdir -p support/apps
 
 MK_DARCS $SRCDIR/base/3-14-12-2-1 base/3-14-12-2-1 R3-14-12-2-1
 
-EPICSBASE=`pwd`/`ls base`
-SUPPORTDIR=`pwd`/support
+EPICSDIR=`dirname $PWD`/epics
+
+EPICSBASE=$EPICSDIR/base/3-14-12-2-1
+SUPPORTDIR=$EPICSDIR/support
 
 MK_DARCS $SRCDIR/support/alarm/3-7                support/alarm            R3-7
 MK_DARCS $SRCDIR/support/alarm/3-8                support/alarm            R3-8

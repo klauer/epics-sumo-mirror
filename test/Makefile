@@ -37,6 +37,11 @@ help:
 
 
 
+# sample epics support dir must be generated
+data/epics/stamp: data/repos/stamp
+	@echo "creating sample support dir..."
+	$(MAKE) -C $(@D)
+
 # sample repositories must be generated:
 data/repos/stamp: data/src/stamp
 	@echo "creating sample repositories..."
@@ -49,6 +54,8 @@ data/src/stamp:
 
 
 distclean: clean
+	@echo "cleanup epics directory..."
+	make -C data/epics clean
 	@echo "cleanup repo directory..."
 	make -C data/repos clean
 	@echo "cleanup src directory..."
@@ -71,7 +78,7 @@ target_module_tests: $(module_tests_tst)
 
 target_script_tests: $(script_tests_tst)
 
-target_shell_tests: data/repos/stamp $(shell_tests_tst)
+target_shell_tests: data/epics/stamp $(shell_tests_tst)
 
 module_tests= $(basename $(shell grep -l doctest ../sumo/*.py))
 module_tests_tst= $(addsuffix .tst, $(module_tests))
