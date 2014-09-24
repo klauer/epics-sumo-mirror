@@ -66,7 +66,7 @@ mkdir -p support/apps
 PREPARE_REPO_GENERIC base/3-14-12-2-1 base/3-14-12-2-1 3-14-12-2-1
 PREPARE_REPO support/alarm 3-7 
 PREPARE_REPO support/alarm 3-8 
-REPO_NEWTAG support/alarm 3-8 "mytag"
+REPO_NEWTAG support/alarm 3-8 "R3-8-modified"
 PREPARE_PATH support/apps/genericTemplate 3-0
 PREPARE_REPO support/apps/iocWatch 3-0
 PREPARE_REPO support/asyn 4-17-2

@@ -22,12 +22,12 @@ DEPS=tmp-020-sumo-db-convert/DEPS.DB
 BUILDS=076-sumo-build-new-0-BUILD.tmp
 
 echo -e "try with modules missing:\n"
-$PYTHON ../bin/sumo-build --db $DEPS --builddb $BUILDS try ALARM:TAGLESS-3-8 MCAN BSPDEP_TIMER BSPDEP_VMETAS MISC_DBC 
+$PYTHON ../bin/sumo-build --db $DEPS --builddb $BUILDS try ALARM:R3-8-modified MCAN BSPDEP_TIMER BSPDEP_VMETAS MISC_DBC 
 
 echo -e "\n----------------------------"
 echo -e "\ntry with complete modulelist:\n"
-$PYTHON ../bin/sumo-build --db $DEPS --builddb $BUILDS try BASE ALARM:TAGLESS-3-8 MCAN BSPDEP_TIMER BSPDEP_VMETAS MISC_DBC MISC_DEBUGMSG SOFT_DEVHWCLIENT
+$PYTHON ../bin/sumo-build --db $DEPS --builddb $BUILDS try BASE ALARM:R3-8-modified MCAN BSPDEP_TIMER BSPDEP_VMETAS MISC_DBC MISC_DEBUGMSG SOFT_DEVHWCLIENT
 
 echo -e "\n----------------------------"
 echo -e "\ntry with completely versioned modulelist:\n"
-$PYTHON ../bin/sumo-build --db $DEPS --builddb $BUILDS try BASE:R3-14-12-2-1 ALARM:TAGLESS-3-8 MCAN:R2-6-1 BSPDEP_TIMER:R6-2 BSPDEP_VMETAS:R2-0 MISC_DBC:R3-0 MISC_DEBUGMSG:R3-0 SOFT_DEVHWCLIENT:R3-0
+$PYTHON ../bin/sumo-build --db $DEPS --builddb $BUILDS try BASE:R3-14-12-2-1 ALARM:R3-8-modified MCAN:R2-6-1 BSPDEP_TIMER:R6-2 BSPDEP_VMETAS:R2-0 MISC_DBC:R3-0 MISC_DEBUGMSG:R3-0 SOFT_DEVHWCLIENT:R3-0

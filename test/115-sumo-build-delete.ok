@@ -17,7 +17,7 @@ SOFT_DEVHWCLIENT
 
 build directories:
 ./ALARM/R3-7+MYAPP-002
-./ALARM/TAGLESS-3-8+MYAPP-001
+./ALARM/R3-8-modified+MYAPP-001
 ./BASE/R3-14-12-2-1+BASE-001
 ./BSPDEP_VMETAS/R2-0+MYAPP-001
 ./SOFT_DEVHWCLIENT/R3-0+MYAPP-001
@@ -40,7 +40,7 @@ contents of BUILDS file:
             "BASE": "BASE-001"
         },
         "modules": {
-            "ALARM": "TAGLESS-3-8",
+            "ALARM": "R3-8-modified",
             "BASE": "R3-14-12-2-1",
             "BSPDEP_TIMER": "R6-2",
             "BSPDEP_VMETAS": "R2-0",
@@ -77,7 +77,7 @@ contents of BUILDS file:
 delete build 'MYAPP-002'
 
 build directories:
-./ALARM/TAGLESS-3-8+MYAPP-001
+./ALARM/R3-8-modified+MYAPP-001
 ./BASE/R3-14-12-2-1+BASE-001
 ./BSPDEP_VMETAS/R2-0+MYAPP-001
 ./SOFT_DEVHWCLIENT/R3-0+MYAPP-001
@@ -99,7 +99,7 @@ contents of BUILDS file:
             "BASE": "BASE-001"
         },
         "modules": {
-            "ALARM": "TAGLESS-3-8",
+            "ALARM": "R3-8-modified",
             "BASE": "R3-14-12-2-1",
             "BSPDEP_TIMER": "R6-2",
             "BSPDEP_VMETAS": "R2-0",

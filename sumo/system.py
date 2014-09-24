@@ -24,7 +24,7 @@ def assert_version(wanted_version):
 # basic system utilities
 # -----------------------------------------------
 
-def system(cmd, catch_stdout, catch_stderr, verbose, dry_run):
+def system_rc(cmd, catch_stdout, catch_stderr, verbose, dry_run):
     """execute a command.
 
     execute a command and return the programs output
@@ -36,7 +36,7 @@ def system(cmd, catch_stdout, catch_stderr, verbose, dry_run):
     if dry_run or verbose:
         print ">", cmd
         if dry_run:
-            return (None, None)
+            return (None, None, 0)
     if catch_stdout:
         stdout_par=subprocess.PIPE
     else:
@@ -52,15 +52,29 @@ def system(cmd, catch_stdout, catch_stderr, verbose, dry_run):
                         close_fds=True)
     (child_stdout, child_stderr) = p.communicate()
     # pylint: disable=E1101
-    # "Instance 'Popen'has no 'returncode' member
-    if p.returncode!=0:
-        if stderr_par is not None:
-            raise IOError(p.returncode,
+    #         "Instance 'Popen'has no 'returncode' member
+    return (child_stdout, child_stderr, p.returncode)
+
+def system(cmd, catch_stdout, catch_stderr, verbose, dry_run):
+    """execute a command with returncode.
+
+    execute a command and return the programs output
+    may raise:
+    IOError(errcode,stderr)
+    OSError(errno,strerr)
+    ValueError
+    """
+    (child_stdout, child_stderr, rc)= system_rc(
+                                            cmd,
+                                            catch_stdout, catch_stderr,
+                                            verbose, dry_run)
+    if rc!=0:
+        if catch_stderr:
+            raise IOError(rc,
                           "cmd \"%s\", errmsg \"%s\"" % (cmd,child_stderr))
         else:
-            raise IOError(p.returncode,
-                          "cmd \"%s\", rc %d" % (cmd, p.returncode))
-    # pylint: enable=E1101
+            raise IOError(rc,
+                          "cmd \"%s\", rc %d" % (cmd, rc))
     return (child_stdout, child_stderr)
 
 def _test():

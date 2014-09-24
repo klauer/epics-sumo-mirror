@@ -190,7 +190,7 @@ class Dependencies(sumo.JSON.Container):
 
         returns True if the spec was changed, False if it wasn't.
         """
-        if not isinstance(sourcespec, sumo.utils.SourceSpec):
+        if not isinstance(sourcespec, sumo.repos.SourceSpec):
             raise TypeError("error: sourcespec '%s' is of wrong "
                             "type" % repr(sourcespec))
         version_dict= self.datadict().setdefault(module_name,{})
@@ -199,7 +199,7 @@ class Dependencies(sumo.JSON.Container):
         if old_source is None:
             version["source"]= sourcespec.to_dict()
             return True
-        old_spec= sumo.utils.SourceSpec(old_source)
+        old_spec= sumo.repos.SourceSpec(old_source)
         return old_spec.change_source(sourcespec)
     def set_source_spec_by_tag(self, module_name, versionname, tag):
         """try to change sourcespec by providing a tag.
@@ -213,7 +213,7 @@ class Dependencies(sumo.JSON.Container):
             raise ValueError("error, %s:%s source specification is empty, "
                              "cannot simply change the tag." % \
                              (module_name, versionname))
-        old_spec= sumo.utils.SourceSpec(old_source)
+        old_spec= sumo.repos.SourceSpec(old_source)
         try:
             ret= old_spec.change_source_by_tag(tag)
         except ValueError, e:
@@ -223,14 +223,17 @@ class Dependencies(sumo.JSON.Container):
         return ret
 
     def set_source_arch(self, module_name, versionname, archs,
-                              repo_dict):
+                              sourcespec):
         """add a module with source spec and archs."""
+        if not isinstance(sourcespec, sumo.repos.SourceSpec):
+            raise TypeError("error: sourcespec '%s' is of wrong "
+                            "type" % repr(sourcespec))
         version_dict= self.datadict().setdefault(module_name,{})
         version= version_dict.setdefault(versionname, {})
         arch_dict= version.setdefault("archs", {})
         for arch in archs:
             arch_dict[arch]= True
-        version["source"]= repo_dict
+        version["source"]= sourcespec.to_dict()
     def add_dependency(self, modulename, versionname,
                        dep_modulename):
         """add dependency for a module:version.
@@ -359,7 +362,7 @@ class Dependencies(sumo.JSON.Container):
         (tp,val)= self.module_source_dict(modulename, versionname)
         if tp=="path":
             return val
-        elif tp=="darcs":
+        elif tp in sumo.repos.known_repos:
             return val["url"]
         else:
             raise AssertionError("unexpected source tag %s at %s:%s" % \

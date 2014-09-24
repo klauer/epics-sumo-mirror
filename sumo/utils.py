@@ -13,6 +13,7 @@ import os.path
 import re
 
 import sumo.JSON
+import sumo.repos
 
 __version__="1.9" #VERSION#
 
@@ -219,7 +220,7 @@ def split_treetag(path):
 def rev2key(rev):
     """convert a revision number to a comparable string.
 
-    This is needed to compare darcs revision tags.
+    This is needed to compare revision tags.
 
     Examples of valid revisions:
 
@@ -323,7 +324,7 @@ def tag2version(ver):
                 return ver
     return ver
 
-def is_standardpath(path, darcs_tag):
+def is_standardpath(path, revision_tag):
     """checks if path is complient to Bessy convention for support paths.
 
     Here are some examples:
@@ -337,125 +338,7 @@ def is_standardpath(path, darcs_tag):
     True
     """
     l= split_path(path)
-    return tag2version(l[1])==tag2version(darcs_tag)
-
-class SourceSpec(sumo.JSON.Container):
-    """hold the source specification.
-    """
-    def __init__(self, dict_= None):
-        """create the object."""
-        super(SourceSpec, self).__init__(dict_)
-    @classmethod
-    def from_source_spec(cls, elms):
-        """scan a source specification.
-
-        A sourcespec is a list of strings in the form ["path",PATH] or
-        ["darcs",URL] or ["darcs",URL,TAG].
-
-        Here are some examples:
-
-        >>> SourceSpec.from_source_spec(["path","ab"])
-        SourceSpec({'path': 'ab'})
-        >>> SourceSpec.from_source_spec(["path"])
-        Traceback (most recent call last):
-            ...
-        ValueError: invalid source spec: 'path'
-        >>> SourceSpec.from_source_spec(["path","a","b"])
-        Traceback (most recent call last):
-            ...
-        ValueError: invalid source spec: 'path a b'
-        >>> SourceSpec.from_source_spec(["darcs","abc"])
-        SourceSpec({'darcs': {'url': 'abc'}})
-        >>> SourceSpec.from_source_spec(["darcs","abc","R1-2"])
-        SourceSpec({'darcs': {'url': 'abc', 'tag': 'R1-2'}})
-        >>> SourceSpec.from_source_spec(["darcs"])
-        Traceback (most recent call last):
-            ...
-        ValueError: invalid source spec: 'darcs'
-        >>> SourceSpec.from_source_spec(["darcs","abc","R1-2","xy"])
-        Traceback (most recent call last):
-            ...
-        ValueError: invalid source spec: 'darcs abc R1-2 xy'
-        """
-        if elms[0]=="path":
-            if len(elms)!=2:
-                raise ValueError("invalid source spec: '%s'" % (" ".join(elms)))
-            return cls({"path": elms[1]})
-        if elms[0]=="darcs":
-            if len(elms)==2:
-                return cls({"darcs":{"url":elms[1]}})
-            elif len(elms)==3:
-                return cls({"darcs":{"url":elms[1], "tag":elms[2]}})
-            else:
-                raise ValueError("invalid source spec: '%s'" % (" ".join(elms)))
-        raise ValueError("invalid source spec: '%s'" % (" ".join(elms)))
-    def unpack(self):
-        """return the internal dict, the sourcetype and the parameters.
-        """
-        d= self.datadict()
-        type_= single_key(d)
-        return (d, type_, d[type_])
-    def copy(self, other):
-        """simply overwrite self with other."""
-        (self_d, self_type, _)= self.unpack()
-        (_, other_type, other_pars)= other.unpack()
-        del self_d[self_type]
-        # reconstruct other_pars if it is an object. For dicts this creates a
-        # second independent dict:
-        self_d[other_type]= other_pars.__class__(other_pars)
-    def change_source(self, other):
-        """set source spec by copying information from another object.
-
-        This can also handle wildcards.
-
-        returns True if the spec was changed, False if it wasn't.
-        """
-        (self_d, self_type, self_pars)   = self.unpack()
-        (_, other_type, other_pars)= other.unpack()
-
-        if self_type!=other_type:
-            self.copy(other)
-            return True
-
-        if isinstance(other_pars, str):
-            if other_pars=="*":
-                return False
-            self_d[self_type]= other_pars
-            return True
-        if isinstance(other_pars, dict):
-            original= dict(self_pars)
-            self_pars.clear()
-            changed= False
-            for (k,v) in other_pars.items():
-                if original.get(k)==v:
-                    self_pars[k]= v
-                    continue
-                if v=="*":
-                    v= original.get(k)
-                    if v is None:
-                        raise ValueError("cannot replace wildcard "
-                                         "for key %s" % k)
-                    self_pars[k]= v
-                    continue
-                self_pars[k]= v
-                changed= True
-            return changed
-        else:
-            raise AssertionError("unexpected type: %s" % repr(other_pars))
-    def change_source_by_tag(self, tag):
-        """change the source spec just by providing a tag.
-
-        returns True if the spec was changed, False if it wasn't.
-        """
-        (_, self_type, self_pars)   = self.unpack()
-        if self_type=="path":
-            raise ValueError("you cannot provide just a new tag for "
-                             "a source specification of type 'path'")
-        old= self_pars.get("tag")
-        if old==tag:
-            return False
-        self_pars["tag"]= tag
-        return True
+    return tag2version(l[1])==tag2version(revision_tag)
 
 # -----------------------------------------------
 # generic datastructure utilities
@@ -517,10 +400,6 @@ class RegexpMatcher(object):
     def __init__(self, regexes=None):
         r"""initialize from a list of regexes.
 
-        Here is a simple example:
-        >>> rx= RegexpPatcher(((r"a(\w+)",r"a(\1)"),(r"x+",r"x")))
-        >>> rx.apply("ab xx")
-        'a(b) x'
         """
         self._list= []
         if regexes is not None:
@@ -620,81 +499,6 @@ class Hints(object):
         # pylint: disable=W0212
         #         Access to a protected member
         return self.__class__._empty
-
-class PathSource(sumo.JSON.Container):
-    """the structure that holds the source information for a path.
-
-    Note:
-      *method "to_dict" used in sumo-scan*
-    """
-    def __init__(self, dict_= None):
-        """create the object."""
-        super(PathSource, self).__init__(dict_)
-    def add_path(self, path, source):
-        """add a simple path.
-
-        *used in sumo-scan*
-        """
-        self.datadict()[path]= {"path": source}
-    def add_darcs(self, path, url, tag= None):
-        """add darcs repository information.
-
-        *used in sumo-scan*
-        """
-        if tag is None:
-            self.datadict()[path]= {"darcs": {"url": url}}
-        else:
-            self.datadict()[path]= {"darcs": {"url": url, "tag": tag}}
-    def iterate(self):
-        """iterate on all items."""
-        return self.datadict().iteritems()
-    def filter_no_repos(self):
-        """return a new object where "path" enities are removed.
-
-        *used in sumo-scan*
-        """
-        new= self.__class__()
-        for path, data in self.iterate():
-            k= single_key(data)
-            if k!="path":
-                new.datadict()[path]= data
-        return new
-    def filter_no_tags(self):
-        """return a new object containing repos without tags.
-
-        *used in sumo-scan*
-        """
-        new= self.__class__()
-        for path, data in self.iterate():
-            k= single_key(data)
-            if k=="path":
-                continue
-            dict_= data[k]
-            if not dict_.has_key("tag"):
-                new.datadict()[path]= data
-        return new
-    def get_data(self, path):
-        """return data for a given path.
-
-        *used in sumo-db*
-
-        Returns a tuple:
-          (type, data)
-
-        For type=="darcs" the data is:
-          { "url": url, "tag": tag }
-
-        for type=="path" the data is:
-          path
-
-        type: repository type, e.g. "darcs"
-        url : the url where to get
-        tag : the repository tag, may be omitted
-
-        Note: raises KeyError if path doesn't exist
-        """
-        data= self.datadict()[path]
-        return single_key_item(data)
 
 def _test():
     """perform internal tests."""

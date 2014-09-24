@@ -30,6 +30,7 @@ import sumo.Config
 import sumo.utils as utils
 
 import sumo.makefile_scan
+import sumo.repos
 
 makefile_scan_pre= {}
 
@@ -320,26 +321,6 @@ def filter_exclude_deps(deps, regexp, trace):
 # repository scanning
 # -----------------------------------------------
 
-rx_darcs_ssh_url= re.compile(r'^([\w_\.]+)@([\w_\.]+):(.*)$')
-
-def darcs_dir_test(darcs_url, verbose, dry_run):
-    """try to list a remote path."""
-    m= rx_darcs_ssh_url.match(darcs_url)
-    if not m:
-        # a pure path
-        return os.path.exists(os.path.join(darcs_url, "_darcs"))
-    cmd= "ssh %s@%s 'ls %s'" % (m.group(1), m.group(2),
-                                os.path.join(m.group(3), "_darcs"))
-    try:
-        # catch_stdout= True : do not show stdout,
-        # catch_stderr= True : do not show stderr:
-        sumo.system.system(cmd,
-                     True, True, verbose, dry_run)
-    except IOError, _:
-        # probably no darcs repo found
-        return False
-    return True
-
 def all_paths_from_deps(deps):
     """get a collection of all paths from the dependency dict.
     """
@@ -350,49 +331,9 @@ def all_paths_from_deps(deps):
             all_paths.add(dep_path)
     return all_paths
 
-rx_darcs_repo= re.compile(r'^\s*Default Remote:\s*(.*)')
-
-def darcs_source_repo(directory, use_dir_test, verbose, dry_run):
-    """get the darcs source repository.
-
-    This function calls "darcs show repo". If there is a "Default
-    repository" it is returned.
-    """
-    if not os.path.exists(os.path.join(directory,"_darcs")):
-        return
-    try:
-        (reply,_)= sumo.system.system("cd %s && darcs show repo" % directory,
-                                True, False, verbose, dry_run)
-    except IOError, _:
-        # probably no darcs repo found
-        return
-    for line in reply.splitlines():
-        m= rx_darcs_repo.match(line)
-        if m:
-            url= m.group(1).strip()
-            if use_dir_test:
-                if not darcs_dir_test(url, verbose, dry_run):
-                    continue
-            return url
-    return directory
-
-def darcs_last_tag(directory, verbose, dry_run):
-    """Returns the topmost darcs tag.
-    """
-    try:
-        (reply,_)= sumo.system.system("cd %s && darcs show tags" % directory,
-                                True, False,
-                                verbose, dry_run)
-    except IOError, _:
-        # probably no darcs repo found
-        return
-    if not reply:
-        # no tags found
-        return
-    return reply.splitlines()[0].strip()
-
-def repo_info(deps, progress, use_dir_test,
+def repo_info(deps, progress,
               source_patches,
+              ignore_changes_matcher,
               hints,
               verbose, dry_run):
     # pylint: disable=R0913
@@ -401,45 +342,44 @@ def repo_info(deps, progress, use_dir_test,
     #                          Too many local variables
     # pylint: disable=R0912
     #                          Too many branches
-    """return a PathSource object with repository informations.
+    """return a dict mapping paths to repository informations.
     """
-    patcher= utils.RegexpPatcher()
+    repo_hints= {}
+    if ignore_changes_matcher:
+        repo_hints["ignore changes"]= \
+                utils.RegexpMatcher(ignore_changes_matcher)
     if source_patches:
+        patcher= utils.RegexpPatcher()
         for p in source_patches:
             patcher.add(eval(p))
+        repo_hints["dir patcher"]= patcher
+        repo_hints["url patcher"]= patcher
+    repo_hints_path= dict(repo_hints)
+    repo_hints_path["force path"]= True
+    repo_hints_local= dict(repo_hints)
+    repo_hints_local["force local"]= True
     path_set= all_paths_from_deps(deps)
-    new= utils.PathSource()
+    new= {}
     cnt_max= 50
     cnt= 0
     if progress:
-        utils.show_progress(cnt, cnt_max, "paths searched for darcs")
+        utils.show_progress(cnt, cnt_max, "paths searched for repositories")
     for path in path_set:
         if progress:
             cnt= utils.show_progress(cnt, cnt_max)
         flagdict= hints.flags(path)
+
+        hints_param= repo_hints
         if flagdict.get("path"):
-            new.add_path(path, patcher.apply(path))
-            continue
-        if not os.path.exists(os.path.join(path,"_darcs")):
-            new.add_path(path, patcher.apply(path))
-            continue
-        # try to find source repository:
-        src= darcs_source_repo(path, use_dir_test, verbose, dry_run)
-        if not src:
-            new.add_path(path, patcher.apply(path))
-            continue
-        #src_patched= patcher.apply(src)
-        if flagdict.get("tagless"):
-            new.add_darcs(path, patcher.apply(path))
-            continue
-        tag= darcs_last_tag(path, verbose, dry_run)
-        if not tag:
-            new.add_darcs(path, patcher.apply(path))
-            continue
-        if not utils.is_standardpath(path, tag):
-            new.add_darcs(path, patcher.apply(path))
-            continue
-        new.add_darcs(path, patcher.apply(src), tag)
+            hints_param= repo_hints_path
+        elif flagdict.get("tagless"):
+            hints_param= repo_hints_local
+
+        repo_obj= sumo.repos.repo_from_dir(path, hints_param,
+                                           verbose, dry_run)
+
+        new[path]= repo_obj.source_spec()
+
     if progress:
         sys.stderr.write("\n")
     return new
@@ -491,8 +431,8 @@ def process(options, commands):
     config= sumo.Config.ConfigFile.from_optionlist(
                 CONFIG_NAME,
                 ( "#include",
-                  "darcs_dirtest", "dir", "exclude_deps", "exclude_path",
-                  "group_basedir", "hint", "ignore_name", "missing_repo",
+                  "dir", "exclude_deps", "exclude_path", "group_basedir",
+                  "hint", "ignore_changes", "ignore_name", "missing_repo",
                   "missing_tag", "progress", "source_patch", "verbose"))
     if (not os.path.exists(CONFIG_NAME)) or options.no_default_config:
         config.disable_default()
@@ -537,11 +477,12 @@ def process(options, commands):
         if not options.group_basedir:
             sys.exit("error, option -g is mandatory here")
 
-    options.dir          = utils.opt_join(options.dir)
-    options.ignore_name  = utils.opt_join(options.ignore_name)
-    options.group_basedir= utils.opt_join(options.group_basedir)
-    options.exclude_path = utils.opt_join(options.exclude_path)
-    options.mergeoption  = utils.opt_join(options.mergeoption)
+    options.dir            = utils.opt_join(options.dir)
+    options.exclude_path   = utils.opt_join(options.exclude_path)
+    options.group_basedir  = utils.opt_join(options.group_basedir)
+    options.ignore_changes = utils.opt_join(options.ignore_changes)
+    options.ignore_name    = utils.opt_join(options.ignore_name)
+    options.mergeoption    = utils.opt_join(options.mergeoption)
 
     if options.dir:
         (deps, archs)= get_configuration(options)
@@ -567,18 +508,30 @@ def process(options, commands):
     if "groups" in commands:
         bag["groups"]= groups_from_deps(deps, options.group_basedir)
     if "repos" in commands:
-        # a utils.PathSource object:
         repo_data= repo_info(deps,
                              options.progress,
-                             options.darcs_dirtest,
                              options.source_patch,
+                             options.ignore_changes,
                              hints,
                              options.verbose, options.dry_run)
-        bag["repos"]= repo_data.to_dict()
+        bag["repos"]= repo_data
         if options.missing_repo:
-            bag["missing-repo"]= repo_data.filter_no_repos()
+            new= {}
+            for (p, s) in repo_data.items():
+                sspec= sumo.repos.SourceSpec(s)
+                if sspec.sourcetype=="path":
+                    continue
+                new[p]= s
+            bag["missing-repo"]= new
         if options.missing_tag:
-            bag["missing-tag"]= repo_data.filter_no_tags()
+            new= {}
+            for (p, s) in repo_data.items():
+                sspec= sumo.repos.SourceSpec(s)
+                if sspec.sourcetype=="path":
+                    continue
+                if sspec.tag is None:
+                    new[p]= s
+            bag["missing-tag"]= new
     sumo.JSON.dump(bag)
 
 # pylint: enable=R0912
@@ -747,6 +700,22 @@ def main():
                            "This option value is stored in the CONFIGFILE.",
                       metavar="REGEXP"
                       )
+    parser.add_option("--ignore-changes",
+                      action="append",
+                      type="string",
+                      help="Ignore all uncomitted changes in files that "
+                           "match the REGEXP. Usually uncomitted changes "
+                           "mean that we cannot use the repository as such "
+                           "but must copy the whole directory (source type "
+                           "is always 'path'). A common application for "
+                           "this option is to ignore changes in "
+                           "'configure/RELEASE'. "
+                           "You can specify more than one of these by "
+                           "repeating this option or by joining values in "
+                           "a single string separated by spaces. "
+                           "This option value is stored in the CONFIGFILE.",
+                      metavar="REGEXP"
+                      )
     parser.add_option("-P", "--source-patch",
                       action="append",
                       help="Specify a source PATCHEXPRESSION. Such an "
@@ -768,14 +737,6 @@ def main():
                       "You can specify more than one hint. "
                       "This option value is stored in the CONFIGFILE.",
                       metavar="HINT"
-                      )
-    parser.add_option("--darcs-dirtest",
-                      action="store_true",
-                      help="Test if a found remote darcs repository "
-                           "has a '_darcs' directory in it. This may "
-                           "help detect invalid default repository "
-                           "entries. "
-                           "This option value is stored in the CONFIGFILE.",
                       )
     parser.add_option("--missing-tag",
                       action="store_true",

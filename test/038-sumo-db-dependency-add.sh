@@ -20,7 +20,7 @@ echo -e "\n-> Test sumo-db replaceversion." >&2
 
 cp tmp-020-sumo-db-convert/DEPS.DB $ME-DEPS.tmp
 
-$PYTHON ../bin/sumo-db --db $ME-DEPS.tmp dependency-add ALARM:TAGLESS-3-8 CSM
+$PYTHON ../bin/sumo-db --db $ME-DEPS.tmp dependency-add ALARM:R3-8-modified CSM
 echo "DB file:"
 cat $ME-DEPS.tmp | sed -e s#$PWD_NICE##
 

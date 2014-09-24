@@ -22,6 +22,7 @@ import sumo.utils as utils
 import sumo.Config
 import sumo.ModuleSpec
 import sumo.Databases
+import sumo.repos
 
 # version of the program:
 my_version= "1.9" #VERSION#
@@ -472,23 +473,10 @@ def create_source(db, modulename, versionname,
     # pylint: disable=R0913
     #                          Too many arguments
     (sourcetype, sourcedata)= db.module_source_dict(modulename, versionname)
-    if sourcetype=="path":
-        #cmd= "scp -r -p \"%s\" %s" % (url, destdir)
-        # join(url,"") effectively adds a "/" at the end of the path. This is
-        # needed in order for rsync to work as intended here.
-        cmd= "rsync -a -u -L --chmod=Fu+w \"%s\" %s" % \
-             (os.path.join(sourcedata,""), destdir)
-        sumo.system.system(cmd, False, False, verbose, dry_run)
-    elif sourcetype=="darcs":
-        cmd_l= ["darcs", "get"]
-        if sourcedata.has_key("tag"):
-            cmd_l.extend(["-t", r"'^%s\s*$'" % sourcedata["tag"]])
-        cmd_l.append(sourcedata["url"])
-        cmd_l.append(destdir)
-        cmd= " ".join(cmd_l)
-        sumo.system.system(cmd, False, False, verbose, dry_run)
-    else:
-        raise AssertionError("unsupported source type %s" % sourcetype)
+    sumo.repos.checkout(sourcetype,
+                        sourcedata,
+                        destdir,
+                        verbose, dry_run)
 
 def delete_module(build_tag, modulename, versionname,
                   must_exist,

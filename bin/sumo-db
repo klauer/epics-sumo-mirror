@@ -24,6 +24,7 @@ import sumo.utils as utils
 import sumo.Config
 import sumo.ModuleSpec
 import sumo.Databases
+import sumo.repos
 
 # version of the program:
 my_version= "1.9" #VERSION#
@@ -99,22 +100,22 @@ def create_app_data(deps, repoinfo, groups):
         subdir= values[0]
         versionedmodule_path= os.path.join(root_path, subdir)
         try:
-            (repotype, repodata)= repoinfo.get_data(
-                                           versionedmodule_path)
+            r_dict= repoinfo.get[versionedmodule_path]
         except KeyError, _:
             # shouldn't happen, but we just print a warning in this
             # case:
             errmsg("no source data: %s" % versionedmodule_path)
             continue
-        if repotype=="path":
+
+        sourcespec_obj= sumo.repos.SourceSpec(r_dict)
+        if sourcespec_obj.sourcetype()=="path":
             versionname= "PATH-%s" % subdir
-        elif repotype=="darcs":
-            if not repodata.has_key("tag"):
+        else:
+            tag= sourcespec_obj.tag()
+            if tag is None:
                 versionname= "TAGLESS-%s" % subdir
             else:
-                versionname= repodata["tag"]
-        else:
-            raise AssertionError("unknown repotype: "+repotype)
+                versionname= tag
         specs_by_path[versionedmodule_path]= (module_name,versionname)
 
     for (aliasname, path) in deps[app_path].items():
@@ -164,15 +165,15 @@ def create_database(deps, repoinfo, groups, archs, source_patches):
                 versionedmodule_path= os.path.join(root_path, subdir)
                 # get the repository data:
                 try:
-                    (repotype, repodata)= repoinfo.get_data(
-                                                   versionedmodule_path)
+                    r_dict= repoinfo.get(versionedmodule_path)
                 except KeyError, _:
                     # shouldn't happen, but we just print a warning in this
                     # case:
                     errmsg("no source data: %s" % versionedmodule_path)
                     continue
 
-                if repotype=="path":
+                src_sourcespec= sumo.repos.SourceSpec(r_dict)
+                if src_sourcespec.sourcetype()=="path":
                     # the source is a directory path, not a repository. We
                     # generate the unique versionname:
                     if subdir.startswith("PATH-"):
@@ -184,10 +185,13 @@ def create_database(deps, repoinfo, groups, archs, source_patches):
                     else:
                         versionname= "PATH-%s" % subdir
                     # repodata is just the path in this case:
-                    repodata= patcher.apply(repodata)
-                elif repotype=="darcs":
-                    if not repodata.has_key("tag"):
-                        # the source is a darcs repository but has no tag. We
+                    new_sourcespec= sumo.repos.SourceSpec.from_param(
+                            "path",
+                            path= patcher.apply(src_sourcespec.path()))
+                if src_sourcespec.is_repo():
+                    tag= src_sourcespec.tag()
+                    if tag is None:
+                        # the source is a repository but has no tag. We
                         # generate a unique versionname:
                         if subdir.startswith("TAGLESS-"):
                             # Try to handle a subdir that was created by this
@@ -201,14 +205,17 @@ def create_database(deps, repoinfo, groups, archs, source_patches):
                         # know in what state the working copy repository is, we
                         # have to take this as a source instead of the central
                         # repository:
-                        repodata= {"url": patcher.apply(versionedmodule_path)}
+                        new_sourcespec= sumo.repos.SourceSpec.from_param(
+                                src_sourcespec.sourcetype(),
+                                url= patcher.apply(versionedmodule_path))
                     else:
-                        # make a copy of repodata so we can modify it:
-                        repodata= dict(repodata)
-                        repodata["url"]= patcher.apply(repodata["url"])
+                        new_sourcespec= sumo.repos.SourceSpec.from_param(
+                                src_sourcespec.sourcetype(),
+                                url= patcher.apply(src_sourcespec.url()),
+                                tag= tag)
                         # the source is a darcs repository with a tag. We use
                         # the tag as unique versionname:
-                        versionname= repodata["tag"]
+                        versionname= new_sourcespec.tag()
                 module_archs= archs.get(versionedmodule_path, [])
                 if not module_archs:
                     #  module_archs list is empty:
@@ -216,7 +223,7 @@ def create_database(deps, repoinfo, groups, archs, source_patches):
                            versionedmodule_path)
                 db.set_source_arch(module_name, versionname,
                                    module_archs,
-                                   {repotype: repodata})
+                                   new_sourcespec)
 
                 _path2namevname[versionedmodule_path]= \
                         (module_name,versionname)
@@ -363,7 +370,7 @@ def process(options, commands):
         filename= commands[1]
         scandata= sumo.JSON.loadfile(filename)
         deps= scandata["dependencies"]
-        repoinfo= utils.PathSource(scandata["repos"])
+        repoinfo= scandata["repos"]
         groups= scandata["groups"]
         archs= scandata["archs"]
         (buildcache, db)= create_database(deps, repoinfo, groups, archs,
@@ -400,7 +407,7 @@ def process(options, commands):
         filename= commands[1]
         scandata= sumo.JSON.loadfile(filename)
         deps= scandata["dependencies"]
-        repoinfo= utils.PathSource(scandata["repos"])
+        repoinfo= scandata["repos"]
         groups= scandata["groups"]
         struc= create_app_data(deps, repoinfo, groups)
         sumo.JSON.dump(struc)
@@ -581,7 +588,7 @@ def process(options, commands):
         else:
             try:
                 source_spec_obj= \
-                        utils.SourceSpec.from_source_spec(sourcespec)
+                    sumo.repos.SourceSpec.from_string_sourcespec(sourcespec)
             except ValueError, e:
                 sys.exit("Error: "+str(e))
             changed= db.set_source_spec(modulename, newversion,

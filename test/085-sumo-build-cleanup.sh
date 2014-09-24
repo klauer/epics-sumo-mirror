@@ -35,7 +35,7 @@ cd $TESTDIR > /dev/null
 
 echo -e "call sumo-build new, let the command fail on purpose..."
 
-$PYTHON ../../bin/sumo-build --arch vxWorks-68040 --arch vxWorks-ppc603 --db DEPS.DB --builddb BUILDS.DB --buildtag 001 --no-make new BASE:R3-14-12-2-1 ALARM:TAGLESS-3-8 MCAN:R2-6-3-gp BSPDEP_TIMER:R6-2 BSPDEP_VMETAS:R2-0 MISC_DBC:R3-0 MISC_DEBUGMSG:R3-0 SOFT_DEVHWCLIENT:R3-0 2>&1 | tail -n 1 | sed -e s#$PWD_NICE##
+$PYTHON ../../bin/sumo-build --arch vxWorks-68040 --arch vxWorks-ppc603 --db DEPS.DB --builddb BUILDS.DB --buildtag 001 --no-make new BASE:R3-14-12-2-1 ALARM:R3-8-modified MCAN:R2-6-3-gp BSPDEP_TIMER:R6-2 BSPDEP_VMETAS:R2-0 MISC_DBC:R3-0 MISC_DEBUGMSG:R3-0 SOFT_DEVHWCLIENT:R3-0 2>&1 | tail -n 1 | sed -e s#$PWD_NICE##
 
 echo -e "\ndirectory tree (without darcs, maxdepth 2)"
 find . -maxdepth 3 | egrep -v '_darcs|\.tmp|\.bak|\.coverage'

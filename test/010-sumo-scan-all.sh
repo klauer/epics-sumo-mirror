@@ -29,6 +29,6 @@ fi
 
 #echo $PYTHON ../bin/sumo-scan -d $EXAMPLEDIR -g $EXAMPLEDIR -N TOP -N SUPPORT -N EPICS_SUPPORT -N TEMPLATE_TOP -t all 
 #$PYTHON ../bin/sumo-scan -d $EXAMPLEDIR -g $EXAMPLEDIR -N TOP -N SUPPORT -N EPICS_SUPPORT -N TEMPLATE_TOP -t all 
-$PYTHON ../bin/sumo-scan --darcs-dirtest -d "$SUPPORTDIR/base $SUPPORTDIR/support" -g "$SUPPORTDIR/support $SUPPORTDIR" -N TOP -N SUPPORT -N EPICS_SUPPORT -N TEMPLATE_TOP all > $EXAMPLEDIR/SCAN
+$PYTHON ../bin/sumo-scan -d "$SUPPORTDIR/base $SUPPORTDIR/support" -g "$SUPPORTDIR/support $SUPPORTDIR" -N TOP -N SUPPORT -N EPICS_SUPPORT -N TEMPLATE_TOP all > $EXAMPLEDIR/SCAN
 
 cat $EXAMPLEDIR/SCAN | sed -e "s#`pwd -P`##;s#`pwd`##"

@@ -109,5 +109,6 @@ ifeq "$(CREATE_TESTS)" "yes"
 endif
 
 # how to perform a shell test:
-$(shell_tests_tst): %.tst: %.sh %.out %.ok
+$(shell_tests_tst): %.tst: %.sh %.ok %.out
 	diff $(wordlist 2, 3, $+) 
+

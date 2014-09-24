@@ -26,7 +26,7 @@ DB file:
                 }
             }
         },
-        "TAGLESS-3-8": {
+        "R3-8-modified": {
             "aliases": {
                 "BASE": "EPICS_BASE",
                 "BSPDEP_TIMER": "TIMER",
@@ -46,6 +46,7 @@ DB file:
             ],
             "source": {
                 "darcs": {
+                    "tag": "R3-8-modified",
                     "url": "/data/epics/support/alarm/3-8"
                 }
             }
@@ -470,7 +471,7 @@ SCANDB file:
                 "R3-0": "scanned"
             }
         },
-        "TAGLESS-3-8": {
+        "R3-8-modified": {
             "BASE": {
                 "R3-14-12-2-1": "scanned"
             },
@@ -565,7 +566,7 @@ SCANDB file:
     "MCAN": {
         "R2-6-1": {
             "ALARM": {
-                "TAGLESS-3-8": "scanned"
+                "R3-8-modified": "scanned"
             },
             "BASE": {
                 "R3-14-12-2-1": "scanned"

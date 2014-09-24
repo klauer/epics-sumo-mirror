@@ -5,7 +5,7 @@ sumo-build show MYAPP-001
             "BASE": "BASE-001"
         },
         "modules": {
-            "ALARM": "TAGLESS-3-8",
+            "ALARM": "R3-8-modified",
             "BASE": "R3-14-12-2-1",
             "BSPDEP_TIMER": "R6-2",
             "BSPDEP_VMETAS": "R2-0",
