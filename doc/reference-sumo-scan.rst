@@ -126,8 +126,8 @@ Phase III, repository scan
 ++++++++++++++++++++++++++
 
 Usually your support modules are managed by a version control system. Currently
-the program only supports *darcs* but in the near future support for mercurial
-and git will be added. 
+the program supports *darcs* and *mercurial* but in the near future support 
+git will be added. 
 
 In each module the program looks for the data of a supported version control
 system. If no version control data is found, the program marks the source of

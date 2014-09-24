@@ -31,4 +31,4 @@ fi
 #$PYTHON ../bin/sumo-scan -d $EXAMPLEDIR -g $EXAMPLEDIR -N TOP -N SUPPORT -N EPICS_SUPPORT -N TEMPLATE_TOP -t all 
 $PYTHON ../bin/sumo-scan -d "$SUPPORTDIR/base $SUPPORTDIR/support" -g "$SUPPORTDIR/support $SUPPORTDIR" -N TOP -N SUPPORT -N EPICS_SUPPORT -N TEMPLATE_TOP all > $EXAMPLEDIR/SCAN
 
-cat $EXAMPLEDIR/SCAN | sed -e "s#`pwd -P`##;s#`pwd`##"
+cat $EXAMPLEDIR/SCAN | sed -e "s#`pwd -P`##;s#`pwd`##;s#\"[0-9a-f]\{12\}\"#\"ABCDABCDABCD\"#"

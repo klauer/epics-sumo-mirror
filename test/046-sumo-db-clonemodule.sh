@@ -23,5 +23,5 @@ cp tmp-020-sumo-db-convert/DEPS.DB $ME-DEPS.tmp
 $PYTHON ../bin/sumo-db --db $ME-DEPS.tmp clonemodule ALARM ALARM3-8 R3-8-modified 
 $PYTHON ../bin/sumo-db --db $ME-DEPS.tmp clonemodule MCAN MCAN-COPY
 echo "DB file:"
-cat $ME-DEPS.tmp | sed -e s#$PWD_NICE##
+cat $ME-DEPS.tmp | sed -e "s#$PWD_NICE##;s#\"[0-9a-f]\{12\}\"#\"ABCDABCDABCD\"#"
 

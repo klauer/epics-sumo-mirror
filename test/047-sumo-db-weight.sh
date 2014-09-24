@@ -22,4 +22,4 @@ cp tmp-020-sumo-db-convert/DEPS.DB $ME-DEPS.tmp
 
 $PYTHON ../bin/sumo-db --db $ME-DEPS.tmp -- weight -1 MCAN:R2-6-1 MISC_DBC
 $PYTHON ../bin/sumo-db --db $ME-DEPS.tmp weight 1 ALARM
-cat $ME-DEPS.tmp | sed -e s#$PWD_NICE##
+cat $ME-DEPS.tmp | sed -e "s#$PWD_NICE##;s#\"[0-9a-f]\{12\}\"#\"ABCDABCDABCD\"#"

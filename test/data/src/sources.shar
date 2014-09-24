@@ -3,8 +3,8 @@
 # To extract the files from this archive, save it to some FILE, remove
 # everything before the '#!/bin/sh' line above, then type 'sh FILE'.
 #
-lock_dir=_sh21239
-# Made on 2014-09-18 16:03 CEST by <pfeiffer@tarn.acc.bessy.de>.
+lock_dir=_sh07136
+# Made on 2014-09-18 16:21 CEST by <pfeiffer@tarn.acc.bessy.de>.
 # Source directory was '/net/aragon/srv/projects/ctl/pfeiffer/csr-home/project/sumo/test/data/src'.
 #
 # Existing files will *not* be overwritten, unless '-c' is specified.
@@ -420,6 +420,21 @@ lock_dir=_sh21239
 #    315 -rw-r--r-- support/bspDep/VMEtas/2-0/configure/Makefile
 #    133 -rw-r--r-- support/bspDep/VMEtas/2-0/configure/RULES
 #    453 -rw-r--r-- support/bspDep/VMEtas/2-0/Makefile
+#     25 -rw-r--r-- support/bspDep/VMEtas/2-1/LICENSE
+#    192 -rw-r--r-- support/bspDep/VMEtas/2-1/configure/O.RTEMS-mvme5500/Makefile
+#    956 -rw-r--r-- support/bspDep/VMEtas/2-1/configure/CONFIG_APP
+#    190 -rw-r--r-- support/bspDep/VMEtas/2-1/configure/O.vxWorks-68040/Makefile
+#    494 -rw-r--r-- support/bspDep/VMEtas/2-1/configure/CONFIG
+#     53 -rw-r--r-- support/bspDep/VMEtas/2-1/configure/RULES.ioc
+#     54 -rw-r--r-- support/bspDep/VMEtas/2-1/configure/RULES_TOP
+#    192 -rw-r--r-- support/bspDep/VMEtas/2-1/configure/O.vxWorks-ppc603/Makefile
+#    182 -rw-r--r-- support/bspDep/VMEtas/2-1/configure/O.linux-x86/Makefile
+#    898 -rw-r--r-- support/bspDep/VMEtas/2-1/configure/RELEASE
+#    192 -rw-r--r-- support/bspDep/VMEtas/2-1/configure/O.RTEMS-mvme2100/Makefile
+#     55 -rw-r--r-- support/bspDep/VMEtas/2-1/configure/RULES_DIRS
+#    315 -rw-r--r-- support/bspDep/VMEtas/2-1/configure/Makefile
+#    133 -rw-r--r-- support/bspDep/VMEtas/2-1/configure/RULES
+#    453 -rw-r--r-- support/bspDep/VMEtas/2-1/Makefile
 #     25 -rw-r--r-- support/bessyRules/2-5/LICENSE
 #      1 -rw-r--r-- support/bessyRules/2-5/configure/O.Common/created_vars.mk
 #     89 -rw-r--r-- support/bessyRules/2-5/configure/O.Common/.vdct
@@ -20048,6 +20063,649 @@ SHAR_EOF
 else
 test `LC_ALL=C wc -c < 'support/bspDep/VMEtas/2-0/Makefile'` -ne 453 && \
   ${echo} "restoration warning:  size of 'support/bspDep/VMEtas/2-0/Makefile' is not 453"
+  fi
+fi
+# ============= support/bspDep/VMEtas/2-1/LICENSE ==============
+if test ! -d 'support/bspDep/VMEtas/2-1'; then
+  mkdir 'support/bspDep/VMEtas/2-1'
+if test $? -eq 0
+then ${echo} "x - created directory support/bspDep/VMEtas/2-1."
+else ${echo} "x - failed to create directory support/bspDep/VMEtas/2-1."
+     exit 1
+fi
+fi
+if test -n "${keep_file}" && test -f 'support/bspDep/VMEtas/2-1/LICENSE'
+then
+${echo} "x - SKIPPING support/bspDep/VMEtas/2-1/LICENSE (file already exists)"
+
+else
+${echo} "x - extracting support/bspDep/VMEtas/2-1/LICENSE (text)"
+  sed 's/^X//' << 'SHAR_EOF' > 'support/bspDep/VMEtas/2-1/LICENSE' &&
+This is the BLA license.
+SHAR_EOF
+  (set 20 14 09 12 14 00 00 'support/bspDep/VMEtas/2-1/LICENSE'
+   eval "${shar_touch}") && \
+  chmod 0644 'support/bspDep/VMEtas/2-1/LICENSE'
+if test $? -ne 0
+then ${echo} "restore of support/bspDep/VMEtas/2-1/LICENSE failed"
+fi
+  if ${md5check}
+  then (
+       ${MD5SUM} -c >/dev/null 2>&1 || ${echo} 'support/bspDep/VMEtas/2-1/LICENSE': 'MD5 check failed'
+       ) << \SHAR_EOF
+dba94118eb3ba7843e2f87173e3e80e3  support/bspDep/VMEtas/2-1/LICENSE
+SHAR_EOF
+
+else
+test `LC_ALL=C wc -c < 'support/bspDep/VMEtas/2-1/LICENSE'` -ne 25 && \
+  ${echo} "restoration warning:  size of 'support/bspDep/VMEtas/2-1/LICENSE' is not 25"
+  fi
+fi
+# ============= support/bspDep/VMEtas/2-1/configure/O.RTEMS-mvme5500/Makefile ==============
+if test ! -d 'support/bspDep/VMEtas/2-1'; then
+  mkdir 'support/bspDep/VMEtas/2-1'
+if test $? -eq 0
+then ${echo} "x - created directory support/bspDep/VMEtas/2-1."
+else ${echo} "x - failed to create directory support/bspDep/VMEtas/2-1."
+     exit 1
+fi
+fi
+if test ! -d 'support/bspDep/VMEtas/2-1/configure'; then
+  mkdir 'support/bspDep/VMEtas/2-1/configure'
+if test $? -eq 0
+then ${echo} "x - created directory support/bspDep/VMEtas/2-1/configure."
+else ${echo} "x - failed to create directory support/bspDep/VMEtas/2-1/configure."
+     exit 1
+fi
+fi
+if test ! -d 'support/bspDep/VMEtas/2-1/configure/O.RTEMS-mvme5500'; then
+  mkdir 'support/bspDep/VMEtas/2-1/configure/O.RTEMS-mvme5500'
+if test $? -eq 0
+then ${echo} "x - created directory support/bspDep/VMEtas/2-1/configure/O.RTEMS-mvme5500."
+else ${echo} "x - failed to create directory support/bspDep/VMEtas/2-1/configure/O.RTEMS-mvme5500."
+     exit 1
+fi
+fi
+if test -n "${keep_file}" && test -f 'support/bspDep/VMEtas/2-1/configure/O.RTEMS-mvme5500/Makefile'
+then
+${echo} "x - SKIPPING support/bspDep/VMEtas/2-1/configure/O.RTEMS-mvme5500/Makefile (file already exists)"
+
+else
+${echo} "x - extracting support/bspDep/VMEtas/2-1/configure/O.RTEMS-mvme5500/Makefile (text)"
+  sed 's/^X//' << 'SHAR_EOF' > 'support/bspDep/VMEtas/2-1/configure/O.RTEMS-mvme5500/Makefile' &&
+#This Makefile created by makeMakefile.pl
+X
+X
+all :
+X	$(MAKE) -f ../Makefile TOP=../.. T_A=RTEMS-mvme5500  $@
+X
+X.DEFAULT: force
+X	$(MAKE) -f ../Makefile TOP=../.. T_A=RTEMS-mvme5500  $@
+X
+force:  ;
+SHAR_EOF
+  (set 20 11 11 21 14 55 17 'support/bspDep/VMEtas/2-1/configure/O.RTEMS-mvme5500/Makefile'
+   eval "${shar_touch}") && \
+  chmod 0644 'support/bspDep/VMEtas/2-1/configure/O.RTEMS-mvme5500/Makefile'
+if test $? -ne 0
+then ${echo} "restore of support/bspDep/VMEtas/2-1/configure/O.RTEMS-mvme5500/Makefile failed"
+fi
+  if ${md5check}
+  then (
+       ${MD5SUM} -c >/dev/null 2>&1 || ${echo} 'support/bspDep/VMEtas/2-1/configure/O.RTEMS-mvme5500/Makefile': 'MD5 check failed'
+       ) << \SHAR_EOF
+dfc9386f6740dbea86d571eb35941368  support/bspDep/VMEtas/2-1/configure/O.RTEMS-mvme5500/Makefile
+SHAR_EOF
+
+else
+test `LC_ALL=C wc -c < 'support/bspDep/VMEtas/2-1/configure/O.RTEMS-mvme5500/Makefile'` -ne 192 && \
+  ${echo} "restoration warning:  size of 'support/bspDep/VMEtas/2-1/configure/O.RTEMS-mvme5500/Makefile' is not 192"
+  fi
+fi
+# ============= support/bspDep/VMEtas/2-1/configure/CONFIG_APP ==============
+if test -n "${keep_file}" && test -f 'support/bspDep/VMEtas/2-1/configure/CONFIG_APP'
+then
+${echo} "x - SKIPPING support/bspDep/VMEtas/2-1/configure/CONFIG_APP (file already exists)"
+
+else
+${echo} "x - extracting support/bspDep/VMEtas/2-1/configure/CONFIG_APP (text)"
+  sed 's/^X//' << 'SHAR_EOF' > 'support/bspDep/VMEtas/2-1/configure/CONFIG_APP' &&
+# CONFIG_APP
+X
+include $(TOP)/configure/RELEASE
+-include $(TOP)/configure/RELEASE.$(EPICS_HOST_ARCH)
+-include $(TOP)/configure/RELEASE.Common.$(T_A)
+-include $(TOP)/configure/RELEASE.$(EPICS_HOST_ARCH).$(T_A)
+X
+CONFIG=$(EPICS_BASE)/configure
+include $(CONFIG)/CONFIG
+X
+INSTALL_LOCATION = $(TOP)
+ifdef INSTALL_LOCATION_APP
+INSTALL_LOCATION = $(INSTALL_LOCATION_APP)
+endif
+X
+ifdef T_A
+-include $(TOP)/configure/O.$(T_A)/CONFIG_APP_INCLUDE
+endif
+X
+# dbst based database optimization (default: NO)
+DB_OPT = NO
+X
+##############   Start BSP Specific Additions ##################
+X
+# Debug FLAGS needed for bsp specific code
+USR_CFLAGS_vxWorks-68040 += -DHAVE_MVME162
+USR_CFLAGS_vxWorks-ppc603 += -DHAVE_MVME2100
+USR_CFLAGS_vxWorks-ppc604_long += -DHAVE_MVME2400
+X
+# VxWorks include directory paths
+USR_INCLUDES_vxWorks += -I $(VX_DIR)/target/config/all
+USR_INCLUDES_vxWorks += -I $(VX_DIR)/target/config
+X
+##############    End BSP Specific Additions  ##################
+SHAR_EOF
+  (set 20 11 09 08 10 53 03 'support/bspDep/VMEtas/2-1/configure/CONFIG_APP'
+   eval "${shar_touch}") && \
+  chmod 0644 'support/bspDep/VMEtas/2-1/configure/CONFIG_APP'
+if test $? -ne 0
+then ${echo} "restore of support/bspDep/VMEtas/2-1/configure/CONFIG_APP failed"
+fi
+  if ${md5check}
+  then (
+       ${MD5SUM} -c >/dev/null 2>&1 || ${echo} 'support/bspDep/VMEtas/2-1/configure/CONFIG_APP': 'MD5 check failed'
+       ) << \SHAR_EOF
+3c50041416e3dfdb74112a58603d1789  support/bspDep/VMEtas/2-1/configure/CONFIG_APP
+SHAR_EOF
+
+else
+test `LC_ALL=C wc -c < 'support/bspDep/VMEtas/2-1/configure/CONFIG_APP'` -ne 956 && \
+  ${echo} "restoration warning:  size of 'support/bspDep/VMEtas/2-1/configure/CONFIG_APP' is not 956"
+  fi
+fi
+# ============= support/bspDep/VMEtas/2-1/configure/O.vxWorks-68040/Makefile ==============
+if test ! -d 'support/bspDep/VMEtas/2-1/configure/O.vxWorks-68040'; then
+  mkdir 'support/bspDep/VMEtas/2-1/configure/O.vxWorks-68040'
+if test $? -eq 0
+then ${echo} "x - created directory support/bspDep/VMEtas/2-1/configure/O.vxWorks-68040."
+else ${echo} "x - failed to create directory support/bspDep/VMEtas/2-1/configure/O.vxWorks-68040."
+     exit 1
+fi
+fi
+if test -n "${keep_file}" && test -f 'support/bspDep/VMEtas/2-1/configure/O.vxWorks-68040/Makefile'
+then
+${echo} "x - SKIPPING support/bspDep/VMEtas/2-1/configure/O.vxWorks-68040/Makefile (file already exists)"
+
+else
+${echo} "x - extracting support/bspDep/VMEtas/2-1/configure/O.vxWorks-68040/Makefile (text)"
+  sed 's/^X//' << 'SHAR_EOF' > 'support/bspDep/VMEtas/2-1/configure/O.vxWorks-68040/Makefile' &&
+#This Makefile created by makeMakefile.pl
+X
+X
+all :
+X	$(MAKE) -f ../Makefile TOP=../.. T_A=vxWorks-68040  $@
+X
+X.DEFAULT: force
+X	$(MAKE) -f ../Makefile TOP=../.. T_A=vxWorks-68040  $@
+X
+force:  ;
+SHAR_EOF
+  (set 20 11 11 21 14 55 17 'support/bspDep/VMEtas/2-1/configure/O.vxWorks-68040/Makefile'
+   eval "${shar_touch}") && \
+  chmod 0644 'support/bspDep/VMEtas/2-1/configure/O.vxWorks-68040/Makefile'
+if test $? -ne 0
+then ${echo} "restore of support/bspDep/VMEtas/2-1/configure/O.vxWorks-68040/Makefile failed"
+fi
+  if ${md5check}
+  then (
+       ${MD5SUM} -c >/dev/null 2>&1 || ${echo} 'support/bspDep/VMEtas/2-1/configure/O.vxWorks-68040/Makefile': 'MD5 check failed'
+       ) << \SHAR_EOF
+a41d810d06a5eac0f6a86fa131cbce05  support/bspDep/VMEtas/2-1/configure/O.vxWorks-68040/Makefile
+SHAR_EOF
+
+else
+test `LC_ALL=C wc -c < 'support/bspDep/VMEtas/2-1/configure/O.vxWorks-68040/Makefile'` -ne 190 && \
+  ${echo} "restoration warning:  size of 'support/bspDep/VMEtas/2-1/configure/O.vxWorks-68040/Makefile' is not 190"
+  fi
+fi
+# ============= support/bspDep/VMEtas/2-1/configure/CONFIG ==============
+if test -n "${keep_file}" && test -f 'support/bspDep/VMEtas/2-1/configure/CONFIG'
+then
+${echo} "x - SKIPPING support/bspDep/VMEtas/2-1/configure/CONFIG (file already exists)"
+
+else
+${echo} "x - extracting support/bspDep/VMEtas/2-1/configure/CONFIG (text)"
+  sed 's/^X//' << 'SHAR_EOF' > 'support/bspDep/VMEtas/2-1/configure/CONFIG' &&
+#CONFIG
+include $(TOP)/configure/CONFIG_APP
+# Add any changes to make definitions here
+X
+#CROSS_COMPILER_TARGET_ARCHS = 
+X
+# Use this when your IOC and the host use different paths
+# to access the application. Typically this will be 
+# used with the Microsoft FTP server or with NFS mounts. Use
+# is indicated by failure of the cdCommands script on
+# vxWorks. You must rebuild in the iocBoot directory 
+# before this takes effect.
+#IOCS_APPL_TOP = <the top of the application as seen by the IOC>
+SHAR_EOF
+  (set 20 11 09 08 10 53 03 'support/bspDep/VMEtas/2-1/configure/CONFIG'
+   eval "${shar_touch}") && \
+  chmod 0644 'support/bspDep/VMEtas/2-1/configure/CONFIG'
+if test $? -ne 0
+then ${echo} "restore of support/bspDep/VMEtas/2-1/configure/CONFIG failed"
+fi
+  if ${md5check}
+  then (
+       ${MD5SUM} -c >/dev/null 2>&1 || ${echo} 'support/bspDep/VMEtas/2-1/configure/CONFIG': 'MD5 check failed'
+       ) << \SHAR_EOF
+abeb690f11678f8dd19a8715fb6d3bd5  support/bspDep/VMEtas/2-1/configure/CONFIG
+SHAR_EOF
+
+else
+test `LC_ALL=C wc -c < 'support/bspDep/VMEtas/2-1/configure/CONFIG'` -ne 494 && \
+  ${echo} "restoration warning:  size of 'support/bspDep/VMEtas/2-1/configure/CONFIG' is not 494"
+  fi
+fi
+# ============= support/bspDep/VMEtas/2-1/configure/RULES.ioc ==============
+if test -n "${keep_file}" && test -f 'support/bspDep/VMEtas/2-1/configure/RULES.ioc'
+then
+${echo} "x - SKIPPING support/bspDep/VMEtas/2-1/configure/RULES.ioc (file already exists)"
+
+else
+${echo} "x - extracting support/bspDep/VMEtas/2-1/configure/RULES.ioc (text)"
+  sed 's/^X//' << 'SHAR_EOF' > 'support/bspDep/VMEtas/2-1/configure/RULES.ioc' &&
+#RULES.ioc
+include $(EPICS_BASE)/configure/RULES.ioc
+SHAR_EOF
+  (set 20 11 09 08 10 53 03 'support/bspDep/VMEtas/2-1/configure/RULES.ioc'
+   eval "${shar_touch}") && \
+  chmod 0644 'support/bspDep/VMEtas/2-1/configure/RULES.ioc'
+if test $? -ne 0
+then ${echo} "restore of support/bspDep/VMEtas/2-1/configure/RULES.ioc failed"
+fi
+  if ${md5check}
+  then (
+       ${MD5SUM} -c >/dev/null 2>&1 || ${echo} 'support/bspDep/VMEtas/2-1/configure/RULES.ioc': 'MD5 check failed'
+       ) << \SHAR_EOF
+984351848e2ca752e9f593fbdae22694  support/bspDep/VMEtas/2-1/configure/RULES.ioc
+SHAR_EOF
+
+else
+test `LC_ALL=C wc -c < 'support/bspDep/VMEtas/2-1/configure/RULES.ioc'` -ne 53 && \
+  ${echo} "restoration warning:  size of 'support/bspDep/VMEtas/2-1/configure/RULES.ioc' is not 53"
+  fi
+fi
+# ============= support/bspDep/VMEtas/2-1/configure/RULES_TOP ==============
+if test -n "${keep_file}" && test -f 'support/bspDep/VMEtas/2-1/configure/RULES_TOP'
+then
+${echo} "x - SKIPPING support/bspDep/VMEtas/2-1/configure/RULES_TOP (file already exists)"
+
+else
+${echo} "x - extracting support/bspDep/VMEtas/2-1/configure/RULES_TOP (text)"
+  sed 's/^X//' << 'SHAR_EOF' > 'support/bspDep/VMEtas/2-1/configure/RULES_TOP' &&
+#RULES_TOP
+include $(EPICS_BASE)/configure/RULES_TOP
+X
+SHAR_EOF
+  (set 20 11 09 08 10 53 03 'support/bspDep/VMEtas/2-1/configure/RULES_TOP'
+   eval "${shar_touch}") && \
+  chmod 0644 'support/bspDep/VMEtas/2-1/configure/RULES_TOP'
+if test $? -ne 0
+then ${echo} "restore of support/bspDep/VMEtas/2-1/configure/RULES_TOP failed"
+fi
+  if ${md5check}
+  then (
+       ${MD5SUM} -c >/dev/null 2>&1 || ${echo} 'support/bspDep/VMEtas/2-1/configure/RULES_TOP': 'MD5 check failed'
+       ) << \SHAR_EOF
+3ac1caca9d5025b246d6dd177988b513  support/bspDep/VMEtas/2-1/configure/RULES_TOP
+SHAR_EOF
+
+else
+test `LC_ALL=C wc -c < 'support/bspDep/VMEtas/2-1/configure/RULES_TOP'` -ne 54 && \
+  ${echo} "restoration warning:  size of 'support/bspDep/VMEtas/2-1/configure/RULES_TOP' is not 54"
+  fi
+fi
+# ============= support/bspDep/VMEtas/2-1/configure/O.vxWorks-ppc603/Makefile ==============
+if test ! -d 'support/bspDep/VMEtas/2-1/configure/O.vxWorks-ppc603'; then
+  mkdir 'support/bspDep/VMEtas/2-1/configure/O.vxWorks-ppc603'
+if test $? -eq 0
+then ${echo} "x - created directory support/bspDep/VMEtas/2-1/configure/O.vxWorks-ppc603."
+else ${echo} "x - failed to create directory support/bspDep/VMEtas/2-1/configure/O.vxWorks-ppc603."
+     exit 1
+fi
+fi
+if test -n "${keep_file}" && test -f 'support/bspDep/VMEtas/2-1/configure/O.vxWorks-ppc603/Makefile'
+then
+${echo} "x - SKIPPING support/bspDep/VMEtas/2-1/configure/O.vxWorks-ppc603/Makefile (file already exists)"
+
+else
+${echo} "x - extracting support/bspDep/VMEtas/2-1/configure/O.vxWorks-ppc603/Makefile (text)"
+  sed 's/^X//' << 'SHAR_EOF' > 'support/bspDep/VMEtas/2-1/configure/O.vxWorks-ppc603/Makefile' &&
+#This Makefile created by makeMakefile.pl
+X
+X
+all :
+X	$(MAKE) -f ../Makefile TOP=../.. T_A=vxWorks-ppc603  $@
+X
+X.DEFAULT: force
+X	$(MAKE) -f ../Makefile TOP=../.. T_A=vxWorks-ppc603  $@
+X
+force:  ;
+SHAR_EOF
+  (set 20 11 11 21 14 55 17 'support/bspDep/VMEtas/2-1/configure/O.vxWorks-ppc603/Makefile'
+   eval "${shar_touch}") && \
+  chmod 0644 'support/bspDep/VMEtas/2-1/configure/O.vxWorks-ppc603/Makefile'
+if test $? -ne 0
+then ${echo} "restore of support/bspDep/VMEtas/2-1/configure/O.vxWorks-ppc603/Makefile failed"
+fi
+  if ${md5check}
+  then (
+       ${MD5SUM} -c >/dev/null 2>&1 || ${echo} 'support/bspDep/VMEtas/2-1/configure/O.vxWorks-ppc603/Makefile': 'MD5 check failed'
+       ) << \SHAR_EOF
+8e29400ab5164c86c8983742a9703ea3  support/bspDep/VMEtas/2-1/configure/O.vxWorks-ppc603/Makefile
+SHAR_EOF
+
+else
+test `LC_ALL=C wc -c < 'support/bspDep/VMEtas/2-1/configure/O.vxWorks-ppc603/Makefile'` -ne 192 && \
+  ${echo} "restoration warning:  size of 'support/bspDep/VMEtas/2-1/configure/O.vxWorks-ppc603/Makefile' is not 192"
+  fi
+fi
+# ============= support/bspDep/VMEtas/2-1/configure/O.linux-x86/Makefile ==============
+if test ! -d 'support/bspDep/VMEtas/2-1/configure/O.linux-x86'; then
+  mkdir 'support/bspDep/VMEtas/2-1/configure/O.linux-x86'
+if test $? -eq 0
+then ${echo} "x - created directory support/bspDep/VMEtas/2-1/configure/O.linux-x86."
+else ${echo} "x - failed to create directory support/bspDep/VMEtas/2-1/configure/O.linux-x86."
+     exit 1
+fi
+fi
+if test -n "${keep_file}" && test -f 'support/bspDep/VMEtas/2-1/configure/O.linux-x86/Makefile'
+then
+${echo} "x - SKIPPING support/bspDep/VMEtas/2-1/configure/O.linux-x86/Makefile (file already exists)"
+
+else
+${echo} "x - extracting support/bspDep/VMEtas/2-1/configure/O.linux-x86/Makefile (text)"
+  sed 's/^X//' << 'SHAR_EOF' > 'support/bspDep/VMEtas/2-1/configure/O.linux-x86/Makefile' &&
+#This Makefile created by makeMakefile.pl
+X
+X
+all :
+X	$(MAKE) -f ../Makefile TOP=../.. T_A=linux-x86  $@
+X
+X.DEFAULT: force
+X	$(MAKE) -f ../Makefile TOP=../.. T_A=linux-x86  $@
+X
+force:  ;
+SHAR_EOF
+  (set 20 11 11 21 14 55 17 'support/bspDep/VMEtas/2-1/configure/O.linux-x86/Makefile'
+   eval "${shar_touch}") && \
+  chmod 0644 'support/bspDep/VMEtas/2-1/configure/O.linux-x86/Makefile'
+if test $? -ne 0
+then ${echo} "restore of support/bspDep/VMEtas/2-1/configure/O.linux-x86/Makefile failed"
+fi
+  if ${md5check}
+  then (
+       ${MD5SUM} -c >/dev/null 2>&1 || ${echo} 'support/bspDep/VMEtas/2-1/configure/O.linux-x86/Makefile': 'MD5 check failed'
+       ) << \SHAR_EOF
+c120161b735b0f3ed9921bbddeeba068  support/bspDep/VMEtas/2-1/configure/O.linux-x86/Makefile
+SHAR_EOF
+
+else
+test `LC_ALL=C wc -c < 'support/bspDep/VMEtas/2-1/configure/O.linux-x86/Makefile'` -ne 182 && \
+  ${echo} "restoration warning:  size of 'support/bspDep/VMEtas/2-1/configure/O.linux-x86/Makefile' is not 182"
+  fi
+fi
+# ============= support/bspDep/VMEtas/2-1/configure/RELEASE ==============
+if test -n "${keep_file}" && test -f 'support/bspDep/VMEtas/2-1/configure/RELEASE'
+then
+${echo} "x - SKIPPING support/bspDep/VMEtas/2-1/configure/RELEASE (file already exists)"
+
+else
+${echo} "x - extracting support/bspDep/VMEtas/2-1/configure/RELEASE (text)"
+  sed 's/^X//' << 'SHAR_EOF' > 'support/bspDep/VMEtas/2-1/configure/RELEASE' &&
+#RELEASE Location of external products
+# Run "gnumake clean uninstall install" in the application
+# top directory each time this file is changed.
+#
+# NOTE: The build does not check dependancies on files
+# external to this application. Thus you should run
+# "gnumake clean uninstall install" in the top directory
+# each time EPICS_BASE, SNCSEQ, or any other external
+# module defined in the RELEASE file is rebuilt.
+X
+#TEMPLATE_TOP=$(EPICS_BASE)/templates/makeBaseApp/top
+X
+# If you don't want to install into $(TOP) then
+# define INSTALL_LOCATION_APP here
+#INSTALL_LOCATION_APP=<fullpathname>
+X
+#If using the sequencer, point SNCSEQ at its top directory:
+#SNCSEQ=$(EPICS_BASE)/../modules/soft/seq
+X
+# EPICS_BASE usually appears last so other apps can override stuff:
+EPICS_BASE=/opt/Epics/R3.14.12/base/3-14-12-2-1
+X
+#Capfast users may need the following definitions
+#CAPFAST_TEMPLATES=
+#SCH2EDIF_PATH=
+SHAR_EOF
+  (set 20 11 11 21 12 08 22 'support/bspDep/VMEtas/2-1/configure/RELEASE'
+   eval "${shar_touch}") && \
+  chmod 0644 'support/bspDep/VMEtas/2-1/configure/RELEASE'
+if test $? -ne 0
+then ${echo} "restore of support/bspDep/VMEtas/2-1/configure/RELEASE failed"
+fi
+  if ${md5check}
+  then (
+       ${MD5SUM} -c >/dev/null 2>&1 || ${echo} 'support/bspDep/VMEtas/2-1/configure/RELEASE': 'MD5 check failed'
+       ) << \SHAR_EOF
+19f69e964da57a4179cf3113ac11cc99  support/bspDep/VMEtas/2-1/configure/RELEASE
+SHAR_EOF
+
+else
+test `LC_ALL=C wc -c < 'support/bspDep/VMEtas/2-1/configure/RELEASE'` -ne 898 && \
+  ${echo} "restoration warning:  size of 'support/bspDep/VMEtas/2-1/configure/RELEASE' is not 898"
+  fi
+fi
+# ============= support/bspDep/VMEtas/2-1/configure/O.RTEMS-mvme2100/Makefile ==============
+if test ! -d 'support/bspDep/VMEtas/2-1/configure/O.RTEMS-mvme2100'; then
+  mkdir 'support/bspDep/VMEtas/2-1/configure/O.RTEMS-mvme2100'
+if test $? -eq 0
+then ${echo} "x - created directory support/bspDep/VMEtas/2-1/configure/O.RTEMS-mvme2100."
+else ${echo} "x - failed to create directory support/bspDep/VMEtas/2-1/configure/O.RTEMS-mvme2100."
+     exit 1
+fi
+fi
+if test -n "${keep_file}" && test -f 'support/bspDep/VMEtas/2-1/configure/O.RTEMS-mvme2100/Makefile'
+then
+${echo} "x - SKIPPING support/bspDep/VMEtas/2-1/configure/O.RTEMS-mvme2100/Makefile (file already exists)"
+
+else
+${echo} "x - extracting support/bspDep/VMEtas/2-1/configure/O.RTEMS-mvme2100/Makefile (text)"
+  sed 's/^X//' << 'SHAR_EOF' > 'support/bspDep/VMEtas/2-1/configure/O.RTEMS-mvme2100/Makefile' &&
+#This Makefile created by makeMakefile.pl
+X
+X
+all :
+X	$(MAKE) -f ../Makefile TOP=../.. T_A=RTEMS-mvme2100  $@
+X
+X.DEFAULT: force
+X	$(MAKE) -f ../Makefile TOP=../.. T_A=RTEMS-mvme2100  $@
+X
+force:  ;
+SHAR_EOF
+  (set 20 11 11 21 14 55 17 'support/bspDep/VMEtas/2-1/configure/O.RTEMS-mvme2100/Makefile'
+   eval "${shar_touch}") && \
+  chmod 0644 'support/bspDep/VMEtas/2-1/configure/O.RTEMS-mvme2100/Makefile'
+if test $? -ne 0
+then ${echo} "restore of support/bspDep/VMEtas/2-1/configure/O.RTEMS-mvme2100/Makefile failed"
+fi
+  if ${md5check}
+  then (
+       ${MD5SUM} -c >/dev/null 2>&1 || ${echo} 'support/bspDep/VMEtas/2-1/configure/O.RTEMS-mvme2100/Makefile': 'MD5 check failed'
+       ) << \SHAR_EOF
+59a83a4fc327573b2585990895611455  support/bspDep/VMEtas/2-1/configure/O.RTEMS-mvme2100/Makefile
+SHAR_EOF
+
+else
+test `LC_ALL=C wc -c < 'support/bspDep/VMEtas/2-1/configure/O.RTEMS-mvme2100/Makefile'` -ne 192 && \
+  ${echo} "restoration warning:  size of 'support/bspDep/VMEtas/2-1/configure/O.RTEMS-mvme2100/Makefile' is not 192"
+  fi
+fi
+# ============= support/bspDep/VMEtas/2-1/configure/RULES_DIRS ==============
+if test -n "${keep_file}" && test -f 'support/bspDep/VMEtas/2-1/configure/RULES_DIRS'
+then
+${echo} "x - SKIPPING support/bspDep/VMEtas/2-1/configure/RULES_DIRS (file already exists)"
+
+else
+${echo} "x - extracting support/bspDep/VMEtas/2-1/configure/RULES_DIRS (text)"
+  sed 's/^X//' << 'SHAR_EOF' > 'support/bspDep/VMEtas/2-1/configure/RULES_DIRS' &&
+#RULES_DIRS
+include $(EPICS_BASE)/configure/RULES_DIRS
+SHAR_EOF
+  (set 20 11 09 08 10 53 03 'support/bspDep/VMEtas/2-1/configure/RULES_DIRS'
+   eval "${shar_touch}") && \
+  chmod 0644 'support/bspDep/VMEtas/2-1/configure/RULES_DIRS'
+if test $? -ne 0
+then ${echo} "restore of support/bspDep/VMEtas/2-1/configure/RULES_DIRS failed"
+fi
+  if ${md5check}
+  then (
+       ${MD5SUM} -c >/dev/null 2>&1 || ${echo} 'support/bspDep/VMEtas/2-1/configure/RULES_DIRS': 'MD5 check failed'
+       ) << \SHAR_EOF
+5c2015f77114575364d7d94e33680e6b  support/bspDep/VMEtas/2-1/configure/RULES_DIRS
+SHAR_EOF
+
+else
+test `LC_ALL=C wc -c < 'support/bspDep/VMEtas/2-1/configure/RULES_DIRS'` -ne 55 && \
+  ${echo} "restoration warning:  size of 'support/bspDep/VMEtas/2-1/configure/RULES_DIRS' is not 55"
+  fi
+fi
+# ============= support/bspDep/VMEtas/2-1/configure/Makefile ==============
+if test -n "${keep_file}" && test -f 'support/bspDep/VMEtas/2-1/configure/Makefile'
+then
+${echo} "x - SKIPPING support/bspDep/VMEtas/2-1/configure/Makefile (file already exists)"
+
+else
+${echo} "x - extracting support/bspDep/VMEtas/2-1/configure/Makefile (text)"
+  sed 's/^X//' << 'SHAR_EOF' > 'support/bspDep/VMEtas/2-1/configure/Makefile' &&
+# Makefile
+X
+TOP=..
+X
+include $(TOP)/configure/CONFIG
+X
+# Set the following to NO to disable consistency checking of
+# the support applications defined in $(TOP)/configure/RELEASE
+CHECK_RELEASE = YES
+X
+TARGETS = $(CONFIG_TARGETS)
+CONFIGS += $(subst ../,,$(wildcard $(CONFIG_INSTALLS)))
+X
+include $(TOP)/configure/RULES
+X
+SHAR_EOF
+  (set 20 11 09 08 10 53 03 'support/bspDep/VMEtas/2-1/configure/Makefile'
+   eval "${shar_touch}") && \
+  chmod 0644 'support/bspDep/VMEtas/2-1/configure/Makefile'
+if test $? -ne 0
+then ${echo} "restore of support/bspDep/VMEtas/2-1/configure/Makefile failed"
+fi
+  if ${md5check}
+  then (
+       ${MD5SUM} -c >/dev/null 2>&1 || ${echo} 'support/bspDep/VMEtas/2-1/configure/Makefile': 'MD5 check failed'
+       ) << \SHAR_EOF
+11c16a437511c2b4a0eb096a03a542b3  support/bspDep/VMEtas/2-1/configure/Makefile
+SHAR_EOF
+
+else
+test `LC_ALL=C wc -c < 'support/bspDep/VMEtas/2-1/configure/Makefile'` -ne 315 && \
+  ${echo} "restoration warning:  size of 'support/bspDep/VMEtas/2-1/configure/Makefile' is not 315"
+  fi
+fi
+# ============= support/bspDep/VMEtas/2-1/configure/RULES ==============
+if test -n "${keep_file}" && test -f 'support/bspDep/VMEtas/2-1/configure/RULES'
+then
+${echo} "x - SKIPPING support/bspDep/VMEtas/2-1/configure/RULES (file already exists)"
+
+else
+${echo} "x - extracting support/bspDep/VMEtas/2-1/configure/RULES (text)"
+  sed 's/^X//' << 'SHAR_EOF' > 'support/bspDep/VMEtas/2-1/configure/RULES' &&
+#CONFIG
+include $(EPICS_BASE)/configure/RULES
+X
+# Library should be rebuilt because LIBOBJS may have changed.
+$(LIBNAME): ../Makefile
+SHAR_EOF
+  (set 20 11 09 08 10 53 03 'support/bspDep/VMEtas/2-1/configure/RULES'
+   eval "${shar_touch}") && \
+  chmod 0644 'support/bspDep/VMEtas/2-1/configure/RULES'
+if test $? -ne 0
+then ${echo} "restore of support/bspDep/VMEtas/2-1/configure/RULES failed"
+fi
+  if ${md5check}
+  then (
+       ${MD5SUM} -c >/dev/null 2>&1 || ${echo} 'support/bspDep/VMEtas/2-1/configure/RULES': 'MD5 check failed'
+       ) << \SHAR_EOF
+428cb074ce349ada36fa3a0bc61fc02b  support/bspDep/VMEtas/2-1/configure/RULES
+SHAR_EOF
+
+else
+test `LC_ALL=C wc -c < 'support/bspDep/VMEtas/2-1/configure/RULES'` -ne 133 && \
+  ${echo} "restoration warning:  size of 'support/bspDep/VMEtas/2-1/configure/RULES' is not 133"
+  fi
+fi
+# ============= support/bspDep/VMEtas/2-1/Makefile ==============
+if test -n "${keep_file}" && test -f 'support/bspDep/VMEtas/2-1/Makefile'
+then
+${echo} "x - SKIPPING support/bspDep/VMEtas/2-1/Makefile (file already exists)"
+
+else
+${echo} "x - extracting support/bspDep/VMEtas/2-1/Makefile (text)"
+  sed 's/^X//' << 'SHAR_EOF' > 'support/bspDep/VMEtas/2-1/Makefile' &&
+# mockup EPICS base for sumo tests
+VERSION="VMETAS:2-1"
+X
+archs= linux-x86 RTEMS-mvme2100  RTEMS-mvme5500  vxWorks-68040  vxWorks-ppc603
+X
+mockdirs= include 
+archdirs= lib
+X
+all_generated= $(archdirs) $(mockdirs) MAKESTAMP
+X
+all: $(mockdirs) $(archdirs)
+X	@echo "$(VERSION)" > MAKESTAMP
+X		
+clean:
+X	@rm -rf $(all_generated)
+X
+$(mockdirs): %:
+X	@mkdir $@
+X	@echo "dummy" > $@/dummyfile
+X
+$(archdirs): %:
+X	@mkdir $@
+X	@for a in $(archs); do mkdir -p $@/$$a; done; 
+X
+SHAR_EOF
+  (set 20 14 09 18 16 21 32 'support/bspDep/VMEtas/2-1/Makefile'
+   eval "${shar_touch}") && \
+  chmod 0644 'support/bspDep/VMEtas/2-1/Makefile'
+if test $? -ne 0
+then ${echo} "restore of support/bspDep/VMEtas/2-1/Makefile failed"
+fi
+  if ${md5check}
+  then (
+       ${MD5SUM} -c >/dev/null 2>&1 || ${echo} 'support/bspDep/VMEtas/2-1/Makefile': 'MD5 check failed'
+       ) << \SHAR_EOF
+e8aa84ea9ac93194f9024f695fe146da  support/bspDep/VMEtas/2-1/Makefile
+SHAR_EOF
+
+else
+test `LC_ALL=C wc -c < 'support/bspDep/VMEtas/2-1/Makefile'` -ne 453 && \
+  ${echo} "restoration warning:  size of 'support/bspDep/VMEtas/2-1/Makefile' is not 453"
   fi
 fi
 # ============= support/bessyRules/2-5/LICENSE ==============

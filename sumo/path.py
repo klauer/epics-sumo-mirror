@@ -9,10 +9,15 @@ import sumo.system
 
 class Repo(object):
     """represent a path."""
+    def _hint(self, name):
+        """return the value of hint "name"."""
+        return self.hints.get(name)
     def __init__(self, directory, hints, verbose, dry_run):
         """initialize."""
-        # pylint: disable=W0613
-        #                          Unused argument
+        self.hints= dict(hints) # shallow copy
+        patcher= self._hint("dir patcher")
+        if patcher is not None:
+            directory= patcher.apply(directory)
         self.directory= directory
         self.verbose= verbose
         self.dry_run= dry_run

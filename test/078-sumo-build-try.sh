@@ -30,4 +30,4 @@ $PYTHON ../bin/sumo-build --db $DEPS --builddb $BUILDS try BASE ALARM:R3-8-modif
 
 echo -e "\n----------------------------"
 echo -e "\ntry with completely versioned modulelist:\n"
-$PYTHON ../bin/sumo-build --db $DEPS --builddb $BUILDS try BASE:R3-14-12-2-1 ALARM:R3-8-modified MCAN:R2-6-1 BSPDEP_TIMER:R6-2 BSPDEP_VMETAS:R2-0 MISC_DBC:R3-0 MISC_DEBUGMSG:R3-0 SOFT_DEVHWCLIENT:R3-0
+$PYTHON ../bin/sumo-build --db $DEPS --builddb $BUILDS try BASE:R3-14-12-2-1 ALARM:R3-8-modified MCAN:R2-6-1 BSPDEP_TIMER:R6-2 BSPDEP_VMETAS:TAGLESS-2-1-modified MISC_DBC:PATH-3-0 MISC_DEBUGMSG:R3-0 SOFT_DEVHWCLIENT:R3-0

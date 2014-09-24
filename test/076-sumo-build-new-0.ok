@@ -7,7 +7,7 @@ BUILD file:
             "BSPDEP_TIMER": "R6-2",
             "BSPDEP_VMETAS": "R2-0",
             "MCAN": "R2-6-1",
-            "MISC_DBC": "R3-0",
+            "MISC_DBC": "PATH-3-0",
             "MISC_DEBUGMSG": "R3-0",
             "SOFT_DEVHWCLIENT": "R3-0"
         },
@@ -28,7 +28,7 @@ BUILD file:
             "BSPDEP_TIMER": "R6-2",
             "BSPDEP_VMETAS": "R2-0",
             "MCAN": "R2-6-1",
-            "MISC_DBC": "R3-0",
+            "MISC_DBC": "PATH-3-0",
             "MISC_DEBUGMSG": "R3-0",
             "SOFT_DEVHWCLIENT": "R3-0"
         },
