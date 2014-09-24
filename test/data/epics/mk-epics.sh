@@ -90,6 +90,37 @@ function MK_HG_GENERIC {
     make -C $2 1>&2
 }
 
+function MK_GIT_TAGLESS {
+    # $1: path
+    # $2: subdir
+    # $3: tag
+    MK_GIT_GENERIC $1 "$1/$2" $3
+    echo "#some change" >> "$1/$2/Makefile"
+    (cd "$1/$2" && git commit -m 'some changes')
+}
+
+function MK_GIT {
+    # $1: path
+    # $2: subdir
+    # $3: tag
+    MK_GIT_GENERIC $1 "$1/$2" $3
+}
+
+function MK_GIT_GENERIC {
+    # $1: source path 
+    # $2: destination path
+    # $3: tag
+    echo -e "\t\tprepare $2..." >&2
+    if [ ! -d `dirname $2` ]; then 
+        mkdir -p `dirname $2`
+    fi
+    echo git clone $REPODIR/$1 $2 >&2
+    git clone $REPODIR/$1 $2 >&2
+    (cd $2 && git checkout $3) >&2
+    # create fake binary directories:
+    make -C $2 1>&2
+}
+
 mkdir base
 mkdir -p support/apps
 
@@ -113,7 +144,8 @@ MK_DARCS         support/genSub 1-6-1
 MK_DARCS         support/mcan 2-6-1
 MK_DARCS         support/mcan 2-6-3-gp
 MK_PATH          support/misc/dbc 3-0
-MK_DARCS         support/misc/debugmsg 3-0
+MK_GIT           support/misc/debugmsg 3-0 R3-0
+MK_GIT           support/misc/debugmsg 3-1 R3-1
 MK_DARCS         support/seq 2-1-10
 MK_DARCS         support/soft/devHwClient 3-0
 

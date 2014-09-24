@@ -38,7 +38,7 @@ else
 fi
 
 echo -e "\ndirectory tree (without darcs, maxdepth 2)"
-find . -maxdepth 3 | grep -v '_darcs\|\.hg\|\.hgignore\|\.tmp\|\.bak\|\.coverage'
+find . -maxdepth 3 | grep -v '_darcs\|\.hg\(\|ignore\)\|\.git\(\|ignore\)\|\.tmp\|\.bak\|\.coverage'
 echo -e "\ncontents of RELEASE files\n"
 for f in `find . -name RELEASE | grep -v 'makeBase\(App\|Ext\)' | sort`; do echo -e "\nFILE: $f"; cat $f | sed -e "s#`pwd -P`#mysumo#"; done
 echo -e "\ncontent of BUILDS"

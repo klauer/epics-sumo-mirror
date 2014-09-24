@@ -441,8 +441,25 @@ DB file:
                 "BASE"
             ],
             "source": {
-                "darcs": {
+                "git": {
                     "tag": "R3-0",
+                    "url": "/data/repos/support/misc/debugmsg"
+                }
+            }
+        },
+        "R3-1": {
+            "aliases": {
+                "BASE": "EPICS_BASE"
+            },
+            "archs": {
+                "ANY": true
+            },
+            "dependencies": [
+                "BASE"
+            ],
+            "source": {
+                "git": {
+                    "tag": "R3-1",
                     "url": "/data/repos/support/misc/debugmsg"
                 }
             }
@@ -663,6 +680,11 @@ SCANDB file:
     },
     "MISC_DEBUGMSG": {
         "R3-0": {
+            "BASE": {
+                "R3-14-12-2-1": "scanned"
+            }
+        },
+        "R3-1": {
             "BASE": {
                 "R3-14-12-2-1": "scanned"
             }

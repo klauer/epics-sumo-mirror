@@ -9,8 +9,9 @@ import sumo.utils
 import sumo.path
 import sumo.darcs
 import sumo.mercurial # "hg"
+import sumo.git
 
-known_repos=set(("darcs","hg"))
+known_repos=set(("darcs","hg","git"))
 known_sources= set(("path",)).union(known_repos)
 
 # ---------------------------------------------------------
@@ -53,6 +54,9 @@ def repo_from_dir(directory, hints, verbose, dry_run):
     obj= sumo.mercurial.Repo.scan_dir(directory, hints, verbose, dry_run)
     if obj is not None:
         return obj
+    obj= sumo.git.Repo.scan_dir(directory, hints, verbose, dry_run)
+    if obj is not None:
+        return obj
     # insert other repo supports here
     return sumo.path.Repo.scan_dir(directory, hints, verbose, dry_run)
 
@@ -68,6 +72,8 @@ def checkout(repotype, spec, destdir, verbose, dry_run):
         sumo.darcs.Repo.checkout(spec, destdir, verbose, dry_run)
     elif repotype == "hg":
         sumo.mercurial.Repo.checkout(spec, destdir, verbose, dry_run)
+    elif repotype == "git":
+        sumo.git.Repo.checkout(spec, destdir, verbose, dry_run)
     elif repotype== "path":
         sumo.path.Repo.checkout(spec, destdir, verbose, dry_run)
     else:
@@ -89,6 +95,8 @@ class SourceSpec(sumo.JSON.Container):
                    rev=None, path=None):
         """create by parameters.
         """
+        # pylint: disable=R0912
+        #                          Too many branches
         # pylint: disable=R0913
         #                          Too many arguments
         if sourcetype not in known_sources:
@@ -107,6 +115,17 @@ class SourceSpec(sumo.JSON.Container):
         if sourcetype=="hg":
             if not url:
                 raise ValueError("'url' missing for sourcetype 'hg'")
+            d= {"url": url}
+            if tag and rev:
+                raise ValueError("you cannot specify tag AND revision")
+            if tag:
+                d["tag"]= tag
+            if rev:
+                d["rev"]= rev
+            return cls({sourcetype: d})
+        if sourcetype=="git":
+            if not url:
+                raise ValueError("'url' missing for sourcetype 'git'")
             d= {"url": url}
             if tag and rev:
                 raise ValueError("you cannot specify tag AND revision")

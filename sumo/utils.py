@@ -178,6 +178,12 @@ def mk_text_file(filename, lines, verbose, dry_run):
 # directory utilities
 # -----------------------------------------------
 
+def changedir(newdir):
+    """return the current dir and change to a new dir."""
+    cwd= os.getcwd()
+    os.chdir(newdir)
+    return cwd
+
 # The following is needed in order to support python2.5
 # where os.walk cannot follow symbolic links
 

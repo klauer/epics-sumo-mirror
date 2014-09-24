@@ -444,8 +444,25 @@
                 "BASE"
             ],
             "source": {
-                "darcs": {
+                "git": {
                     "tag": "R3-0",
+                    "url": "/data/repos/support/misc/debugmsg"
+                }
+            }
+        },
+        "R3-1": {
+            "aliases": {
+                "BASE": "EPICS_BASE"
+            },
+            "archs": {
+                "ANY": true
+            },
+            "dependencies": [
+                "BASE"
+            ],
+            "source": {
+                "git": {
+                    "tag": "R3-1",
                     "url": "/data/repos/support/misc/debugmsg"
                 }
             }

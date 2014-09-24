@@ -14,7 +14,7 @@
     "GENSUB": "R1-6-1",
     "MCAN": "R2-6-3-gp",
     "MISC_DBC": "PATH-3-0",
-    "MISC_DEBUGMSG": "R3-0",
+    "MISC_DEBUGMSG": "R3-1",
     "SEQ": "R2-1-10",
     "SOFT_DEVHWCLIENT": "R3-0"
 }

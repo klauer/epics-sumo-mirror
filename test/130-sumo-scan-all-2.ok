@@ -133,7 +133,7 @@
             "path": "/tmp-110-sumo-build-new-2/MISC_DBC/PATH-3-0+MYAPP-001"
         },
         "/tmp-110-sumo-build-new-2/MISC_DEBUGMSG/R3-0+MYAPP-001": {
-            "darcs": {
+            "git": {
                 "tag": "R3-0",
                 "url": "/data/repos/support/misc/debugmsg"
             }

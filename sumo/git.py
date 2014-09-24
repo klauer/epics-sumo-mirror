@@ -1,63 +1,75 @@
-"""mercurial support
+"""git support
 """
 
 # pylint: disable=C0103
 #                          Invalid name for type variable
 
+# test like this:
+# cd test/src
+# git init
+# git add *
+# git commit -a -m 'initial release'
+# git tag 1.1
+# cd ..
+# git clone src clone
+
 import os.path
+import sumo.utils
 import sumo.system
 import re
 
 class Repo(object):
-    """represent a mercurial repository."""
+    """represent a git repository."""
     # pylint: disable=R0902
     #                          Too many instance attributes
+    rx_repo=re.compile(r'^\s*Push\s+URL:\s*(.*)$')
     rx_tag=re.compile(r'^(.*)\s+([0-9]+):([a-z0-9]+)$')
-    def _default_repo(self):
-        """return the default repo."""
+    def _find_remote(self, patcher):
+        """find and contact the remote repository.
+
+        Note that "git remote show origin" tries to contact the remote
+        repository and fails if the repository cannot be reached.
+        """
+        cwd= sumo.utils.changedir(self.directory)
         try:
-            (reply,_)= sumo.system.system("hg paths default -R %s" % \
-                                    self.directory,
+            (reply,_)= sumo.system.system("git remote show origin",
                                     True, False,
                                     self.verbose, self.dry_run)
         except IOError, _:
-            # probably no repo found
+            # remote repo could not be contacted.
             return
-        st= reply.splitlines()[0].strip()
-        if st.startswith("not found"):
-            return
-        return st
-    def _find_remote(self, patcher):
-        """find and contact the remote repository."""
-        default_repo= self._default_repo()
-        if default_repo is None:
-            return
-        if patcher is not None:
-            default_repo= patcher.apply(default_repo)
-        cmd= "hg -R %s incoming %s" % \
-                 (self.directory, default_repo)
-        (_,_,rc)= sumo.system.system_rc(cmd,
-                             True, True,
-                             self.verbose, self.dry_run)
-        if rc not in (0,1):
-            # contacting the remote repo failed
-            return
-        return default_repo
+        finally:
+            sumo.utils.changedir(cwd)
+        for line in reply.splitlines():
+            line= line.strip()
+            # look for "Push" url:
+            m= self.rx_repo.search(line)
+            if m is not None:
+                repo= m.group(1)
+                if patcher is not None:
+                    repo= patcher.apply(repo)
+                return repo
+        return
     def _local_changes(self, matcher):
         """returns True if there are uncomitted changes.
 
         Does basically "hg status". All lines that match the matcher
         object are ignored. The matcher parameter may be <None>.
         """
-        cmd= "hg status -a -m -r -d -R %s" % self.directory
-        (reply,_,rc)= sumo.system.system_rc(cmd,
-                             True, False, self.verbose, self.dry_run)
-        # Note: a return code 1 is normal with mercurial
-        if rc not in (0,1):
-            raise IOError(rc, "cmd \"%s\" failed" % cmd)
+        cmd= "git status --porcelain"
+        cwd= sumo.utils.changedir(self.directory)
+        try:
+            (reply,_)= sumo.system.system(cmd,
+                                 True, False, self.verbose, self.dry_run)
+        finally:
+            sumo.utils.changedir(cwd)
         changes= False
         for line in reply.splitlines():
-            line= line.strip()
+            line= line.rstrip()
+            if line.startswith("?? "):
+                # ignore unknown files
+                continue
+            line= line[3:]
             if matcher is not None:
                 # ignore if line matches:
                 if matcher.search(line):
@@ -73,46 +85,64 @@ class Repo(object):
         if self.remote_url is None:
             raise AssertionError("cannot compute local patches without "
                                  "a reachable remote repository.")
-        cmd= "hg -R %s outgoing" % self.directory
-        (_,_,rc)= sumo.system.system_rc(cmd,
-                             True, False, self.verbose, self.dry_run)
-        if rc not in (0,1):
-            raise IOError(rc, "cmd \"%s\" failed" % cmd)
-        return rc==0
+        cwd= sumo.utils.changedir(self.directory)
+        cmd= "git push --dry-run --porcelain --all" # try to push to "origin"
+        try:
+            (reply,_)= sumo.system.system(cmd,
+                                 True, False, self.verbose, self.dry_run)
+        finally:
+            sumo.utils.changedir(cwd)
+        changes= False
+        for line in reply.splitlines():
+            line= line.strip()
+            if line.startswith("To "):
+                continue
+            if line.startswith("="):
+                continue
+            if line.startswith("Done"):
+                continue
+            changes= True
+            break
+        return changes
     def _current_revision(self):
         """returns the revision of the working copy.
+
+        This returns the shortened hash key, the hash key has 7 characters in
+        this case.
+
+        Note that a tag at the top has itself a revision hash key, so if a tag
+        is on top this will return the hash key of the tag, not of the newest
+        patch.
         """
-        (reply,_)= sumo.system.system("hg identify -i -R %s" % \
-                                self.directory,
-                                True, False,
-                                self.verbose, self.dry_run)
+        cwd= sumo.utils.changedir(self.directory)
+        try:
+            (reply,_)= sumo.system.system("git rev-parse --short HEAD",
+                                    True, False,
+                                    self.verbose, self.dry_run)
+        finally:
+            sumo.utils.changedir(cwd)
         # for uncomitted changes, the revision ends with a "+":
-        return reply.splitlines()[0].strip().replace("+","")
+        return reply.splitlines()[0].strip()
     def _tag_on_top(self):
         """returns True when a tag identifies the working copy.
 
-        These automatically generated tags are ignored:
-          tip, qtip, qbase, qparent
-
         Returns the found tag or None if no tag on top was found.
         """
-        ignore= set(("tip","qtip","qbase","qparent"))
         curr_rev= self.current_revision
-        cmd= "hg tags -R %s" % self.directory
-        (reply,_)= sumo.system.system(cmd,
-                             True, False,
-                             self.verbose, self.dry_run)
+        cwd= sumo.utils.changedir(self.directory)
+        cmd= "git tag --points-at %s" % curr_rev
+        try:
+            (reply,_)= sumo.system.system(cmd,
+                                 True, False,
+                                 self.verbose, self.dry_run)
+        finally:
+            sumo.utils.changedir(cwd)
         tags= []
         for line in reply.splitlines():
             line= line.strip()
-            m= self.__class__.rx_tag.search(line)
-            if m is None:
-                raise AssertionError("cannot parse: '%s' % line")
-            tag= m.group(1).strip()
-            if tag in ignore:
-                continue
-            if m.group(3)==curr_rev:
-                tags.append(m.group(1).strip())
+            if line: # if line is not empty:
+                # there may be more than one tag:
+                tags.append(line)
         if not tags:
             # no tags found:
             return
@@ -167,7 +197,7 @@ class Repo(object):
         self.tag_on_top= self._tag_on_top() # uses self._current_revision
     def __str__(self):
         """return a human readable representation."""
-        lines= [ "mercurial repo",
+        lines= [ "git repo",
                  "dir: %s" % repr(self.directory),
                  "current revision: %s" % repr(self.current_revision),
                  "local_changes: %s" % repr(self.local_changes),
@@ -179,7 +209,7 @@ class Repo(object):
         """return the repo type name."""
         # pylint: disable=R0201
         #                          Method could be a function
-        return "hg"
+        return "git"
     def get_tag_on_top(self):
         """return the "tag on top" property."""
         return self.tag_on_top
@@ -188,7 +218,7 @@ class Repo(object):
         return self.current_revision
     @classmethod
     def scan_dir(cls, directory, hints, verbose, dry_run):
-        """return a Repo object if a mercurial repo was found.
+        """return a Repo object if a git repo was found.
 
         This function returns <None> if no working repo was found.
 
@@ -196,7 +226,7 @@ class Repo(object):
         """
         # pylint: disable=R0201
         #                          Method could be a function
-        if not os.path.exists(os.path.join(directory,".hg")):
+        if not os.path.exists(os.path.join(directory,".git")):
             return
         obj= cls(directory, hints, verbose, dry_run)
         # if there are unrecorded changes we cannot use this as a repository,
@@ -214,7 +244,7 @@ class Repo(object):
             raise AssertionError("cannot create spec from repo '%s' with "
                                  "unrecorded changes" % self.directory)
         pars= {}
-        d= {"hg": pars}
+        d= {"git": pars}
         if self.tag_on_top is not None:
             pars["tag"]= self.tag_on_top
         else:
@@ -231,21 +261,26 @@ class Repo(object):
     def checkout(spec, destdir, verbose, dry_run):
         """spec must be a dictionary with "url" and "tag" (optional).
         """
-        cmd_l= ["hg", "clone"]
         url= spec.get("url")
         if url is None:
             raise ValueError("spec '%s' has no url" % repr(spec))
+        cmd= "git clone %s %s" % (url, destdir)
         tag= spec.get("tag")
         rev= spec.get("rev")
         if tag and rev:
             raise ValueError("you cannot specify both, tag '%s' and "
                              "revision '%s'" % (tag,rev))
-        if tag is not None:
-            cmd_l.extend(["-u '%s'" % tag])
-        elif rev is not None:
-            cmd_l.extend(["-u '%s'" % rev])
-        cmd_l.append(url)
-        cmd_l.append(destdir)
-        cmd= " ".join(cmd_l)
         sumo.system.system(cmd, False, False, verbose, dry_run)
+        if (tag is None) and (rev is None):
+            return
+        if tag is not None:
+            cmd="git checkout %s" % tag
+        else:
+            cmd="git checkout %s" % rev
+        cwd= sumo.utils.changedir(destdir)
+        try:
+            sumo.system.system(cmd, False, False, verbose, dry_run)
+        finally:
+            sumo.utils.changedir(cwd)
+
 

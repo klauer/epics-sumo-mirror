@@ -121,6 +121,9 @@
         "/data/epics/support/misc/debugmsg/3-0": [
             "ANY"
         ],
+        "/data/epics/support/misc/debugmsg/3-1": [
+            "ANY"
+        ],
         "/data/epics/support/seq/2-1-10": [
             "RTEMS-mvme2100",
             "RTEMS-mvme5500",
@@ -208,6 +211,9 @@
             "EPICS_BASE": "/data/epics/base/3-14-12-2-1"
         },
         "/data/epics/support/misc/debugmsg/3-0": {
+            "EPICS_BASE": "/data/epics/base/3-14-12-2-1"
+        },
+        "/data/epics/support/misc/debugmsg/3-1": {
             "EPICS_BASE": "/data/epics/base/3-14-12-2-1"
         },
         "/data/epics/support/seq/2-1-10": {
@@ -299,7 +305,8 @@
         },
         "MISC_DEBUGMSG": {
             "/data/epics/support/misc/debugmsg": [
-                "3-0"
+                "3-0",
+                "3-1"
             ]
         },
         "SEQ": {
@@ -422,8 +429,14 @@
             "path": "/data/epics/support/misc/dbc/3-0"
         },
         "/data/epics/support/misc/debugmsg/3-0": {
-            "darcs": {
+            "git": {
                 "tag": "R3-0",
+                "url": "/data/repos/support/misc/debugmsg"
+            }
+        },
+        "/data/epics/support/misc/debugmsg/3-1": {
+            "git": {
+                "tag": "R3-1",
                 "url": "/data/repos/support/misc/debugmsg"
             }
         },
