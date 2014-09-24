@@ -37,6 +37,7 @@ List of modules that fullfill the given module specification:
                 "MCAN:R2-6-3-gp": "state: not tested",
                 "MISC_DBC:PATH-3-0": "state: stable",
                 "MISC_DEBUGMSG:R3-0": "state: stable",
+                "MISC_DEBUGMSG:R3-1": "state: not tested",
                 "SOFT_DEVHWCLIENT:R3-0": "state: stable"
             }
         }
@@ -95,6 +96,13 @@ List of modules that fullfill the given module specification:
             "built": true,
             "dependents": {
                 "MCAN:R2-6-1": "state: stable",
+                "MCAN:R2-6-3-gp": "state: not tested"
+            }
+        },
+        "R3-1": {
+            "built": false,
+            "dependents": {
+                "MCAN:R2-6-1": "state: not tested",
                 "MCAN:R2-6-3-gp": "state: not tested"
             }
         }
@@ -126,7 +134,7 @@ exact version specification:
     BSPDEP_VMETAS
     MCAN
     MISC_DBC             -> suggested version: PATH-3-0
-    MISC_DEBUGMSG        -> suggested version: R3-0
+    MISC_DEBUGMSG
     SOFT_DEVHWCLIENT     -> suggested version: R3-0
 
 List of modules that fullfill the given module specification:
@@ -153,6 +161,7 @@ List of modules that fullfill the given module specification:
                 "MCAN:R2-6-3-gp": "state: not tested",
                 "MISC_DBC:PATH-3-0": "state: stable",
                 "MISC_DEBUGMSG:R3-0": "state: stable",
+                "MISC_DEBUGMSG:R3-1": "state: not tested",
                 "SOFT_DEVHWCLIENT:R3-0": "state: stable"
             }
         }
@@ -211,6 +220,13 @@ List of modules that fullfill the given module specification:
             "built": true,
             "dependents": {
                 "MCAN:R2-6-1": "state: stable",
+                "MCAN:R2-6-3-gp": "state: not tested"
+            }
+        },
+        "R3-1": {
+            "built": false,
+            "dependents": {
+                "MCAN:R2-6-1": "state: not tested",
                 "MCAN:R2-6-3-gp": "state: not tested"
             }
         }

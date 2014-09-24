@@ -53,7 +53,7 @@ function MK_HG
     #echo "DIR : $sourcepath"
     if [ ! -e .hg ]; then
         hg init
-        cp $SRCDIR/hgignore .hgignore
+        cp $SRCDIR/gitignore .gitignore
     fi
     if [ -n "$EPICSBASE" ]; then
         sed -i configure/RELEASE -e "s#^\(EPICS_BASE\) *=.*#\1=$EPICSBASE#"
@@ -66,6 +66,37 @@ function MK_HG
     fi
     hg commit -m 'dummy mercurial commit' 
     hg tag $tag
+    cd $old > /dev/null
+  }
+
+# create git repositories
+function MK_GIT
+  { 
+    old=`pwd`
+    sourcepath="$1"
+    destpath="$2"
+    tag="$3"
+    if [ ! -d $destpath ]; then
+        mkdir -p $destpath
+    fi
+    cd $destpath > /dev/null
+    cp -a $sourcepath/* .
+    #echo "DIR : $sourcepath"
+    if [ ! -e .git ]; then
+        git init
+        cp $SRCDIR/gitignore .gitignore
+    fi
+    if [ -n "$EPICSBASE" ]; then
+        sed -i configure/RELEASE -e "s#^\(EPICS_BASE\) *=.*#\1=$EPICSBASE#"
+        sed -i configure/RELEASE -e "s#^\(SUPPORT\) *=.*#\1=$SUPPORTDIR#"
+        sed -i configure/RELEASE -e "s#^\(EPICS_SUPPORT\) *=.*#\1=$SUPPORTDIR#"
+    fi
+    # run "git add" when there seem to be new files:
+    if git status -s -u | grep '?' -q; then
+        git status --porcelain -u | sed -e 's/?? //' | xargs git add
+    fi
+    git commit -a -m 'dummy git commit' 
+    git tag -a $tag -m 'my tag'
     cd $old > /dev/null
   }
 
@@ -96,7 +127,8 @@ MK_DARCS $SRCDIR/support/genSub/1-6-1             support/genSub           R1-6-
 MK_DARCS $SRCDIR/support/mcan/2-6-1               support/mcan             R2-6-1
 MK_DARCS $SRCDIR/support/mcan/2-6-3-gp            support/mcan             R2-6-3-gp
 MK_DARCS $SRCDIR/support/misc/dbc/3-0             support/misc/dbc         R3-0
-MK_DARCS $SRCDIR/support/misc/debugmsg/3-0        support/misc/debugmsg    R3-0
+MK_GIT   $SRCDIR/support/misc/debugmsg/3-0        support/misc/debugmsg    R3-0
+MK_GIT   $SRCDIR/support/misc/debugmsg/3-1        support/misc/debugmsg    R3-1
 MK_DARCS $SRCDIR/support/seq/2-1-10               support/seq              R2-1-10
 MK_DARCS $SRCDIR/support/soft/devHwClient/3-0     support/soft/devHwClient R3-0
 

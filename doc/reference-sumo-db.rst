@@ -187,11 +187,11 @@ source data
 
 The *source data* describes where the :term:`sources` of the :term:`module` can
 be found. It is a map with a single key. The key either has the value "path" or
-"darcs" or "hg". If the key is "path" the  value is a string, the path of the source.
-If the key is "darcs" or "hg", the value is a map. This map has a key "url" whose value
-is the repository url. The map may also have a key "tag" which is the
-repository tag or a key "rev" which is the revision number. Here is the structure 
-of the *source data*::
+"darcs", "hg" or "git". If the key is "path" the  value is a string, the path
+of the source.  If the key is "darcs" or "hg", the value is a map. This map has
+a key "url" whose value is the repository url. The map may also have a key
+"tag" which is the repository tag or a key "rev" which is the revision number.
+Here is the structure of the *source data*::
 
   {
       "path": PATH
@@ -235,6 +235,32 @@ or::
 
   {
       "hg": {
+          "tag": TAG,
+          "url": URL
+      }
+  }
+
+or::
+
+  {
+      "git": {
+          "url": URL
+      }
+  }
+
+or::
+
+  {
+      "git": {
+          "rev": REVISION,
+          "url": URL
+      }
+  }
+
+or::
+
+  {
+      "git": {
           "tag": TAG,
           "url": URL
       }
@@ -460,10 +486,10 @@ This command adds a new :term:`version` of a :term:`module` to the
 :term:`dependency database` by copying the old :term:`version`. If sourcespec
 is given, the command changes the source part according to this parameter. A
 sourcespec has the form "path PATH" or "REPOTYPE URL" or "REPOTYPE URL TAG".
-REPOTYPE may be "darcs" or "hg". Both, URL or TAG may be "*", in this case the
-original URL or TAG remain unchanged. If sourcespec is not given, the command
-adds NEW-VERSION as new tag to the source specification. The command always
-asks for a confirmation of the action unless option "-y" is used.
+REPOTYPE may be "darcs", "hg" or "git". Both, URL or TAG may be "*", in this
+case the original URL or TAG remain unchanged. If sourcespec is not given, the
+command adds NEW-VERSION as new tag to the source specification. The command
+always asks for a confirmation of the action unless option "-y" is used.
 
 replaceversion [MODULE] [OLD-VERSION] [NEW-VERSION]
 +++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -472,8 +498,8 @@ This command replaces a :term:`version` of a :term:`module` with a new
 :term:`version`. All the data of the :term:`module` is copied. If sourcespec is
 given, the command changes the source part according to this parameter. A
 sourcespec has the form "path PATH" or "REPOTYPE URL" or "REPOTYPE URL TAG".
-REPOTYPE may be "darcs" or "hg". Both, URL or TAG may be "*", in this case the
-original URL or TAG remains unchanged.
+REPOTYPE may be "darcs", "hg" or "git". Both, URL or TAG may be "*", in this
+case the original URL or TAG remains unchanged.
 
 clonemodule [OLD-MODULE] [NEW-MODULE] {VERSIONS}
 ++++++++++++++++++++++++++++++++++++++++++++++++
