@@ -11,7 +11,6 @@ Create a dependency database with sumo-scan
 You first have to create a file sumo-scan.config with this content::
 
   {
-      "darcs_dirtest": true,
       "dir": [
           "/opt/csr/Epics/R3.14.12/base/3-14-12-2-1",
           "/opt/Epics/R3.14.12/support"

@@ -161,7 +161,7 @@ DB file:
                 }
             }
         },
-        "TAGLESS-3-8": {
+        "R3-8-modified": {
             "aliases": {
                 "BASE": "EPICS_BASE",
                 "BSPDEP_TIMER": "TIMER",
@@ -181,6 +181,7 @@ DB file:
             ],
             "source": {
                 "darcs": {
+                    "tag": "R3-8-modified",
                     "url": "/data/epics/support/alarm/3-8"
                 }
             }

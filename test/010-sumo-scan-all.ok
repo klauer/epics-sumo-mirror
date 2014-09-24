@@ -306,6 +306,7 @@
         },
         "/data/epics/support/alarm/3-8": {
             "darcs": {
+                "tag": "R3-8-modified",
                 "url": "/data/epics/support/alarm/3-8"
             }
         },

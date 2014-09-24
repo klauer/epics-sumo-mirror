@@ -16,7 +16,7 @@ have to be added:
 List of modules that fullfill the given module specification:
 {
     "ALARM": {
-        "TAGLESS-3-8": {
+        "R3-8-modified": {
             "built": false,
             "dependents": {
                 "MCAN:R2-6-1": "state: not tested",
@@ -28,7 +28,7 @@ List of modules that fullfill the given module specification:
         "R3-14-12-2-1": {
             "built": true,
             "dependents": {
-                "ALARM:TAGLESS-3-8": "state: not tested",
+                "ALARM:R3-8-modified": "state: not tested",
                 "BSPDEP_TIMER:R6-2": "state: stable",
                 "BSPDEP_VMETAS:R2-0": "state: stable",
                 "MCAN:R2-6-1": "state: stable",
@@ -43,7 +43,7 @@ List of modules that fullfill the given module specification:
         "R6-2": {
             "built": true,
             "dependents": {
-                "ALARM:TAGLESS-3-8": "state: not tested"
+                "ALARM:R3-8-modified": "state: not tested"
             }
         }
     },
@@ -68,7 +68,7 @@ List of modules that fullfill the given module specification:
         "R3-0": {
             "built": true,
             "dependents": {
-                "ALARM:TAGLESS-3-8": "state: not tested",
+                "ALARM:R3-8-modified": "state: not tested",
                 "MCAN:R2-6-1": "state: stable",
                 "MCAN:R2-6-3-gp": "state: not tested"
             }
@@ -116,7 +116,7 @@ exact version specification:
 List of modules that fullfill the given module specification:
 {
     "ALARM": {
-        "TAGLESS-3-8": {
+        "R3-8-modified": {
             "built": false,
             "dependents": {
                 "MCAN:R2-6-1": "state: not tested",
@@ -128,7 +128,7 @@ List of modules that fullfill the given module specification:
         "R3-14-12-2-1": {
             "built": true,
             "dependents": {
-                "ALARM:TAGLESS-3-8": "state: not tested",
+                "ALARM:R3-8-modified": "state: not tested",
                 "BSPDEP_TIMER:R6-2": "state: stable",
                 "BSPDEP_VMETAS:R2-0": "state: stable",
                 "MCAN:R2-6-1": "state: stable",
@@ -143,7 +143,7 @@ List of modules that fullfill the given module specification:
         "R6-2": {
             "built": true,
             "dependents": {
-                "ALARM:TAGLESS-3-8": "state: not tested"
+                "ALARM:R3-8-modified": "state: not tested"
             }
         }
     },
@@ -168,7 +168,7 @@ List of modules that fullfill the given module specification:
         "R3-0": {
             "built": true,
             "dependents": {
-                "ALARM:TAGLESS-3-8": "state: not tested",
+                "ALARM:R3-8-modified": "state: not tested",
                 "MCAN:R2-6-1": "state: stable",
                 "MCAN:R2-6-3-gp": "state: not tested"
             }
@@ -210,7 +210,7 @@ specification:
 List of modules that fullfill the given module specification:
 {
     "ALARM": {
-        "TAGLESS-3-8": {
+        "R3-8-modified": {
             "built": false,
             "dependents": {
                 "MCAN:R2-6-1": "state: not tested"
@@ -221,7 +221,7 @@ List of modules that fullfill the given module specification:
         "R3-14-12-2-1": {
             "built": true,
             "dependents": {
-                "ALARM:TAGLESS-3-8": "state: not tested",
+                "ALARM:R3-8-modified": "state: not tested",
                 "BSPDEP_TIMER:R6-2": "state: stable",
                 "BSPDEP_VMETAS:R2-0": "state: stable",
                 "MCAN:R2-6-1": "state: stable",
@@ -235,7 +235,7 @@ List of modules that fullfill the given module specification:
         "R6-2": {
             "built": true,
             "dependents": {
-                "ALARM:TAGLESS-3-8": "state: not tested"
+                "ALARM:R3-8-modified": "state: not tested"
             }
         }
     },
@@ -256,7 +256,7 @@ List of modules that fullfill the given module specification:
         "R3-0": {
             "built": true,
             "dependents": {
-                "ALARM:TAGLESS-3-8": "state: not tested",
+                "ALARM:R3-8-modified": "state: not tested",
                 "MCAN:R2-6-1": "state: stable"
             }
         }

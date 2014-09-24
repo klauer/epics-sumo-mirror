@@ -373,6 +373,14 @@ Here is a short overview on command line options:
 ``--exclude-deps REGEXP``
     Exclude all paths whose dependencies match REGEXP. This option value is
     stored in the CONFIGFILE.,
+``--ignore-changes REGEXP``
+    Ignore all uncomitted changes in files that match the REGEXP. Usually
+    uncomitted changes mean that we cannot use the repository as such but must
+    copy the whole directory (source type is always 'path'). A common
+    application for this option is to ignore changes in 'configure/RELEASE'.
+    You can specify more than one of these by repeating this option or by
+    joining values in a single string separated by spaces. This option value is
+    stored in the CONFIGFILE.
 ``-P PATCHEXPRESSION, --source-patch PATCHEXPRESSION``
     Specify a source PATCHEXPRESSION. Such an expression consists of a tuple of
     2 python strings. The first is the match expression, the second one is the
@@ -384,10 +392,6 @@ Here is a short overview on command line options:
     regular expression that is matched with the module path. FLAG is a string
     that gives hints how to treat that module.  You can specify more than one
     hint.  This option value is stored in the CONFIGFILE.,
-``--darcs-dirtest``
-    Test if a found remote darcs repository has a '_darcs' directory in it.
-    This may help detect invalid default repository entries. This option value
-    is stored in the CONFIGFILE.,
 ``--missing-tag``
     Show directories where a repository was found but no tag.  This option
     value is stored in the CONFIGFILE.

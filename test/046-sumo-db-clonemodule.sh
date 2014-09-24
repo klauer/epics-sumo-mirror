@@ -20,7 +20,7 @@ echo -e "\n-> Test sumo-db cloneversion." >&2
 
 cp tmp-020-sumo-db-convert/DEPS.DB $ME-DEPS.tmp
 
-$PYTHON ../bin/sumo-db --db $ME-DEPS.tmp clonemodule ALARM ALARM3-8 TAGLESS-3-8 
+$PYTHON ../bin/sumo-db --db $ME-DEPS.tmp clonemodule ALARM ALARM3-8 R3-8-modified 
 $PYTHON ../bin/sumo-db --db $ME-DEPS.tmp clonemodule MCAN MCAN-COPY
 echo "DB file:"
 cat $ME-DEPS.tmp | sed -e s#$PWD_NICE##
