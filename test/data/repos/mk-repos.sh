@@ -100,6 +100,31 @@ function MK_GIT
     cd $old > /dev/null
   }
 
+# create just a directory
+function MK_TAR
+  { 
+    old=`pwd`
+    sourcepath="$1"
+    tarname="$2"
+    tardir="$3"
+
+    if [ ! -d $tardir ]; then
+        mkdir -p $tardir
+    fi
+    cd $tardir > /dev/null
+    cp -a $sourcepath $tarname
+    if [ -n "$EPICSBASE" ]; then
+        cd $tarname > /dev/null
+        sed -i configure/RELEASE -e "s#^\(EPICS_BASE\) *=.*#\1=$EPICSBASE#"
+        sed -i configure/RELEASE -e "s#^\(SUPPORT\) *=.*#\1=$SUPPORTDIR#"
+        sed -i configure/RELEASE -e "s#^\(EPICS_SUPPORT\) *=.*#\1=$SUPPORTDIR#"
+        cd .. > /dev/null
+    fi
+    tar -czf $tarname.tar.gz $tarname
+    rm -rf $tarname
+    cd $old > /dev/null
+  }
+
 mkdir base
 mkdir -p support/apps
 
@@ -130,5 +155,4 @@ MK_DARCS $SRCDIR/support/misc/dbc/3-0             support/misc/dbc         R3-0
 MK_GIT   $SRCDIR/support/misc/debugmsg/3-0        support/misc/debugmsg    R3-0
 MK_GIT   $SRCDIR/support/misc/debugmsg/3-1        support/misc/debugmsg    R3-1
 MK_DARCS $SRCDIR/support/seq/2-1-10               support/seq              R2-1-10
-MK_DARCS $SRCDIR/support/soft/devHwClient/3-0     support/soft/devHwClient R3-0
-
+MK_TAR   $SRCDIR/support/soft/devHwClient/3-0 devHwClient-3-0 support/soft

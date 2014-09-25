@@ -772,19 +772,21 @@ where command is:
           Add a new version to the database by copying the old version. The
           old-version data is copied for the new version data. If sourcespec is
           given, the command changes the source part according to this
-          parameter. A sourcespec has the form "path PATH" or "REPOTYPE URL" or
-          "REPOTYPE URL TAG". REPOTYPE may be "darcs", "hg" or "git". Both, URL
-          or TAG may be "*", in this case the original URL or TAG remain
-          unchanged. If sourcespec is not given, the command adds NEW-VERSION
-          as new tag to the source specification. The command always asks for a
-          confirmation of the action unless option "-y" is used.
+          parameter. A sourcespec has the form "path PATH", "tar TARFILE",
+          "REPOTYPE URL" or "REPOTYPE URL TAG". REPOTYPE may be "darcs", "hg"
+          or "git". Both, URL or TAG may be "*", in this case the original URL
+          or TAG remain unchanged. If sourcespec is not given, the command adds
+          NEW-VERSION as new tag to the source specification. The command
+          always asks for a confirmation of the action unless option "-y" is
+          used.
   replaceversion [MODULE] [OLD-VERSION] [NEW-VERSION] {SOURCESPEC}
           Replace a version to the database with a new one. The old-version
           data is copied for the new version data. If sourcespec is given, the
           command changes the source part according to this parameter. A
-          sourcespec has the form "path PATH" or "REPOTYPE URL" or "REPOTYPE
-          URL TAG". REPOTYPE may be "darcs", "hg" or "git". Both, URL or TAG
-          may be "*", in this case the original URL or TAG remains unchanged.
+          sourcespec has the form "path PATH", "tar TARFILE", "REPOTYPE URL" or
+          "REPOTYPE URL TAG". REPOTYPE may be "darcs", "hg" or "git". Both, URL
+          or TAG may be "*", in this case the original URL or TAG remains
+          unchanged.
   clonemodule [OLD-MODULE] [NEW-MODULE] {VERSIONS}
           Copy all versions of the existing old module and add this with the
           name of thew new module to the dependency database. If there are no
