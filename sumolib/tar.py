@@ -6,8 +6,8 @@
 
 import os.path
 import shutil
-import sumo.system
-import sumo.utils
+import sumolib.system
+import sumolib.utils
 
 class Repo(object):
     """represent a tar."""
@@ -132,12 +132,12 @@ class Repo(object):
         ap_destdir= p_abspath(destdir)
         ap_tempdir= destdir+".tmp"
         os.makedirs(ap_tempdir)
-        cwd= sumo.utils.changedir(ap_tempdir)
+        cwd= sumolib.utils.changedir(ap_tempdir)
         try:
-            sumo.system.system("tar %s %s" % (tar_args, ap_spec),
+            sumolib.system.system("tar %s %s" % (tar_args, ap_spec),
                                False, False, verbose, dry_run)
         finally:
-            sumo.utils.changedir(cwd)
+            sumolib.utils.changedir(cwd)
         ap_subdir= only_dir(ap_tempdir)
         if not ap_subdir:
             os.rename(ap_tempdir, ap_destdir)

@@ -15,21 +15,21 @@ import os
 import errno
 import shutil
 
-import sumo.system
-import sumo.JSON
-import sumo.lock
-import sumo.utils as utils
-import sumo.Config
-import sumo.ModuleSpec
-import sumo.Databases
-import sumo.repos
+import sumolib.system
+import sumolib.JSON
+import sumolib.lock
+import sumolib.utils as utils
+import sumolib.Config
+import sumolib.ModuleSpec
+import sumolib.Databases
+import sumolib.repos
 
 # version of the program:
 my_version= "1.9" #VERSION#
 
-sumo.JSON.assert_version(my_version)
-sumo.lock.assert_version(my_version)
-sumo.system.assert_version(my_version)
+sumolib.JSON.assert_version(my_version)
+sumolib.lock.assert_version(my_version)
+sumolib.system.assert_version(my_version)
 utils.assert_version(my_version)
 
 KNOWN_COMMANDS=set(( "cleanup", "delete", "edit", "find", "list",
@@ -148,7 +148,7 @@ def get_buildtag(options, commands, command_index,
 def db_from_json_file(filename, keep_locked= False):
     """load a db, exits gracefully in case of an error."""
     try:
-        db= sumo.Databases.Dependencies.from_json_file(filename, keep_locked)
+        db= sumolib.Databases.Dependencies.from_json_file(filename, keep_locked)
     except ValueError, e:
         sys.exit("Error while loading dependency database (db file),\n%s" % \
                  str(e))
@@ -160,7 +160,7 @@ def db_from_json_file(filename, keep_locked= False):
 def builddb_from_json_file(filename, keep_locked= False):
     """load a builddb, exits gracefully in case of an error."""
     try:
-        builddb= sumo.Databases.Builddb.from_json_file(filename, keep_locked)
+        builddb= sumolib.Databases.Builddb.from_json_file(filename, keep_locked)
     except ValueError, e:
         sys.exit("Error while loading build database (builddb),\n%s" % str(e))
     except IOError, e:
@@ -170,10 +170,10 @@ def builddb_from_json_file(filename, keep_locked= False):
 def init_buildcache(scandb_name, builddb, db):
     """load a builddb, exits gracefully in case of an error."""
     if not scandb_name:
-        buildcache= sumo.Databases.BuildCache()
+        buildcache= sumolib.Databases.BuildCache()
     else:
         try:
-            buildcache= sumo.Databases.BuildCache.from_json_file(scandb_name,
+            buildcache= sumolib.Databases.BuildCache.from_json_file(scandb_name,
                                                                  False)
         except ValueError, e:
             sys.exit("Error while loading build database (buildcache),\n%s" % \
@@ -223,7 +223,7 @@ def loadcleanup(build_tag, must_exist= False):
     """load the cleanup file."""
     fn= cleanupfilename(build_tag)
     if os.path.exists(fn):
-        return sumo.JSON.loadfile(fn)
+        return sumolib.JSON.loadfile(fn)
     if must_exist:
         raise IOError("file '%s' not found" % fn)
     return {"modules": [] }
@@ -231,7 +231,7 @@ def loadcleanup(build_tag, must_exist= False):
 def savecleanup(build_tag, struc):
     """save the cleanup file."""
     fn= cleanupfilename(build_tag)
-    sumo.JSON.dump_file(fn, struc)
+    sumolib.JSON.dump_file(fn, struc)
 
 # -----------------------------------------------
 # error messages
@@ -473,7 +473,7 @@ def create_source(db, modulename, versionname,
     # pylint: disable=R0913
     #                          Too many arguments
     (sourcetype, sourcedata)= db.module_source_dict(modulename, versionname)
-    sumo.repos.checkout(sourcetype,
+    sumolib.repos.checkout(sourcetype,
                         sourcedata,
                         destdir,
                         verbose, dry_run)
@@ -647,7 +647,7 @@ def create_modules(dist_dict, db, builddb, build_tag, extra_lines,
 
     if builddb.is_fully_linked(build_tag):
         # the new build would contain only links, this is probably not wanted.
-        if sumo.Databases.Builddb.is_generated_buildtag(build_tag):
+        if sumolib.Databases.Builddb.is_generated_buildtag(build_tag):
             # we never want an autotag build that consists only of links
             sys.exit("error: this build with an auto generated tag "
                      "would consist only of links. You can as well "
@@ -690,7 +690,7 @@ def call_make(builddb_name, buildtag,
     cmd="make %s -f %s" % (" ".join(make_options),makefilename(buildtag))
     try:
         # sys.stderr.write("CALLING MAKE: %s\n" % cmd)
-        sumo.system.system(cmd, False, False, verbose, dry_run)
+        sumolib.system.system(cmd, False, False, verbose, dry_run)
     except IOError, e:
         sys.stderr.write("error: make failed, %s" % str(e))
         sys.exit(1)
@@ -792,7 +792,7 @@ def process(options, commands):
     #                          Too many statements
     # pylint: disable=R0914
     #                          Too many local variables
-    config= sumo.Config.ConfigFile.from_optionlist(
+    config= sumolib.Config.ConfigFile.from_optionlist(
                 CONFIG_NAME,
                 ( "#include",
                   "arch", "alias", "builddb", "buildtag_stem", "db", "extra",
@@ -816,7 +816,7 @@ def process(options, commands):
         sys.exit(str(e))
 
     if options.nolock:
-        sumo.lock.use_lockfile= False
+        sumolib.lock.use_lockfile= False
     if not commands:
         sys.exit("command missing")
     if commands[0] not in KNOWN_COMMANDS:
@@ -830,7 +830,7 @@ def process(options, commands):
             sys.exit("filename for command \"makeconfig\" is missing")
         if options.module:
             try:
-                modulespecs_obj= sumo.ModuleSpec.Specs.from_strings(
+                modulespecs_obj= sumolib.ModuleSpec.Specs.from_strings(
                                                          options.module,
                                                          options.builddb,
                                                          options.arch)
@@ -845,7 +845,8 @@ def process(options, commands):
             sys.exit("--readonly forbids editing a database file")
         if len(commands)!=2:
             sys.exit("exactly one filename must follow \"edit\"")
-        sumo.lock.edit_with_lock(commands[1], options.verbose, options.dry_run)
+        sumolib.lock.edit_with_lock(commands[1],
+                                    options.verbose, options.dry_run)
         return
 
     if commands[0]=="list":
@@ -872,7 +873,7 @@ def process(options, commands):
         builddb= builddb_from_json_file(options.builddb)
         if not builddb.has_build_tag(buildtag):
             sys.exit("error: buildtag \"%s\" not found" % buildtag)
-        new_builddb= sumo.Databases.Builddb()
+        new_builddb= sumolib.Databases.Builddb()
         new_builddb.add_build(builddb, buildtag)
         new_builddb.json_print()
         return
@@ -981,7 +982,7 @@ def process(options, commands):
             sys.exit("error: module specs missing")
 
         try:
-            modulespecs_obj= sumo.ModuleSpec.Specs.from_strings(modulespecs,
+            modulespecs_obj= sumolib.ModuleSpec.Specs.from_strings(modulespecs,
                                                             options.builddb,
                                                             options.arch)
         except ValueError, e:
@@ -993,7 +994,7 @@ def process(options, commands):
 
         db= db_from_json_file(options.db, keep_locked= False)
         if not os.path.exists(options.builddb):
-            builddb= sumo.Databases.Builddb()
+            builddb= sumolib.Databases.Builddb()
         else:
             builddb= builddb_from_json_file(options.builddb,
                                             keep_locked= False)
@@ -1111,7 +1112,7 @@ def process(options, commands):
                 print
             print "List of modules that fullfill the given "+\
                   "module specification:"
-            sumo.JSON.dump(report)
+            sumolib.JSON.dump(report)
 
         if buildtag is None:
             if not options.buildtag_stem:
@@ -1152,7 +1153,7 @@ def process(options, commands):
         db= db_from_json_file(options.db, keep_locked= False)
 
         try:
-            modulespecs_obj= sumo.ModuleSpec.Specs.from_strings(modulespecs,
+            modulespecs_obj= sumolib.ModuleSpec.Specs.from_strings(modulespecs,
                                                             options.builddb,
                                                             options.arch)
         except ValueError, e:
@@ -1172,7 +1173,7 @@ def process(options, commands):
             sys.exit(str(e))
 
         if not os.path.exists(options.builddb):
-            builddb= sumo.Databases.Builddb()
+            builddb= sumolib.Databases.Builddb()
         else:
             builddb= builddb_from_json_file(options.builddb,
                         keep_locked= not options.dry_run)
@@ -1230,7 +1231,7 @@ def process(options, commands):
         db= db_from_json_file(options.db)
         builddb= builddb_from_json_file(options.builddb)
         try:
-            modulespecs_obj= sumo.ModuleSpec.Specs.from_strings(modulespecs,
+            modulespecs_obj= sumolib.ModuleSpec.Specs.from_strings(modulespecs,
                                                             builddb,
                                                             options.arch)
         except ValueError, e:
@@ -1307,7 +1308,7 @@ def process(options, commands):
         builddb= builddb_from_json_file(options.builddb)
 
         try:
-            modulespecs_obj= sumo.ModuleSpec.Specs.from_strings(modulespecs,
+            modulespecs_obj= sumolib.ModuleSpec.Specs.from_strings(modulespecs,
                                                             options.builddb,
                                                             options.arch)
         except ValueError, e:

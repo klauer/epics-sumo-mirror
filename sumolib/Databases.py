@@ -6,19 +6,19 @@
 
 import sys
 import copy
-import sumo.ModuleSpec
+import sumolib.ModuleSpec
 
 if __name__ == "__main__":
     # if this module is directly called like a script, we have to add the path
     # ".." to the python search path in order to find modules named
-    # "sumo.[module]".
+    # "sumolib.[module]".
     sys.path.append("..")
 
-import sumo.JSON
+import sumolib.JSON
 
-import sumo.utils
+import sumolib.utils
 
-class OldDependencies(sumo.JSON.Container):
+class OldDependencies(sumolib.JSON.Container):
     """convert the old dependency database to the new format.
 
     returns a BuildCache and a Dependency object.
@@ -64,7 +64,7 @@ class OldDependencies(sumo.JSON.Container):
                     new_versiondict["dependencies"]= sorted(list(s))
         return (buildcache, Dependencies(new))
 
-class Dependencies(sumo.JSON.Container):
+class Dependencies(sumolib.JSON.Container):
     """the dependency database."""
     # pylint: disable=R0904
     #                          Too many public methods
@@ -130,7 +130,7 @@ class Dependencies(sumo.JSON.Container):
                 for dictname, dictval in vdict2.items():
                     if dictname=="archs":
                         try:
-                            sumo.utils.dict_update(
+                            sumolib.utils.dict_update(
                                         vdict.setdefault(dictname,{}),
                                         dictval)
                         except ValueError, e:
@@ -144,7 +144,7 @@ class Dependencies(sumo.JSON.Container):
                         continue
                     if dictname=="aliases":
                         try:
-                            sumo.utils.dict_update(
+                            sumolib.utils.dict_update(
                                         vdict.setdefault(dictname,{}),
                                         dictval)
                         except ValueError, e:
@@ -190,7 +190,7 @@ class Dependencies(sumo.JSON.Container):
 
         returns True if the spec was changed, False if it wasn't.
         """
-        if not isinstance(sourcespec, sumo.repos.SourceSpec):
+        if not isinstance(sourcespec, sumolib.repos.SourceSpec):
             raise TypeError("error: sourcespec '%s' is of wrong "
                             "type" % repr(sourcespec))
         version_dict= self.datadict().setdefault(module_name,{})
@@ -199,7 +199,7 @@ class Dependencies(sumo.JSON.Container):
         if old_source is None:
             version["source"]= sourcespec.to_dict()
             return True
-        old_spec= sumo.repos.SourceSpec(old_source)
+        old_spec= sumolib.repos.SourceSpec(old_source)
         return old_spec.change_source(sourcespec)
     def set_source_spec_by_tag(self, module_name, versionname, tag):
         """try to change sourcespec by providing a tag.
@@ -213,7 +213,7 @@ class Dependencies(sumo.JSON.Container):
             raise ValueError("error, %s:%s source specification is empty, "
                              "cannot simply change the tag." % \
                              (module_name, versionname))
-        old_spec= sumo.repos.SourceSpec(old_source)
+        old_spec= sumolib.repos.SourceSpec(old_source)
         try:
             ret= old_spec.change_source_by_tag(tag)
         except ValueError, e:
@@ -225,7 +225,7 @@ class Dependencies(sumo.JSON.Container):
     def set_source_arch(self, module_name, versionname, archs,
                               sourcespec):
         """add a module with source spec and archs."""
-        if not isinstance(sourcespec, sumo.repos.SourceSpec):
+        if not isinstance(sourcespec, sumolib.repos.SourceSpec):
             raise TypeError("error: sourcespec '%s' is of wrong "
                             "type" % repr(sourcespec))
         version_dict= self.datadict().setdefault(module_name,{})
@@ -356,15 +356,15 @@ class Dependencies(sumo.JSON.Container):
     def module_source_dict(self, modulename, versionname):
         """return a tuple (type,dict) for the module source."""
         l= self.datadict()[modulename][versionname]["source"]
-        return sumo.utils.single_key_item(l)
+        return sumolib.utils.single_key_item(l)
     def module_source_url(self, modulename, versionname):
         """return the source url or tar-file or path for a module."""
         (tp,val)= self.module_source_dict(modulename, versionname)
-        if tp not in sumo.repos.known_sources:
+        if tp not in sumolib.repos.known_sources:
             raise AssertionError("unexpected source tag %s at %s:%s" % \
                     (tp, modulename, versionname))
         # currently all known_repos have an "url" property:
-        if tp in sumo.repos.known_repos:
+        if tp in sumolib.repos.known_repos:
             return val["url"]
         # all others (not repos) are expected to have just a single
         # "string" property:
@@ -523,7 +523,7 @@ class Dependencies(sumo.JSON.Container):
         """return an iterator on sorted versionnames of a module."""
         return sorted(self.iter_versions(modulename,
                                          archs, must_exist),
-                      key= sumo.utils.rev2key,
+                      key= sumolib.utils.rev2key,
                       reverse= True)
 
     def patch_version(self, modulename, versionname, newversionname,
@@ -579,7 +579,7 @@ class Dependencies(sumo.JSON.Container):
             # scan stable, testing and unstable versions:
             for version in self.iter_versions(modulename,
                                               None, must_exist= True):
-                if not sumo.ModuleSpec.Spec.compare_versions(version,
+                if not sumolib.ModuleSpec.Spec.compare_versions(version,
                                                     versionname, "eq"):
                     continue
                 d[version]= self.datadict()[modulename][version]
@@ -587,7 +587,7 @@ class Dependencies(sumo.JSON.Container):
     def partial_copy_by_modulespecs(self, modulespecs):
         """take items from the Dependencies object and create a new one.
 
-        modulespecs must be a sumo.ModuleSpec.Specs object.
+        modulespecs must be a sumolib.ModuleSpec.Specs object.
 
         Note that this function treats versions like "R1-3" and "1-3" to be
         different.
@@ -601,7 +601,7 @@ class Dependencies(sumo.JSON.Container):
         data. This DOES NOT do a deep copy so you should NOT modify the
         result.
         """
-        if not isinstance(modulespecs, sumo.ModuleSpec.Specs):
+        if not isinstance(modulespecs, sumolib.ModuleSpec.Specs):
             raise TypeError("wrong type: '%s'" % repr(modulespecs))
         new= self.__class__()
         for modulespec in modulespecs:
@@ -620,7 +620,7 @@ class Dependencies(sumo.JSON.Container):
     def sets_dict(self, modulespecs):
         """create a dict of sets according to modulespecs.
 
-        modulespecs must be a sumo.ModuleSpec.Specs object.
+        modulespecs must be a sumolib.ModuleSpec.Specs object.
 
         convert modulespecs to a sets dict:
         { modulename1 : set(version1,version2),
@@ -628,7 +628,7 @@ class Dependencies(sumo.JSON.Container):
         }
 
         """
-        if not isinstance(modulespecs, sumo.ModuleSpec.Specs):
+        if not isinstance(modulespecs, sumolib.ModuleSpec.Specs):
             raise TypeError("wrong type: '%s'" % repr(modulespecs))
         new= {}
         for modulespec in modulespecs:
@@ -702,7 +702,7 @@ class Dependencies(sumo.JSON.Container):
                     except ValueError, _:
                         pass
 
-class Builddb(sumo.JSON.Container):
+class Builddb(sumolib.JSON.Container):
     """the buildtree database."""
     # pylint: disable=R0904
     #                          Too many public methods
@@ -778,7 +778,7 @@ class Builddb(sumo.JSON.Container):
             d[key].update(other[key])
     def add_json_file(self, filename):
         """add data from a JSON file."""
-        data= sumo.JSON.loadfile(filename)
+        data= sumolib.JSON.loadfile(filename)
         self.add(data)
     def delete(self, build_tag):
         """delete a build."""
@@ -888,7 +888,7 @@ class Builddb(sumo.JSON.Container):
         Note that this function treats versions like "R1-3" and "1-3" to be
         different.
         """
-        if not isinstance(modulespecs, sumo.ModuleSpec.Specs):
+        if not isinstance(modulespecs, sumolib.ModuleSpec.Specs):
             raise TypeError("wrong type: '%s'" % repr(modulespecs))
         new= self.__class__()
         for build_tag in self.iter_builds():
@@ -932,18 +932,18 @@ class Builddb(sumo.JSON.Container):
         """return the modules of a build in form module spec strings.
 
         This function returns a list of strings that ccan be parsed by
-        sumo.ModuleSpec.Spec.from_string().
+        sumolib.ModuleSpec.Spec.from_string().
         """
         lst= []
         build_dict= self.modules(build_tag)
         for modulename in sorted(build_dict.keys()):
             versionname= build_dict[modulename]
-            m= sumo.ModuleSpec.Spec(modulename, versionname,
+            m= sumolib.ModuleSpec.Spec(modulename, versionname,
                                      "eq", default_archs)
             lst.append(m.to_string())
         return lst
 
-class BuildCache(sumo.JSON.Container):
+class BuildCache(sumolib.JSON.Container):
     """Detailed dependency information.
 
     Taken from sumo-scan and from the build database.

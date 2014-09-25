@@ -1,32 +1,33 @@
-"""mercurial support
+"""darcs support
 """
 
 # pylint: disable=C0103
 #                          Invalid name for type variable
 
-import os.path
-import sumo.system
 import re
+import os.path
+import sumolib.system
 
 class Repo(object):
-    """represent a mercurial repository."""
+    """represent a darcs repository."""
     # pylint: disable=R0902
     #                          Too many instance attributes
-    rx_tag=re.compile(r'^(.*)\s+([0-9]+):([a-z0-9]+)$')
+    rx_darcs_repo= re.compile(r'^\s*Default Remote:\s*(.*)')
     def _default_repo(self):
         """return the default repo."""
         try:
-            (reply,_)= sumo.system.system("hg paths default -R %s" % \
+            (reply,_)= sumolib.system.system("cd %s && darcs show repo" % \
                                     self.directory,
                                     True, False,
                                     self.verbose, self.dry_run)
         except IOError, _:
-            # probably no repo found
+            # probably no darcs repo found
             return
-        st= reply.splitlines()[0].strip()
-        if st.startswith("not found"):
-            return
-        return st
+        for line in reply.splitlines():
+            m= self.__class__.rx_darcs_repo.match(line)
+            if m:
+                return m.group(1).strip()
+        return
     def _find_remote(self, patcher):
         """find and contact the remote repository."""
         default_repo= self._default_repo()
@@ -34,25 +35,28 @@ class Repo(object):
             return
         if patcher is not None:
             default_repo= patcher.apply(default_repo)
-        cmd= "hg -R %s incoming %s" % \
-                 (self.directory, default_repo)
-        (_,_,rc)= sumo.system.system_rc(cmd,
-                             True, True,
-                             self.verbose, self.dry_run)
-        if rc not in (0,1):
-            # contacting the remote repo failed
+        cmd= "darcs pull '%s' --repodir %s --dry-run" % \
+                 (default_repo, self.directory)
+        try:
+            # catch_stdout= True : do not show stdout,
+            # catch_stderr= True : do not show stderr:
+            (_,_)= sumolib.system.system(cmd,
+                                 True, True,
+                                 self.verbose, self.dry_run)
+        except IOError, _:
+            # probably no darcs repo found
             return
         return default_repo
     def _local_changes(self, matcher):
-        """returns True if there are uncomitted changes.
+        """returns True if there are unrecorded changes.
 
-        Does basically "hg status". All lines that match the matcher
+        Does basically "darcs whatsnew". All lines that match the matcher
         object are ignored. The matcher parameter may be <None>.
         """
-        cmd= "hg status -a -m -r -d -R %s" % self.directory
-        (reply,_,rc)= sumo.system.system_rc(cmd,
+        cmd= "darcs whatsnew -s --repodir %s" % self.directory
+        (reply,_,rc)= sumolib.system.system_rc(cmd,
                              True, False, self.verbose, self.dry_run)
-        # Note: a return code 1 is normal with mercurial
+        # Note: a return code 1 is normal with darcs
         if rc not in (0,1):
             raise IOError(rc, "cmd \"%s\" failed" % cmd)
         changes= False
@@ -62,7 +66,8 @@ class Repo(object):
                 # ignore if line matches:
                 if matcher.search(line):
                     continue
-            # any line remaining means that there were changes:
+            if line.startswith("No changes"):
+                continue
             changes= True
             break
         return changes
@@ -73,52 +78,30 @@ class Repo(object):
         if self.remote_url is None:
             raise AssertionError("cannot compute local patches without "
                                  "a reachable remote repository.")
-        cmd= "hg -R %s outgoing" % self.directory
-        (_,_,rc)= sumo.system.system_rc(cmd,
-                             True, False, self.verbose, self.dry_run)
-        if rc not in (0,1):
-            raise IOError(rc, "cmd \"%s\" failed" % cmd)
-        return rc==0
-    def _current_revision(self):
-        """returns the revision of the working copy.
-        """
-        (reply,_)= sumo.system.system("hg identify -i -R %s" % \
-                                self.directory,
-                                True, False,
-                                self.verbose, self.dry_run)
-        # for uncomitted changes, the revision ends with a "+":
-        return reply.splitlines()[0].strip().replace("+","")
+        cmd= "darcs push --repodir %s --dry-run" % self.directory
+        (reply,_)= sumolib.system.system(cmd,
+                             True, False,
+                             self.verbose, self.dry_run)
+        last_line= reply.splitlines()[-1].strip()
+        if last_line.startswith("No recorded local changes"):
+            return False
+        return True
     def _tag_on_top(self):
-        """returns True when a tag identifies the working copy.
+        """returns True when a darcs tag is the first in the patch list.
 
-        These automatically generated tags are ignored:
-          tip, qtip, qbase, qparent
+        For a "clean" darcs repository the first patch shown with "darcs
+        changes" should be a tag.
 
         Returns the found tag or None if no tag on top was found.
         """
-        ignore= set(("tip","qtip","qbase","qparent"))
-        curr_rev= self.current_revision
-        cmd= "hg tags -R %s" % self.directory
-        (reply,_)= sumo.system.system(cmd,
+        cmd= "darcs changes --last 1 --repodir %s" % self.directory
+        (reply,_)= sumolib.system.system(cmd,
                              True, False,
                              self.verbose, self.dry_run)
-        tags= []
-        for line in reply.splitlines():
-            line= line.strip()
-            m= self.__class__.rx_tag.search(line)
-            if m is None:
-                raise AssertionError("cannot parse: '%s' % line")
-            tag= m.group(1).strip()
-            if tag in ignore:
-                continue
-            if m.group(3)==curr_rev:
-                tags.append(m.group(1).strip())
-        if not tags:
-            # no tags found:
-            return
-        # return the first tag of the sorted list:
-        tags.sort()
-        return tags[0]
+        last_line= reply.splitlines()[-1].strip()
+        if last_line.startswith("tagged "):
+            return last_line.replace("tagged ","")
+        return None
     def _hint(self, name):
         """return the value of hint "name"."""
         return self.hints.get(name)
@@ -128,20 +111,23 @@ class Repo(object):
         Hints must be a dictionary. This gives hints how the directory should
         be scanned. Currently we know these keys in the dictionary:
 
-        "ignore changes": sumo.utils.RegexpMatcher
+        "ignore changes": sumolib.utils.RegexpMatcher
             All local changes in files that match the RegexpMatcher object are
             ignored. By this we can get the remote repository and tag from a
             directory although there are uncomitted changes. A common
             application is to ignore changes in file "configure/RELEASE".
-        "dir patcher": sumo.utils.RegexpPatcher
+        "dir patcher": sumolib.utils.RegexpPatcher
             This patcher is applied to the directory that is stored in the
             object.
-        "url patcher": sumo.utils.RegexpPatcher
+        "url patcher": sumolib.utils.RegexpPatcher
             This patcher is applied to the URL that is stored in the object.
         "force local": bool
             If this is True, the returns repository object does not contain a
             remote repoistory url even if there was one.
         """
+        if not isinstance(hints, dict):
+            raise TypeError("hints parameter '%s' has wrong type" % \
+                            repr(hints))
         self.hints= dict(hints) # shallow copy
         patcher= self._hint("dir patcher")
         if patcher is not None:
@@ -153,10 +139,8 @@ class Repo(object):
         self.remote_url= None
         self.local_patches= None
         self.tag_on_top= None
-        self.current_revision= None
         if self.directory is None:
             return
-        self.current_revision= self._current_revision()
         self.local_changes= \
                 self._local_changes(self._hint("ignore changes"))
         self.remote_url= self._find_remote(self._hint("url patcher"))
@@ -164,12 +148,11 @@ class Repo(object):
             self.local_patches= self._local_patches()
         if self._hint("force local"):
             self.remote_url= None
-        self.tag_on_top= self._tag_on_top() # uses self._current_revision
+        self.tag_on_top= self._tag_on_top()
     def __str__(self):
         """return a human readable representation."""
-        lines= [ "mercurial repo",
+        lines= [ "darcs repo",
                  "dir: %s" % repr(self.directory),
-                 "current revision: %s" % repr(self.current_revision),
                  "local_changes: %s" % repr(self.local_changes),
                  "remote url: %s" % repr(self.remote_url),
                  "local patches: %s" % repr(self.local_patches),
@@ -179,16 +162,13 @@ class Repo(object):
         """return the repo type name."""
         # pylint: disable=R0201
         #                          Method could be a function
-        return "hg"
+        return "darcs"
     def get_tag_on_top(self):
         """return the "tag on top" property."""
         return self.tag_on_top
-    def get_revision(self):
-        """return the current revision."""
-        return self.current_revision
     @classmethod
     def scan_dir(cls, directory, hints, verbose, dry_run):
-        """return a Repo object if a mercurial repo was found.
+        """return a Repo object if a darcs repo was found.
 
         This function returns <None> if no working repo was found.
 
@@ -196,7 +176,7 @@ class Repo(object):
         """
         # pylint: disable=R0201
         #                          Method could be a function
-        if not os.path.exists(os.path.join(directory,".hg")):
+        if not os.path.exists(os.path.join(directory,"_darcs")):
             return
         obj= cls(directory, hints, verbose, dry_run)
         # if there are unrecorded changes we cannot use this as a repository,
@@ -214,15 +194,15 @@ class Repo(object):
             raise AssertionError("cannot create spec from repo '%s' with "
                                  "unrecorded changes" % self.directory)
         pars= {}
-        d= {"hg": pars}
+        d= {"darcs": pars}
         if self.tag_on_top is not None:
             pars["tag"]= self.tag_on_top
-        else:
-            pars["rev"]= self.current_revision
 
         if self.remote_url is None:
             pars["url"]= self.directory
         elif self.local_patches:
+            pars["url"]= self.directory
+        elif self.tag_on_top is None:
             pars["url"]= self.directory
         else:
             pars["url"]= self.remote_url
@@ -231,21 +211,16 @@ class Repo(object):
     def checkout(spec, destdir, verbose, dry_run):
         """spec must be a dictionary with "url" and "tag" (optional).
         """
-        cmd_l= ["hg", "clone"]
+        cmd_l= ["darcs", "get"]
         url= spec.get("url")
         if url is None:
             raise ValueError("spec '%s' has no url" % repr(spec))
         tag= spec.get("tag")
-        rev= spec.get("rev")
-        if tag and rev:
-            raise ValueError("you cannot specify both, tag '%s' and "
-                             "revision '%s'" % (tag,rev))
         if tag is not None:
-            cmd_l.extend(["-u '%s'" % tag])
-        elif rev is not None:
-            cmd_l.extend(["-u '%s'" % rev])
+            cmd_l.extend(["-t", r"'^%s\s*$'" % tag])
         cmd_l.append(url)
         cmd_l.append(destdir)
         cmd= " ".join(cmd_l)
-        sumo.system.system(cmd, False, False, verbose, dry_run)
+        sumolib.system.system(cmd, False, False, verbose, dry_run)
+
 

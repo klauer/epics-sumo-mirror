@@ -4,13 +4,13 @@
 # pylint: disable=C0103
 #                          Invalid name for type variable
 
-import sumo.system
-import sumo.utils
-import sumo.path
-import sumo.tar
-import sumo.darcs
-import sumo.mercurial # "hg"
-import sumo.git
+import sumolib.system
+import sumolib.utils
+import sumolib.path
+import sumolib.tar
+import sumolib.darcs
+import sumolib.mercurial # "hg"
+import sumolib.git
 
 known_repos=set(("darcs","hg","git"))
 known_no_repos= set(("path","tar"))
@@ -28,14 +28,14 @@ def repo_from_dir(directory, hints, verbose, dry_run):
     Hints must be a dictionary. This gives hints how the directory should be
     scanned. Currently we know these keys in the dictionary:
 
-    "ignore changes": sumo.utils.RegexpMatcher
+    "ignore changes": sumolib.utils.RegexpMatcher
         All local changes in files that match the RegexpMatcher object are
         ignored. By this we can get the remote repository and tag from a
         directory although there are uncomitted changes. A common application
         is to ignore changes in file "configure/RELEASE".
-    "dir patcher": sumo.utils.RegexpPatcher
+    "dir patcher": sumolib.utils.RegexpPatcher
         This patcher is applied to the directory that is stored in the object.
-    "url patcher": sumo.utils.RegexpPatcher
+    "url patcher": sumolib.utils.RegexpPatcher
         This patcher is applied to the URL that is stored in the object.
     "force path" : bool
         If this is True, a Path object is always returned, even if a repository
@@ -48,22 +48,22 @@ def repo_from_dir(directory, hints, verbose, dry_run):
         raise TypeError("hints parameter '%s' is of wrong type" % \
                         repr(hints))
     if hints.get("force path"):
-        return sumo.path.Repo.scan_dir(directory, hints, verbose, dry_run)
+        return sumolib.path.Repo.scan_dir(directory, hints, verbose, dry_run)
 
-    obj= sumo.darcs.Repo.scan_dir(directory, hints, verbose, dry_run)
+    obj= sumolib.darcs.Repo.scan_dir(directory, hints, verbose, dry_run)
     if obj is not None:
         return obj
-    obj= sumo.mercurial.Repo.scan_dir(directory, hints, verbose, dry_run)
+    obj= sumolib.mercurial.Repo.scan_dir(directory, hints, verbose, dry_run)
     if obj is not None:
         return obj
-    obj= sumo.git.Repo.scan_dir(directory, hints, verbose, dry_run)
+    obj= sumolib.git.Repo.scan_dir(directory, hints, verbose, dry_run)
     if obj is not None:
         return obj
-    obj= sumo.tar.Repo.scan_dir(directory, hints, verbose, dry_run)
+    obj= sumolib.tar.Repo.scan_dir(directory, hints, verbose, dry_run)
     if obj is not None:
         return obj
     # insert other repo supports here
-    return sumo.path.Repo.scan_dir(directory, hints, verbose, dry_run)
+    return sumolib.path.Repo.scan_dir(directory, hints, verbose, dry_run)
 
 # ---------------------------------------------------------
 # check out:
@@ -74,22 +74,22 @@ def checkout(repotype, spec, destdir, verbose, dry_run):
     # pylint: disable=R0913
     #                          Too many arguments
     if repotype == "darcs":
-        sumo.darcs.Repo.checkout(spec, destdir, verbose, dry_run)
+        sumolib.darcs.Repo.checkout(spec, destdir, verbose, dry_run)
     elif repotype == "hg":
-        sumo.mercurial.Repo.checkout(spec, destdir, verbose, dry_run)
+        sumolib.mercurial.Repo.checkout(spec, destdir, verbose, dry_run)
     elif repotype == "git":
-        sumo.git.Repo.checkout(spec, destdir, verbose, dry_run)
+        sumolib.git.Repo.checkout(spec, destdir, verbose, dry_run)
     elif repotype== "tar":
-        sumo.tar.Repo.checkout(spec, destdir, verbose, dry_run)
+        sumolib.tar.Repo.checkout(spec, destdir, verbose, dry_run)
     elif repotype== "path":
-        sumo.path.Repo.checkout(spec, destdir, verbose, dry_run)
+        sumolib.path.Repo.checkout(spec, destdir, verbose, dry_run)
     else:
         raise ValueError("unsupported repotype: %s" % repotype)
 
 # ---------------------------------------------------------
 # SourceSpec class:
 
-class SourceSpec(sumo.JSON.Container):
+class SourceSpec(sumolib.JSON.Container):
     """hold the source specification.
     """
     # pylint: disable=R0904
@@ -155,7 +155,7 @@ class SourceSpec(sumo.JSON.Container):
         [<repotype>,URL] or [<repotype>,URL,TAG].
 
         where <repotype> may be one of the strings in
-        sumo.repos.known_repos
+        sumolib.repos.known_repos
 
         Here are some examples:
 
@@ -197,7 +197,7 @@ class SourceSpec(sumo.JSON.Container):
     def sourcetype(self):
         """return the type of the source."""
         d= self.datadict()
-        return sumo.utils.single_key(d)
+        return sumolib.utils.single_key(d)
     def is_repo(self):
         """return if SourceSpec refers to a repository.
         """
@@ -252,7 +252,7 @@ class SourceSpec(sumo.JSON.Container):
         """return the internal dict, the sourcetype and the parameters.
         """
         d= self.datadict()
-        type_= sumo.utils.single_key(d)
+        type_= sumolib.utils.single_key(d)
         return (d, type_, d[type_])
     def copy(self, other):
         """simply overwrite self with other."""

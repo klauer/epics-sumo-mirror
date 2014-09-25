@@ -25,22 +25,22 @@ import os
 import re
 # import pprint
 
-import sumo.system
-import sumo.Config
-import sumo.utils as utils
+import sumolib.system
+import sumolib.Config
+import sumolib.utils as utils
 
-import sumo.makefile_scan
-import sumo.repos
+import sumolib.makefile_scan
+import sumolib.repos
 
 makefile_scan_pre= {}
 
 # version of the program:
 my_version= "1.9" #VERSION#
 
-sumo.system.assert_version(my_version)
+sumolib.system.assert_version(my_version)
 utils.assert_version(my_version)
 
-sumo.makefile_scan.assert_version(my_version)
+sumolib.makefile_scan.assert_version(my_version)
 
 KNOWN_COMMANDS=set(("deps", "name2paths", "path2names",
                     "groups", "repos", "all", "makeconfig"))
@@ -62,7 +62,7 @@ def scan_config_file(filename, external_definitions= None,
     """
     wanted= { 'CROSS_COMPILER_TARGET_ARCHS': None
             }
-    data= sumo.makefile_scan.scan(filename,
+    data= sumolib.makefile_scan.scan(filename,
                              external_definitions,
                              makefile_scan_pre,
                              False,
@@ -77,7 +77,7 @@ def scan_release_file(filename,
                       verbose= False, dry_run= False):
     """scan a release file.
     """
-    data= sumo.makefile_scan.scan(filename,
+    data= sumolib.makefile_scan.scan(filename,
                              external_definitions,
                              makefile_scan_pre,
                              True, # warnings
@@ -375,7 +375,7 @@ def repo_info(deps, progress,
         elif flagdict.get("tagless"):
             hints_param= repo_hints_local
 
-        repo_obj= sumo.repos.repo_from_dir(path, hints_param,
+        repo_obj= sumolib.repos.repo_from_dir(path, hints_param,
                                            verbose, dry_run)
 
         new[path]= repo_obj.source_spec()
@@ -428,7 +428,7 @@ def process(options, commands):
     #                          Too many branches
     # pylint: disable=R0915
     #                          Too many statements
-    config= sumo.Config.ConfigFile.from_optionlist(
+    config= sumolib.Config.ConfigFile.from_optionlist(
                 CONFIG_NAME,
                 ( "#include",
                   "dir", "exclude_deps", "exclude_path", "group_basedir",
@@ -489,7 +489,7 @@ def process(options, commands):
     elif options.info_file:
         # pylint: disable=W0633
         #                     Attempting to unpack a non-sequence
-        (deps, archs)= sumo.JSON.loadfile(options.info_file)
+        (deps, archs)= sumolib.JSON.loadfile(options.info_file)
     else:
         sys.exit("error: -d or -i required for command")
 
@@ -518,7 +518,7 @@ def process(options, commands):
         if options.missing_repo:
             new= {}
             for (p, s) in repo_data.items():
-                sspec= sumo.repos.SourceSpec(s)
+                sspec= sumolib.repos.SourceSpec(s)
                 if sspec.sourcetype=="path":
                     continue
                 new[p]= s
@@ -526,13 +526,13 @@ def process(options, commands):
         if options.missing_tag:
             new= {}
             for (p, s) in repo_data.items():
-                sspec= sumo.repos.SourceSpec(s)
+                sspec= sumolib.repos.SourceSpec(s)
                 if sspec.sourcetype=="path":
                     continue
                 if sspec.tag is None:
                     new[p]= s
             bag["missing-tag"]= new
-    sumo.JSON.dump(bag)
+    sumolib.JSON.dump(bag)
 
 # pylint: enable=R0912
 

@@ -12,8 +12,8 @@ import os
 import os.path
 import re
 
-import sumo.JSON
-import sumo.repos
+import sumolib.JSON
+import sumolib.repos
 
 __version__="1.9" #VERSION#
 
@@ -23,7 +23,7 @@ if _pyver < (2,5):
     sys.exit("ERROR: SUMO requires at least Python 2.5, "
              "your version is %d.%d" % _pyver)
 
-sumo.JSON.assert_version(__version__)
+sumolib.JSON.assert_version(__version__)
 
 # -----------------------------------------------
 # ensure a certain module version
@@ -32,7 +32,7 @@ sumo.JSON.assert_version(__version__)
 def assert_version(wanted_version):
     """check if the version is the one that was expected."""
     if __version__!=wanted_version:
-        sys.exit("ERROR: module 'sumo/utils' version %s expected "
+        sys.exit("ERROR: module 'sumolib/utils' version %s expected "
                  "but found %s instead" % \
                  (wanted_version, __version__))
 
