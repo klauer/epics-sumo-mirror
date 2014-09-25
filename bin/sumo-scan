@@ -27,7 +27,7 @@ import re
 
 import sumolib.system
 import sumolib.Config
-import sumolib.utils as utils
+import sumolib.utils
 
 import sumolib.makefile_scan
 import sumolib.repos
@@ -38,7 +38,7 @@ makefile_scan_pre= {}
 my_version= "1.9" #VERSION#
 
 sumolib.system.assert_version(my_version)
-utils.assert_version(my_version)
+sumolib.utils.assert_version(my_version)
 
 sumolib.makefile_scan.assert_version(my_version)
 
@@ -145,7 +145,7 @@ def support_configure_data(support_trees,
         index=0
         i= None
         for e in l:
-            if utils.split_treetag(e)[1]==buildtag:
+            if sumolib.utils.split_treetag(e)[1]==buildtag:
                 i= index
                 break
             index+=1
@@ -166,7 +166,8 @@ def support_configure_data(support_trees,
     cnt_max= 50
     cnt= 0
     if progress:
-        utils.show_progress(cnt, cnt_max, "directories searched for RELEASE")
+        sumolib.utils.show_progress(cnt, cnt_max,
+                                    "directories searched for RELEASE")
     # not possible on python 2.5:
     #for (dirpath, dirnames, filenames) in os.walk(support_tree,
     #                                              topdown= True):
@@ -176,11 +177,12 @@ def support_configure_data(support_trees,
     if trace:
         progress= False
     for support_tree in support_trees:
-        for (dirpath, dirnames, filenames) in utils.dirwalk(support_tree):
+        for (dirpath, dirnames, filenames) in \
+                                 sumolib.utils.dirwalk(support_tree):
             if trace:
                 sys.stderr.write("%s\n" % dirpath)
             if progress:
-                cnt= utils.show_progress(cnt, cnt_max)
+                cnt= sumolib.utils.show_progress(cnt, cnt_max)
             if exclude_matcher.search(dirpath):
                 if trace:
                     sys.stderr.write("\texclude!\n")
@@ -248,8 +250,8 @@ def name2path_from_deps(deps):
     name2path= {}
     for dependends in deps.values():
         for name, dep_path in dependends.items():
-            utils.dict_of_sets_add(name2path, name, dep_path)
-    return utils.dict_sets_to_lists(name2path)
+            sumolib.utils.dict_of_sets_add(name2path, name, dep_path)
+    return sumolib.utils.dict_sets_to_lists(name2path)
 
 def path2name_from_deps(deps):
     """calculate path2name dict from dependency dict.
@@ -257,8 +259,8 @@ def path2name_from_deps(deps):
     path2name= {}
     for dependends in deps.values():
         for name, dep_path in dependends.items():
-            utils.dict_of_sets_add(path2name, dep_path, name)
-    return utils.dict_sets_to_lists(path2name)
+            sumolib.utils.dict_of_sets_add(path2name, dep_path, name)
+    return sumolib.utils.dict_sets_to_lists(path2name)
 
 def groups_from_deps(deps, basedirs):
     """try to group directories.
@@ -347,9 +349,9 @@ def repo_info(deps, progress,
     repo_hints= {}
     if ignore_changes_matcher:
         repo_hints["ignore changes"]= \
-                utils.RegexpMatcher(ignore_changes_matcher)
+                sumolib.utils.RegexpMatcher(ignore_changes_matcher)
     if source_patches:
-        patcher= utils.RegexpPatcher()
+        patcher= sumolib.utils.RegexpPatcher()
         for p in source_patches:
             patcher.add(eval(p))
         repo_hints["dir patcher"]= patcher
@@ -363,10 +365,11 @@ def repo_info(deps, progress,
     cnt_max= 50
     cnt= 0
     if progress:
-        utils.show_progress(cnt, cnt_max, "paths searched for repositories")
+        sumolib.utils.show_progress(cnt, cnt_max,
+                                    "paths searched for repositories")
     for path in path_set:
         if progress:
-            cnt= utils.show_progress(cnt, cnt_max)
+            cnt= sumolib.utils.show_progress(cnt, cnt_max)
         flagdict= hints.flags(path)
 
         hints_param= repo_hints
@@ -400,7 +403,7 @@ def get_configuration(options):
     for d in options.dir:
         if not os.path.exists(d):
             sys.exit("error, directory \"%s\" doesn't exist" % options.dir)
-    exclude_matcher= utils.RegexpMatcher(options.exclude_path)
+    exclude_matcher= sumolib.utils.RegexpMatcher(options.exclude_path)
     if options.ignore_name:
         ignore_names= set(options.ignore_name)
     else:
@@ -463,7 +466,7 @@ def process(options, commands):
         return
 
     # evaluate the --hint command line option:
-    hints= utils.Hints(options.hint)
+    hints= sumolib.utils.Hints(options.hint)
 
     commands= set(commands)
     if "all" in commands:
@@ -477,12 +480,12 @@ def process(options, commands):
         if not options.group_basedir:
             sys.exit("error, option -g is mandatory here")
 
-    options.dir            = utils.opt_join(options.dir)
-    options.exclude_path   = utils.opt_join(options.exclude_path)
-    options.group_basedir  = utils.opt_join(options.group_basedir)
-    options.ignore_changes = utils.opt_join(options.ignore_changes)
-    options.ignore_name    = utils.opt_join(options.ignore_name)
-    options.mergeoption    = utils.opt_join(options.mergeoption)
+    options.dir            = sumolib.utils.opt_join(options.dir)
+    options.exclude_path   = sumolib.utils.opt_join(options.exclude_path)
+    options.group_basedir  = sumolib.utils.opt_join(options.group_basedir)
+    options.ignore_changes = sumolib.utils.opt_join(options.ignore_changes)
+    options.ignore_name    = sumolib.utils.opt_join(options.ignore_name)
+    options.mergeoption    = sumolib.utils.opt_join(options.mergeoption)
 
     if options.dir:
         (deps, archs)= get_configuration(options)
