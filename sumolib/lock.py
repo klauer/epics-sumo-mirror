@@ -9,11 +9,11 @@ import sys
 if __name__ == "__main__":
     # if this module is directly called like a script, we have to add the path
     # ".." to the python search path in order to find modules named
-    # "sumo.[module]".
+    # "sumolib.[module]".
     sys.path.append("..")
 
 import os
-import sumo.system
+import sumolib.system
 
 __version__="1.9" #VERSION#
 
@@ -35,7 +35,7 @@ except ImportError, _lockfile_err:
 def assert_version(wanted_version):
     """check if the version is the one that was expected."""
     if __version__!=wanted_version:
-        sys.exit("ERROR: module 'sumo/locksupport' version %s expected "
+        sys.exit("ERROR: module 'sumolib/locksupport' version %s expected "
                  "but found %s instead" % \
                  (wanted_version, __version__))
 
@@ -92,10 +92,10 @@ def edit_with_lock(filename, verbose, dry_run):
         raise IOError("error: file \"%s\" doesn't exist" % filename)
     l= lock_a_file(filename)
     try:
-        sumo.system.system("%s %s" % (os.environ["VISUAL"], filename),
+        sumolib.system.system("%s %s" % (os.environ["VISUAL"], filename),
                False, False, verbose, dry_run)
     except IOError, _:
-        sumo.system.system("%s %s" % (os.environ["EDITOR"], filename),
+        sumolib.system.system("%s %s" % (os.environ["EDITOR"], filename),
                False, False, verbose, dry_run)
     unlock_a_file(l)
 

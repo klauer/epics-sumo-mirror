@@ -14,8 +14,8 @@
 # git clone src clone
 
 import os.path
-import sumo.utils
-import sumo.system
+import sumolib.utils
+import sumolib.system
 import re
 
 class Repo(object):
@@ -30,16 +30,16 @@ class Repo(object):
         Note that "git remote show origin" tries to contact the remote
         repository and fails if the repository cannot be reached.
         """
-        cwd= sumo.utils.changedir(self.directory)
+        cwd= sumolib.utils.changedir(self.directory)
         try:
-            (reply,_)= sumo.system.system("git remote show origin",
+            (reply,_)= sumolib.system.system("git remote show origin",
                                     True, False,
                                     self.verbose, self.dry_run)
         except IOError, _:
             # remote repo could not be contacted.
             return
         finally:
-            sumo.utils.changedir(cwd)
+            sumolib.utils.changedir(cwd)
         for line in reply.splitlines():
             line= line.strip()
             # look for "Push" url:
@@ -57,12 +57,12 @@ class Repo(object):
         object are ignored. The matcher parameter may be <None>.
         """
         cmd= "git status --porcelain"
-        cwd= sumo.utils.changedir(self.directory)
+        cwd= sumolib.utils.changedir(self.directory)
         try:
-            (reply,_)= sumo.system.system(cmd,
+            (reply,_)= sumolib.system.system(cmd,
                                  True, False, self.verbose, self.dry_run)
         finally:
-            sumo.utils.changedir(cwd)
+            sumolib.utils.changedir(cwd)
         changes= False
         for line in reply.splitlines():
             line= line.rstrip()
@@ -85,13 +85,13 @@ class Repo(object):
         if self.remote_url is None:
             raise AssertionError("cannot compute local patches without "
                                  "a reachable remote repository.")
-        cwd= sumo.utils.changedir(self.directory)
+        cwd= sumolib.utils.changedir(self.directory)
         cmd= "git push --dry-run --porcelain --all" # try to push to "origin"
         try:
-            (reply,_)= sumo.system.system(cmd,
+            (reply,_)= sumolib.system.system(cmd,
                                  True, False, self.verbose, self.dry_run)
         finally:
-            sumo.utils.changedir(cwd)
+            sumolib.utils.changedir(cwd)
         changes= False
         for line in reply.splitlines():
             line= line.strip()
@@ -114,13 +114,13 @@ class Repo(object):
         is on top this will return the hash key of the tag, not of the newest
         patch.
         """
-        cwd= sumo.utils.changedir(self.directory)
+        cwd= sumolib.utils.changedir(self.directory)
         try:
-            (reply,_)= sumo.system.system("git rev-parse --short HEAD",
+            (reply,_)= sumolib.system.system("git rev-parse --short HEAD",
                                     True, False,
                                     self.verbose, self.dry_run)
         finally:
-            sumo.utils.changedir(cwd)
+            sumolib.utils.changedir(cwd)
         # for uncomitted changes, the revision ends with a "+":
         return reply.splitlines()[0].strip()
     def _tag_on_top(self):
@@ -129,14 +129,14 @@ class Repo(object):
         Returns the found tag or None if no tag on top was found.
         """
         curr_rev= self.current_revision
-        cwd= sumo.utils.changedir(self.directory)
+        cwd= sumolib.utils.changedir(self.directory)
         cmd= "git tag --points-at %s" % curr_rev
         try:
-            (reply,_)= sumo.system.system(cmd,
+            (reply,_)= sumolib.system.system(cmd,
                                  True, False,
                                  self.verbose, self.dry_run)
         finally:
-            sumo.utils.changedir(cwd)
+            sumolib.utils.changedir(cwd)
         tags= []
         for line in reply.splitlines():
             line= line.strip()
@@ -158,15 +158,15 @@ class Repo(object):
         Hints must be a dictionary. This gives hints how the directory should
         be scanned. Currently we know these keys in the dictionary:
 
-        "ignore changes": sumo.utils.RegexpMatcher
+        "ignore changes": sumolib.utils.RegexpMatcher
             All local changes in files that match the RegexpMatcher object are
             ignored. By this we can get the remote repository and tag from a
             directory although there are uncomitted changes. A common
             application is to ignore changes in file "configure/RELEASE".
-        "dir patcher": sumo.utils.RegexpPatcher
+        "dir patcher": sumolib.utils.RegexpPatcher
             This patcher is applied to the directory that is stored in the
             object.
-        "url patcher": sumo.utils.RegexpPatcher
+        "url patcher": sumolib.utils.RegexpPatcher
             This patcher is applied to the URL that is stored in the object.
         "force local": bool
             If this is True, the returns repository object does not contain a
@@ -270,17 +270,17 @@ class Repo(object):
         if tag and rev:
             raise ValueError("you cannot specify both, tag '%s' and "
                              "revision '%s'" % (tag,rev))
-        sumo.system.system(cmd, False, False, verbose, dry_run)
+        sumolib.system.system(cmd, False, False, verbose, dry_run)
         if (tag is None) and (rev is None):
             return
         if tag is not None:
             cmd="git checkout %s" % tag
         else:
             cmd="git checkout %s" % rev
-        cwd= sumo.utils.changedir(destdir)
+        cwd= sumolib.utils.changedir(destdir)
         try:
-            sumo.system.system(cmd, False, False, verbose, dry_run)
+            sumolib.system.system(cmd, False, False, verbose, dry_run)
         finally:
-            sumo.utils.changedir(cwd)
+            sumolib.utils.changedir(cwd)
 
 

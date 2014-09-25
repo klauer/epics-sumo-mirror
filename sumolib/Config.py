@@ -7,12 +7,12 @@
 import os
 import sys
 
-import sumo.JSON
+import sumolib.JSON
 
 if __name__ == "__main__":
     # if this module is directly called like a script, we have to add the path
     # ".." to the python search path in order to find modules named
-    # "sumo.[module]".
+    # "sumolib.[module]".
     sys.path.append("..")
 
 
@@ -64,7 +64,7 @@ class ConfigFile(object):
         """
         if not os.path.exists(filename):
             raise IOError("error: file \"%s\" doesn't exist" % filename)
-        data= sumo.JSON.loadfile(filename)
+        data= sumolib.JSON.loadfile(filename)
         # pylint: disable=E1103
         #                     Instance of 'bool' has no 'items' member
         includefiles= data.get("#include")
@@ -97,11 +97,11 @@ class ConfigFile(object):
                 continue
             dump[k]= v
         if filename=="-":
-            sumo.JSON.dump(dump)
+            sumolib.JSON.dump(dump)
             return
         if filename=="DEFAULT":
             filename= self._filename
-        sumo.JSON.dump_file(filename, dump)
+        sumolib.JSON.dump_file(filename, dump)
 
     def merge_options(self, option_obj, list_merge_opts):
         """create from an option object.

@@ -16,7 +16,7 @@ __version__="1.9" #VERSION#
 def assert_version(wanted_version):
     """check if the version is the one that was expected."""
     if __version__!=wanted_version:
-        sys.exit("ERROR: module 'sumo/systemsupport' version %s expected "
+        sys.exit("ERROR: module 'sumolib/systemsupport' version %s expected "
                  "but found %s instead" % \
                  (wanted_version, __version__))
 

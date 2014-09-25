@@ -9,12 +9,12 @@ import sys
 if __name__ == "__main__":
     # if this module is directly called like a script, we have to add the path
     # ".." to the python search path in order to find modules named
-    # "sumo.[module]".
+    # "sumolib.[module]".
     sys.path.append("..")
 
 import pprint
 import os.path
-import sumo.lock
+import sumolib.lock
 
 __version__="1.9" #VERSION#
 
@@ -27,7 +27,7 @@ _pyver= (sys.version_info[0], sys.version_info[1])
 def assert_version(wanted_version):
     """check if the version is the one that was expected."""
     if __version__!=wanted_version:
-        sys.exit("ERROR: module 'sumo/JSONsupport' version %s expected "
+        sys.exit("ERROR: module 'sumolib/JSONsupport' version %s expected "
                  "but found %s instead" % \
                  (wanted_version, __version__))
 
@@ -194,12 +194,12 @@ class Container(object):
             # already locked
             return
         self.unlock_file()
-        self.lock= sumo.lock.lock_a_file(filename)
+        self.lock= sumolib.lock.lock_a_file(filename)
         self.lock_filename= filename
     def unlock_file(self):
         """remove a filelock if there is one."""
         if self.lock_filename is not None:
-            sumo.lock.unlock_a_file(self.lock)
+            sumolib.lock.unlock_a_file(self.lock)
             self.lock= None
             self.lock_filename= None
     def __del__(self):
@@ -234,7 +234,7 @@ class Container(object):
             return result
         if not os.path.exists(filename):
             raise IOError("file \"%s\" not found" % filename)
-        l= sumo.lock.lock_a_file(filename)
+        l= sumolib.lock.lock_a_file(filename)
         # If the line in "try" raises an exception, the file lock
         # is removed, then the exception is re-raised
 
@@ -243,14 +243,14 @@ class Container(object):
         try:
             result= cls(loadfile(filename))
         except ValueError, _:
-            sumo.lock.unlock_a_file(l)
+            sumolib.lock.unlock_a_file(l)
             raise
 
         if keep_locked:
             result.lock= l
             result.lock_filename= filename
         else:
-            sumo.lock.unlock_a_file(l)
+            sumolib.lock.unlock_a_file(l)
         result.selfcheck("(created from JSON file %s)" % filename)
         return result
     def json_string(self):

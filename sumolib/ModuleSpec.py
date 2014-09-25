@@ -9,12 +9,12 @@ import sys
 if __name__ == "__main__":
     # if this module is directly called like a script, we have to add the path
     # ".." to the python search path in order to find modules named
-    # "sumo.[module]".
+    # "sumolib.[module]".
     sys.path.append("..")
 
-import sumo.utils
-import sumo.JSON
-import sumo.Databases
+import sumolib.utils
+import sumolib.JSON
+import sumolib.Databases
 
 # -----------------------------------------------
 # modulespecification
@@ -188,8 +188,8 @@ class Spec(object):
             return True
         if flag=="eq":
             return version1==version2
-        k1= sumo.utils.rev2key(version1)
-        k2= sumo.utils.rev2key(version2)
+        k1= sumolib.utils.rev2key(version1)
+        k2= sumolib.utils.rev2key(version2)
         #if self.versionflag=="=":
         #    return (k1==k2)
         if flag=="le":
@@ -296,7 +296,7 @@ class Specs(object):
                 if special[0]=="load":
                     if len(special)<=1:
                         raise ValueError("argument to :load: missing")
-                    json_data= sumo.JSON.loadfile(special[1])
+                    json_data= sumolib.JSON.loadfile(special[1])
                     # pylint: disable=E1103
                     #         Instance of 'bool' has no 'get' member
                     json_specs= json_data.get("module")
@@ -312,7 +312,7 @@ class Specs(object):
                     if not builddb:
                         raise ValueError("error: builddb not specified")
                     if isinstance(builddb, str):
-                        builddb= sumo.Databases.Builddb.from_json_file(
+                        builddb= sumolib.Databases.Builddb.from_json_file(
                                                                   builddb)
                     try:
                         build_specs= builddb.module_specs(special[1])

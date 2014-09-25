@@ -5,7 +5,7 @@
 #                          Invalid name for type variable
 
 import os.path
-import sumo.system
+import sumolib.system
 
 class Repo(object):
     """represent a path."""
@@ -64,4 +64,4 @@ class Repo(object):
         # needed in order for rsync to work as intended here.
         cmd= "rsync -a -u -L --chmod=Fu+w \"%s\" %s" % \
              (os.path.join(spec,""), destdir)
-        sumo.system.system(cmd, False, False, verbose, dry_run)
+        sumolib.system.system(cmd, False, False, verbose, dry_run)

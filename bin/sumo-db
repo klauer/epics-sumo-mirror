@@ -18,19 +18,19 @@ import os.path
 import os
 import re
 
-import sumo.lock
-import sumo.JSON
-import sumo.utils as utils
-import sumo.Config
-import sumo.ModuleSpec
-import sumo.Databases
-import sumo.repos
+import sumolib.lock
+import sumolib.JSON
+import sumolib.utils as utils
+import sumolib.Config
+import sumolib.ModuleSpec
+import sumolib.Databases
+import sumolib.repos
 
 # version of the program:
 my_version= "1.9" #VERSION#
 
-sumo.lock.assert_version(my_version)
-sumo.JSON.assert_version(my_version)
+sumolib.lock.assert_version(my_version)
+sumolib.JSON.assert_version(my_version)
 utils.assert_version(my_version)
 
 KNOWN_COMMANDS=set(("alias-add", "appconvert", "check", "clonemodule",
@@ -57,7 +57,7 @@ def script_shortname():
 def db_from_json_file(filename, keep_locked= False):
     """load a db, exits gracefully in case of an error."""
     try:
-        db= sumo.Databases.Dependencies.from_json_file(filename, keep_locked)
+        db= sumolib.Databases.Dependencies.from_json_file(filename, keep_locked)
     except ValueError, e:
         sys.exit("Error while loading builddb,\n%s" % str(e))
     except IOError, e:
@@ -107,7 +107,7 @@ def create_app_data(deps, repoinfo, groups):
             errmsg("no source data: %s" % versionedmodule_path)
             continue
 
-        sourcespec_obj= sumo.repos.SourceSpec(r_dict)
+        sourcespec_obj= sumolib.repos.SourceSpec(r_dict)
         if sourcespec_obj.sourcetype()=="path":
             versionname= "PATH-%s" % subdir
         else:
@@ -150,7 +150,7 @@ def create_database(deps, repoinfo, groups, archs, source_patches):
             patcher.add(eval(p))
     _path2namevname= {}
     _namevname2path= {}
-    db= sumo.Databases.Dependencies()
+    db= sumolib.Databases.Dependencies()
     # we first create the map from modulenames to versiondata. In this loop we
     # populate the versiondata only with the source specification. We also
     # create two maps:
@@ -172,7 +172,7 @@ def create_database(deps, repoinfo, groups, archs, source_patches):
                     errmsg("no source data: %s" % versionedmodule_path)
                     continue
 
-                src_sourcespec= sumo.repos.SourceSpec(r_dict)
+                src_sourcespec= sumolib.repos.SourceSpec(r_dict)
                 if src_sourcespec.sourcetype()=="path":
                     # the source is a directory path, not a repository. We
                     # generate the unique versionname:
@@ -228,10 +228,10 @@ def create_database(deps, repoinfo, groups, archs, source_patches):
                                     (module_name, versionname),[])
                 _paths.append(versionedmodule_path)
 
-    #sumo.JSON.dump(_path2namevname)
+    #sumolib.JSON.dump(_path2namevname)
     #sys.exit(0)
 
-    buildcache= sumo.Databases.BuildCache()
+    buildcache= sumolib.Databases.BuildCache()
 
     # here we populate the versiondata with the dependency specifications:
     for modulename in db.iter_modulenames():
@@ -308,7 +308,7 @@ def process(options, commands):
     # pylint: disable=R0915
     #                          Too many statements
 
-    config= sumo.Config.ConfigFile.from_optionlist(
+    config= sumolib.Config.ConfigFile.from_optionlist(
                 CONFIG_NAME,
                 ( "#include",
                   "arch", "db", "module", "progress",
@@ -331,7 +331,7 @@ def process(options, commands):
         sys.exit(str(e))
 
     if options.nolock:
-        sumo.lock.use_lockfile= False
+        sumolib.lock.use_lockfile= False
     if not commands:
         sys.exit("command missing")
     if commands[0] not in KNOWN_COMMANDS:
@@ -346,7 +346,8 @@ def process(options, commands):
     if commands[0]=="edit":
         if len(commands)!=2:
             sys.exit("exactly one filename must follow \"edit\"")
-        sumo.lock.edit_with_lock(commands[1], options.verbose, options.dry_run)
+        sumolib.lock.edit_with_lock(commands[1],
+                                    options.verbose, options.dry_run)
         return
 
     if commands[0]=="convert":
@@ -362,7 +363,7 @@ def process(options, commands):
             sys.exit("error, scandb file '%s' already exists" % \
                      options.scandb)
         filename= commands[1]
-        scandata= sumo.JSON.loadfile(filename)
+        scandata= sumolib.JSON.loadfile(filename)
         deps= scandata["dependencies"]
         repoinfo= scandata["repos"]
         groups= scandata["groups"]
@@ -387,7 +388,7 @@ def process(options, commands):
             sys.exit("error, scandb file '%s' already exists" % \
                      options.scandb)
         filename= commands[1]
-        old= sumo.Databases.OldDependencies.from_json_file(filename,
+        old= sumolib.Databases.OldDependencies.from_json_file(filename,
                                                            keep_locked=False)
         (buildcache, db)= old.convert()
         db.json_save(options.db, options.verbose, options.dry_run)
@@ -399,12 +400,12 @@ def process(options, commands):
         if len(commands)!=2:
             sys.exit("a filename must follow \"convert\"")
         filename= commands[1]
-        scandata= sumo.JSON.loadfile(filename)
+        scandata= sumolib.JSON.loadfile(filename)
         deps= scandata["dependencies"]
         repoinfo= scandata["repos"]
         groups= scandata["groups"]
         struc= create_app_data(deps, repoinfo, groups)
-        sumo.JSON.dump(struc)
+        sumolib.JSON.dump(struc)
         return
 
     if commands[0]=="weight":
@@ -423,7 +424,7 @@ def process(options, commands):
         db= db_from_json_file(options.db,
                 keep_locked= not options.dumpdb and (not options.dry_run))
         try:
-            modulespecs_obj= sumo.ModuleSpec.Specs.from_strings(modulespecs,
+            modulespecs_obj= sumolib.ModuleSpec.Specs.from_strings(modulespecs,
                                                                 None)
         except ValueError, e:
             sys.exit(str(e))
@@ -452,7 +453,7 @@ def process(options, commands):
             sys.exit("error, --db is mandatory here")
         db= db_from_json_file(options.db, keep_locked= False)
         try:
-            modulespecs_obj= sumo.ModuleSpec.Specs.from_strings(modulespecs,
+            modulespecs_obj= sumolib.ModuleSpec.Specs.from_strings(modulespecs,
                                                             options.arch)
         except ValueError, e:
             sys.exit(str(e))
@@ -497,7 +498,7 @@ def process(options, commands):
                      commands[0])
         if not options.db:
             sys.exit("error, --db is mandatory here")
-        module_spec= sumo.ModuleSpec.Spec.from_string(commands[1])
+        module_spec= sumolib.ModuleSpec.Spec.from_string(commands[1])
         (depname,alias)= commands[2:4]
         db = db_from_json_file(options.db,
                 keep_locked= not options.dumpdb and (not options.dry_run))
@@ -517,7 +518,7 @@ def process(options, commands):
                      commands[0])
         if not options.db:
             sys.exit("error, --db is mandatory here")
-        module_spec= sumo.ModuleSpec.Spec.from_string(commands[1])
+        module_spec= sumolib.ModuleSpec.Spec.from_string(commands[1])
         dep        = commands[2]
         db = db_from_json_file(options.db,
                 keep_locked= not options.dumpdb and (not options.dry_run))
@@ -537,7 +538,7 @@ def process(options, commands):
                      commands[0])
         if not options.db:
             sys.exit("error, --db is mandatory here")
-        module_spec= sumo.ModuleSpec.Spec.from_string(commands[1])
+        module_spec= sumolib.ModuleSpec.Spec.from_string(commands[1])
         dep        = commands[2]
         if module_spec.no_version_spec():
             sys.exit("module has no version")
@@ -582,7 +583,7 @@ def process(options, commands):
         else:
             try:
                 source_spec_obj= \
-                    sumo.repos.SourceSpec.from_string_sourcespec(sourcespec)
+                    sumolib.repos.SourceSpec.from_string_sourcespec(sourcespec)
             except ValueError, e:
                 sys.exit("Error: "+str(e))
             changed= db.set_source_spec(modulename, newversion,
@@ -628,7 +629,7 @@ def process(options, commands):
             sys.exit("error, --db is mandatory here")
         db= db_from_json_file(options.db)
         result= sorted(db.iter_modulenames())
-        sumo.JSON.dump(result)
+        sumolib.JSON.dump(result)
         return
 
     if commands[0]=="shownewest" or commands[0]=="showall":
@@ -649,7 +650,7 @@ def process(options, commands):
         result= {}
 
         try:
-            modulespecs_obj= sumo.ModuleSpec.Specs.from_strings(modulespecs,
+            modulespecs_obj= sumolib.ModuleSpec.Specs.from_strings(modulespecs,
                                                             options.arch)
         except ValueError, e:
             sys.exit(str(e))
@@ -671,7 +672,7 @@ def process(options, commands):
                 result[modulename]= versions[0]
             else:
                 result[modulename]= versions
-        sumo.JSON.dump(result)
+        sumolib.JSON.dump(result)
         return
 
     if commands[0]=="find":
