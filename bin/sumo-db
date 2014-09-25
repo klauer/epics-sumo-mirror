@@ -20,7 +20,7 @@ import re
 
 import sumolib.lock
 import sumolib.JSON
-import sumolib.utils as utils
+import sumolib.utils
 import sumolib.Config
 import sumolib.ModuleSpec
 import sumolib.Databases
@@ -31,7 +31,7 @@ my_version= "1.9" #VERSION#
 
 sumolib.lock.assert_version(my_version)
 sumolib.JSON.assert_version(my_version)
-utils.assert_version(my_version)
+sumolib.utils.assert_version(my_version)
 
 KNOWN_COMMANDS=set(("alias-add", "appconvert", "check", "clonemodule",
                     "cloneversion", "convert", "convert-old",
@@ -144,7 +144,7 @@ def create_database(deps, repoinfo, groups, archs, source_patches):
         """print something on stderr."""
         sys.stderr.write(msg+"\n")
 
-    patcher= utils.RegexpPatcher()
+    patcher= sumolib.utils.RegexpPatcher()
     if source_patches:
         for p in source_patches:
             patcher.add(eval(p))
@@ -181,7 +181,7 @@ def create_database(deps, repoinfo, groups, archs, source_patches):
                         # of tools. Such a subdir may already be named
                         # "PATH-<name>+<treetag>". We want to take <name> as
                         # versionname in this case:
-                        versionname= utils.split_treetag(subdir)[0]
+                        versionname= sumolib.utils.split_treetag(subdir)[0]
                     else:
                         versionname= "PATH-%s" % subdir
                     # repodata is just the path in this case:
@@ -197,7 +197,7 @@ def create_database(deps, repoinfo, groups, archs, source_patches):
                             # set of tools. Such a subdir may already be named
                             # "PATH-<name>+<treetag>". We want to take <name>
                             # as versionname in this case:
-                            versionname= utils.split_treetag(subdir)[0]
+                            versionname= sumolib.utils.split_treetag(subdir)[0]
                         else:
                             versionname= "TAGLESS-%s" % subdir
                         # patch URL to <versionedmodule_path>. Since we do not
@@ -596,7 +596,7 @@ def process(options, commands):
                    "identical with that of \n"
                    "%s:%s, this is probably not what you want!") % \
                    (modulename, oldversion)
-        utils.ask_abort("Proceed ? ", options.yes)
+        sumolib.utils.ask_abort("Proceed ? ", options.yes)
         if options.dumpdb:
             db.json_print()
         else:
@@ -964,9 +964,9 @@ def main():
     # args: list of left-over args
 
     # join some of the list options:
-    options.arch       = utils.opt_join(options.arch, do_sort= True)
-    options.module     = utils.opt_join(options.module)
-    options.mergeoption= utils.opt_join(options.mergeoption)
+    options.arch       = sumolib.utils.opt_join(options.arch, do_sort= True)
+    options.module     = sumolib.utils.opt_join(options.module)
+    options.mergeoption= sumolib.utils.opt_join(options.mergeoption)
 
     if options.summary:
         print_summary()
