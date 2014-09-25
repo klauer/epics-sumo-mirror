@@ -358,15 +358,17 @@ class Dependencies(sumo.JSON.Container):
         l= self.datadict()[modulename][versionname]["source"]
         return sumo.utils.single_key_item(l)
     def module_source_url(self, modulename, versionname):
-        """return the source url or path for a module."""
+        """return the source url or tar-file or path for a module."""
         (tp,val)= self.module_source_dict(modulename, versionname)
-        if tp=="path":
-            return val
-        elif tp in sumo.repos.known_repos:
-            return val["url"]
-        else:
+        if tp not in sumo.repos.known_sources:
             raise AssertionError("unexpected source tag %s at %s:%s" % \
                     (tp, modulename, versionname))
+        # currently all known_repos have an "url" property:
+        if tp in sumo.repos.known_repos:
+            return val["url"]
+        # all others (not repos) are expected to have just a single
+        # "string" property:
+        return val
     def iter_dependencies(self, modulename, versionname):
         """return an iterator on dependency modulenames of a module."""
         md= self.datadict().get(modulename)

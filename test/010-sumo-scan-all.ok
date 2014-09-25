@@ -447,10 +447,7 @@
             }
         },
         "/data/epics/support/soft/devHwClient/3-0": {
-            "darcs": {
-                "tag": "R3-0",
-                "url": "/data/repos/support/soft/devHwClient"
-            }
+            "tar": "/data/epics/support/soft/devHwClient-3-0.tar.gz"
         }
     }
 }

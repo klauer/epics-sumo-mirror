@@ -15,6 +15,7 @@ else
 fi
 
 PWD_NICE=`pwd`
+PWD_REAL=`pwd -P`
 
 echo -e "\n-> Test sumo-db replaceversion." >&2
 
@@ -22,6 +23,6 @@ cp tmp-020-sumo-db-convert/DEPS.DB $ME-DEPS.tmp
 
 $PYTHON ../bin/sumo-db --db $ME-DEPS.tmp alias-add MCAN:R2-6-1 ALARM MYALARM
 echo "DB file:"
-cat $ME-DEPS.tmp | sed -e "s#$PWD_NICE##;s#\"[0-9a-f]\{12\}\"#\"ABCDABCDABCD\"#"
+cat $ME-DEPS.tmp | sed -e "s#$PWD_NICE##;s#$PWD_REAL##;s#\"[0-9a-f]\{12\}\"#\"ABCDABCDABCD\"#"
 
 

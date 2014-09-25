@@ -139,10 +139,7 @@
             }
         },
         "/tmp-110-sumo-build-new-2/SOFT_DEVHWCLIENT/R3-0+MYAPP-001": {
-            "darcs": {
-                "tag": "R3-0",
-                "url": "/data/repos/support/soft/devHwClient"
-            }
+            "path": "/tmp-110-sumo-build-new-2/SOFT_DEVHWCLIENT/R3-0+MYAPP-001"
         }
     }
 }

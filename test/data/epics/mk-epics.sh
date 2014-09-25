@@ -121,6 +121,37 @@ function MK_GIT_GENERIC {
     make -C $2 1>&2
 }
 
+function MK_TAR {
+    # $1: tarfile
+    # $2: destination-dir
+    echo -e "\t\tprepare $2..." >&2
+    if [ ! -d $2 ]; then 
+        mkdir -p $2
+    fi
+    tar_filename=`basename $1`
+    tar_base=`echo $tar_filename | sed -e 's/\..*//'`
+    module=`echo $tar_base | sed -e 's/-.*//'`
+    version=`echo $tar_base | sed -e 's/[^-]\+-//'`
+
+    cd $2 > /dev/null
+    pwd
+    cp $REPODIR/$1 .
+    touch DIRLIST-NEW
+    ls > DIRLIST-OLD
+    tar -xzf `basename $1`
+    ls > DIRLIST-NEW
+    newdir=`diff DIRLIST-OLD DIRLIST-NEW | grep '>' | sed -e 's/> //'`
+    rm -f DIRLIST-OLD DIRLIST-NEW
+
+    if [ ! -d $module ]; then
+        mkdir -p $module
+    fi
+    pwd
+    mv $newdir $module/$version
+    # create fake binary directories:
+    make -C $module/$version 1>&2
+}
+
 mkdir base
 mkdir -p support/apps
 
@@ -147,5 +178,5 @@ MK_PATH          support/misc/dbc 3-0
 MK_GIT           support/misc/debugmsg 3-0 R3-0
 MK_GIT           support/misc/debugmsg 3-1 R3-1
 MK_DARCS         support/seq 2-1-10
-MK_DARCS         support/soft/devHwClient 3-0
+MK_TAR           support/soft/devHwClient-3-0.tar.gz support/soft
 

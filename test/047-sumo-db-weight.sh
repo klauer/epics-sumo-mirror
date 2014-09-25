@@ -15,6 +15,7 @@ else
 fi
 
 PWD_NICE=`pwd`
+PWD_REAL=`pwd -P`
 
 echo -e "\n-> Test sumo-db weight" >&2
 
@@ -22,4 +23,4 @@ cp tmp-020-sumo-db-convert/DEPS.DB $ME-DEPS.tmp
 
 $PYTHON ../bin/sumo-db --db $ME-DEPS.tmp -- weight -1 MCAN:R2-6-1 MISC_DBC
 $PYTHON ../bin/sumo-db --db $ME-DEPS.tmp weight 1 ALARM
-cat $ME-DEPS.tmp | sed -e "s#$PWD_NICE##;s#\"[0-9a-f]\{12\}\"#\"ABCDABCDABCD\"#"
+cat $ME-DEPS.tmp | sed -e "s#$PWD_NICE##;s#$PWD_REAL##;s#\"[0-9a-f]\{12\}\"#\"ABCDABCDABCD\"#"

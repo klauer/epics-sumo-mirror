@@ -7,12 +7,14 @@
 import sumo.system
 import sumo.utils
 import sumo.path
+import sumo.tar
 import sumo.darcs
 import sumo.mercurial # "hg"
 import sumo.git
 
 known_repos=set(("darcs","hg","git"))
-known_sources= set(("path",)).union(known_repos)
+known_no_repos= set(("path","tar"))
+known_sources= set(known_no_repos).union(known_repos)
 
 # ---------------------------------------------------------
 # generic code:
@@ -57,6 +59,9 @@ def repo_from_dir(directory, hints, verbose, dry_run):
     obj= sumo.git.Repo.scan_dir(directory, hints, verbose, dry_run)
     if obj is not None:
         return obj
+    obj= sumo.tar.Repo.scan_dir(directory, hints, verbose, dry_run)
+    if obj is not None:
+        return obj
     # insert other repo supports here
     return sumo.path.Repo.scan_dir(directory, hints, verbose, dry_run)
 
@@ -74,6 +79,8 @@ def checkout(repotype, spec, destdir, verbose, dry_run):
         sumo.mercurial.Repo.checkout(spec, destdir, verbose, dry_run)
     elif repotype == "git":
         sumo.git.Repo.checkout(spec, destdir, verbose, dry_run)
+    elif repotype== "tar":
+        sumo.tar.Repo.checkout(spec, destdir, verbose, dry_run)
     elif repotype== "path":
         sumo.path.Repo.checkout(spec, destdir, verbose, dry_run)
     else:
@@ -92,7 +99,7 @@ class SourceSpec(sumo.JSON.Container):
         super(SourceSpec, self).__init__(dict_)
     @classmethod
     def from_param(cls, sourcetype, url=None, tag=None,
-                   rev=None, path=None):
+                   rev=None, tar=None, path=None):
         """create by parameters.
         """
         # pylint: disable=R0912
@@ -105,6 +112,10 @@ class SourceSpec(sumo.JSON.Container):
             if not path:
                 raise ValueError("'path' missing for sourcetype 'path'")
             return cls({"path": path})
+        if sourcetype=="tar":
+            if not tar:
+                raise ValueError("'tar' missing for sourcetype 'tar'")
+            return cls({"tar": tar})
         if sourcetype=="darcs":
             if not url:
                 raise ValueError("'url' missing for sourcetype 'darcs'")
@@ -140,7 +151,7 @@ class SourceSpec(sumo.JSON.Container):
         """scan a source specification.
 
         A sourcespec is a list of strings. Currently we support here:
-        ["path",PATH] or
+        ["path",PATH] or ["tar",TARFILE] or
         [<repotype>,URL] or [<repotype>,URL,TAG].
 
         where <repotype> may be one of the strings in
@@ -173,10 +184,10 @@ class SourceSpec(sumo.JSON.Container):
         """
         if elms[0] not in known_sources:
             raise ValueError("unknown source type: '%s'" % elms[0])
-        if elms[0]=="path":
+        if elms[0]=="path" or elms[0]=="tar":
             if len(elms)!=2:
                 raise ValueError("invalid source spec: '%s'" % (" ".join(elms)))
-            return cls({"path": elms[1]})
+            return cls({elms[0]: elms[1]})
         if len(elms)==2:
             return cls({elms[0]:{"url":elms[1]}})
         elif len(elms)==3:
@@ -220,12 +231,22 @@ class SourceSpec(sumo.JSON.Container):
             return pars
         d[type_]= new_val
         return new_val
+    def tar(self, new_val= None):
+        """return the tar if the type is "tar"."""
+        (d, type_, pars)= self.unpack()
+        if type_!= "tar":
+            raise TypeError("error, 'tar()' can only be called for "
+                            "SourceSpec objects of type 'tar'")
+        if new_val is None:
+            return pars
+        d[type_]= new_val
+        return new_val
     def url(self, new_val= None):
-        """return the path if the type is "path"."""
+        """return the url if the type is a repository."""
         (_, type_, pars)= self.unpack()
-        if type_== "path":
+        if type_ in known_no_repos:
             raise TypeError("error, 'url()' cannot be called for "
-                            "SourceSpec objects of type 'path'")
+                            "SourceSpec objects of type '%s'" % type_)
         return self._set_get(pars, "url", new_val)
     def unpack(self):
         """return the internal dict, the sourcetype and the parameters.
@@ -255,8 +276,8 @@ class SourceSpec(sumo.JSON.Container):
             self.copy(other)
             return True
 
-        if isinstance(other_pars, str):
-            # usually type "path":
+        if isinstance(other_pars, basestring):
+            # this is only the case for type "path" or type "tar":
             if other_pars=="*":
                 return False
             self_d[self_type]= other_pars
@@ -288,9 +309,10 @@ class SourceSpec(sumo.JSON.Container):
         returns True if the spec was changed, False if it wasn't.
         """
         (_, self_type, self_pars)   = self.unpack()
-        if self_type=="path":
+        if self_type in known_no_repos:
             raise ValueError("you cannot provide just a new tag for "
-                             "a source specification of type 'path'")
+                             "a source specification of "
+                             "type '%s'" % self_type)
         old= self_pars.get("tag")
         if old==tag:
             return False
