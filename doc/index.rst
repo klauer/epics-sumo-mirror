@@ -43,8 +43,7 @@ Contents:
    introduction
    modulespecs
    reference-sumo-scan
-   reference-sumo-db
-   reference-sumo-build
+   reference-sumo
    examples
    glossary
 

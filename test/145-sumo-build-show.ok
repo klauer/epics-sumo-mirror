@@ -1,4 +1,4 @@
-sumo-build show MYAPP-001
+sumo build show MYAPP-001
 {
     "MYAPP-001": {
         "linked": {

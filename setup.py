@@ -141,5 +141,5 @@ setup(name='sumo',
       #package_data={'sumo': ['data/*']},
       data_files= data_files_list,
       license= "HZB non commercial license, see file LICENSE",
-      scripts=['bin/sumo-build','bin/sumo-db','bin/sumo-scan'],
+      scripts=['bin/sumo','bin/sumo-scan'],
      )

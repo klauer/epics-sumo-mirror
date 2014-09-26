@@ -54,14 +54,14 @@ if grep -q '^CHECK_RELEASE *= *YES' configure/Makefile ;then
     exit 1
 fi
         
-# Create the configure/MODULES file with sumo-scan and sumo-db:
+# Create the configure/MODULES file with sumo-scan and sumo:
 
-sumo-scan -c $SUMO_SCAN_CONFIG -d . all | sumo-db --no-default-config appconvert - > $MODULES
+sumo-scan -c $SUMO_SCAN_CONFIG -d . all | sumo --no-default-config appconvert - > $MODULES
 
 # We must use BASE:R-3-14-8-2-1 instead of BASE:R-3-14-8-2-0:
 
 if grep -q BASE:R3-14-8-2-0 $MODULES; then
-    sumo-build -c $MODULES --mergeoption "alias module" \
+    sumo -c $MODULES --mergeoption "alias module" \
             -m BASE:R3-14-8-2-1 \
             makeconfig $MODULES alias module 
 fi
@@ -71,43 +71,43 @@ fi
 # the HZB:
 
 if grep -q APPS_GENERICTEMPLATE:R3-6 $MODULES; then
-    sumo-build -c $MODULES --mergeoption "alias module" \
+    sumo -c $MODULES --mergeoption "alias module" \
             -m "APPS_GENERICTEMPLATE:R3-6-RULES-1-1 RULES-1-1:R1-1" \
             makeconfig $MODULES alias module 
 fi
 
 if grep -q APPS_IOCWATCH:R2-2 $MODULES; then
-    sumo-build -c $MODULES --mergeoption "alias module" \
+    sumo -c $MODULES --mergeoption "alias module" \
             -m "APPS_IOCWATCH:R2-2-RULES-1-1 RULES-1-1:R1-1" \
             makeconfig $MODULES alias module 
 fi
 
 if grep -q APPS_MOTOR:TAGLESS-2-6-2-2 $MODULES; then
-    sumo-build -c $MODULES --mergeoption "alias module" \
+    sumo -c $MODULES --mergeoption "alias module" \
             -m "APPS_MOTOR:TAGLESS-2-6-2-2-RULES-1-5 RULES-1-5:R1-5" \
             makeconfig $MODULES alias module 
 fi
 
 if grep -q APPS_SCOPESAVERESTORE:R1-1 $MODULES; then
-    sumo-build -c $MODULES --mergeoption "alias module" \
+    sumo -c $MODULES --mergeoption "alias module" \
             -m "APPS_SCOPESAVERESTORE:R1-1-RULES-1-4-1 RULES-1-4-1:R1-4-1" \
             makeconfig $MODULES alias module 
 fi
 
 if grep -q APPS_VACUUM:TAGLESS-1-1-1 $MODULES; then
-    sumo-build -c $MODULES --mergeoption "alias module" \
+    sumo -c $MODULES --mergeoption "alias module" \
             -m "APPS_VACUUM:TAGLESS-1-1-1-RULES-1-15 RULES-1-15:R1-15" \
             makeconfig $MODULES alias module 
 fi
 
 if grep -q HIGHLAND-V375:TAGLESS-1-2 $MODULES; then
-    sumo-build -c $MODULES --mergeoption "alias module" \
+    sumo -c $MODULES --mergeoption "alias module" \
             -m "HIGHLAND-V375:TAGLESS-1-2-RULES-1-9 RULES-1-9:R1-9" \
             makeconfig $MODULES alias module 
 fi
 
 #if grep -q STD:PATH-2-6-2 $MODULES; then
-#    sumo-build -c $MODULES --mergeoption "alias module" \
+#    sumo -c $MODULES --mergeoption "alias module" \
 #            -m "STD:R2-8-bessy2" \
 #            makeconfig $MODULES alias module 
 #fi
@@ -115,7 +115,7 @@ fi
 # STD:PATH-2-6-2 needs a special GENSUB support:
 
 if grep -q STD:PATH-2-6-2 $MODULES; then
-    sumo-build -c $MODULES --mergeoption "alias module" \
+    sumo -c $MODULES --mergeoption "alias module" \
             -m "SYNAPPS_5-2-0-1_SUPPORT_GENSUB:PATH-1-6a" \
             makeconfig $MODULES alias module 
 fi
@@ -123,28 +123,24 @@ fi
 # We must use a special version of APPS_GENERICBOOT:
 
 if grep -q APPS_GENERICBOOT:R0-9 $MODULES; then
-    sumo-build -c $MODULES --mergeoption "alias module" \
+    sumo -c $MODULES --mergeoption "alias module" \
             -m "APPS_GENERICBOOT:R0-9-EPICS-3-14-8" \
             makeconfig $MODULES alias module 
 fi
 
-# Write the sumo-db configuration file:
+# Write the sumo configuration file:
 
-sumo-db --no-default-config --db $SUMODIR/database/DEPS.DB --#include $MODULES makeconfig DEFAULT
-
-# Write the sumo-build configuration file:
-
-sumo-build --no-default-config --buildtag-stem "$stem" --db $SUMODIR/database/DEPS.DB --builddb $SUMODIR/build/BUILDS.DB --supportdir $SUMODIR/build --#include $MODULES makeconfig DEFAULT
+sumo --no-default-config --buildtag-stem "$stem" --db $SUMODIR/database/DEPS.DB --builddb $SUMODIR/build/BUILDS.DB --supportdir $SUMODIR/build --#include $MODULES makeconfig DEFAULT
 
 echo "A file '$MODULES' containing the module dependencies was created in "
 echo "directory 'configure'. You may review or modify that file."
 echo
 echo "In order to build your application you first have to run"
-echo "    'sumo-build use"
+echo "    'sumo build use"
 echo "in order to create the file 'configure/RELEASE' from the "
 echo "'$MODULES' file."
 echo 
-echo "If 'sumo-build use' says that no build matches the modulespecs"
+echo "If 'sumo build use' says that no build matches the modulespecs"
 echo "run"
-echo "    'sumo-build new'"
+echo "    'sumo build new'"
 echo "first."

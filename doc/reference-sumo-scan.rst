@@ -8,7 +8,7 @@ This script scans an existing EPICS support module directory tree and collects
 all information necessary to generate a dependency database or :term:`DB` file.
 The data is formatted in `JSON <http://www.json.org>`_ format and printed to
 the console. You can either save this output in a file or combine this script
-with :doc:`sumo-db <reference-sumo-db>` in a pipe to directly create a
+with :doc:`sumo db <reference-sumo>` in a pipe to directly create a
 :term:`DB` file.
 
 The script takes one or mode commands and has a number of options. Single
@@ -25,7 +25,7 @@ commands "deps", "groups" or "repos" you have to provide the input of a phase
 from a file by using the command line option "--info-file".
 
 All three phases that are needed to create the data for generating a dependency
-database with :doc:`sumo-db <reference-sumo-db>` are combined with the command
+database with :doc:`sumo db <reference-sumo>` are combined with the command
 "all". 
 
 Two other phases "name2paths" and "path2names" are implemented to get
@@ -130,7 +130,7 @@ the program supports *darcs*, *mercurial* and git
 
 In each module the program looks for the data of a supported version control
 system. If no version control data is found, the program marks the source of
-the module as a *path* meaning that `sumo-build <reference-sumo-build>` will
+the module as a *path* meaning that `sumo build <reference-sumo>` will
 copy the sources from exactly that path.
 
 If version control data is found the program it looks for a repository tag. It
@@ -275,7 +275,7 @@ all
 This is the most important command. "all" combines the commands "deps",
 "groups" and "repos". The output of the commands is combined in a single large
 `JSON <http://www.json.org>`_ structure and printed to the console. You can use
-the output of this command as input for :doc:`sumo-db <reference-sumo-db>` in
+the output of this command as input for :doc:`sumo db <reference-sumo>` in
 order to create a dependency database.
 
 deps

@@ -3,7 +3,7 @@
 ME=`basename $0 .sh`
 
 if [ "$1" = "deps" ]; then
-        echo "$ME.tst: $ME.sh $ME.out $ME.ok 020-sumo-db-convert.tst"
+        echo "$ME.tst: $ME.sh $ME.out $ME.ok 020-sumo db-convert.tst"
         echo
         exit
 fi
@@ -16,7 +16,7 @@ fi
 
 PWD_NICE=`pwd`
 
-echo -e "\n-> Test sumo-db check" >&2
+echo -e "\n-> Test sumo db check" >&2
 
 DEPS=tmp-020-sumo-db-convert/DEPS.DB
 
@@ -45,10 +45,10 @@ cat > $ME-DEPS.tmp <<HEE
 }
 HEE
 
-echo -e "sumo-db --db samples/DB check:"
+echo -e "sumo db --db samples/DB check:"
 
-$PYTHON ../bin/sumo-db --db $DEPS check
+$PYTHON ../bin/sumo db --db $DEPS check
 
-echo -e "\nsumo-db --db samples/BUILDS check:"
+echo -e "\nsumo db --db samples/BUILDS check:"
 
-$PYTHON ../bin/sumo-db --db $ME-DEPS.tmp check 2>&1 | tail -n 1
+$PYTHON ../bin/sumo db --db $ME-DEPS.tmp check 2>&1 | tail -n 1

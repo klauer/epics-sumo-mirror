@@ -3,7 +3,7 @@
 ME=`basename $0 .sh`
 
 if [ "$1" = "deps" ]; then
-        echo "$ME.tst: $ME.sh $ME.out $ME.ok 020-sumo-db-convert.tst 080-sumo-build-new.tst"
+        echo "$ME.tst: $ME.sh $ME.out $ME.ok 020-sumo db-convert.tst 080-sumo build-new.tst"
         echo
         exit
 fi
@@ -16,7 +16,7 @@ fi
 
 PWD_NICE=`pwd`
 
-echo -e "\n-> Test sumo-build new (use existing tree)" >&2
+echo -e "\n-> Test sumo build new (use existing tree)" >&2
 
 DEPS=tmp-020-sumo-db-convert/DEPS.DB
 
@@ -38,7 +38,7 @@ if [ ! -d $MYTESTDIR ]; then
     rm -f *.bak
 
     # use an auto generated build tag:
-    $PYTHON ../../bin/sumo-build --arch vxWorks-ppc603 --db DEPS.DB --builddb BUILDS.DB -m ':build:MYAPP-001 ALARM:R3-7' --buildtag MYAPP-002 --no-make new 1>&2 
+    $PYTHON ../../bin/sumo build --arch vxWorks-ppc603 --db DEPS.DB --builddb BUILDS.DB -m ':build:MYAPP-001 ALARM:R3-7' --buildtag MYAPP-002 --no-make new 1>&2 
 else
     echo -e "\t$MYTESTDIR already exists, effectively skipping this test..." 1>&2
     cd $MYTESTDIR > /dev/null

@@ -121,21 +121,16 @@ their list.
 The implementation
 ------------------
 
-The functions described above are implemented with three programs.  The
+The functions described above are implemented with two programs. The
 dependency and build database files have `JSON <http://www.json.org>`_ format.
 
-Here are three programs:
+Here are two programs:
 
 :doc:`sumo-scan <reference-sumo-scan>`
   This is a python script that is used to scan an existing support module tree
   for module versions and their repository sources. It generates a *scan* file
-  which can be converted to a *DB* file with the `sumo-db <reference-sumo-db>`.
+  which can be converted to a *DB* file with `sumo <reference-sumo>`.
 
-:doc:`sumo-db <reference-sumo-db>`
+:doc:`sumo <reference-sumo>`
   This python script manages *DB* files that hold all module version and
-  dependency information. 
-
-:doc:`sumo-build <reference-sumo-build>`
-  This python script creates and manages builds. It also updates the *status*
-  of dependencies in the *DB* file.
-
+  dependency information and creates and manages builds.
