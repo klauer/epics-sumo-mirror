@@ -18,18 +18,13 @@ import sumolib.lock
 
 __version__="1.9" #VERSION#
 
+assert __version__==sumolib.lock.__version__
+
 _pyver= (sys.version_info[0], sys.version_info[1])
 
 # -----------------------------------------------
-# ensure a certain module version
+# ensure a certain python version
 # -----------------------------------------------
-
-def assert_version(wanted_version):
-    """check if the version is the one that was expected."""
-    if __version__!=wanted_version:
-        sys.exit("ERROR: module 'sumolib/JSONsupport' version %s expected "
-                 "but found %s instead" % \
-                 (wanted_version, __version__))
 
 if _pyver < (2,5):
     sys.exit("ERROR: SUMO requires at least Python 2.5, "

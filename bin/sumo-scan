@@ -35,12 +35,13 @@ import sumolib.repos
 makefile_scan_pre= {}
 
 # version of the program:
-my_version= "1.9" #VERSION#
+__version__= "1.9" #VERSION#
 
-sumolib.system.assert_version(my_version)
-sumolib.utils.assert_version(my_version)
-
-sumolib.makefile_scan.assert_version(my_version)
+assert __version__==sumolib.system.__version__
+assert __version__==sumolib.Config.__version__
+assert __version__==sumolib.utils.__version__
+assert __version__==sumolib.makefile_scan.__version__
+assert __version__==sumolib.repos.__version__
 
 KNOWN_COMMANDS=set(("deps", "name2paths", "path2names",
                     "groups", "repos", "all", "makeconfig"))
@@ -583,7 +584,7 @@ def main():
     """
     # command-line options and command-line help:
     parser = OptionParser(usage=usage,
-                          version="%%prog %s" % my_version,
+                          version="%%prog %s" % __version__,
                           description="This program scans EPICS support "+\
                               "trees and prints the found dependencies "+\
                               "to the screen",

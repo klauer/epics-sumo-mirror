@@ -14,7 +14,11 @@ if __name__ == "__main__":
 
 import sumolib.utils
 import sumolib.JSON
-import sumolib.Databases
+
+__version__="1.9" #VERSION#
+
+assert __version__==sumolib.utils.__version__
+assert __version__==sumolib.JSON.__version__
 
 # -----------------------------------------------
 # modulespecification
@@ -368,7 +372,7 @@ class Specs(object):
         """
         module_dict= {}
         Specs._from_strings(module_dict, 0, specs, builddb_fn,
-                                  default_archs)
+                            default_archs)
 
         l= [modulespec for (_,modulespec) in sorted(module_dict.values()) \
                        if modulespec]

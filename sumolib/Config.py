@@ -7,14 +7,17 @@
 import os
 import sys
 
-import sumolib.JSON
-
 if __name__ == "__main__":
     # if this module is directly called like a script, we have to add the path
     # ".." to the python search path in order to find modules named
     # "sumolib.[module]".
     sys.path.append("..")
 
+import sumolib.JSON
+
+__version__="1.9" #VERSION#
+
+assert __version__==sumolib.JSON.__version__
 
 # -----------------------------------------------
 # config file support

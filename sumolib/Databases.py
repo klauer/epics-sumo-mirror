@@ -6,7 +6,6 @@
 
 import sys
 import copy
-import sumolib.ModuleSpec
 
 if __name__ == "__main__":
     # if this module is directly called like a script, we have to add the path
@@ -14,9 +13,19 @@ if __name__ == "__main__":
     # "sumolib.[module]".
     sys.path.append("..")
 
+import sumolib.ModuleSpec
 import sumolib.JSON
-
 import sumolib.utils
+
+__version__="1.9" #VERSION#
+
+assert __version__==sumolib.ModuleSpec.__version__
+assert __version__==sumolib.JSON.__version__
+assert __version__==sumolib.utils.__version__
+
+# -----------------------------------------------
+# class definitions
+# -----------------------------------------------
 
 class OldDependencies(sumolib.JSON.Container):
     """convert the old dependency database to the new format.

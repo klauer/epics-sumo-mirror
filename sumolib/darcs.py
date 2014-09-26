@@ -8,6 +8,14 @@ import re
 import os.path
 import sumolib.system
 
+__version__="1.9" #VERSION#
+
+assert __version__==sumolib.system.__version__
+
+# -----------------------------------------------
+# Repo class
+# -----------------------------------------------
+
 class Repo(object):
     """represent a darcs repository."""
     # pylint: disable=R0902

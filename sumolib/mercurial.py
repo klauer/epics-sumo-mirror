@@ -4,9 +4,18 @@
 # pylint: disable=C0103
 #                          Invalid name for type variable
 
+import re
 import os.path
 import sumolib.system
-import re
+
+__version__="1.9" #VERSION#
+
+assert __version__==sumolib.system.__version__
+
+# -----------------------------------------------
+# Repo class
+# -----------------------------------------------
+
 
 class Repo(object):
     """represent a mercurial repository."""

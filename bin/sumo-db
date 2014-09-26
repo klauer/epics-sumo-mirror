@@ -27,11 +27,15 @@ import sumolib.Databases
 import sumolib.repos
 
 # version of the program:
-my_version= "1.9" #VERSION#
+__version__= "1.9" #VERSION#
 
-sumolib.lock.assert_version(my_version)
-sumolib.JSON.assert_version(my_version)
-sumolib.utils.assert_version(my_version)
+assert __version__==sumolib.lock.__version__
+assert __version__==sumolib.JSON.__version__
+assert __version__==sumolib.utils.__version__
+assert __version__==sumolib.Config.__version__
+assert __version__==sumolib.ModuleSpec.__version__
+assert __version__==sumolib.Databases.__version__
+assert __version__==sumolib.repos.__version__
 
 KNOWN_COMMANDS=set(("alias-add", "appconvert", "check", "clonemodule",
                     "cloneversion", "convert", "convert-old",
@@ -812,7 +816,7 @@ def main():
     # command-line options and command-line help:
 
     parser = OptionParser(usage=usage,
-                          version="%%prog %s" % my_version,
+                          version="%%prog %s" % __version__,
                           description="This program manages EPICS support trees"
                          )
 

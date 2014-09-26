@@ -9,17 +9,6 @@ import subprocess
 __version__="1.9" #VERSION#
 
 # -----------------------------------------------
-# ensure a certain module version
-# -----------------------------------------------
-
-def assert_version(wanted_version):
-    """check if the version is the one that was expected."""
-    if __version__!=wanted_version:
-        sys.exit("ERROR: module 'sumolib/systemsupport' version %s expected "
-                 "but found %s instead" % \
-                 (wanted_version, __version__))
-
-# -----------------------------------------------
 # basic system utilities
 # -----------------------------------------------
 

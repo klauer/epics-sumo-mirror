@@ -21,17 +21,6 @@ if _pyver < (2,5):
              "your version is %d.%d" % _pyver)
 
 # -----------------------------------------------
-# ensure a certain module version
-# -----------------------------------------------
-
-def assert_version(wanted_version):
-    """check if the version is the one that was expected."""
-    if __version__!=wanted_version:
-        sys.exit("ERROR: module 'sumolib/utils' version %s expected "
-                 "but found %s instead" % \
-                 (wanted_version, __version__))
-
-# -----------------------------------------------
 # tracing support
 # -----------------------------------------------
 
