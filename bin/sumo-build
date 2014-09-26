@@ -796,6 +796,18 @@ def process(options, commands):
     #                          Too many statements
     # pylint: disable=R0914
     #                          Too many local variables
+    _builddb= [None]
+    def mspecs_from_build(builddb_name):
+        """generate a function to return module specs from a build."""
+        def mspecs(buildtag):
+            """return module specs for a buildtag."""
+            if _builddb[0] is None:
+                if builddb_name is None:
+                    raise ValueError("--builddb is needed for modulespecs")
+                _builddb[0]= builddb_from_json_file(builddb_name, False)
+            return _builddb[0].module_specs(buildtag)
+        return mspecs
+
     config= sumolib.Config.ConfigFile.from_optionlist(
                 CONFIG_NAME,
                 ( "#include",
@@ -835,9 +847,9 @@ def process(options, commands):
         if options.module:
             try:
                 modulespecs_obj= sumolib.ModuleSpec.Specs.from_strings(
-                                                         options.module,
-                                                         options.builddb,
-                                                         options.arch)
+                                     options.module,
+                                     mspecs_from_build(options.builddb),
+                                     options.arch)
             except ValueError, e:
                 sys.exit(str(e))
             config.set("module", modulespecs_obj.to_stringlist())
@@ -986,9 +998,10 @@ def process(options, commands):
             sys.exit("error: module specs missing")
 
         try:
-            modulespecs_obj= sumolib.ModuleSpec.Specs.from_strings(modulespecs,
-                                                            options.builddb,
-                                                            options.arch)
+            modulespecs_obj= sumolib.ModuleSpec.Specs.from_strings(
+                                     modulespecs,
+                                     mspecs_from_build(options.builddb),
+                                     options.arch)
         except ValueError, e:
             sys.exit(str(e))
 
@@ -1157,9 +1170,10 @@ def process(options, commands):
         db= db_from_json_file(options.db, keep_locked= False)
 
         try:
-            modulespecs_obj= sumolib.ModuleSpec.Specs.from_strings(modulespecs,
-                                                            options.builddb,
-                                                            options.arch)
+            modulespecs_obj= sumolib.ModuleSpec.Specs.from_strings(
+                                     modulespecs,
+                                     mspecs_from_build(options.builddb),
+                                     options.arch)
         except ValueError, e:
             sys.exit(str(e))
 
@@ -1232,14 +1246,16 @@ def process(options, commands):
         if not modulespecs:
             sys.exit("error: module specs missing")
 
-        db= db_from_json_file(options.db)
-        builddb= builddb_from_json_file(options.builddb)
         try:
-            modulespecs_obj= sumolib.ModuleSpec.Specs.from_strings(modulespecs,
-                                                            builddb,
-                                                            options.arch)
+            modulespecs_obj= sumolib.ModuleSpec.Specs.from_strings(
+                                     modulespecs,
+                                     mspecs_from_build(options.builddb),
+                                     options.arch)
         except ValueError, e:
             sys.exit(str(e))
+
+        db= db_from_json_file(options.db)
+        builddb= builddb_from_json_file(options.builddb)
 
         if options.dump_modules:
             dump_modules(modulespecs_obj)
@@ -1309,15 +1325,16 @@ def process(options, commands):
             _assume_dir("configure", options.dry_run)
             output= os.path.join("configure","RELEASE")
 
-        db= db_from_json_file(options.db)
-        builddb= builddb_from_json_file(options.builddb)
-
         try:
-            modulespecs_obj= sumolib.ModuleSpec.Specs.from_strings(modulespecs,
-                                                            options.builddb,
-                                                            options.arch)
+            modulespecs_obj= sumolib.ModuleSpec.Specs.from_strings(
+                                     modulespecs,
+                                     mspecs_from_build(options.builddb),
+                                     options.arch)
         except ValueError, e:
             sys.exit(str(e))
+
+        db= db_from_json_file(options.db)
+        builddb= builddb_from_json_file(options.builddb)
 
         if options.dump_modules:
             dump_modules(modulespecs_obj)
