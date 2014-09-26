@@ -454,6 +454,7 @@ def process(options, commands):
         db= db_from_json_file(options.db, keep_locked= False)
         try:
             modulespecs_obj= sumolib.ModuleSpec.Specs.from_strings(modulespecs,
+                                                            None,
                                                             options.arch)
         except ValueError, e:
             sys.exit(str(e))
@@ -651,6 +652,7 @@ def process(options, commands):
 
         try:
             modulespecs_obj= sumolib.ModuleSpec.Specs.from_strings(modulespecs,
+                                                            None,
                                                             options.arch)
         except ValueError, e:
             sys.exit(str(e))
