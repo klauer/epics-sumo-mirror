@@ -15,7 +15,7 @@ if __name__ == "__main__":
 
 import sumolib.system
 
-__version__="1.9" #VERSION#
+__version__="2.0" #VERSION#
 
 try:
     import lockfile
