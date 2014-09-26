@@ -41,57 +41,56 @@ cp $ORIG_DB $DB
 cd .. > /dev/null
 
 echo "* creating Sumo configuration files"
-sumo-db --db $SUMODIR/database/$DB makeconfig
-sumo-build --db $SUMODIR/database/$DB --builddb $SUMODIR/build/BUILDS.DB --supportdir $SUMODIR/build --makeopts "-s" makeconfig
+sumo --db $SUMODIR/database/$DB --builddb $SUMODIR/build/BUILDS.DB --supportdir $SUMODIR/build --makeopts "-s" makeconfig
 
 echo "* adding BASE 3.14.8.2.1 to the dependency database"
-sumo-db cloneversion BASE R3-14-8-2-0 R3-14-8-2-1 darcs rcsadm@repo:/opt/Epics/R3.14.8/base/3-14-8-2-1 R3-14-8-2-1
+sumo db cloneversion BASE R3-14-8-2-0 R3-14-8-2-1 darcs rcsadm@repo:/opt/Epics/R3.14.8/base/3-14-8-2-1 R3-14-8-2-1
 
 echo "* creating clones needed for BII-Controls of the RULES support"
-sumo-db clonemodule RULES RULES-1-1 R1-1
-sumo-db clonemodule RULES RULES-1-4-1 R1-4-1
-sumo-db clonemodule RULES RULES-1-5 R1-5
-sumo-db clonemodule RULES RULES-1-9 R1-9
-sumo-db clonemodule RULES RULES-1-15 R1-15
+sumo db clonemodule RULES RULES-1-1 R1-1
+sumo db clonemodule RULES RULES-1-4-1 R1-4-1
+sumo db clonemodule RULES RULES-1-5 R1-5
+sumo db clonemodule RULES RULES-1-9 R1-9
+sumo db clonemodule RULES RULES-1-15 R1-15
 
 echo "* creating clone of APPS_GENERICTEMPLATE R3-6 for RULES-1-1"
-sumo-db cloneversion -y APPS_GENERICTEMPLATE R3-6 R3-6-RULES-1-1
-sumo-db dependency-delete APPS_GENERICTEMPLATE:R3-6-RULES-1-1 RULES
-sumo-db dependency-add    APPS_GENERICTEMPLATE:R3-6-RULES-1-1 RULES-1-1
-sumo-db alias-add         APPS_GENERICTEMPLATE:R3-6-RULES-1-1 RULES-1-1 RULES
+sumo db cloneversion -y APPS_GENERICTEMPLATE R3-6 R3-6-RULES-1-1
+sumo db dependency-delete APPS_GENERICTEMPLATE:R3-6-RULES-1-1 RULES
+sumo db dependency-add    APPS_GENERICTEMPLATE:R3-6-RULES-1-1 RULES-1-1
+sumo db alias-add         APPS_GENERICTEMPLATE:R3-6-RULES-1-1 RULES-1-1 RULES
 
 echo "* creating clone of APPS_IOCWATCH R2-2 for RULES-1-1"
-sumo-db cloneversion -y APPS_IOCWATCH R2-2 R2-2-RULES-1-1
-sumo-db dependency-delete APPS_IOCWATCH:R2-2-RULES-1-1 RULES
-sumo-db dependency-add    APPS_IOCWATCH:R2-2-RULES-1-1 RULES-1-1
-sumo-db alias-add         APPS_IOCWATCH:R2-2-RULES-1-1 RULES-1-1 RULES
+sumo db cloneversion -y APPS_IOCWATCH R2-2 R2-2-RULES-1-1
+sumo db dependency-delete APPS_IOCWATCH:R2-2-RULES-1-1 RULES
+sumo db dependency-add    APPS_IOCWATCH:R2-2-RULES-1-1 RULES-1-1
+sumo db alias-add         APPS_IOCWATCH:R2-2-RULES-1-1 RULES-1-1 RULES
 
 echo "* creating clone of APPS_MOTOR TAGLESS-2-6-2-2 for RULES-1-5"
-sumo-db cloneversion -y APPS_MOTOR TAGLESS-2-6-2-2 TAGLESS-2-6-2-2-RULES-1-5
-sumo-db dependency-delete APPS_MOTOR:TAGLESS-2-6-2-2-RULES-1-5 RULES
-sumo-db dependency-add    APPS_MOTOR:TAGLESS-2-6-2-2-RULES-1-5 RULES-1-5
-sumo-db alias-add         APPS_MOTOR:TAGLESS-2-6-2-2-RULES-1-5 RULES-1-5 RULES
+sumo db cloneversion -y APPS_MOTOR TAGLESS-2-6-2-2 TAGLESS-2-6-2-2-RULES-1-5
+sumo db dependency-delete APPS_MOTOR:TAGLESS-2-6-2-2-RULES-1-5 RULES
+sumo db dependency-add    APPS_MOTOR:TAGLESS-2-6-2-2-RULES-1-5 RULES-1-5
+sumo db alias-add         APPS_MOTOR:TAGLESS-2-6-2-2-RULES-1-5 RULES-1-5 RULES
 
 echo "* creating clone of APPS_SCOPESAVERESTORE R1-1 for RULES-1-4-1"
-sumo-db cloneversion -y APPS_SCOPESAVERESTORE R1-1 R1-1-RULES-1-4-1
-sumo-db dependency-delete APPS_SCOPESAVERESTORE:R1-1-RULES-1-4-1 RULES
-sumo-db dependency-add    APPS_SCOPESAVERESTORE:R1-1-RULES-1-4-1 RULES-1-4-1
-sumo-db alias-add         APPS_SCOPESAVERESTORE:R1-1-RULES-1-4-1 RULES-1-4-1 RULES
+sumo db cloneversion -y APPS_SCOPESAVERESTORE R1-1 R1-1-RULES-1-4-1
+sumo db dependency-delete APPS_SCOPESAVERESTORE:R1-1-RULES-1-4-1 RULES
+sumo db dependency-add    APPS_SCOPESAVERESTORE:R1-1-RULES-1-4-1 RULES-1-4-1
+sumo db alias-add         APPS_SCOPESAVERESTORE:R1-1-RULES-1-4-1 RULES-1-4-1 RULES
 
 echo "* creating clone of APPS_VACUUM TAGLESS-1-1-1 for RULES-1-15"
-sumo-db cloneversion -y APPS_VACUUM TAGLESS-1-1-1 TAGLESS-1-1-1-RULES-1-15
-sumo-db dependency-delete APPS_VACUUM:TAGLESS-1-1-1-RULES-1-15 RULES
-sumo-db dependency-add    APPS_VACUUM:TAGLESS-1-1-1-RULES-1-15 RULES-1-15
-sumo-db alias-add         APPS_VACUUM:TAGLESS-1-1-1-RULES-1-15 RULES-1-15 RULES
+sumo db cloneversion -y APPS_VACUUM TAGLESS-1-1-1 TAGLESS-1-1-1-RULES-1-15
+sumo db dependency-delete APPS_VACUUM:TAGLESS-1-1-1-RULES-1-15 RULES
+sumo db dependency-add    APPS_VACUUM:TAGLESS-1-1-1-RULES-1-15 RULES-1-15
+sumo db alias-add         APPS_VACUUM:TAGLESS-1-1-1-RULES-1-15 RULES-1-15 RULES
 
 echo "* creating clone of HIGHLAND TAGLESS-1-2 for RULES-1-9"
-sumo-db cloneversion -y HIGHLAND-V375 TAGLESS-1-2 TAGLESS-1-2-RULES-1-9
-sumo-db dependency-delete HIGHLAND-V375:TAGLESS-1-2-RULES-1-9 RULES
-sumo-db dependency-add    HIGHLAND-V375:TAGLESS-1-2-RULES-1-9 RULES-1-9
-sumo-db alias-add         HIGHLAND-V375:TAGLESS-1-2-RULES-1-9 RULES-1-9 RULES
+sumo db cloneversion -y HIGHLAND-V375 TAGLESS-1-2 TAGLESS-1-2-RULES-1-9
+sumo db dependency-delete HIGHLAND-V375:TAGLESS-1-2-RULES-1-9 RULES
+sumo db dependency-add    HIGHLAND-V375:TAGLESS-1-2-RULES-1-9 RULES-1-9
+sumo db alias-add         HIGHLAND-V375:TAGLESS-1-2-RULES-1-9 RULES-1-9 RULES
 
 #echo "* creating a BUILD containing just BASE R-3-14-8-2-1"
-#sumo-build new BASE:R3-14-8-2-1 -t BASE-R3-14-8-2-1
+#sumo build new BASE:R3-14-8-2-1 -t BASE-R3-14-8-2-1
 
 echo
 echo "You may now edit the definition of 'SUMODIR' in $SHARE/sumo.vars"

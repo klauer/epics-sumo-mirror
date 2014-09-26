@@ -2,8 +2,7 @@ Module Specifications
 =====================
 
 :term:`Module` specifications are central to many :term:`commands` in 
-:doc:`sumo-db <reference-sumo-db>` and 
-:doc:`sumo-build <reference-sumo-build>`. They provide a powerful way to
+:doc:`sumo <reference-sumo>`. They provide a powerful way to
 specify what :term:`modules` and what :term:`versions` to use.
 
 A module specification is a string with a certain format. "Module

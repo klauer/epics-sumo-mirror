@@ -1,4 +1,4 @@
-sumo-build list
+sumo build list
 BASE-001
 MYAPP-001
 MYAPP-002

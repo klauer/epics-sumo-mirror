@@ -1,12 +1,17 @@
-sumo-db
-=======
+sumo
+====
 
 What the script does
 --------------------
 
-This program manages the dependency database or :term:`DB` file. It is used to
-create this file from the output of :doc:`sumo-scan <reference-sumo-scan>` and
-to query and change that file.
+The script has two major purposes:
+
+- Manage the :term:`dependency database` or :term:`DB` file. 
+  It is used to create this file from the output of 
+  :doc:`sumo-scan <reference-sumo-scan>` and to query and 
+  change that file.
+- Create and manage :term:`builds`. It also keeps note of 
+  all builds in the build database or :term:`BUILDDB`.
 
 The script takes one or mode commands and has a number of options. Single
 character options always start with a single dash "-", long options start with
@@ -15,6 +20,15 @@ a double dash "--", commands are simple words on the command line.
 How it works
 ------------
 
+Information on all known :term:`modules` and module :term:`versions` is kept in
+the :term:`dependency database`. This file also contains a :term:`source`
+specification for each module that may be a directory, tar file or a repository
+specification.
+
+A complete and consistent set of modules that is compiled is called a
+:term:`build`.  All :term:`builds` are kept in a single directory, the
+:term:`support directory`. Information on :term:`builds` is kept in a 
+`JSON <http://www.json.org>`_ file, the build database or :term:`BUILDDB`.
 
 .. _reference-sumo-db-The-dependency-database:
 
@@ -136,14 +150,13 @@ The *versiondata* map has this form::
 aliasdata
 :::::::::
 
-When the support module is to be compiled, 
-:doc:`sumo-build <reference-sumo-build>` creates a RELEASE file from the known
-dependencies of the module. The RELEASE file contains variable definitions, one
-for each dependency whose name is the module name and whose value is the path
-of the compiled module. If a module needs a variable name that is different
-from the module name, an alias must be defined. For each dependency that is
-part of the alias map, the *ALIASNAME* of the alias map is taken. The
-*aliasdata* map has this form::
+When the support module is to be compiled "sumo build" creates a RELEASE file
+from the known dependencies of the module. The RELEASE file contains variable
+definitions, one for each dependency whose name is the module name and whose
+value is the path of the compiled module. If a module needs a variable name
+that is different from the module name, an alias must be defined. For each
+dependency that is part of the alias map, the *ALIASNAME* of the alias map is
+taken. The *aliasdata* map has this form::
 
   {
       MODULENAME: MODULEALIAS,
@@ -358,13 +371,141 @@ For each dependency of a module this structure contains the version of the
 dependency and a state. The state can be "stable" or "testing" or "scanned" but
 is always "scanned" if the file was generated with sumo-db.
 
+The build database
+++++++++++++++++++
+
+The build database or :term:`BUILDDB` file is a `JSON <http://www.json.org>`_
+file that contains information of all :term:`builds` in the 
+:term:`support directory`.
+
+Here is an example how this file looks like::
+
+  {
+      "001": {
+          "modules": {
+              "ALARM": "R3-5",
+              "ASYN": "R4-15-bessy2",
+              "BASE": "R3-14-8-2-0",
+              "BSPDEP_CPUBOARDINIT": "R4-0",
+              "BSPDEP_TIMER": "R5-1",
+              "CSM": "R3-8",
+              "EK": "R2-1",
+              "GENSUB": "PATH-1-6-1",
+              "MCAN": "R2-3-18",
+              "MISC": "R2-4",
+              "SEQ": "R2-0-12-1",
+              "SOFT": "R2-5",
+              "VXSTATS": "R2-0"
+          },
+          "state": "stable"
+      },
+      "002": {
+          "linked": {
+              "ASYN": "001",
+              "BASE": "001",
+              "BSPDEP_CPUBOARDINIT": "001",
+              "BSPDEP_TIMER": "001",
+              "CSM": "001",
+              "EK": "001",
+              "GENSUB": "001",
+              "MISC": "001",
+              "SEQ": "001",
+              "SOFT": "001",
+              "VXSTATS": "001"
+          },
+          "modules": {
+              "ALARM": "R3-4",
+              "ASYN": "R4-15-bessy2",
+              "BASE": "R3-14-8-2-0",
+              "BSPDEP_CPUBOARDINIT": "R4-0",
+              "BSPDEP_TIMER": "R5-1",
+              "CSM": "R3-8",
+              "EK": "R2-1",
+              "GENSUB": "PATH-1-6-1",
+              "MCAN": "R2-3-18",
+              "MISC": "R2-4",
+              "SEQ": "R2-0-12-1",
+              "SOFT": "R2-5",
+              "VXSTATS": "R2-0"
+          },
+          "state": "unstable"
+      }
+  }
+
+The basic datastructure is this::
+
+  {
+      BUILDTAG : {
+          <builddata> 
+          },
+      BUILDTAG : {
+          <builddata> 
+          },
+      ...
+  }
+
+The *builddata* has this form::
+
+  {
+      "linked": {
+          <linkdata>
+          },
+      "modules": {
+          <moduledata>
+          },
+      "state": <state>
+  }
+
+moduledata
+::::::::::
+
+moduledata is a map that maps :term:`modulenames` to :term:`versionnames`.
+This specifies all the :term:`modules` that are part of the :term:`build`.
+Since a :term:`build` may reuse :term:`modules` from another :term:`build` not
+all modules from this map may actually exist as separate directories of the
+:term:`build`. The *moduledata* has this form::
+
+  {
+      MODULENAME: VERSIONNAME,
+      MODULENAME: VERSIONNAME,
+      ...
+  }
+
+linkdata
+::::::::
+
+linkdata is a map that maps :term:`modulenames` to buildtags. This map contains
+all :term:`modules` of the :term:`build` that are reused from other
+:term:`builds`. If a :term:`build` has no linkdata, the key "linked" in
+*builddata* is omitted. The *linkdata* has this form::
+
+  {
+      MODULENAME: BUILDTAG,
+      MODULENAME: BUILDTAG,
+      ...
+  }
+
+state
+:::::
+
+This is a :term:`state` string that describes the state of the :term:`build`.
+Here are the meanings of the :term:`state` string:
+
+* unstable: the :term:`build` has been created but not yet compiled
+* testing: the :term:`build` has been compiled successfully
+* stable: the :term:`build` has been tested in production successfully
+
 Commands
 --------
 
-This is a list of all commands:
+You always have to provide sumo with a *maincommand*. Some *maincommands* need
+to be followed by a *subcommand*. 
+
+maincommands
+++++++++++++
 
 makeconfig [FILENAME] {OPTIONNAMES}
-+++++++++++++++++++++++++++++++++++
+:::::::::::::::::::::::::::::::::::
 
 Create a new configuration file from the options read from configuration files
 and options from the command line. If FILENAME is '-' dump to the console. If
@@ -374,7 +515,7 @@ OPTIONNAMES are specified, only options from this list are saved in the
 configuration file.
 
 edit [FILE]
-+++++++++++
+:::::::::::
 
 Start the editor specified by the environment variable "VISUAL" or "EDITOR"
 with that file. This command first aquires a file-lock on the file that is only
@@ -385,8 +526,23 @@ same time you modify it.
 
 This command must be followed by a *filename*.
 
+db
+::
+
+This is the maincommand for all operations that work with the 
+:term:`dependency database` (DB) file.
+
+build
+:::::
+
+This is the maincommand for all operations that work with builds and the build
+database (:term:`BUILDDB`).
+
+subcommands for maincommand "db"
+++++++++++++++++++++++++++++++++
+
 convert [SCANFILE]
-++++++++++++++++++
+::::::::::::::::::
 
 Convert a :term:`scanfile` that was created by by 
 :doc:`"sumo-scan all"<reference-sumo-scan>` to a new dependency database.
@@ -399,7 +555,7 @@ database file contains information on what moduleversion can be used with what
 dependency version.
 
 convert-old [OLDDB]
-+++++++++++++++++++
+:::::::::::::::::::
 
 Convert a 
 :ref:`dependency database <reference-sumo-db-The-dependency-database>` from the
@@ -412,18 +568,16 @@ file. The scan database file contains information on what :term:`version` of a
 according to the data in the old dependency database.
 
 appconvert [SCANFILE]
-+++++++++++++++++++++
+:::::::::::::::::::::
 
 Convert a :term:`scanfile` that was created by applying 
 :doc:`"sumo-scan all"<reference-sumo-scan>` to an application to a list of 
 :term:`aliases` and :term:`modulespecs` in `JSON <http://www.json.org>`_
 format. The result is printed to the console. It can be used with
---config to put these in the configuration file of 
-:doc:`"sumo-db "<reference-sumo-db>` or 
-:doc:`"sumo-build "<reference-sumo-build>` 
+--config to put these in the configuration file of sumo.
 
 weight [WEIGHT] [MODULES]
-+++++++++++++++++++++++++
+:::::::::::::::::::::::::
 
 Set the weight factor for modules. Parameter MODULES is a list of
 :term:`modulespecs` that specifies the :term:`modules` and :term:`versions` to
@@ -434,13 +588,13 @@ Note that this command *does not* use the "--modules" command line option.
 Parameter WEIGHT must be an integer.
 
 list
-++++
+::::
 
 This command lists all :term:`modules` in the 
 :ref:`dependency database <reference-sumo-db-The-dependency-database>`.
 
 shownewest {MODULES}
-++++++++++++++++++++
+::::::::::::::::::::
 
 This command shows only the newest versions of modules.
 
@@ -449,7 +603,7 @@ Optional parameter MODULES specifies which :term:`modules` are shown. If no
 :term:`modules`.
 
 showall {MODULES}
-+++++++++++++++++
+:::::::::::::::::
 
 This command shows all versions of the given modules. 
 
@@ -458,7 +612,7 @@ Optional parameter MODULES specifies which :term:`modules` are shown. If no
 :term:`modules`.
 
 filter [MODULES]
-++++++++++++++++
+::::::::::::::::
 
 This command prints only the parts of the dependency database that contain the
 given modules. 
@@ -467,19 +621,19 @@ Parameter MODULES is a list of :term:`modulespecs` that specifies the
 :term:`modules` and :term:`versions` to operate on. 
 
 find [REGEXP]
-+++++++++++++
+:::::::::::::
 
 This command shows all :term:`modules` whose names or :term:`sources` match a
 regexp.  Parameter REGEXP is a perl compatible :term:`regular expression`.  
 
 check
-+++++
+:::::
 
 This command does a consistency check of the dependency database (:term:`DB`
 file).
 
 merge [DB]
-++++++++++
+::::::::::
 
 This command merges a :term:`dependency database` with another
 :term:`dependency database`. The database that is modified must follow the
@@ -487,7 +641,7 @@ command as parameter DB. The database that is added must be specified with the
 "--db" option.
 
 cloneversion [MODULE] [OLD-VERSION] [NEW-VERSION] {SOURCESPEC}
-++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 This command adds a new :term:`version` of a :term:`module` to the
 :term:`dependency database` by copying the old :term:`version`. If sourcespec
@@ -500,7 +654,7 @@ command always asks for a confirmation of the action unless option "-y" is
 used.
 
 replaceversion [MODULE] [OLD-VERSION] [NEW-VERSION]
-+++++++++++++++++++++++++++++++++++++++++++++++++++
+:::::::::::::::::::::::::::::::::::::::::::::::::::
 
 This command replaces a :term:`version` of a :term:`module` with a new
 :term:`version`. All the data of the :term:`module` is copied. If sourcespec is
@@ -510,7 +664,7 @@ URL TAG".  REPOTYPE may be "darcs", "hg" or "git". Both, URL or TAG may be "*",
 in this case the original URL or TAG remains unchanged.
 
 clonemodule [OLD-MODULE] [NEW-MODULE] {VERSIONS}
-++++++++++++++++++++++++++++++++++++++++++++++++
+::::::::::::::::::::::::::::::::::::::::::::::::
 
 Copy all :term:`versions` of the existing old :term:`module` and add this with
 the name of thew new :term:`module` to the :term:`dependency` database. If
@@ -519,19 +673,128 @@ there are no :term:`versions` specified, the command copies all existing
 :term:`dependency` to any other :term:`modules`.
 
 dependency-delete MODULE:VERSION DEPENDENCYNAME
-+++++++++++++++++++++++++++++++++++++++++++++++
+:::::::::::::::::::::::::::::::::::::::::::::::
 
 Delete a :term:`dependency` of a :term:`module`.
 
 dependency-add MODULE:VERSION DEPENDENCYNAME
-++++++++++++++++++++++++++++++++++++++++++++
+::::::::::::::::::::::::::::::::::::::::::::
 
 Add a :term:`dependency` to a :term:`module`.
 
 alias-add MODULE:VERSION DEPENDENCYNAME alias
-+++++++++++++++++++++++++++++++++++++++++++++
+:::::::::::::::::::::::::::::::::::::::::::::
 
 Add an :term:`alias` to a :term:`module`.
+
+subcommands for maincommand "build"
++++++++++++++++++++++++++++++++++++
+
+try [MODULES]
+:::::::::::::
+
+This command helps to create :term:`module` specifications for the "new"
+command.  You can specify an incomplete list of :term:`modules`,
+:term:`modules` without :term:`versions` or with :term:`version` ranges.  The
+program then shows which :term:`modules` you have to include in your list since
+other :term:`modules` depend on them and shows information on all
+:term:`versions` of all :term:`modules` that satisfy your :term:`module`
+specifications. It also shows if your :term:`module` specifications are
+*complete* and *exact* meaning that all :term:`dependencies` are included and
+all :term:`modules` are specified with exactly a single :term:`version`.  Note
+that you can use option "--scandb" in order to give additional information
+which :term:`versions` of :term:`modules` are compatible with each other.
+Options "--db" and "--builddb" are mandatory for this command.
+
+For an example see :ref:`try example <example-sumo-build-try>`.
+
+new [MODULES]
+:::::::::::::
+
+This command creates a new :term:`build`. If the :term:`buildtag` is not given
+as an option, the program generates a :term:`buildtag` in the form "AUTO-nnn".
+Note that options "--db" and "--builddb" are mandatory for this command. A new
+:term:`build` is created according to the :term:`modulespecs`. Your
+modulespecifications must be *complete* and *exact* meaning that all
+:term:`dependencies` are included and all :term:`modules` are specified with
+exactly a single :term:`version`. Use command "try" in order to create
+:term:`module` specifications that can be used with command "new".  This
+command calls "make" and, after successful completion, sets the state of the
+:term:`build` to "testing". If you want to skip this step, use option
+"--no-make". In order to provide arbitrary options to make use option
+"--makeopts".
+
+find [MODULESPECS]
+::::::::::::::::::
+
+This command is used to find matching :term:`builds` for a given list of
+:term:`modulespecs`. It prints a list of :term:`buildtags` of matching
+:term:`builds` on the console. Note that the :term:`versions` in
+:term:`modulespecs` may be *unspecified*, *specified exactly* or *specifed
+by relation*. If option --brief is given, the program just shows the
+buildtags.
+
+useall [BUILDTAG]
+:::::::::::::::::
+
+This command creates a configure/RELEASE file for an application. The command
+must be followed by buildtag. The release file created includes *all*
+:term:`modules` of the :term:`build`. The buildtag may be given as argument or
+option. Output to another file or the console can be specified with option
+'-o'.
+
+use [MODULES]
+:::::::::::::
+
+This command creates a configure/RELEASE file for an application. The command
+must be followed by a list of :term:`modulespecs`. If option --buildtag is
+given, it checks if this is compatible with the given :term:`modules`.
+Otherwise it looks for all :term:`builds` that have the :term:`modules` in the
+required :term:`versions`. If more than one matching :term:`build` found it
+takes the one with the alphabetically first buildtag. Note that the
+:term:`modulespecs` MUST specify :term:`versions` exactly. If you have
+unspecified :term:`versions` or :term:`versions` specified by relation you must
+use command "use" instead.  The RELEASE created includes only the
+:term:`modules` that are specified. For this command the :term:`DB` file must
+be specified with the "--db" option. Output to another file or the console can
+be specified with option '-o'.
+
+list
+::::
+
+This command lists the names of all builds.
+
+show [BUILDTAG]
+:::::::::::::::
+
+This command shows the data of a :term:`build`. The :term:`buildtag` may be
+given as argument or option.
+
+state [BUILDTAG] {NEW STATE}
+::::::::::::::::::::::::::::
+
+This command is used to show or change the :term:`state` of a :term:`build`.
+The :term:`buildtag` may be given as argument or option.If there is no new
+:term:`state` given, it just shows the current :term:`state` of the
+:term:`build`. Otherwise the :term:`state` of the :term:`build` is changed to
+the given value. 
+
+delete [BUILDTAG]
+:::::::::::::::::
+
+If no other :term:`build` depends on the :term:`build` specified by the
+:term:`buildtag`, the directories of the :term:`build` are removed and it's
+entry in the builddb is deleted. The :term:`buildtag` may be given as argument
+or option.
+
+cleanup [BUILDTAG]
+::::::::::::::::::
+
+This command removes the remains of a failed :term:`build`. If the command
+"new" is interrupted or stopped by an exception in the program, the
+:term:`build` may be in an incomplete :term:`state`. In this case you can use
+the "cleanup" command to remove the directories of the failed :term:`build`.
+The :term:`buildtag` may be given as argument or option.
 
 Options
 -------
@@ -567,23 +830,52 @@ Here is a short overview on command line options:
 ``--db DB``
     Define the name of the DB file. This option value is stored in the
     configuration file. 
+``--builddb BUILDDB``
+    Specify the :term:`BUILDDB` file. This option value is stored in the
+    configuration file.
 ``--scandb SCANDB``
-    Specify the :term:`SCANDB` file (only for 'convert' and 'convert-old'
-    command).
+    Specify the (optional) :term:`SCANDB` file. The scan database file contains
+    information on what moduleversion can be used with what dependency version.
 ``--dumpdb``
     Dump the modified db on the console, currently only for the commands
     "weight", "merge", "cloneversion" and "replaceversion".
+``-t BUILDTAG, --buildtag BUILDTAG``
+    Specify a buildtag.
+``--buildtag-stem STEM``
+    Specify the stem of a buildtag. This option has only an effect on the
+    commands 'new' and 'try' if a buildtag is not specified. The program
+    generates a new tag in the form 'stem-nnn' where 'nnn' is the smallest
+    possible number that ensures that the buildtag is unique.
+``--supportdir SUPPORDIR``
+    Specify the support directory. If this option is not given take the current
+    working directory as support directory.  This option value is stored in the
+    configuration file.
+``-o OUTPUTFILE, --output OUTPUTFILE``
+    Define the output for commands 'useall' and 'use'. If this option is not
+    given, 'useall' and 'use' write to 'configure/RELEASE'. If this option is
+    '-', the commands write to standard-out",
+``-x EXTRALINE, --extra EXTRALLINE``
+    Specify an extra line that is added to the generated RELEASE file. This
+    option value is stored in the configuration file.
+``-a ALIAS, --alias ALIAS``
+    Define an alias for the commands 'use' and 'useall'. An alias must have the
+    form FROM:TO. The path of module named 'FROM' is put in the generated
+    RELEASE file as a variable named 'TO'. You can specify more than one of
+    these by repeating this option or by joining values in a single string
+    separated by spaces. This option value is stored in the configuration file.
 ``--arch ARCH``
     Define the name of a targetarchitecture. You can specify more than one
     target architecture.  You can specify more than one of these by repeating
     this option or by joining values in a single string separated by spaces.
-    This option value is stored in the configuration file.  
+    This option value is stored in the configuration file.
 ``-m MODULE, --module MODULE``
     Define a :term:`modulespec`. If you specify modules with this option you
     don't have to put :term:`modulespecs` after some of the commands. You can
     specify more than one of these by repeating this option or by joining
     values in a single string separated by spaces.  This option value is stored
     in the configuration file.
+``-X, --exclude-states``
+    For command 'try' exclude all 'dependents' whose state does match one of
 ``-b, --brief``
     Create a more brief output for some commands.
 ``-P EXPRESSION, --source-patch EXPRESSION``
@@ -594,13 +886,28 @@ Here is a short overview on command line options:
     value is stored in the configuration file.
 ``--noignorecase``
     For command 'find', do NOT ignore case.
+``--no-checkout``
+    With this option, "new" does not check out sources of support modules. This
+    option is only here for test purposes.
+``--no-make``
+    With this option, "new" does not call "make".j
+``--makeopts MAKEOPTIONS``
+    Specify extra option strings for make You can specify more than one of
+    these by repeating this option or by joining values in a single string
+    separated by spaces.  This option value is stored in the configuration
+    file.
+``--readonly``
+    Do not allow modifying the database files or the support directory.  This
+    option value is stored in the configuration file.
 ``--nolock``
     Do not use file locking.
 ``-p, --progress``
     Show progress on stderr. This option value is stored in the configuration
     file.
-``-t, --trace``
+``--trace``
     Switch on some trace messages.
+``--tracemore``
+    Switch on even more trace messages.
 ``--dump-modules``
     Dump module specs, then stop the program.
 ``-y, --yes``

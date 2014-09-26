@@ -1,4 +1,4 @@
-call sumo-build new, let the command fail on purpose...
+call sumo build new, let the command fail on purpose...
 IOError: [Errno 2] cmd "darcs get -t '^R3-14-12-2-1\s*$' /data/repo/mybase3-14-12-2-1 BASE/R3-14-12-2-1+001", rc 2
 
 directory tree (without darcs, maxdepth 2)
@@ -50,7 +50,7 @@ contents of cleanup file:
     ]
 }
 
-now do sumo-build cleanup 001
+now do sumo build cleanup 001
 
 directory tree (without darcs, maxdepth 2)
 .

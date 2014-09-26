@@ -14,10 +14,10 @@ else
         PYTHON=$1
 fi
 
-echo -e "\n-> Test sumo-db convert-old." >&2
+echo -e "\n-> Test sumo db convert-old." >&2
 
 set +o posix
-$PYTHON ../bin/sumo-db convert-old data/samples/DB_IDCP_OLD --db $ME-DEPS.tmp --scandb $ME-SCAN.tmp 
+$PYTHON ../bin/sumo db convert-old data/samples/DB_IDCP_OLD --db $ME-DEPS.tmp --scandb $ME-SCAN.tmp 
 echo "DB file:"
 cat $ME-DEPS.tmp
 echo

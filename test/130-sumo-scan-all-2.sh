@@ -3,7 +3,7 @@
 ME=`basename $0 .sh`
 
 if [ "$1" = "deps" ]; then
-        echo "$ME.tst: $ME.sh $ME.out $ME.ok 110-sumo-build--new.tst"
+        echo "$ME.tst: $ME.sh $ME.out $ME.ok 110-sumo build--new.tst"
         echo
         exit
 fi

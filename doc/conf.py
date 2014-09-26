@@ -41,7 +41,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'Support Module Manager'
-copyright = u'2013, Helmholtz-Zentrum Berlin GmbH'
+copyright = u'2014, Helmholtz-Zentrum Berlin GmbH'
 show_authors= True
 
 # The version info for the project you're documenting, acts as replacement for

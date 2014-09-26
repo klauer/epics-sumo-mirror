@@ -35,12 +35,12 @@ sumo-makedir-3.14.12 $dir_3_14_12
 
 cd $dir_3_14_8
 
-sumo-db replaceversion APPS_GENERICTEMPLATE R3-6 R3-6-EPICS-3-14-8 
-sumo-db replaceversion APPS_GENERICBOOT R0-9 R0-9-EPICS-3-14-8 
-sumo-db replaceversion APPS_GENERICBOOT R0-3 R0-3-EPICS-3-14-8
-sumo-db replaceversion APPS_GENERICBOOT R0-4 R0-4-EPICS-3-14-8
-sumo-db replaceversion APPS_GENERICBOOT R0-7 R0-7-EPICS-3-14-8
-sumo-db replaceversion APPS_VACUUM TAGLESS-1-1 TAGLESS-1-1-EPICS-3-14-8
+sumo db replaceversion APPS_GENERICTEMPLATE R3-6 R3-6-EPICS-3-14-8 
+sumo db replaceversion APPS_GENERICBOOT R0-9 R0-9-EPICS-3-14-8 
+sumo db replaceversion APPS_GENERICBOOT R0-3 R0-3-EPICS-3-14-8
+sumo db replaceversion APPS_GENERICBOOT R0-4 R0-4-EPICS-3-14-8
+sumo db replaceversion APPS_GENERICBOOT R0-7 R0-7-EPICS-3-14-8
+sumo db replaceversion APPS_VACUUM TAGLESS-1-1 TAGLESS-1-1-EPICS-3-14-8
 
 cd $HERE > /dev/null
 
@@ -50,7 +50,7 @@ mkdir $dir/database
 cp -a $dir_3_14_8/database/* $dir/database
 cp -a $dir_3_14_12/database/* $dir/database
 
-sumo-db --db $dir/database/DEPS.DB merge $dir_3_14_8/database/DEPS.DB
+sumo db --db $dir/database/DEPS.DB merge $dir_3_14_8/database/DEPS.DB
 
 rm -rf $dir_3_14_8
 rm -rf $dir_3_14_12

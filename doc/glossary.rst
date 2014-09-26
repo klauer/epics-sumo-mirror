@@ -167,7 +167,7 @@ Here we define some of the terms used in the following text.
   scanfile
       This is the file created by :doc:`"sumo-scan all"<reference-sumo-scan>`.
       This `JSON <http://www.json.org>`_ file can be converted to a :term:`DB`
-      file with by :doc:`"sumo-db convert"<reference-sumo-db>`.
+      file with by :doc:`"sumo db convert"<reference-sumo>`.
 
   dependency database
       See :term:`DB`.

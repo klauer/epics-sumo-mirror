@@ -1,4 +1,4 @@
-sumo-build find MCAN -b:
+sumo build find MCAN -b:
 {
     "MYAPP-001": {
         "linked": {

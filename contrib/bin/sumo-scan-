@@ -28,5 +28,5 @@ NOW=`date -Iseconds`
 
 sumo-scan -c $SUMO_SCAN_CONFIG all > SUMO-SCAN-$NOW.SCAN
 
-sumo-db -c $SUMO_DB_CONFIG convert SUMO-SCAN-$NOW.SCAN --db SUMO-SCAN-DEPS-$NOW.DB --scandb SUMO-SCAN-SCAN-$NOW.DB
+sumo db -c $SUMO_DB_CONFIG convert SUMO-SCAN-$NOW.SCAN --db SUMO-SCAN-DEPS-$NOW.DB --scandb SUMO-SCAN-SCAN-$NOW.DB
 
