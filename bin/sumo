@@ -1914,6 +1914,16 @@ def process(options, commands):
     """
     # pylint: disable=R0912
     #                          Too many branches
+    # pylint: disable=R0915
+    #                          Too many statements
+    if not commands:
+        print "command missing\n"
+        print usage
+        return
+    if commands[0]=="help":
+        print helptext(commands[1:])
+        return
+
     config= sumolib.Config.ConfigFile.from_optionlist(
                 CONFIG_NAME,
                 ( "#include", "arch", "alias", "builddb", "buildtag_stem",
@@ -1983,182 +1993,340 @@ def _test():
     doctest.testmod()
     print "done!"
 
-usage = """usage: %prog maincommand subcommand [options]
-where maincommand is:
-  makeconfig [FILENAME] {OPTIONNAMES}
-          Create a new configuration file from the options read from
-          configuration files and options from the command line. If FILENAME is
-          '-' dump to the console. If FILENAME is "DEFAULT", rewrite the
-          configuration file that was read before (see option --config).
-          OPTIONNAMES is an optional list of long option names. If OPTIONNAMES
-          are specified, only options from this list are saved in the
-          configuration file.
-  edit [FILE]
-          Start the editor specified by the environment variable "VISUAL" or
-          "EDITOR" with that file. This command first aquires a file-lock on
-          the file that is only released when the editor program is terminated.
-          If you want to edit a DB or BUILDDB file directly, you should always
-          do it with this with this command. The file locking prevents other
-          users to use the file at the same time you modify it.
-  db
-          This is the maincommand for all operations that work with the
-          dependency database (DB) file.
-  build
-          This is the maincommand for all operations that work with builds and
-          the build database (BUILDDB).
+help_maincommands= set(("makeconfig", "edit", "db", "build"))
 
-subcommands for maincommand "db":
+help_topics= {
+        "":"""
+No help topic given. Use
+  "help <topic>" to get help on a topic.
 
-  convert [SCANFILE]: 
-          Convert SCANFILE created by "sumo-scan all" to a new dependency
-          database. If SCANFILE is a dash "-" the program expects the scanfile
-          on stdin.  Note that options "--db" and "--scandb" are mandatory
-          here. With "--db" you specify the name of the new created dependency
-          database file, with "--scandb" you specify the name of the scan
-          database file.  The scan database file contains information on what
-          moduleversion can be used with what dependency version.
-  convert-old [OLD-DEPS-DB]
-          Convert a dependency database from the old to the new format. Note
-          that options "--db" and "--scandb" are mandatory here. With "--db"
-          you specify the name of the new created dependency database file,
-          with "--scandb" you specify the name of the scan database or SCANDB
-          file. The scan database file contains information on what version of
-          a module is probably compatible with what version of a dependency
-          according to the data in the old dependency database.
-  appconvert [SCANFILE] 
-          Convert a SCANFILE that was created by applying sumo-scan to an
-          application to a list of aliases and modulespecs in JSON format. The
-          result is printed to the console. It can be used with --config
-          to put these in the configuration file of sumo.
-  weight [WEIGHT] [modules]
-          Set the weight factor for modules. Use
-          modulename:{+-}versionname to select more versions of a module.
-          This command *does not* use the --modules option.
-          Weight must be an integer.
-  list:   list the names of all modules
-  shownewest {MODULES}: 
-          Show newest version for each module. If {modules} is missing, take
-          all modules of the database.
-  showall {MODULES}: 
-          Show all versions for each module. If {modules} is missing, take all
-          modules of the database.
-  filter [MODULES]
-          Print the database for the given modules. If you want a specific
-          version of a module use modulename:versioname instead of the
-          modulename alone.
-  find [REGEXP]
-          Show all modules whose names or sources match regexp.
+Possible topics are:
 
-  check 
-          do some consistency checks on the db specifed by --db
-  merge [DB]
-          Merge the given db with the one specified by --db
-  cloneversion [MODULE] [OLD-VERSION] [NEW-VERSION] {SOURCESPEC}
-          Add a new version to the database by copying the old version. The
-          old-version data is copied for the new version data. If sourcespec is
-          given, the command changes the source part according to this
-          parameter. A sourcespec has the form "path PATH", "tar TARFILE",
-          "REPOTYPE URL" or "REPOTYPE URL TAG". REPOTYPE may be "darcs", "hg"
-          or "git". Both, URL or TAG may be "*", in this case the original URL
-          or TAG remain unchanged. If sourcespec is not given, the command adds
-          NEW-VERSION as new tag to the source specification. The command
-          always asks for a confirmation of the action unless option "-y" is
-          used.
-  replaceversion [MODULE] [OLD-VERSION] [NEW-VERSION] {SOURCESPEC}
-          Replace a version to the database with a new one. The old-version
-          data is copied for the new version data. If sourcespec is given, the
-          command changes the source part according to this parameter. A
-          sourcespec has the form "path PATH", "tar TARFILE", "REPOTYPE URL" or
-          "REPOTYPE URL TAG". REPOTYPE may be "darcs", "hg" or "git". Both, URL
-          or TAG may be "*", in this case the original URL or TAG remains
-          unchanged.
-  clonemodule [OLD-MODULE] [NEW-MODULE] {VERSIONS}
-          Copy all versions of the existing old module and add this with the
-          name of thew new module to the dependency database. If there are no
-          versions specified, the command copies all existing versions. Note
-          that this DOES NOT add the new module as dependency to any other
-          modules.
-  dependency-delete MODULE:VERSION DEPENDENCYNAME
-          Delete a dependency of a module.
-  dependency-add MODULE:VERSION DEPENDENCYNAME
-          Add a dependency to a module.
-  alias-add MODULE:VERSION DEPENDENCYNAME ALIAS
-          Add an alias to a module.
+  maincommand                : explain what a maincommand is
+  <maincommand>              : help for a specific maincommand
+  <maincommand> <subcommand> : help for a subcommand of a maincommand
+  <subcommand>               : help for a subcommand
+""",
+        "maincommand":"""
+A maincommand provides a grouping for the various commands of sumo.
 
-subcommands for maincommand "build":
+While some maincommands can be used without a subcommand, others must be
+followed by a subcommand. These are the known maincommands:
 
-  try [MODULES]
-          This command helps to create module specifications for the "new"
-          command.  You can specify an incomplete list of modules, modules
-          without versions or with version ranges.  The program then shows
-          which modules you have to include in your list since other modules
-          depend on them and shows information on all versions of all modules
-          that satisfy your module specifications. It also shows if your
-          module specifications are *complete* and *exact* meaning that all
-          dependencies are included and all modules are specified with exactly
-          a single version. Note that you can use option "--scandb" in order to
-          give additional information which versions of modules are compatible
-          with each other. Options "--db" and "--builddb" are mandatory for
-          this command.
-  new [MODULES]
-          This command creates a new build. If the buildtag is not given as an
-          option, the program generates a buildtag in the form "AUTO-nnn". Note
-          that options "--db" and "--builddb" are mandatory for this command. A
-          new build is created according to the modulespecs. Your
-          modulespecifications must be *complete* and *exact* meaning that all
-          dependencies are included and all modules are specified with exactly
-          a single version. Use command "try" in order to create module
-          specifications that can be used with command "new".  This command
-          calls "make" and, after successful completion, sets the state of the
-          build to "testing". If you want to skip this step, use option
-          "--no-make". In order to provide arbitrary options to make use option
-          "--makeopts".
-  find [MODULESPECS]
-          This command is used to find matching builds for a given list of
-          modulespecs. It prints a list of buildtags of matching builds on the
-          console.  Note that the versions in modulespecs may be *unspecified*,
-          *specified exactly* or *specifed by relation*. If option --brief is
-          given, the program just shows the buildtags.
-  useall [BUILDTAG]
-          This command creates a configure/RELEASE file for an application. The
-          command must be followed by buildtag. The release file created
-          includes *all* modules of the build. The buildtag may be given as
-          argument or option. Output to another file or the console can be
-          specified with option '-o'.
-  use [MODULES]
-          This command creates a configure/RELEASE file for an application. The
-          command must be followed by a list of modulespecs. If option
-          --buildtag is given, it checks if this is compatible with the given
-          modules. Otherwise it looks for all builds that have the modules in
-          the required versions. If more than one matching build found it takes
-          the one with the alphabetically first buildtag. Note that the
-          modulespecs MUST specify versions exactly. If you have unspecified
-          versions or versions specified by relation you must use command "use"
-          instead. The RELEASE created includes only the modules that are
-          specified. For this command the DB file must be specified with the
-          "--db" option. Output to another file or the console can be specified
-          with option '-o'.
-  list    
-          This command lists the names of all builds.
-  show [BUILDTAG]
-          This command shows the data of a build. The buildtag may be given as
-          argument or option.
-  state {BUILDTAG} {NEW STATE}
-          This command is used to show or change the state of a build. The
-          buildtag may be given as argument or option.If there is no new state
-          given, it just shows the current state of the build. Otherwise the
-          state of the build is changed to the given value. 
-  delete {BUILDTAG}
-          If no other build depends on the build specified by the buildtag, the
-          directories of the build are removed and it's entry in the builddb is
-          deleted. The buildtag may be given as argument or option.
-  cleanup {BUILDTAG}
-          This command removes the remains of a failed build. If the command
-          "new" is interrupted or stopped by an exception in the program, the
-          build may be in an incomplete state. In this case you can use the
-          "cleanup" command to remove the directories of the failed build. The
-          buildtag may be given as argument or option.
+  makeconfig         - generate a configuration file
+  edit               - lock, then edit a file
+  db [subcommand]    - operation on the dependency database
+  build [subcommand] - manage the build database and builds
+
+Use "help [maincommand] for further details.
+""",
+        "makeconfig":"""
+makeconfig [FILENAME] {OPTIONNAMES}
+
+Create a new configuration file from the options read from configuration files
+and options from the command line. If FILENAME is '-' dump to the console. If
+FILENAME is "DEFAULT", rewrite the configuration file that was read before (see
+option --config).  OPTIONNAMES is an optional list of long option names. If
+OPTIONNAMES are specified, only options from this list are saved in the
+configuration file.
+""",
+        "edit": """
+edit [FILE]
+
+Start the editor specified by the environment variable "VISUAL" or "EDITOR"
+with that file. This command first aquires a file-lock on the file that is only
+released when the editor program is terminated.  If you want to edit a DB or
+BUILDDB file directly, you should always do it with this with this command. The
+file locking prevents other users to use the file at the same time you modify
+it.
+""",
+        "db": """
+
+db [subcommand]
+
+Query or modify the dependency database (DB) file. These are the known
+subcommands here:
+
+  convert      - convert a scanfile created by sumo-scan to a DB file
+  convert-old  - convert a DB file from old to new format (legacy)
+  appconvert   - convert a scanfile to a MODULES file for an application
+  weight       - set the weight factor for modules
+  list         - list modules
+  shownewest   - show newest module versions
+  showall      - show all modules
+  filter       - show parts of the DB file
+  find         - search for modules with a regexp
+  check        - consistency check of the DB file
+  merge        - merge two DB files
+  cloneversion - create a new DB entry by copying an old one
+  replaceversion - 
+                 replace a DB entry with a new one
+  clonemodule  - add a module under a new name in the DB file
+
+Use "help [subcommand] for further details.
+""",
+        "build": """
+
+build [subcommand]
+
+Manage the build database (BUILDDB) and create or delete builds. These are the
+known subcommands:
+
+  try       - check the module specification for completeness and consistency
+  new       - create a new build
+  find      - look for builds that match a module specification
+  useall    - use all modules of a build in your application
+  use       . use all modules or your module specification in your application
+  list      - list names of all builds
+  show      - show details of a build
+  state     - show or change the state of a build
+  delete    - delete a build
+  cleanup   - clean up remains of build whose checkout command failed
+""",
+        "list":"""
+This is a subcommand of command 'db' and command 'build'.
+
+For help on 'db list' enter 'help db list'
+For help on 'build list' enter 'help build list'
+""",
+        "find":"""
+This is a subcommand of command 'db' and command 'build'.
+
+For help on 'db find' enter 'help db find'
+For help on 'build find' enter 'help build find'
+""",
+
+        "convert":"""
+convert [SCANFILE]: 
+
+Convert SCANFILE created by "sumo-scan all" to a new dependency database. If
+SCANFILE is a dash "-" the program expects the scanfile on stdin.  Note that
+options "--db" and "--scandb" are mandatory here. With "--db" you specify the
+name of the new created dependency database file, with "--scandb" you specify
+the name of the scan database file.  The scan database file contains
+information on what moduleversion can be used with what dependency version.
+""",
+        "convert-old": """
+convert-old [OLD-DEPS-DB]
+
+Convert a dependency database from the old to the new format. Note that options
+"--db" and "--scandb" are mandatory here. With "--db" you specify the name of
+the new created dependency database file, with "--scandb" you specify the name
+of the scan database or SCANDB file. The scan database file contains
+information on what version of a module is probably compatible with what
+version of a dependency according to the data in the old dependency database.
+""",
+        "appconvert": """
+appconvert [SCANFILE] 
+
+Convert a SCANFILE that was created by applying sumo-scan to an application to
+a list of aliases and modulespecs in JSON format. The result is printed to the
+console. It can be used with --config to put these in the configuration file of
+sumo.
+""",
+        "weight": """
+weight [WEIGHT] [modules]
+
+Set the weight factor for modules. Use modulename:{+-}versionname to select
+more versions of a module.  This command *does not* use the --modules option.
+Weight must be an integer.
+""",
+        "db list": """
+list
+
+list the names of all modules
+""",
+        "shownewest": """
+shownewest {MODULES}
+
+Show newest version for each module. If {modules} is missing, take all modules
+of the database.
+""",
+        "showall": """
+showall {MODULES}
+
+Show all versions for each module. If {modules} is missing, take all modules of
+the database.
+""",
+        "filter": """
+filter [MODULES]
+
+Print the database for the given modules. If you want a specific version of a
+module use modulename:versioname instead of the modulename alone.
+""",
+        "db find": """
+find [REGEXP]
+
+Show all modules whose names or sources match regexp.
+""",
+        "check": """
+check 
+
+do some consistency checks on the db specifed by --db
+""",
+        "merge": """
+merge [DB]
+
+Merge the given db with the one specified by --db
+""",
+        "cloneversion": """
+cloneversion [MODULE] [OLD-VERSION] [NEW-VERSION] {SOURCESPEC}
+
+Add a new version to the database by copying the old version. The old-version
+data is copied for the new version data. If sourcespec is given, the command
+changes the source part according to this parameter. A sourcespec has the form
+"path PATH", "tar TARFILE", "REPOTYPE URL" or "REPOTYPE URL TAG". REPOTYPE may
+be "darcs", "hg" or "git". Both, URL or TAG may be "*", in this case the
+original URL or TAG remain unchanged. If sourcespec is not given, the command
+adds NEW-VERSION as new tag to the source specification. The command always
+asks for a confirmation of the action unless option "-y" is used.
+""",
+        "replaceversion": """
+replaceversion [MODULE] [OLD-VERSION] [NEW-VERSION] {SOURCESPEC}
+
+Replace a version to the database with a new one. The old-version data is
+copied for the new version data. If sourcespec is given, the command changes
+the source part according to this parameter. A sourcespec has the form "path
+PATH", "tar TARFILE", "REPOTYPE URL" or "REPOTYPE URL TAG". REPOTYPE may be
+"darcs", "hg" or "git". Both, URL or TAG may be "*", in this case the original
+URL or TAG remains unchanged.
+""",
+        "clonemodule": """
+clonemodule [OLD-MODULE] [NEW-MODULE] {VERSIONS}
+
+Copy all versions of the existing old module and add this with the name of thew
+new module to the dependency database. If there are no versions specified, the
+command copies all existing versions. Note that this DOES NOT add the new
+module as dependency to any other modules.
+""",
+        "try": """
+try [MODULES]
+
+This command helps to create module specifications for the "new" command.  You
+can specify an incomplete list of modules, modules without versions or with
+version ranges.  The program then shows which modules you have to include in
+your list since other modules depend on them and shows information on all
+versions of all modules that satisfy your module specifications. It also shows
+if your module specifications are *complete* and *exact* meaning that all
+dependencies are included and all modules are specified with exactly a single
+version. Note that you can use option "--scandb" in order to give additional
+information which versions of modules are compatible with each other. Options
+"--db" and "--builddb" are mandatory for this command.
+""",
+        "new": """
+new [MODULES]
+
+This command creates a new build. If the buildtag is not given as an option,
+the program generates a buildtag in the form "AUTO-nnn". Note that options
+"--db" and "--builddb" are mandatory for this command. A new build is created
+according to the modulespecs. Your modulespecifications must be *complete* and
+*exact* meaning that all dependencies are included and all modules are
+specified with exactly a single version. Use command "try" in order to create
+module specifications that can be used with command "new".  This command calls
+"make" and, after successful completion, sets the state of the build to
+"testing". If you want to skip this step, use option "--no-make". In order to
+provide arbitrary options to make use option "--makeopts".
+""",
+        "build find": """
+find [MODULESPECS]
+
+This command is used to find matching builds for a given list of modulespecs.
+It prints a list of buildtags of matching builds on the console.  Note that the
+versions in modulespecs may be *unspecified*, *specified exactly* or *specifed
+by relation*. If option --brief is given, the program just shows the buildtags.
+""",
+        "useall": """
+useall [BUILDTAG]
+
+This command creates a configure/RELEASE file for an application. The command
+must be followed by buildtag. The release file created includes *all* modules
+of the build. The buildtag may be given as argument or option. Output to
+another file or the console can be specified with option '-o'.
+""",
+        "use": """
+use [MODULES]
+
+This command creates a configure/RELEASE file for an application. The command
+must be followed by a list of modulespecs. If option --buildtag is given, it
+checks if this is compatible with the given modules. Otherwise it looks for all
+builds that have the modules in the required versions. If more than one
+matching build found it takes the one with the alphabetically first buildtag.
+Note that the modulespecs MUST specify versions exactly. If you have
+unspecified versions or versions specified by relation you must use command
+"use" instead. The RELEASE created includes only the modules that are
+specified. For this command the DB file must be specified with the "--db"
+option. Output to another file or the console can be specified with option
+'-o'.
+""",
+        "build list": """
+list    
+
+This command lists the names of all builds.
+""",
+        "show": """
+show [BUILDTAG]
+
+This command shows the data of a build. The buildtag may be given as argument
+or option.
+""",
+        "state": """
+state {BUILDTAG} {NEW STATE}
+
+This command is used to show or change the state of a build. The buildtag may
+be given as argument or option.If there is no new state given, it just shows
+the current state of the build. Otherwise the state of the build is changed to
+the given value. 
+""",
+        "delete": """
+delete {BUILDTAG}
+
+If no other build depends on the build specified by the buildtag, the
+directories of the build are removed and it's entry in the builddb is deleted.
+The buildtag may be given as argument or option.
+""",
+        "cleanup": """
+cleanup {BUILDTAG}
+
+This command removes the remains of a failed build. If the command "new" is
+interrupted or stopped by an exception in the program, the build may be in an
+incomplete state. In this case you can use the "cleanup" command to remove the
+directories of the failed build. The buildtag may be given as argument or
+option.
 """
+}
+
+def helptext(topics):
+    """return helptext.
+    """
+    # pylint: disable=R0911
+    #                          Too many return statements
+    if not topics:
+        return help_topics[""]
+    lc_topics= [s.lower().strip() for s in topics]
+    if len(lc_topics)>3:
+        return "help should be followed by one or two words"
+    if len(lc_topics)==1:
+        txt= help_topics[lc_topics[0]]
+        if txt is not None:
+            return txt
+        return "help not found for '%s'" % (" ".join(topics))
+    # two words given
+    if lc_topics[0] not in help_maincommands:
+        return "no known maincommand '%s'" % topics[0]
+    txt= help_topics.get(" ".join(lc_topics))
+    if txt is not None:
+        return txt
+    txt= help_topics.get(lc_topics[1])
+    if txt is not None:
+        return txt
+    return "no known subcommand '%s'" % topics[1]
+
+me= script_shortname()
+usage = """usage: %s maincommand [subcommand] [options]
+
+Enter '%s help' for help on commands,
+      '%s -h' for help on options
+""" % (me,me,me)
 
 def main():
     """The main function.

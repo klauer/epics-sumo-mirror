@@ -504,6 +504,19 @@ to be followed by a *subcommand*.
 maincommands
 ++++++++++++
 
+help command [command]
+::::::::::::::::::::::
+
+This command prints help for the given command. It can be invoked as::
+
+  help MAINCOMMAND
+  help SUBCOMMAND
+  help MAINCOMMAND SUBCOMMAND
+
+You get a list of all known MAINCOMMANDS with::
+
+  help maincommand
+
 makeconfig [FILENAME] {OPTIONNAMES}
 :::::::::::::::::::::::::::::::::::
 
