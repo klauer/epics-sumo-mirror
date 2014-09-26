@@ -12,9 +12,6 @@ import os
 import os.path
 import re
 
-import sumolib.JSON
-import sumolib.repos
-
 __version__="1.9" #VERSION#
 
 _pyver= (sys.version_info[0], sys.version_info[1])
@@ -22,8 +19,6 @@ _pyver= (sys.version_info[0], sys.version_info[1])
 if _pyver < (2,5):
     sys.exit("ERROR: SUMO requires at least Python 2.5, "
              "your version is %d.%d" % _pyver)
-
-sumolib.JSON.assert_version(__version__)
 
 # -----------------------------------------------
 # ensure a certain module version
