@@ -4,7 +4,6 @@
 # pylint: disable=C0103
 #                          Invalid name for type variable
 
-import sumolib.system
 import sumolib.utils
 import sumolib.path
 import sumolib.tar

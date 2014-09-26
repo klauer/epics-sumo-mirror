@@ -4,7 +4,6 @@
 # pylint: disable=C0103
 #                          Invalid name for type variable
 
-import sys
 import subprocess
 
 __version__="1.9" #VERSION#
