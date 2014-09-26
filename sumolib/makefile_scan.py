@@ -25,10 +25,11 @@ dry_run
 
 """
 
-import subprocess
 import os.path
 import re
 import sys
+
+import sumolib.system
 
 # pylint: disable=C0322,C0103
 
@@ -44,39 +45,6 @@ def assert_version(wanted_version):
         sys.exit("ERROR: module 'sumolib/makefile_scan' version %s expected "
                  "but found %s instead" % \
                  (wanted_version, __version__))
-
-# -----------------------------------------------
-# basic system utilities
-# -----------------------------------------------
-
-def _system(cmd, catch_stdout, verbose, dry_run):
-    """execute a command.
-
-    execute a command and return the programs output
-    may raise:
-    IOError(errcode,stderr)
-    OSError(errno,strerr)
-    ValueError
-    """
-    if dry_run or verbose:
-        print ">", cmd
-        if dry_run:
-            return None
-    if catch_stdout:
-        stdout_par=subprocess.PIPE
-    else:
-        stdout_par=None
-
-    p= subprocess.Popen(cmd, shell=True,
-                        stdout=stdout_par, stderr=subprocess.PIPE,
-                        close_fds=True)
-    (child_stdout, child_stderr) = p.communicate()
-    # pylint: disable= E1101
-    if p.returncode!=0:
-        raise IOError(p.returncode,
-                      "cmd \"%s\", errmsg \"%s\"" % (cmd,child_stderr))
-    # pylint: enable= E1101
-    return child_stdout
 
 # -----------------------------------------------
 # makefile scanning
@@ -111,7 +79,7 @@ def _scan(filenames, external_definitions= None,
 	 "\\t@printenv\\n\" | %s " +\
 	 "make -s -e -f - scan_makefile_pe") % (include_cmd,extra)
     data= {}
-    reply= _system(cmd, True, verbose, dry_run)
+    (reply,_)= sumolib.system.system(cmd, True, False, verbose, dry_run)
     if dry_run:
         return data
     for line in reply.splitlines():
