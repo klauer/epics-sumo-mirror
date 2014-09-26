@@ -16,7 +16,7 @@ import pprint
 import os.path
 import sumolib.lock
 
-__version__="1.9" #VERSION#
+__version__="2.0" #VERSION#
 
 assert __version__==sumolib.lock.__version__
 
