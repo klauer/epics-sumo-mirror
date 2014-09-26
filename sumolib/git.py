@@ -14,9 +14,18 @@
 # git clone src clone
 
 import os.path
-import sumolib.utils
-import sumolib.system
 import re
+import sumolib.system
+import sumolib.utils
+
+__version__="1.9" #VERSION#
+
+assert __version__==sumolib.system.__version__
+assert __version__==sumolib.utils.__version__
+
+# -----------------------------------------------
+# Repo class
+# -----------------------------------------------
 
 class Repo(object):
     """represent a git repository."""

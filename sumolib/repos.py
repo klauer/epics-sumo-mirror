@@ -3,7 +3,6 @@
 
 # pylint: disable=C0103
 #                          Invalid name for type variable
-
 import sumolib.utils
 import sumolib.path
 import sumolib.tar
@@ -11,12 +10,18 @@ import sumolib.darcs
 import sumolib.mercurial # "hg"
 import sumolib.git
 
+__version__="1.9" #VERSION#
+
+assert __version__==sumolib.utils.__version__
+assert __version__==sumolib.path.__version__
+assert __version__==sumolib.tar.__version__
+assert __version__==sumolib.darcs.__version__
+assert __version__==sumolib.mercurial.__version__
+assert __version__==sumolib.git.__version__
+
 known_repos=set(("darcs","hg","git"))
 known_no_repos= set(("path","tar"))
 known_sources= set(known_no_repos).union(known_repos)
-
-# ---------------------------------------------------------
-# generic code:
 
 # ---------------------------------------------------------
 # scan a directory:

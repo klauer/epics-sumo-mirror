@@ -7,6 +7,14 @@
 import os.path
 import sumolib.system
 
+__version__="1.9" #VERSION#
+
+assert __version__==sumolib.system.__version__
+
+# -----------------------------------------------
+# Repo class
+# -----------------------------------------------
+
 class Repo(object):
     """represent a path."""
     def _hint(self, name):

@@ -5,6 +5,7 @@
 #                          Invalid name for type variable
 
 import sys
+import os
 
 if __name__ == "__main__":
     # if this module is directly called like a script, we have to add the path
@@ -12,7 +13,6 @@ if __name__ == "__main__":
     # "sumolib.[module]".
     sys.path.append("..")
 
-import os
 import sumolib.system
 
 __version__="1.9" #VERSION#
@@ -27,17 +27,6 @@ except ImportError, _lockfile_err:
         sys.stderr.write("module 'lockfile' not found - " +\
                          "file accesses will not be locked\n")
         use_lockfile= False
-
-# -----------------------------------------------
-# ensure a certain module version
-# -----------------------------------------------
-
-def assert_version(wanted_version):
-    """check if the version is the one that was expected."""
-    if __version__!=wanted_version:
-        sys.exit("ERROR: module 'sumolib/locksupport' version %s expected "
-                 "but found %s instead" % \
-                 (wanted_version, __version__))
 
 # -----------------------------------------------
 # file locking

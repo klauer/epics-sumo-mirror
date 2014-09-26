@@ -9,6 +9,15 @@ import shutil
 import sumolib.system
 import sumolib.utils
 
+__version__="1.9" #VERSION#
+
+assert __version__==sumolib.system.__version__
+assert __version__==sumolib.utils.__version__
+
+# -----------------------------------------------
+# Repo class
+# -----------------------------------------------
+
 class Repo(object):
     """represent a tar."""
     def _hint(self, name):
