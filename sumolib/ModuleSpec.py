@@ -267,11 +267,15 @@ class Specs(object):
             return None
         return st[1:].split(":")
     @staticmethod
-    def _from_strings(module_dict, idx, specs, builddb, default_archs):
+    def _from_strings(module_dict, idx, specs, builddb_fn, default_archs):
         """internal function to scan specs.
 
         Note:
         module_dict maps a modulename to a pair (order-key,Spec-object).
+
+        builddb_fn: a function that for builddb_fn(buildtag) returns
+                builddb.module_specs(buildtag), only needed for
+                :build:buildtag.
 
         The order-key is used to give the list of modules the same sort order
         as they were found in the module specifications.
@@ -303,26 +307,17 @@ class Specs(object):
                     if json_specs:
                         idx= Specs._from_strings(module_dict, idx,
                                                        json_specs,
-                                                       builddb,
+                                                       builddb_fn,
                                                        default_archs)
                     continue
                 if special[0]=="build":
                     if len(special)<=1:
                         raise ValueError("argument to :build: missing")
-                    if not builddb:
-                        raise ValueError("error: builddb not specified")
-                    if isinstance(builddb, str):
-                        builddb= sumolib.Databases.Builddb.from_json_file(
-                                                                  builddb)
-                    try:
-                        build_specs= builddb.module_specs(special[1])
-                    except KeyError,_:
-                        raise ValueError("error, buildtag '%s' not found" % \
-                                         special[1])
+                    build_specs= builddb_fn(special[1])
 
                     idx= Specs._from_strings(module_dict, idx,
                                                    build_specs,
-                                                   builddb,
+                                                   builddb_fn,
                                                    default_archs)
                     continue
 
@@ -341,8 +336,9 @@ class Specs(object):
         """scan a list of module specification strings.
 
         specs:  list of module specification strings
-        builddb_fn: filename of builddb or the builddb itself,
-                    only needed for :build:buildtag
+        builddb_fn: a function that for builddb_fn(buildtag) returns
+                builddb.module_specs(buildtag), only needed for
+                :build:buildtag.
         default_archs: list of default archs, may be None
 
         returns a new Specs object.
