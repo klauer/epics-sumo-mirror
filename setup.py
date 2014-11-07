@@ -112,7 +112,7 @@ def copy_files(dest_dir, source_dir, source_files):
 
 # main      -------------------------
 
-doc_install_dir= os.path.join("share","doc","sumo-%s" % my_version)
+doc_install_dir= os.path.join("doc","sumo-%s" % my_version)
 html_install_dir= os.path.join(doc_install_dir, "html")
 
 doc_dir= "doc"
