@@ -263,11 +263,9 @@ makeconfig [FILENAME] {OPTIONNAMES}
 +++++++++++++++++++++++++++++++++++
 
 Create a new configuration file from the options read from configuration files
-and options from the command line. If FILENAME is '-' dump to the console. If
-FILENAME is "DEFAULT", rewrite the configuration file that was read before (see
-option --config).  OPTIONNAMES is an optional list of long option names. If
-OPTIONNAMES are specified, only options from this list are saved in the
-configuration file.
+and options from the command line. If FILENAME is '-' dump to the console.
+OPTIONNAMES is an optional list of long option names. If OPTIONNAMES are
+specified, only options from this list are saved in the configuration file.
 
 all
 +++
@@ -328,9 +326,10 @@ Here is a short overview on command line options:
     Perform some self tests.
 ``-c FILE, --config FILE``
     Load options from the given configuration file. You can specify more than
-    one of these, in this case the files are merged. If this option is not
-    given and --no-default-config is not given, the program tries to load the
-    default configuration file sumo-db.config.
+    one of these.  Unless --no-default-config is given, the program always
+    loads configuration files from several standard directories first before it
+    loads your configuration file. The contents of all configuration files are
+    merged.
 ``--no-default-config``
     If this option is given the program doesn't load the default configuration.
 ``--mergeoption OPTIONNAME``

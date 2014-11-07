@@ -495,6 +495,67 @@ Here are the meanings of the :term:`state` string:
 * testing: the :term:`build` has been compiled successfully
 * stable: the :term:`build` has been tested in production successfully
 
+Configuration Files
++++++++++++++++++++
+
+Many options that can be given on the command line can be taken from
+configuration files. 
+
+File format
+:::::::::::
+
+A configuration file is always in `JSON
+<http://www.json.org>`_ format. Each key is the long name of a command line
+option, each value is either a string or a list of strings.
+
+Here is an example of such a file::
+
+  {
+      "builddb": "/opt/Epics/sumo/build/BUILDS.DB",
+      "db": "/opt/Epics/sumo/database/DEPS.DB",
+      "makeopts": [
+          "-s"
+      ],
+      "supportdir": "/opt/Epics/sumo/build"
+  }
+
+Merging
+:::::::
+
+Sumo can read several configuration files, in this case the data is *merged*.
+
+Merging means that keys not yet defined are simply added. For keys that already
+exist and whose values are strings, the latter one overwrites the first one.
+For keys that already exist and whose values are lists, the lists are simply
+concatenated.
+
+Default paths
+:::::::::::::
+
+Sumo reads and merges configuration files from various places, which one
+depends on your environment variable settings and command line options. 
+
+First the program tries to read the file sumo.config from a list of default
+paths. The list of default paths can be set by the environment variable
+ENV_CONFIG which must be a colon (on Unix systems) or semicolon (on Windows
+systems) separated list of paths. 
+
+If ENV_CONFIG is not set, these are the predefined default paths:
+
+- /etc
+- [python-libdir]/sumolib
+- $HOME
+- your current working directory
+
+If you use the "--no-default-config" command line option, the list of default
+paths is made empty.
+
+The config option
+:::::::::::::::::
+
+After the configuration files from default paths were read the program reads
+the all configuration files specified by the "-c" or "--config" option.
+
 Commands
 --------
 
@@ -521,11 +582,9 @@ makeconfig [FILENAME] {OPTIONNAMES}
 :::::::::::::::::::::::::::::::::::
 
 Create a new configuration file from the options read from configuration files
-and options from the command line. If FILENAME is '-' dump to the console. If
-FILENAME is "DEFAULT", rewrite the configuration file that was read before (see
-option --config).  OPTIONNAMES is an optional list of long option names. If
-OPTIONNAMES are specified, only options from this list are saved in the
-configuration file.
+and options from the command line. If FILENAME is '-' dump to the console.
+OPTIONNAMES is an optional list of long option names. If OPTIONNAMES are
+specified, only options from this list are saved in the configuration file.
 
 edit [FILE]
 :::::::::::
@@ -824,11 +883,14 @@ Here is a short overview on command line options:
     Perform some self tests.
 ``-c FILE, --config FILE``
     Load options from the given configuration file. You can specify more than
-    one of these, in this case the files are merged. If this option is not
-    given and --no-default-config is not given, the program tries to load the
-    default configuration file sumo-db.config.
+    one of these.  Unless --no-default-config is given, the program always
+    loads configuration files from several standard directories first before it
+    loads your configuration file. The contents of all configuration files are
+    merged.
 ``--no-default-config``
-    If this option is given the program doesn't load the default configuration.
+    If this option is not given and --no-default-config is not given, the
+    program tries to load the default configuration file sumo-scan.config from
+    several standard locations (see documentation on configuration files).
 ``--mergeoption OPTIONNAME``
     If an option with name OPTIONNAME is given here and it is a list option,
     the lists from the config file and the command line are merged. The new

@@ -6,6 +6,7 @@
 
 import os
 import sys
+import platform
 
 if __name__ == "__main__":
     # if this module is directly called like a script, we have to add the path
@@ -25,16 +26,53 @@ assert __version__==sumolib.JSON.__version__
 
 class ConfigFile(object):
     """store options in a JSON file."""
+    @staticmethod
+    def paths_from_env(varname):
+        """read configuration paths from environment variable."""
+        val= os.environ.get(varname)
+        if not val:
+            return
+        # allow ":" and ";" as separators:
+        if platform.system()=="Windows":
+            sep= ";"
+        else:
+            sep= ":"
+        return val.split(sep)
     @classmethod
-    def from_optionlist(cls, filename, optionlist):
+    def from_optionlist(cls, filename, env_name, optionlist):
         """Create object from optionlist."""
         d= dict( [(n,None) for n in optionlist])
-        return cls(filename, d)
-    def __init__(self, filename, dict_):
-        """create from a dict."""
-        self._filename= filename
-        self.load_default= True
+        return cls(filename, env_name, d)
+    def __init__(self, filename, env_name, dict_):
+        """create from a dict.
+
+        If filename is not empty, search for config files at:
+          /etc
+          <path of this python file>
+          $HOME
+          <cwd>
+
+        """
         self._dict= dict(dict_)
+        self._filename= filename
+        if not filename:
+            self._paths= []
+        else:
+            search_paths= self.__class__.paths_from_env(env_name)
+            if not search_paths:
+                # not specified by environment variable:
+                lib_path= os.path.dirname(os.path.abspath(__file__))
+                search_paths=["/etc",
+                              lib_path,
+                              os.environ.get("HOME"),
+                              os.getcwd()]
+            self._paths= []
+            for path in search_paths:
+                if not path:
+                    continue
+                p= os.path.join(path, filename)
+                if os.path.isfile(p):
+                    self._paths.append(p)
     def __repr__(self):
         """return repr string."""
         return "%s(%s, %s)" % (self.__class__.__name__,
@@ -50,15 +88,18 @@ class ConfigFile(object):
     def set(self, optionname, value):
         """set an option to an arbitrary value."""
         self._dict[optionname]= value
-    def disable_default(self):
-        """disable loading of the default file."""
-        self.load_default= False
     def _merge(self, dict_):
         """merge known keys from dict_ with self."""
         for (key, val) in dict_.items():
             if not self._dict.has_key(key):
                 continue # silently ignore unknown keys
-            self._dict[key]= val
+            if isinstance(self._dict[key], list):
+                if not isinstance(val, list):
+                    raise ValueError("error: config merge: expected a "
+                                     "list at %s:%s" % (key,repr(val)))
+                self._dict[key].extend(val)
+            else:
+                self._dict[key]= val
     def _load_file(self, filename):
         """load filename.
 
@@ -76,15 +117,16 @@ class ConfigFile(object):
                 self._load_file(f)
             del data["#include"]
         self._merge(data)
+    def paths(self):
+        """return the list of files that should be loaded or were loaded."""
+        return self._paths
     def load(self, filenames):
-        """first load self._filename, then filenames."""
-        if self.load_default:
-            lst= [self._filename]
-        else:
-            lst= []
+        """load from all files in filenames list."""
         if filenames:
-            lst.extend(filenames)
-        for filename in lst:
+            for f in filenames:
+                if os.path.isfile(f):
+                    self._paths.append(f)
+        for filename in self._paths:
             self._load_file(filename)
     def save(self, filename, keys):
         """dump in json format"""
@@ -102,8 +144,6 @@ class ConfigFile(object):
         if filename=="-":
             sumolib.JSON.dump(dump)
             return
-        if filename=="DEFAULT":
-            filename= self._filename
         sumolib.JSON.dump_file(filename, dump)
 
     def merge_options(self, option_obj, list_merge_opts):

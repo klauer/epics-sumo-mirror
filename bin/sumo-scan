@@ -44,12 +44,13 @@ assert __version__==sumolib.makefile_scan.__version__
 assert __version__==sumolib.repos.__version__
 
 KNOWN_COMMANDS=set(("deps", "name2paths", "path2names",
-                    "groups", "repos", "all", "makeconfig"))
+                    "groups", "repos", "all", "makeconfig", "showconfig"))
 
 IGNORE_NAMES= set(["TOP", "EPICS_SUPPORT",
                    "SUPPORT", "TEMPLATE_TOP"]) #, "EPICS_BASE"])
 
 CONFIG_NAME="sumo-scan.config"
+ENV_CONFIG="SUMOSCANCONFIG"
 
 # -----------------------------------------------
 # RELEASE file scanning
@@ -354,6 +355,8 @@ def repo_info(deps, progress,
     if source_patches:
         patcher= sumolib.utils.RegexpPatcher()
         for p in source_patches:
+            # pylint: disable=W0123
+            #                          Use of eval
             patcher.add(eval(p))
         repo_hints["dir patcher"]= patcher
         repo_hints["url patcher"]= patcher
@@ -432,14 +435,16 @@ def process(options, commands):
     #                          Too many branches
     # pylint: disable=R0915
     #                          Too many statements
+    config_name= None
+    if not options.no_default_config:
+        config_name= CONFIG_NAME
     config= sumolib.Config.ConfigFile.from_optionlist(
-                CONFIG_NAME,
+                config_name,
+                ENV_CONFIG,
                 ( "#include",
                   "dir", "exclude_deps", "exclude_path", "group_basedir",
                   "hint", "ignore_changes", "ignore_name", "missing_repo",
                   "missing_tag", "progress", "source_patch", "verbose"))
-    if (not os.path.exists(CONFIG_NAME)) or options.no_default_config:
-        config.disable_default()
 
     try:
         config.load(options.config)
@@ -460,6 +465,10 @@ def process(options, commands):
         if not c in KNOWN_COMMANDS:
             sys.exit("unknown command: %s" % c)
 
+    if commands[0]=="showconfig":
+        print "These configuration files were loaded:"
+        print "\n".join(config.paths())
+        return
     if commands[0]=="makeconfig":
         if len(commands)<=1:
             sys.exit("filename for command \"makeconfig\" is missing")
@@ -570,11 +579,12 @@ The commands above can be combined!
   makeconfig [FILENAME] {OPTIONNAMES}
           Create a new configuration file from the options read from
           configuration files and options from the command line. If FILENAME is
-          '-' dump to the console. If FILENAME is "DEFAULT", rewrite the
-          configuration file that was read before (see option --config).
-          OPTIONNAMES is an optional list of long option names. If OPTIONNAMES
-          are specified, only options from this list are saved in the
-          configuration file.
+          '-' dump to the console. OPTIONNAMES is an optional list of long 
+          option names. If OPTIONNAMES are specified, only options from this 
+          list are saved in the configuration file.
+
+  showconfig {FILENAME}
+          Show all the configuration files that were loaded.
 """
 
 def main():
@@ -606,11 +616,13 @@ def main():
                       action="append",
                       type="string",
                       help="Load options from the given configuration "
-                           "file. You can specify more than one of these, "
-                           "in this case the files are merged. If this "
-                           "option is not given and --no-default-config "
-                           "is not given, the program tries to load the "
-                           "default configuration file %s." % CONFIG_NAME,
+                           "file. You can specify more than one of "
+                           "these.  Unless --no-default-config is given, "
+                           "the program always loads configuration files "
+                           "from several standard directories first "
+                           "before it loads your configuration file. The "
+                           "contents of all configuration files are "
+                           "merged. ",
                       metavar="CONFIGFILE"
                       )
     parser.add_option("--no-default-config",
