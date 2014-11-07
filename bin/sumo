@@ -1969,8 +1969,11 @@ def process(options, commands):
             sys.exit("--readonly forbids editing a database file")
         if len(commands)!=2:
             sys.exit("exactly one filename must follow \"edit\"")
-        sumolib.lock.edit_with_lock(commands[1],
-                                    options.verbose, options.dry_run)
+        try:
+            sumolib.lock.edit_with_lock(commands[1],
+                                        options.verbose, options.dry_run)
+        except IOError, e:
+            sys.exit(str(e))
         return
 
     elif commands[0]=="db":

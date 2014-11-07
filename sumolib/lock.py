@@ -79,15 +79,28 @@ def edit_with_lock(filename, verbose, dry_run):
     """lock a file, edit it, then unlock the file."""
     if not os.path.exists(filename):
         raise IOError("error: file \"%s\" doesn't exist" % filename)
+    envs=["VISUAL","EDITOR"]
+    ed_lst= [v for v in [os.environ.get(x) for x in envs] if v is not None]
+    if not ed_lst:
+        raise IOError("error: environment variable 'VISUAL' or "
+                         "'EDITOR' must be defined")
     l= lock_a_file(filename)
-    try:
-        sumolib.system.system("%s %s" % (os.environ["VISUAL"], filename),
-               False, False, verbose, dry_run)
-    except IOError, _:
-        sumolib.system.system("%s %s" % (os.environ["EDITOR"], filename),
-               False, False, verbose, dry_run)
+    found= False
+    errors= ["couldn't start editor(s):"]
+    for editor in ed_lst:
+        try:
+            sumolib.system.system("%s %s" % (editor, filename),
+                                  False, False, verbose, dry_run)
+            found= True
+            break
+        except IOError, e:
+            # cannot find or not start editor
+            errors.append(str(e))
+            pass
     unlock_a_file(l)
-
+    if not found:
+        raise IOError("\n".join(errors))
+    
 def _test():
     """perform internal tests."""
     import doctest
