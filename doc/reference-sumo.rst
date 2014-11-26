@@ -604,11 +604,17 @@ db
 This is the maincommand for all operations that work with the 
 :term:`dependency database` (DB) file.
 
+For all of the db subcommands you have to specify the dependency database with
+option --db or a configuration file.
+
 build
 :::::
 
 This is the maincommand for all operations that work with builds and the build
 database (:term:`BUILDDB`).
+
+For all of the build subcommands you have to specify the dependency database
+and the build database with --db and --builddb or a configuration file.
 
 subcommands for maincommand "db"
 ++++++++++++++++++++++++++++++++
@@ -651,9 +657,10 @@ format. The result is printed to the console. It can be used with
 weight [WEIGHT] [MODULES]
 :::::::::::::::::::::::::
 
-Set the weight factor for modules. Parameter MODULES is a list of
-:term:`modulespecs` that specifies the :term:`modules` and :term:`versions` to
-operate on. 
+Set the weight factor for modules. A weight determines where a module is placed
+in the generated RELEASE file. Modules there are sorted first by weight, then
+by dependency. Parameter MODULES is a list of :term:`modulespecs`. Use
+modulename:{+-}versionname to select more versions of a module.
 
 Note that this command *does not* use the "--modules" command line option.
 
@@ -668,9 +675,10 @@ This command lists all :term:`modules` in the
 shownewest {MODULES}
 ::::::::::::::::::::
 
-This command shows only the newest versions of modules.
+This command shows the newest versions of modules by applying some trying to
+sort version names intelligently and picking the last in the sort order.
 
-Optional parameter MODULES specifies which :term:`modules` are shown. If no
+Optional parameter MODULES specifies the names of :term:`modules` shown. If no
 :term:`modules` are given the command shows the newest :term:`versions` of all
 :term:`modules`.
 
@@ -679,7 +687,7 @@ showall {MODULES}
 
 This command shows all versions of the given modules. 
 
-Optional parameter MODULES specifies which :term:`modules` are shown. If no
+Optional parameter MODULES specifies the names of :term:`modules` shown. If no
 :term:`modules` are given the command shows all :term:`versions` of all
 :term:`modules`.
 
@@ -689,8 +697,8 @@ filter [MODULES]
 This command prints only the parts of the dependency database that contain the
 given modules. 
 
-Parameter MODULES is a list of :term:`modulespecs` that specifies the
-:term:`modules` and :term:`versions` to operate on. 
+Parameter MODULES is a list of :term:`modulespecs` MODULE:{+-}VERSION that
+specifies the :term:`modules` and :term:`versions` to operate on. 
 
 find [REGEXP]
 :::::::::::::
@@ -716,48 +724,57 @@ cloneversion [MODULE] [OLD-VERSION] [NEW-VERSION] {SOURCESPEC}
 ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 This command adds a new :term:`version` of a :term:`module` to the
-:term:`dependency database` by copying the old :term:`version`. If sourcespec
-is given, the command changes the source part according to this parameter. A
-sourcespec has the form "path PATH", "tar TARFILE", "REPOTYPE URL" or "REPOTYPE
-URL TAG".  REPOTYPE may be "darcs", "hg" or "git". Both, URL or TAG may be "*",
-in this case the original URL or TAG remain unchanged. If sourcespec is not
-given, the command adds NEW-VERSION as new tag to the source specification. The
-command always asks for a confirmation of the action unless option "-y" is
-used.
+:term:`dependency database` by copying the old :term:`version`. MODULE here is
+just the name of the module since the version follows as a separate argument.
+If sourcespec is given, the command changes the source part according to this
+parameter. A sourcespec has the form "path PATH", "tar TARFILE", "REPOTYPE URL"
+or "REPOTYPE URL TAG".  REPOTYPE may be "darcs", "hg" or "git". Both, URL or
+TAG may be "*", in this case the original URL or TAG remain unchanged. If
+sourcespec is not given, the command adds NEW-VERSION as new tag to the source
+specification. The command always asks for a confirmation of the action unless
+option "-y" is used.
 
 replaceversion [MODULE] [OLD-VERSION] [NEW-VERSION]
 :::::::::::::::::::::::::::::::::::::::::::::::::::
 
 This command replaces a :term:`version` of a :term:`module` with a new
-:term:`version`. All the data of the :term:`module` is copied. If sourcespec is
-given, the command changes the source part according to this parameter. A
-sourcespec has the form "path PATH", "tar TARFILE", "REPOTYPE URL" or "REPOTYPE
-URL TAG".  REPOTYPE may be "darcs", "hg" or "git". Both, URL or TAG may be "*",
-in this case the original URL or TAG remains unchanged.
+:term:`version`. MODULE here is just the name of the module since the version
+follows as a separate argument. All the data of the :term:`module` is copied.
+If sourcespec is given, the command changes the source part according to this
+parameter. A sourcespec has the form "path PATH", "tar TARFILE", "REPOTYPE URL"
+or "REPOTYPE URL TAG".  REPOTYPE may be "darcs", "hg" or "git". Both, URL or
+TAG may be "*", in this case the original URL or TAG remains unchanged.
 
 clonemodule [OLD-MODULE] [NEW-MODULE] {VERSIONS}
 ::::::::::::::::::::::::::::::::::::::::::::::::
 
 Copy all :term:`versions` of the existing old :term:`module` and add this with
-the name of thew new :term:`module` to the :term:`dependency` database. If
-there are no :term:`versions` specified, the command copies all existing
-:term:`versions`. Note that this DOES NOT add the new :term:`module` as
-:term:`dependency` to any other :term:`modules`.
+the name of thew new :term:`module` to the :term:`dependency` database.
+OLD-MODULE and NEW-MODULE here are just the module names since the versions may
+follow as a separate argument. If there are no :term:`versions` specified, the
+command copies all existing :term:`versions`. Note that this DOES NOT add the
+new :term:`module` as :term:`dependency` to any other :term:`modules`.
 
-dependency-delete MODULE:VERSION DEPENDENCYNAME
+dependency-delete MODULE DEPENDENCY
 :::::::::::::::::::::::::::::::::::::::::::::::
 
-Delete a :term:`dependency` of a :term:`module`.
+Delete a :term:`dependency` of a :term:`module`. MODULE here is a
+:term:`modulespec` of the form MODULE:VERSION that specifies a single version
+of a module.
 
-dependency-add MODULE:VERSION DEPENDENCYNAME
+dependency-add MODULE DEPENDENCY
 ::::::::::::::::::::::::::::::::::::::::::::
 
-Add a :term:`dependency` to a :term:`module`.
+Add a :term:`dependency` to a :term:`module`. MODULE here is a
+:term:`modulespec` of the form MODULE:VERSION that specifies a single version
+of a module.
 
-alias-add MODULE:VERSION DEPENDENCYNAME alias
+alias-add MODULE DEPENDENCY ALIAS
 :::::::::::::::::::::::::::::::::::::::::::::
 
-Add an :term:`alias` to a :term:`module`.
+Define a new :term:`alias` for a :term:`dependency` of a :term:`module`. MODULE
+here is a :term:`modulespec` of the form MODULE:VERSION that specifies a single
+version of a module.
 
 subcommands for maincommand "build"
 +++++++++++++++++++++++++++++++++++
@@ -766,45 +783,49 @@ try [MODULES]
 :::::::::::::
 
 This command helps to create :term:`module` specifications for the "new"
-command.  You can specify an incomplete list of :term:`modules`,
-:term:`modules` without :term:`versions` or with :term:`version` ranges.  The
-program then shows which :term:`modules` you have to include in your list since
-other :term:`modules` depend on them and shows information on all
-:term:`versions` of all :term:`modules` that satisfy your :term:`module`
-specifications. It also shows if your :term:`module` specifications are
-*complete* and *exact* meaning that all :term:`dependencies` are included and
-all :term:`modules` are specified with exactly a single :term:`version`.  Note
-that you can use option "--scandb" in order to give additional information
-which :term:`versions` of :term:`modules` are compatible with each other.
-Options "--db" and "--builddb" are mandatory for this command.
+command. Each MODULE here is a :term:`modulespec` of the form MODULE or
+MODULE:{+-}VERSION that specifies just a module name, a module and some
+versions or a single version. You can specify an incomplete list of
+:term:`modules`.  The program then shows which :term:`modules` you have to
+include in your list since other :term:`modules` depend on them and shows
+information on all :term:`versions` of all :term:`modules` that satisfy your
+:term:`module` specifications. It also shows if your :term:`module`
+specifications are *complete* and *exact* meaning that all :term:`dependencies`
+are included and all :term:`modules` are specified with exactly a single
+:term:`version`.  Note that you can use option "--scandb" in order to give
+additional information which :term:`versions` of :term:`modules` are compatible
+with each other. 
+
+With option "--brief" or "-b", the output of the command is a shorter summary
+which is in many cases all you want to see.
 
 For an example see :ref:`try example <example-sumo-build-try>`.
 
 new [MODULES]
 :::::::::::::
 
-This command creates a new :term:`build`. If the :term:`buildtag` is not given
-as an option, the program generates a :term:`buildtag` in the form "AUTO-nnn".
-Note that options "--db" and "--builddb" are mandatory for this command. A new
-:term:`build` is created according to the :term:`modulespecs`. Your
-modulespecifications must be *complete* and *exact* meaning that all
-:term:`dependencies` are included and all :term:`modules` are specified with
-exactly a single :term:`version`. Use command "try" in order to create
-:term:`module` specifications that can be used with command "new".  This
-command calls "make" and, after successful completion, sets the state of the
-:term:`build` to "testing". If you want to skip this step, use option
-"--no-make". In order to provide arbitrary options to make use option
-"--makeopts".
+This command creates a new :term:`build`. Each module given in MODULES here is
+a :term:`modulespec` of the form MODULE:VERSION that specifies a single version
+of a module. If the :term:`buildtag` is not given as an option, the program
+generates a :term:`buildtag` in the form "AUTO-nnn". A new :term:`build` is
+created according to the :term:`modulespecs`. Your modulespecifications must be
+*complete* and *exact* meaning that all :term:`dependencies` are included and
+all :term:`modules` are specified with exactly a single :term:`version`. Use
+command "try" in order to create :term:`module` specifications that can be used
+with command "new".  This command calls "make" and, after successful
+completion, sets the state of the :term:`build` to "testing". If you want to
+skip this step, use option "--no-make". In order to provide arbitrary options
+to make use option "--makeopts". 
 
-find [MODULESPECS]
-::::::::::::::::::
+find [MODULES]
+::::::::::::::
 
 This command is used to find matching :term:`builds` for a given list of
-:term:`modulespecs`. It prints a list of :term:`buildtags` of matching
-:term:`builds` on the console. Note that the :term:`versions` in
-:term:`modulespecs` may be *unspecified*, *specified exactly* or *specifed
-by relation*. If option --brief is given, the program just shows the
-buildtags.
+:term:`modulespecs`. Each module in MODULES here is a :term:`modulespec` of the
+form MODULE or MODULE:{+-}VERSION that specifies just a module name, a module
+and some versions or a single version. The command prints a list of
+:term:`buildtags` of matching :term:`builds` on the console. If option --brief
+is given, the program just shows the buildtags. 
 
 useall [BUILDTAG]
 :::::::::::::::::
@@ -813,23 +834,20 @@ This command creates a configure/RELEASE file for an application. The command
 must be followed by buildtag. The release file created includes *all*
 :term:`modules` of the :term:`build`. The buildtag may be given as argument or
 option. Output to another file or the console can be specified with option
-'-o'.
+'-o'. 
 
 use [MODULES]
 :::::::::::::
 
-This command creates a configure/RELEASE file for an application. The command
-must be followed by a list of :term:`modulespecs`. If option --buildtag is
-given, it checks if this is compatible with the given :term:`modules`.
-Otherwise it looks for all :term:`builds` that have the :term:`modules` in the
-required :term:`versions`. If more than one matching :term:`build` found it
-takes the one with the alphabetically first buildtag. Note that the
-:term:`modulespecs` MUST specify :term:`versions` exactly. If you have
-unspecified :term:`versions` or :term:`versions` specified by relation you must
-use command "use" instead.  The RELEASE created includes only the
-:term:`modules` that are specified. For this command the :term:`DB` file must
-be specified with the "--db" option. Output to another file or the console can
-be specified with option '-o'.
+This command creates a configure/RELEASE file for an application. Each module
+given in MODULES here is a :term:`modulespec` of the form MODULE:VERSION that
+specifies a single version of a module. If option --buildtag is given, it
+checks if this is compatible with the given :term:`modules`.  Otherwise it
+looks for all :term:`builds` that have the :term:`modules` in the required
+:term:`versions`. If more than one matching :term:`build` found it takes the
+one with the alphabetically first buildtag. The RELEASE file created includes
+only the :term:`modules` that are specified. Output to another file or the
+console can be specified with option '-o'.
 
 list
 ::::
@@ -839,25 +857,25 @@ This command lists the names of all builds.
 show [BUILDTAG]
 :::::::::::::::
 
-This command shows the data of a :term:`build`. The :term:`buildtag` may be
-given as argument or option.
+This command shows the data of a :term:`build`. The :term:`buildtag` must be
+given as an argument.
 
-state [BUILDTAG] {NEW STATE}
+state [BUILDTAG] {NEW-STATE}
 ::::::::::::::::::::::::::::
 
 This command is used to show or change the :term:`state` of a :term:`build`.
-The :term:`buildtag` may be given as argument or option.If there is no new
+The :term:`buildtag` must be given as an argument. If there is no new
 :term:`state` given, it just shows the current :term:`state` of the
-:term:`build`. Otherwise the :term:`state` of the :term:`build` is changed to
-the given value. 
+:term:`build`. Otherwise the :term:`state` of the :term:`build` is changed
+to the given value. 
 
 delete [BUILDTAG]
 :::::::::::::::::
 
 If no other :term:`build` depends on the :term:`build` specified by the
 :term:`buildtag`, the directories of the :term:`build` are removed and it's
-entry in the builddb is deleted. The :term:`buildtag` may be given as argument
-or option.
+entry in the builddb is deleted. The :term:`buildtag` must be given as an
+argument.
 
 cleanup [BUILDTAG]
 ::::::::::::::::::
@@ -866,7 +884,7 @@ This command removes the remains of a failed :term:`build`. If the command
 "new" is interrupted or stopped by an exception in the program, the
 :term:`build` may be in an incomplete :term:`state`. In this case you can use
 the "cleanup" command to remove the directories of the failed :term:`build`.
-The :term:`buildtag` may be given as argument or option.
+The :term:`buildtag` must be given as an argument.
 
 Options
 -------
