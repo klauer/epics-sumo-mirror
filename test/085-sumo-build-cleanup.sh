@@ -19,7 +19,7 @@ PWD_NICE=`pwd`
 echo -e "\n-> Test sumo build cleanup (for some seconds nothing will seem to happen)" >&2
 
 DEPS=tmp-020-sumo-db-convert/DEPS.DB
-BUILDS=076-sumo build-new-0-BUILD.tmp
+BUILDS="076-sumo build-new-0-BUILD.tmp"
 
 TESTDIR=tmp-$ME
 
