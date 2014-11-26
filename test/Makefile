@@ -17,8 +17,8 @@ PYTHON:=$(shell python -V 2>&1 | ( grep -q " 2\.[5678]" && echo python || ( pyth
 # the variable MUST BE set to "no".
 CREATE_TESTS=no
 
-# a list of generic shell script based shell_tests is generated from all *.ok files:
-shell_tests= $(sort $(basename $(wildcard *.ok)))
+# The list of tests and their order is taken from file "TESTS":
+shell_tests= $(shell cat TESTS | xargs)
 
 # *.sh are the shell scripts:
 shell_tests_sh= $(addsuffix .tst, $(shell_tests))
