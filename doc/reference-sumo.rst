@@ -953,12 +953,18 @@ Here is a short overview on command line options:
     For command 'try' exclude all 'dependents' whose state does match one of
 ``-b, --brief``
     Create a more brief output for some commands.
-``-P EXPRESSION, --source-patch EXPRESSION``
-    Specify a source patchexpression. Such an expression consists of a tuple of
-    2 python strings. The first is the match expression, the second one is the
-    replacement string. The regular expression is applied to every source url
-    generated. You can specify more than one patchexpression.  This option
+``-D EXPRESSION, --dir-patch EXPRESSION``
+    Specify a directory patchexpression. Such an expression consists of a tuple
+    of 2 python strings. The first is the match expression, the second one is
+    the replacement string. The regular expression is applied to every source
+    path generated. You can specify more than one patchexpression. This option
     value is stored in the configuration file.
+``-U EXPRESSION, --url-patch EXPRESSION``
+    Specify a repository url patchexpression. Such an expression consists of a
+    tuple of 2 python strings. The first is the match expression, the second
+    one is the replacement string. The regular expression is applied to every
+    source url generated. You can specify more than one patchexpression. This
+    option value is stored in the configuration file.
 ``--noignorecase``
     For command 'find', do NOT ignore case.
 ``--no-checkout``

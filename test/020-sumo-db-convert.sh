@@ -38,7 +38,7 @@ rm -f $EXAMPLEDIR/DEPS.DB $EXAMPLEDIR/SCAN.DB
 
 set +o posix
 
-$PYTHON ../bin/sumo db convert tmp-010-sumo-scan-all/SCAN -P "r\"^$PWD_REAL\",r\"$PWD_NICE\"" --db $EXAMPLEDIR/DEPS.DB --scandb $EXAMPLEDIR/SCAN.DB 2> >(grep -v 'no dependency info' 1>&2) 
+$PYTHON ../bin/sumo db convert tmp-010-sumo-scan-all/SCAN -D "r\"^$PWD_REAL\",r\"$PWD_NICE\"" -U "r\"^$PWD_REAL\",r\"$PWD_NICE\"" --db $EXAMPLEDIR/DEPS.DB --scandb $EXAMPLEDIR/SCAN.DB 2> >(grep -v 'no dependency info' 1>&2) 
 
 echo "DB file:"
 cat $EXAMPLEDIR/DEPS.DB | sed -e "s#$PWD_NICE##;s#$PWD_REAL##;s#\"[0-9a-f]\{12\}\"#\"ABCDABCDABCD\"#"
