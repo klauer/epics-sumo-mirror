@@ -923,7 +923,7 @@ Here is a short overview on command line options:
     loads configuration files from several standard directories first before it
     loads your configuration file. The contents of all configuration files are
     merged.
-``--no-default-config``
+``-C, --no-default-config``
     If this option is not given and --no-default-config is not given, the
     program tries to load the default configuration file sumo-scan.config from
     several standard locations (see documentation on configuration files).

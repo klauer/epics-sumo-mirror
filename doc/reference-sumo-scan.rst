@@ -330,7 +330,7 @@ Here is a short overview on command line options:
     loads configuration files from several standard directories first before it
     loads your configuration file. The contents of all configuration files are
     merged.
-``--no-default-config``
+``-C, --no-default-config``
     If this option is given the program doesn't load the default configuration.
 ``--mergeoption OPTIONNAME``
     If an option with name OPTIONNAME is given here and it is a list option,

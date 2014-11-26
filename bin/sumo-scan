@@ -635,7 +635,7 @@ def main():
                            "merged. ",
                       metavar="CONFIGFILE"
                       )
-    parser.add_option("--no-default-config",
+    parser.add_option("-C", "--no-default-config",
                       action="store_true",
                       help="If this option is given the program doesn't load "
                            "the default configuration.",
