@@ -669,7 +669,7 @@ def create_app_data(deps, repoinfo, groups):
     return {"alias": aliases, "module": modulespecs}
 
 
-def create_database(deps, repoinfo, groups, archs, source_patches):
+def create_database(deps, repoinfo, groups, archs, dir_patches, url_patches):
     """join the information of the three sources.
     """
     # pylint: disable=R0914
@@ -680,12 +680,18 @@ def create_database(deps, repoinfo, groups, archs, source_patches):
     #                          Too many statements
     # pylint: disable=R0913
     #                          Too many arguments
-    patcher= sumolib.utils.RegexpPatcher()
-    if source_patches:
-        for p in source_patches:
+    dir_patcher= sumolib.utils.RegexpPatcher()
+    url_patcher= sumolib.utils.RegexpPatcher()
+    if url_patches:
+        for p in url_patches:
             # pylint: disable=W0123
             #                          Use of eval
-            patcher.add(eval(p))
+            url_patcher.add(eval(p))
+    if dir_patches:
+        for p in dir_patches:
+            # pylint: disable=W0123
+            #                          Use of eval
+            dir_patcher.add(eval(p))
     _path2namevname= {}
     _namevname2path= {}
     db= sumolib.Databases.Dependencies()
@@ -723,7 +729,8 @@ def create_database(deps, repoinfo, groups, archs, source_patches):
                     else:
                         versionname= "PATH-%s" % subdir
                     # repodata is just the path in this case:
-                    src_sourcespec.path(patcher.apply(src_sourcespec.path()))
+                    src_sourcespec.path(dir_patcher.apply(
+                                            src_sourcespec.path()))
                 if src_sourcespec.is_repo():
                     tag= src_sourcespec.tag()
 
@@ -746,7 +753,8 @@ def create_database(deps, repoinfo, groups, archs, source_patches):
                         # the source is a darcs repository with a tag. We use
                         # the tag as unique versionname:
                         versionname= tag
-                    src_sourcespec.url(patcher.apply(src_sourcespec.url()))
+                    src_sourcespec.url(url_patcher.apply(
+                                           src_sourcespec.url()))
 
                 module_archs= archs.get(versionedmodule_path, [])
                 if not module_archs:
@@ -1074,7 +1082,8 @@ def process_db(options, commands):
         groups= scandata["groups"]
         archs= scandata["archs"]
         (buildcache, db)= create_database(deps, repoinfo, groups, archs,
-                                          options.source_patch)
+                                          options.dir_patch,
+                                          options.url_patch)
         db.json_save(options.db, options.verbose, options.dry_run)
         buildcache.json_save(options.scandb,
                              options.verbose, options.dry_run)
@@ -1934,8 +1943,8 @@ def process(options, commands):
                 ENV_CONFIG,
                 ( "#include", "arch", "alias", "builddb", "buildtag_stem",
                   "db", "extra", "makeopts", "module", "progress",
-                  "readonly", "scandb", "source_patch", "supportdir",
-                  "verbose"))
+                  "readonly", "scandb", "dir_patch", "url_patch", 
+                  "supportdir", "verbose"))
 
     try:
         config.load(options.config)
@@ -2575,10 +2584,22 @@ def main():
                       action="store_true",
                       help="Create a more brief output for some commands. ",
                       )
-    parser.add_option("-P", "--source-patch",
+    parser.add_option("-D", "--dir-patch",
                       action="append",
-                      help="Specify a source PATCHEXPRESSION. Such an "
+                      help="Specify a directory PATCHEXPRESSION. Such an "
                            "expression consists of a tuple of 2 python "
+                           "strings. The first is the match expression, "
+                           "the second one is the replacement string. The "
+                           "regular expression is applied to every source "
+                           "path generated. You can specify more than one "
+                           "PATCHEXPRESSION. "
+                           "This option value is stored in the CONFIGFILE.",
+                      metavar="PATCHEXPRESSION"
+                      )
+    parser.add_option("-U", "--url-patch",
+                      action="append",
+                      help="Specify a repository url PATCHEXPRESSION. Such "
+                           "an expression consists of a tuple of 2 python "
                            "strings. The first is the match expression, "
                            "the second one is the replacement string. The "
                            "regular expression is applied to every source "

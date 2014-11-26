@@ -379,12 +379,18 @@ Here is a short overview on command line options:
     You can specify more than one of these by repeating this option or by
     joining values in a single string separated by spaces. This option value is
     stored in the CONFIGFILE.
-``-P PATCHEXPRESSION, --source-patch PATCHEXPRESSION``
-    Specify a source PATCHEXPRESSION. Such an expression consists of a tuple of
-    2 python strings. The first is the match expression, the second one is the
-    replacement string. The regular expression is applied to every source url
-    generated. You can specify more than one PATCHEXPRESSION. This option value
-    is stored in the CONFIGFILE.
+``-D EXPRESSION, --dir-patch EXPRESSION``
+    Specify a directory patchexpression. Such an expression consists of a tuple
+    of 2 python strings. The first is the match expression, the second one is
+    the replacement string. The regular expression is applied to every source
+    path generated. You can specify more than one patchexpression. This option
+    value is stored in the configuration file.
+``-U EXPRESSION, --url-patch EXPRESSION``
+    Specify a repository url patchexpression. Such an expression consists of a
+    tuple of 2 python strings. The first is the match expression, the second
+    one is the replacement string. The regular expression is applied to every
+    source url generated. You can specify more than one patchexpression. This
+    option value is stored in the configuration file.
 ``--hint HINT``
     Specify a HINT. A HINT has the form REGEXP,FLAG{,FLAG}.  REGEXP is a
     regular expression that is matched with the module path. FLAG is a string

@@ -336,7 +336,8 @@ def all_paths_from_deps(deps):
     return all_paths
 
 def repo_info(deps, progress,
-              source_patches,
+              dir_patches,
+              url_patches,
               ignore_changes_matcher,
               hints,
               verbose, dry_run):
@@ -352,13 +353,19 @@ def repo_info(deps, progress,
     if ignore_changes_matcher:
         repo_hints["ignore changes"]= \
                 sumolib.utils.RegexpMatcher(ignore_changes_matcher)
-    if source_patches:
+    if dir_patches:
         patcher= sumolib.utils.RegexpPatcher()
-        for p in source_patches:
+        for p in dir_patches:
             # pylint: disable=W0123
             #                          Use of eval
             patcher.add(eval(p))
         repo_hints["dir patcher"]= patcher
+    if url_patches:
+        patcher= sumolib.utils.RegexpPatcher()
+        for p in url_patches:
+            # pylint: disable=W0123
+            #                          Use of eval
+            patcher.add(eval(p))
         repo_hints["url patcher"]= patcher
     repo_hints_path= dict(repo_hints)
     repo_hints_path["force path"]= True
@@ -444,7 +451,9 @@ def process(options, commands):
                 ( "#include",
                   "dir", "exclude_deps", "exclude_path", "group_basedir",
                   "hint", "ignore_changes", "ignore_name", "missing_repo",
-                  "missing_tag", "progress", "source_patch", "verbose"))
+                  "missing_tag", "progress",
+                  "dir_patch", "url_patch",
+                  "verbose"))
 
     try:
         config.load(options.config)
@@ -523,7 +532,8 @@ def process(options, commands):
     if "repos" in commands:
         repo_data= repo_info(deps,
                              options.progress,
-                             options.source_patch,
+                             options.dir_patch,
+                             options.url_patch,
                              options.ignore_changes,
                              hints,
                              options.verbose, options.dry_run)
@@ -732,10 +742,22 @@ def main():
                            "This option value is stored in the CONFIGFILE.",
                       metavar="REGEXP"
                       )
-    parser.add_option("-P", "--source-patch",
+    parser.add_option("-D", "--dir-patch",
                       action="append",
-                      help="Specify a source PATCHEXPRESSION. Such an "
+                      help="Specify a directory PATCHEXPRESSION. Such an "
                            "expression consists of a tuple of 2 python "
+                           "strings. The first is the match expression, "
+                           "the second one is the replacement string. The "
+                           "regular expression is applied to every source "
+                           "path generated. You can specify more than one "
+                           "PATCHEXPRESSION. "
+                           "This option value is stored in the CONFIGFILE.",
+                      metavar="PATCHEXPRESSION"
+                      )
+    parser.add_option("-U", "--url-patch",
+                      action="append",
+                      help="Specify a repository url PATCHEXPRESSION. Such "
+                           "an expression consists of a tuple of 2 python "
                            "strings. The first is the match expression, "
                            "the second one is the replacement string. The "
                            "regular expression is applied to every source "

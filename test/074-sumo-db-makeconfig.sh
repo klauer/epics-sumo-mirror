@@ -23,7 +23,7 @@ CONFIG=$ME-CONFIG.tmp
 MODULES=$ME-MODULES.tmp
 
 # create config file:
-$PYTHON ../bin/sumo --#include $MODULES --arch vxWorks-68040 --arch vxWorks-ppc603 --db DEPS.DB --progress --scandb SCAN --source-patch 'r"^/srv/csr/Epics",r"rcsadm@aragon.acc.bessy.de:/opt/Epics"' --verbose makeconfig $CONFIG
+$PYTHON ../bin/sumo --#include $MODULES --arch vxWorks-68040 --arch vxWorks-ppc603 --db DEPS.DB --progress --scandb SCAN -D 'r"^/srv/csr/Epics",r"rcsadm@aragon.acc.bessy.de:/opt/Epics"' --verbose makeconfig $CONFIG
 
 echo "generated config file:"
 cat $CONFIG
