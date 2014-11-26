@@ -599,6 +599,23 @@ same time you modify it.
 
 This command must be followed by a *filename*.
 
+lock FILE
+:::::::::
+
+Lock a FILE, then exit sumo. This is useful if you want to read or write a
+database file without sumo interfering. Don't forget to remove the lock later
+with the "unlock" command.
+
+This command must be followed by a *filename*.
+
+unlock FILE
+:::::::::::
+
+Unlock a FILE, then exit sumo. If you locked a database with "lock" before you
+should always unlock it later, otherwise sumo can't access the file.
+
+This command must be followed by a *filename*.
+
 db
 ::
 

@@ -66,6 +66,19 @@ def lock_a_file(filename, timeout=20):
                  (filename, timeout, extra)
             raise AssertionError(txt)
 
+def force_unlock_a_file(filename):
+    """enforce the removal of a lock."""
+    if not use_lockfile:
+        return
+    lock= lockfile.LockFile(filename)
+    if lock.i_am_locking():
+        lock.release()
+    else:
+        try:
+            lock.acquire(0)
+        except lockfile.AlreadyLocked:
+            lock.break_lock()
+
 def unlock_a_file(lock):
     """unlock a file.
     """
@@ -96,11 +109,10 @@ def edit_with_lock(filename, verbose, dry_run):
         except IOError, e:
             # cannot find or not start editor
             errors.append(str(e))
-            pass
     unlock_a_file(l)
     if not found:
         raise IOError("\n".join(errors))
-    
+
 def _test():
     """perform internal tests."""
     import doctest
