@@ -80,7 +80,7 @@ target_script_tests: $(script_tests_tst)
 
 target_shell_tests: data/epics/stamp $(shell_tests_tst)
 
-module_tests= $(basename $(shell grep -l doctest ../sumo/*.py))
+module_tests= $(basename $(shell grep -l doctest ../sumolib/*.py))
 module_tests_tst= $(addsuffix .tst, $(module_tests))
 
 script_tests= $(basename $(shell ls ../bin))
