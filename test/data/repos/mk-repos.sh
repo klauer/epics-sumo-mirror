@@ -18,6 +18,7 @@ function MK_DARCS
     fi
     cd $destpath > /dev/null
     cp -a $sourcepath/* .
+    sync
     #echo "DIR : $sourcepath"
     if [ ! -e _darcs ]; then
         darcs init
