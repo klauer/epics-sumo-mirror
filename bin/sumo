@@ -2163,7 +2163,8 @@ def process(options, commands):
     if not commands:
         sys.exit("command missing")
     if commands[0] not in KNOWN_MAIN_COMMANDS:
-        sys.exit("unknown maincommand '%s', expected 'db' or 'build'.")
+        sys.exit("unknown maincommand '%s', expected 'db' or 'build'." % \
+                 commands[0])
     if commands[0]=="showconfig":
         print "These configuration files were loaded:"
         print "\n".join(config.paths())
