@@ -14,6 +14,10 @@ else
         PYTHON=$1
 fi
 
+BINDIR=`pwd`/../bin
+SUMO_SCAN="$PYTHON $BINDIR/sumo-scan -C"
+SUMO="$PYTHON $BINDIR/sumo -C"
+
 EXAMPLEDIR=tmp-$ME
 
 PWD_NICE=`pwd`
@@ -41,6 +45,6 @@ git add DEPS.DB
 git commit -a -q -m 'initial record'
 cd ..
 
-$PYTHON ../../bin/sumo db --db "local-darcs/DEPS.DB" --dbrepo 'darcs central' list 
-$PYTHON ../../bin/sumo db --db "local-hg/DEPS.DB" --dbrepo 'hg central' list 
-$PYTHON ../../bin/sumo db --db "local-git/DEPS.DB" --dbrepo 'git central' list 
+$SUMO db --db "local-darcs/DEPS.DB" --dbrepo 'darcs central' list 
+$SUMO db --db "local-hg/DEPS.DB" --dbrepo 'hg central' list 
+$SUMO db --db "local-git/DEPS.DB" --dbrepo 'git central' list 

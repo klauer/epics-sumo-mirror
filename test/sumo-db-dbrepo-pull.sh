@@ -14,6 +14,10 @@ else
         PYTHON=$1
 fi
 
+BINDIR=`pwd`/../bin
+SUMO_SCAN="$PYTHON $BINDIR/sumo-scan -C"
+SUMO="$PYTHON $BINDIR/sumo -C"
+
 REPOSRC="tmp-sumo-db-dbrepo-create/central"
 CHG_REPO="tmp-sumo-db-cloneversion-dbrepo"
 EXAMPLEDIR=tmp-$ME
@@ -43,12 +47,12 @@ git -C delme-git push -q ../central-git
 
 echo "sumo db showall ALARM without --dbrepo:"
 echo "----------------------------------------"
-$PYTHON ../../bin/sumo db --db local-darcs/DEPS.DB showall ALARM
-$PYTHON ../../bin/sumo db --db local-hg/DEPS.DB showall ALARM
-$PYTHON ../../bin/sumo db --db local-git/DEPS.DB showall ALARM
+$SUMO db --db local-darcs/DEPS.DB showall ALARM
+$SUMO db --db local-hg/DEPS.DB showall ALARM
+$SUMO db --db local-git/DEPS.DB showall ALARM
 echo
 echo "sumo db showall ALARM with --dbrepo (fetch changes from central repo)"
 echo "----------------------------------------"
-$PYTHON ../../bin/sumo db --db local-darcs/DEPS.DB --dbrepo "darcs central-darcs" showall ALARM
-$PYTHON ../../bin/sumo db --db local-hg/DEPS.DB --dbrepo "hg central-hg" showall ALARM
-$PYTHON ../../bin/sumo db --db local-git/DEPS.DB --dbrepo "git central-git" showall ALARM
+$SUMO db --db local-darcs/DEPS.DB --dbrepo "darcs central-darcs" showall ALARM
+$SUMO db --db local-hg/DEPS.DB --dbrepo "hg central-hg" showall ALARM
+$SUMO db --db local-git/DEPS.DB --dbrepo "git central-git" showall ALARM
