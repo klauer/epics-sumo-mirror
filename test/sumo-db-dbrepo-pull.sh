@@ -1,0 +1,54 @@
+#!/bin/sh
+
+ME=`basename $0 .sh`
+
+if [ "$1" = "deps" ]; then
+        echo "$ME.tst: $ME.sh $ME.out $ME.ok sumo-db-dbrepo-create.tst sumo-db-cloneversion-dbrepo.tst"
+        echo
+        exit
+fi
+
+if [ -z "$1" ]; then
+        PYTHON="python"
+else
+        PYTHON=$1
+fi
+
+REPOSRC="tmp-sumo-db-dbrepo-create/central"
+CHG_REPO="tmp-sumo-db-cloneversion-dbrepo"
+EXAMPLEDIR=tmp-$ME
+
+PWD_NICE=`pwd`
+
+echo -e "\n-> Test sumo db cloneversion with --dbrepo (repo pull)." >&2
+
+rm -rf $EXAMPLEDIR
+mkdir $EXAMPLEDIR
+cd $EXAMPLEDIR > /dev/null
+darcs get -q ../$REPOSRC central-darcs
+hg clone -q ../$REPOSRC central-hg
+git clone --bare -q ../$REPOSRC central-git
+
+# clone the original repositories
+darcs clone -q central-darcs local-darcs
+hg clone -q central-hg local-hg
+git clone -q central-git local-git
+
+# now add patches to the central repositories:
+(cd ../$CHG_REPO/central-darcs && darcs push -a ../../$EXAMPLEDIR/central-darcs > /dev/null)
+(cd ../$CHG_REPO/central-hg && hg push -q ../../$EXAMPLEDIR/central-hg)
+git clone -q ../$CHG_REPO/central-git delme-git 
+git -C delme-git config push.default simple
+git -C delme-git push -q ../central-git
+
+echo "sumo db showall ALARM without --dbrepo:"
+echo "----------------------------------------"
+$PYTHON ../../bin/sumo db --db local-darcs/DEPS.DB showall ALARM
+$PYTHON ../../bin/sumo db --db local-hg/DEPS.DB showall ALARM
+$PYTHON ../../bin/sumo db --db local-git/DEPS.DB showall ALARM
+echo
+echo "sumo db showall ALARM with --dbrepo (fetch changes from central repo)"
+echo "----------------------------------------"
+$PYTHON ../../bin/sumo db --db local-darcs/DEPS.DB --dbrepo "darcs central-darcs" showall ALARM
+$PYTHON ../../bin/sumo db --db local-hg/DEPS.DB --dbrepo "hg central-hg" showall ALARM
+$PYTHON ../../bin/sumo db --db local-git/DEPS.DB --dbrepo "git central-git" showall ALARM

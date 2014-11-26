@@ -253,8 +253,28 @@ class Repo(object):
             cmd_l.extend(["-u '%s'" % tag])
         elif rev is not None:
             cmd_l.extend(["-u '%s'" % rev])
+        cmd_l.append("-q")
         cmd_l.append(url)
         cmd_l.append(destdir)
         cmd= " ".join(cmd_l)
         sumolib.system.system(cmd, False, False, verbose, dry_run)
+    def commit(self, logmessage):
+        """commit changes."""
+        cmd="hg -R %s commit -m '%s'" % (self.directory, logmessage)
+        (_,_)= sumolib.system.system(cmd,
+                                     True, False,
+                                     self.verbose, self.dry_run)
+    def push(self):
+        """push all changes changes."""
+        cmd="hg push -R %s %s" % (self.directory, self.remote_url)
+        (_,_)= sumolib.system.system(cmd,
+                                     True, False,
+                                     self.verbose, self.dry_run)
+    def pull(self):
+        """pull all changes changes.  """
+        # use "-u" to update to head:
+        cmd="hg pull -R %s -u %s" % (self.directory, self.remote_url)
+        (_,_)= sumolib.system.system(cmd,
+                                     True, False,
+                                     self.verbose, self.dry_run)
 

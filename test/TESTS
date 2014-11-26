@@ -14,6 +14,9 @@ sumo-db-showall
 sumo-db-show
 sumo-db-find
 sumo-db-check
+sumo-db-dbrepo-create
+sumo-db-cloneversion-dbrepo
+sumo-db-dbrepo-pull
 sumo-db-makeconfig
 sumo-build-makeconfig
 sumo-build-new-0
