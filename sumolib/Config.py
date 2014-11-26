@@ -55,6 +55,7 @@ class ConfigFile(object):
         """
         self._dict= dict(dict_)
         self._filename= filename
+        self._real_paths= []
         if not filename:
             self._paths= []
         else:
@@ -120,6 +121,7 @@ class ConfigFile(object):
             if not must_exist:
                 return
             raise IOError("error: file \"%s\" doesn't exist" % filename)
+        self._real_paths.append(filename)
         data= sumolib.JSON.loadfile(filename)
         # pylint: disable=E1103
         #                     Instance of 'bool' has no 'items' member
@@ -132,9 +134,9 @@ class ConfigFile(object):
             self._load_file(f, must_exist= True)
         for f in _load_lst(data, ["#opt-postload"]):
             self._load_file(f, must_exist= False)
-    def paths(self):
+    def real_paths(self):
         """return the list of files that should be loaded or were loaded."""
-        return self._paths
+        return self._real_paths
     def load(self, filenames):
         """load from all files in filenames list."""
         if filenames:

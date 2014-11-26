@@ -2167,7 +2167,7 @@ def process(options, commands):
                  commands[0])
     if commands[0]=="showconfig":
         print "These configuration files were loaded:"
-        print "\n".join(config.paths())
+        print "\n".join(config.real_paths())
         return
     if commands[0]=="makeconfig":
         if len(commands)<=1:
