@@ -24,6 +24,14 @@ assert __version__==sumolib.JSON.__version__
 assert __version__==sumolib.utils.__version__
 
 # -----------------------------------------------
+# warnings
+# -----------------------------------------------
+
+def warn(text):
+    """print a warning to the console."""
+    sys.stderr.write(text+"\n")
+
+# -----------------------------------------------
 # class definitions
 # -----------------------------------------------
 
@@ -982,6 +990,8 @@ class BuildCache(sumolib.JSON.Container):
     def update_from_builddb(self, builddb, db):
         """update data from a builddb.
         """
+        # pylint: disable=R0914
+        #                          Too many local variables
         d= self.datadict()
         for buildtag in builddb.iter_builds():
             state= builddb.state(buildtag)
@@ -995,7 +1005,15 @@ class BuildCache(sumolib.JSON.Container):
             for (modulename, versionname) in build_dict.items():
                 versiondict   = d.setdefault(modulename, {})
                 depmoduledict = versiondict.setdefault(versionname, {})
-                for dep_name in db.iter_dependencies(modulename, versionname):
+                try:
+                    dep_names= list(db.iter_dependencies(modulename,
+                                                         versionname))
+                except KeyError, _:
+                    warn("WARNING: build '%s', module '%s:%s' not "
+                         "in dependency db!" % \
+                         (buildtag,modulename,versionname))
+                    continue
+                for dep_name in dep_names:
                     v= build_dict.get(dep_name)
                     if v is not None:
                         depversiondict= depmoduledict.setdefault(dep_name, {})
