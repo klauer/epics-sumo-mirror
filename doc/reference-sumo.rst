@@ -1067,6 +1067,8 @@ Here is a short overview on command line options:
     Switch on even more trace messages.
 ``--dump-modules``
     Dump module specs, then stop the program.
+``--list``
+    Show information for automatic command completion.
 ``-y, --yes``
     All questions the program may ask are treated as if the user replied 'yes'.
 ``-v, --verbose``

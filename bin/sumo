@@ -19,6 +19,7 @@ import os
 import re
 import errno
 import shutil
+import glob
 
 import sumolib.system
 import sumolib.lock
@@ -41,8 +42,8 @@ assert __version__==sumolib.ModuleSpec.__version__
 assert __version__==sumolib.Databases.__version__
 assert __version__==sumolib.repos.__version__
 
-KNOWN_MAIN_COMMANDS=set(("lock","unlock","edit","makeconfig","showconfig",
-                         "db","build"))
+KNOWN_MAIN_COMMANDS=set(("help","lock","unlock","edit","makeconfig",
+                         "showconfig", "db","build"))
 
 KNOWN_DB_COMMANDS=set(("alias-add", "appconvert", "check", "clonemodule",
                        "cloneversion", "convert", "convert-old",
@@ -54,6 +55,7 @@ KNOWN_DB_COMMANDS=set(("alias-add", "appconvert", "check", "clonemodule",
 KNOWN_BUILD_COMMANDS=set(("cleanup", "delete", "find", "list",
                           "new",
                           "show", "state", "try", "use", "useall"))
+KNOWN_FILE_COMMANDS=set(("lock", "unlock", "edit"))
 
 CONFIG_NAME="sumo.config"
 ENV_CONFIG="SUMOCONFIG"
@@ -1877,6 +1879,31 @@ def build_use(arguments, options):
 # command processing
 # -----------------------------------------------
 
+def pr_list(iterable):
+    """print for --list option."""
+    l= [k for k in iterable if k] # remove empty strings
+    print "\n".join(sorted(l))
+
+def complete_command(commandlist):
+    """try to return a completion for a commandlist."""
+    # pylint: disable=R0911
+    #                          Too many return statements
+    if len(commandlist)==0:
+        return list(KNOWN_MAIN_COMMANDS)
+    if commandlist[0] in KNOWN_FILE_COMMANDS:
+        if len(commandlist)>1:
+            return glob.glob(commandlist[1]+"*")
+        return glob.glob("*")
+    if commandlist[0]=="db":
+        if len(commandlist)==1:
+            return list(KNOWN_DB_COMMANDS)
+        return []
+    if commandlist[0]=="build":
+        if len(commandlist)==1:
+            return list(KNOWN_BUILD_COMMANDS)
+        return []
+    return []
+
 def assert_mandatory_options(options, *opt_list):
     """check for the presence of options."""
     for opt in opt_list:
@@ -2129,11 +2156,18 @@ def process(options, commands):
     # pylint: disable=R0911
     #                          Too many return statements
     if not commands:
-        print "command missing\n"
-        print usage
+        if options.list:
+            pr_list(KNOWN_MAIN_COMMANDS)
+        else:
+            print "command missing\n"
+            print usage
         return
     if commands[0]=="help":
-        print helptext(commands[1:])
+        helptext(commands[1:], options.list)
+        return
+
+    if options.list:
+        pr_list(complete_command(commands))
         return
 
     config_name= None
@@ -2163,8 +2197,7 @@ def process(options, commands):
     if not commands:
         sys.exit("command missing")
     if commands[0] not in KNOWN_MAIN_COMMANDS:
-        sys.exit("unknown maincommand '%s', expected 'db' or 'build'." % \
-                 commands[0])
+        sys.exit("unknown maincommand '%s'" % commands[0])
     if commands[0]=="showconfig":
         print "These configuration files were loaded:"
         print "\n".join(config.real_paths())
@@ -2413,7 +2446,7 @@ known subcommands:
   new       - create a new build
   find      - look for builds that match a module specification
   useall    - use all modules of a build in your application
-  use       . use all modules or your module specification in your application
+  use       - use all modules or your module specification in your application
   list      - list names of all builds
   show      - show details of a build
   state     - show or change the state of a build
@@ -2673,31 +2706,48 @@ directories of the failed build. The buildtag must be given as an argument.
 """
 }
 
-def helptext(topics):
+def helptext(topics, listmode):
     """return helptext.
     """
     # pylint: disable=R0911
     #                          Too many return statements
     if not topics:
-        return help_topics[""]
+        if listmode:
+            pr_list(help_topics.keys())
+        else:
+            print help_topics[""]
+        return
     lc_topics= [s.lower().strip() for s in topics]
     if len(lc_topics)>3:
-        return "help should be followed by one or two words"
+        if not listmode:
+            print "help should be followed by one or two words"
+        return
     if len(lc_topics)==1:
+        if listmode:
+            pr_list(help_topics.keys())
+            return
         txt= help_topics[lc_topics[0]]
         if txt is not None:
-            return txt
-        return "help not found for '%s'" % (" ".join(topics))
+            print txt
+            return
+        print "help not found for '%s'" % (" ".join(topics))
+        return
+    if listmode:
+        return
     # two words given
     if lc_topics[0] not in help_maincommands:
-        return "no known maincommand '%s'" % topics[0]
+        print "no known maincommand '%s'" % topics[0]
+        return
     txt= help_topics.get(" ".join(lc_topics))
     if txt is not None:
-        return txt
+        print txt
+        return
     txt= help_topics.get(lc_topics[1])
     if txt is not None:
-        return txt
-    return "no known subcommand '%s'" % topics[1]
+        print txt
+        return
+    print "no known subcommand '%s'" % topics[1]
+    return
 
 me= script_shortname()
 usage = """usage: %s maincommand [subcommand] [options]
@@ -3012,6 +3062,11 @@ def main():
     parser.add_option("--dump-modules",
                       action="store_true",
                       help="Dump module specs, then stop the program.",
+                      )
+    parser.add_option("--list",
+                      action="store_true",
+                      help="Show information for automatic command "
+                           "completion."
                       )
     parser.add_option("-y", "--yes",
                       action="store_true",
