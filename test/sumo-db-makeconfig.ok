@@ -1,6 +1,6 @@
 generated config file:
 {
-    "#include": [
+    "#preload": [
         "sumo-db-makeconfig-MODULES.tmp"
     ],
     "arch": [

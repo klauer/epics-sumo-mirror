@@ -338,11 +338,22 @@ Here is a short overview on command line options:
     list is the sum of both lists where it is ensured that for all elements the
     string up to the first colon ":" is unique (this is usefule for module
     specifications that have the form "module:version").
-``--#include FILE`` 
-    Specify a an '#include' directive in the configuration file.  This option
+``--#preload FILES`` 
+    Specify a an '#preload' directive in the configuration file. This option
     has only a meaning if a configuration file is created with the 'makeconfig'
-    command. '#include' means that the following file(s) are included before
-    the rest of the configuration file.
+    command. '#preload' means that the following file(s) are loaded before the
+    rest of the configuration file.
+``--#opt-preload FILES`` 
+    This option does the same as --#preload but the file loading is optional.
+    If they do not exist the program continues without an error.
+``--#postload FILES`` 
+    Specify a an '#postload' directive in the configuration file. This option
+    has only a meaning if a configuration file is created with the 'makeconfig'
+    command. '#postload' means that the following file(s) are loaded after the
+    rest of the configuration file.
+``--#opt-postload FILES`` 
+    This option does the same as --#postload but the file loading is optional.
+    If they do not exist the program continues without an error.
 ``-d DIR, --dir DIR``
     Parse all RELEASE files in directory DIR. You can specify more than one of
     these by repeating this option or by joining values in a single string
