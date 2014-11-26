@@ -1045,6 +1045,12 @@ def apprelease(build_path, build_tag, modulespecs, builddb, db,
 # command processing
 # -----------------------------------------------
 
+def assert_mandatory_options(options, *opt_list):
+    """check for the presence of options."""
+    for opt in opt_list:
+        if not getattr(options, opt):
+            sys.exit("--%s is mandatory here" % opt)
+
 def process_db(options, commands):
     """do all the work.
     """
@@ -1064,10 +1070,7 @@ def process_db(options, commands):
         sys.exit("unknown command: %s" % commands[0])
 
     if commands[0]=="convert":
-        if not options.db:
-            sys.exit("error, --db is mandatory here")
-        if not options.scandb:
-            sys.exit("error, --scandb is mandatory here")
+        assert_mandatory_options(options, "db", "scandb")
         if len(commands)!=2:
             sys.exit("a filename must follow \"convert\"")
         if os.path.exists(options.db):
@@ -1090,10 +1093,7 @@ def process_db(options, commands):
         return
 
     if commands[0]=="convert-old":
-        if not options.db:
-            sys.exit("error, --db is mandatory here")
-        if not options.scandb:
-            sys.exit("error, --scandb is mandatory here")
+        assert_mandatory_options(options, "db", "scandb")
         if len(commands)!=2:
             sys.exit("a filename must follow \"convert-old\"")
         if os.path.exists(options.db):
@@ -1123,12 +1123,11 @@ def process_db(options, commands):
         return
 
     if commands[0]=="weight":
+        assert_mandatory_options(options, "db")
         if len(commands)<=1:
             sys.exit("error: WEIGHT and module missing")
         if len(commands)<=2:
             sys.exit("error: no modules specified")
-        if not options.db:
-            sys.exit("error, --db is mandatory here")
         weight= commands[1]
         modulespecs= commands[2:]
         try:
@@ -1155,6 +1154,7 @@ def process_db(options, commands):
         return
 
     if commands[0]=="filter":
+        assert_mandatory_options(options, "db")
         modulespecs= []
         if options.module:
             modulespecs.extend(options.module)
@@ -1163,8 +1163,6 @@ def process_db(options, commands):
         if not modulespecs:
             sys.exit("error: module specs missing")
 
-        if not options.db:
-            sys.exit("error, --db is mandatory here")
         db= db_from_json_file(options.db, keep_locked= False)
         try:
             modulespecs_obj= sumolib.ModuleSpec.Specs.from_strings(modulespecs,
@@ -1181,10 +1179,9 @@ def process_db(options, commands):
         return
 
     if commands[0]=="check":
+        assert_mandatory_options(options, "db")
         if len(commands)>1:
             sys.exit("error: extra arguments following \"check\"")
-        if not options.db:
-            sys.exit("error, --db is mandatory here")
         db = db_from_json_file(options.db,
                                                keep_locked= False)
         msg= db.check()
@@ -1192,10 +1189,9 @@ def process_db(options, commands):
         return
 
     if commands[0]=="merge":
+        assert_mandatory_options(options, "db")
         if len(commands)!=2:
             sys.exit("exactly one filename must follow \"merge\"")
-        if not options.db:
-            sys.exit("error, --db is mandatory here")
         db = db_from_json_file(options.db,
                 keep_locked= not options.dumpdb and (not options.dry_run))
         db2= db_from_json_file(commands[1])
@@ -1208,11 +1204,10 @@ def process_db(options, commands):
         return
 
     if commands[0]=="alias-add":
+        assert_mandatory_options(options, "db")
         if len(commands)<4:
             sys.exit("Three arguments must follow \"%s\"" % \
                      commands[0])
-        if not options.db:
-            sys.exit("error, --db is mandatory here")
         module_spec= sumolib.ModuleSpec.Spec.from_string(commands[1])
         (depname,dep_alias)= commands[2:4]
         db = db_from_json_file(options.db,
@@ -1228,11 +1223,10 @@ def process_db(options, commands):
         return
 
     if commands[0]=="dependency-add":
+        assert_mandatory_options(options, "db")
         if len(commands)<3:
             sys.exit("Two arguments must follow \"%s\"" % \
                      commands[0])
-        if not options.db:
-            sys.exit("error, --db is mandatory here")
         module_spec= sumolib.ModuleSpec.Spec.from_string(commands[1])
         dep        = commands[2]
         db = db_from_json_file(options.db,
@@ -1248,11 +1242,10 @@ def process_db(options, commands):
         return
 
     if commands[0]=="dependency-delete":
+        assert_mandatory_options(options, "db")
         if len(commands)<3:
             sys.exit("Two arguments must follow \"%s\"" % \
                      commands[0])
-        if not options.db:
-            sys.exit("error, --db is mandatory here")
         module_spec= sumolib.ModuleSpec.Spec.from_string(commands[1])
         dep        = commands[2]
         if module_spec.no_version_spec():
@@ -1271,6 +1264,7 @@ def process_db(options, commands):
         return
 
     if commands[0]=="cloneversion" or commands[0]=="replaceversion":
+        assert_mandatory_options(options, "db")
         do_replace= (commands[0]=="replaceversion")
         if len(commands)<4:
             sys.exit("at least three arguments must follow \"%s\"" % \
@@ -1280,8 +1274,6 @@ def process_db(options, commands):
             sourcespec= None
         else:
             sourcespec= commands[4:]
-        if not options.db:
-            sys.exit("error, --db is mandatory here")
 
         db = db_from_json_file(options.db,
                 keep_locked= not options.dumpdb and (not options.dry_run))
@@ -1320,13 +1312,12 @@ def process_db(options, commands):
         return
 
     if commands[0]=="clonemodule":
+        assert_mandatory_options(options, "db")
         if len(commands)<3:
             sys.exit("at least two arguments must follow \"%s\"" % \
                      commands[0])
         (oldmodule, newodule)= commands[1:3]
         versions= commands[3:]
-        if not options.db:
-            sys.exit("error, --db is mandatory here")
         db = db_from_json_file(options.db,
                 keep_locked= not options.dumpdb and (not options.dry_run))
         db.clonemodule(oldmodule, newodule, versions)
@@ -1338,19 +1329,17 @@ def process_db(options, commands):
         return
 
     if commands[0]=="list":
+        assert_mandatory_options(options, "db")
         if len(commands)>1:
             sys.exit("error: extra arguments following \"list\"")
-        if not options.db:
-            sys.exit("error, --db is mandatory here")
         db= db_from_json_file(options.db)
         result= sorted(db.iter_modulenames())
         sumolib.JSON.dump(result)
         return
 
     if commands[0]=="shownewest" or commands[0]=="showall":
+        assert_mandatory_options(options, "db")
         showall= (commands[0]=="showall")
-        if not options.db:
-            sys.exit("error, --db is mandatory here")
         db= db_from_json_file(options.db)
 
         modulespecs= []
@@ -1392,10 +1381,9 @@ def process_db(options, commands):
         return
 
     if commands[0]=="find":
+        assert_mandatory_options(options, "db")
         if len(commands)<=1:
             sys.exit("error: REGEXP missing")
-        if not options.db:
-            sys.exit("error, --db is mandatory here")
         db= db_from_json_file(options.db)
         regexp= commands[1]
         if options.noignorecase:
@@ -1434,16 +1422,16 @@ def process_build(options, commands):
         options.extra= []
 
     if commands[0]=="list":
+        assert_mandatory_options(options, "builddb")
         if len(commands)>1:
             sys.exit("error: extra arguments following \"%s\"" % commands[0])
-        if not options.builddb:
-            sys.exit("--builddb is mandatory")
         builddb= builddb_from_json_file(options.builddb)
         for buildtag in builddb.iter_builds():
             print buildtag
         return
 
     if commands[0]=="show":
+        assert_mandatory_options(options, "builddb")
         if len(commands)>2:
             sys.exit("error: extra arguments following \"%s\"" % commands[0])
 
@@ -1452,8 +1440,6 @@ def process_build(options, commands):
                                    optional= False,
                                    check_conflict= True)
 
-        if not options.builddb:
-            sys.exit("--builddb is mandatory")
         builddb= builddb_from_json_file(options.builddb)
         if not builddb.has_build_tag(buildtag):
             sys.exit("error: buildtag \"%s\" not found" % buildtag)
@@ -1463,6 +1449,7 @@ def process_build(options, commands):
         return
 
     if commands[0]=="state":
+        assert_mandatory_options(options, "builddb")
         if options.readonly:
             sys.exit("--readonly forbids changing the state of a build")
 
@@ -1483,8 +1470,6 @@ def process_build(options, commands):
         else:
             new_state= commands[state_idx]
 
-        if not options.builddb:
-            sys.exit("--builddb is mandatory")
         builddb= builddb_from_json_file(options.builddb,
                 keep_locked= not options.dry_run)
         if not builddb.has_build_tag(buildtag):
@@ -1504,6 +1489,7 @@ def process_build(options, commands):
         return
 
     if commands[0]=="delete":
+        assert_mandatory_options(options, "builddb")
         if options.readonly:
             sys.exit("--readonly forbids deleting a support")
         if len(commands)>2:
@@ -1546,14 +1532,11 @@ def process_build(options, commands):
         return
 
     if commands[0]=="try":
+        assert_mandatory_options(options, "db", "builddb")
 
         # this command can no longer work this way,
         # it has to be re-implemented
         buildtag= options.buildtag
-        if not options.db:
-            sys.exit("--db is mandatory")
-        if not options.builddb:
-            sys.exit("--builddb is mandatory")
 
         exclude_matcher= sumolib.utils.RegexpMatcher(options.exclude_states)
 
@@ -1717,15 +1700,11 @@ def process_build(options, commands):
         return
 
     if commands[0]=="new":
+        assert_mandatory_options(options, "db", "builddb")
         if options.readonly:
             sys.exit("--readonly forbids creating a new build")
 
         buildtag= options.buildtag
-
-        if not options.db:
-            sys.exit("--db is mandatory")
-        if not options.builddb:
-            sys.exit("--builddb is mandatory")
 
         modulespecs= []
         if options.module:
@@ -1801,10 +1780,7 @@ def process_build(options, commands):
                       options.verbose, options.dry_run)
         return
     if commands[0]=="find":
-        if not options.builddb:
-            sys.exit("--builddb is mandatory")
-        if not options.db:
-            sys.exit("--db is mandatory")
+        assert_mandatory_options(options, "db", "builddb")
 
         modulespecs= []
         if options.module:
@@ -1839,6 +1815,7 @@ def process_build(options, commands):
                 new_builddb.json_print()
         return
     if commands[0]=="useall":
+        assert_mandatory_options(options, "db", "builddb")
         if len(commands)>2:
             sys.exit("error: extra arguments following \"%s\"" % commands[0])
 
@@ -1847,8 +1824,6 @@ def process_build(options, commands):
                                    optional= False,
                                    check_conflict= True)
 
-        if not options.db:
-            sys.exit("--db is mandatory")
         output= options.output
         if not output:
             _assume_dir("configure", options.dry_run)
@@ -1869,10 +1844,8 @@ def process_build(options, commands):
         return
 
     if commands[0]=="use":
+        assert_mandatory_options(options, "db", "builddb")
         buildtag= options.buildtag
-
-        if not options.db:
-            sys.exit("--db is mandatory")
 
         modulespecs= []
         if options.module:
@@ -1886,8 +1859,6 @@ def process_build(options, commands):
             dump_modules(modulespecs_obj)
             sys.exit(0)
 
-        if not options.db:
-            sys.exit("--db is mandatory")
         output= options.output
         if not output:
             _assume_dir("configure", options.dry_run)
