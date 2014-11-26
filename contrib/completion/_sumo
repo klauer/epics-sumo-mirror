@@ -1,0 +1,19 @@
+_sumo()
+{
+    # get the word currently being completed
+    local cur
+    cur=${COMP_WORDS[$COMP_CWORD]}
+
+    # create a command line to run
+    local cmd
+    # copy all words the user has entered
+    cmd=( ${COMP_WORDS[@]} )
+
+    # replace the current word with --list
+    cmd[${COMP_CWORD}]="--list"
+
+    # the resulting completions should be put into this array
+    COMPREPLY=( $( compgen -W "$( ${cmd[@]} )" -- $cur ) )
+}
+
+complete -F _sumo sumo
