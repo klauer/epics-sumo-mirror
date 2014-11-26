@@ -1004,6 +1004,787 @@ def apprelease(build_path, build_tag, modulespecs, builddb, db,
                           module_dict.keys(), aliases, extra_lines)
 
 # -----------------------------------------------
+# command implementation
+# -----------------------------------------------
+
+def db_convert(arguments, options):
+    """implement "db convert"."""
+    args= get_command_args(arguments, ["SCANFILE"])
+    assert_mandatory_options(options, "db", "scandb")
+    if os.path.exists(options.db):
+        sys.exit("error, db file '%s' already exists" % options.db)
+    if os.path.exists(options.scandb):
+        sys.exit("error, scandb file '%s' already exists" % \
+                 options.scandb)
+    scandata= sumolib.JSON.loadfile(args["SCANFILE"])
+    deps= scandata["dependencies"]
+    repoinfo= scandata["repos"]
+    groups= scandata["groups"]
+    archs= scandata["archs"]
+    (buildcache, db)= create_database(deps, repoinfo, groups, archs,
+                                      options.dir_patch,
+                                      options.url_patch)
+    db.json_save(options.db, options.verbose, options.dry_run)
+    buildcache.json_save(options.scandb,
+                         options.verbose, options.dry_run)
+
+def db_convert_old(arguments, options):
+    """implement "db convert-old"."""
+    args= get_command_args(arguments, ["OLD-DEPS-DB"])
+    assert_mandatory_options(options, "db", "scandb")
+    if os.path.exists(options.db):
+        sys.exit("error, db file '%s' already exists" % options.db)
+    if os.path.exists(options.scandb):
+        sys.exit("error, scandb file '%s' already exists" % \
+                 options.scandb)
+    old= sumolib.Databases.OldDependencies.from_json_file(
+                                                    args["OLD-DEPS-DB"],
+                                                    keep_locked=False)
+    (buildcache, db)= old.convert()
+    db.json_save(options.db, options.verbose, options.dry_run)
+    buildcache.json_save(options.scandb,
+                         options.verbose, options.dry_run)
+
+def db_appconvert(arguments):
+    """implement "db appconvert"."""
+    args= get_command_args(arguments, ["SCANFILE"])
+    scandata= sumolib.JSON.loadfile(args["SCANFILE"])
+    deps= scandata["dependencies"]
+    repoinfo= scandata["repos"]
+    groups= scandata["groups"]
+    struc= create_app_data(deps, repoinfo, groups)
+    sumolib.JSON.dump(struc)
+
+def db_weight(arguments, options):
+    """implement "db weight"."""
+    args= get_command_args(arguments, ["WEIGHT"],
+                           extra_mandatory= "MODULES")
+    assert_mandatory_options(options, "db")
+    try:
+        weight= int(args["WEIGHT"])
+    except ValueError, _:
+        sys.exit("error: weight must be an integer")
+    db= db_from_json_file(options.db,
+            keep_locked= not options.dumpdb and (not options.dry_run))
+    try:
+        modulespecs_obj= sumolib.ModuleSpec.Specs.from_strings(
+                                                        args["MODULES"],
+                                                        None)
+    except ValueError, e:
+        sys.exit(str(e))
+
+    if options.dump_modules:
+        dump_modules(modulespecs_obj)
+        sys.exit(0)
+    set_weight(db, weight, modulespecs_obj, options.trace)
+    if options.dumpdb:
+        db.json_print()
+    else:
+        db.json_save(options.db, options.verbose, options.dry_run)
+        # ^^^ does also unlock the file
+
+def db_filter(arguments, options):
+    """implement "db filter"."""
+    args= get_command_args(arguments,
+                           extra_optional="MODULES")
+    assert_mandatory_options(options, "db")
+    modulespecs= []
+    if options.module:
+        modulespecs.extend(options.module)
+    if args.has_key("MODULES"):
+        modulespecs.extend(args["MODULES"])
+    if not modulespecs:
+        sys.exit("error: module specs missing")
+
+    db= db_from_json_file(options.db, keep_locked= False)
+    try:
+        modulespecs_obj= sumolib.ModuleSpec.Specs.from_strings(modulespecs,
+                                                        None,
+                                                        options.arch)
+    except ValueError, e:
+        sys.exit(str(e))
+
+    if options.dump_modules:
+        dump_modules(modulespecs_obj)
+        sys.exit(0)
+    db= db.partial_copy_by_modulespecs(modulespecs_obj)
+    db.json_print()
+
+def db_check(arguments, options):
+    """implement "db check"."""
+    assert_mandatory_options(options, "db")
+    get_command_args(arguments)
+    db = db_from_json_file(options.db, keep_locked= False)
+    msg= db.check()
+    print "\n".join(msg)
+
+def db_merge(arguments, options):
+    """implement "db merge"."""
+    args= get_command_args(arguments, ["DB"])
+    assert_mandatory_options(options, "db")
+    db = db_from_json_file(options.db,
+            keep_locked= not options.dumpdb and (not options.dry_run))
+    db2= db_from_json_file(args["DB"])
+    db.merge(db2)
+    if options.dumpdb:
+        db.json_print()
+    else:
+        db.json_save(options.db, options.verbose, options.dry_run)
+        # ^^^ does also unlock the file
+
+def db_alias_add(arguments, options):
+    """implement "db alias_add"."""
+    args= get_command_args(arguments,
+                           ["MODULE","DEPENDENCY","ALIAS"])
+    assert_mandatory_options(options, "db")
+    module_spec= sumolib.ModuleSpec.Spec.from_string(args["MODULE"])
+    try:
+        module_spec.assert_exact()
+    except ValueError, e:
+        sys.exit(str(e))
+    db = db_from_json_file(options.db,
+            keep_locked= not options.dumpdb and (not options.dry_run))
+    db.add_alias(module_spec.modulename,
+                 module_spec.versionname,
+                 args["ALIAS"], args["DEPENDENCY"])
+    if options.dumpdb:
+        db.json_print()
+    else:
+        db.json_save(options.db, options.verbose, options.dry_run)
+        # ^^^ does also unlock the file
+
+def db_dependency_add(arguments, options):
+    """implement "db dependency_add"."""
+    args= get_command_args(arguments, ["MODULE","DEPENDENCY"])
+    assert_mandatory_options(options, "db")
+    module_spec= sumolib.ModuleSpec.Spec.from_string(args["MODULE"])
+    try:
+        module_spec.assert_exact()
+    except ValueError, e:
+        sys.exit(str(e))
+    db = db_from_json_file(options.db,
+            keep_locked= not options.dumpdb and (not options.dry_run))
+    db.add_dependency(module_spec.modulename,
+                      module_spec.versionname,
+                      args["DEPENDENCY"])
+    if options.dumpdb:
+        db.json_print()
+    else:
+        db.json_save(options.db, options.verbose, options.dry_run)
+        # ^^^ does also unlock the file
+
+def db_dependency_delete(arguments, options):
+    """implement "db dependency_delete"."""
+    args= get_command_args(arguments, ["MODULE","DEPENDENCY"])
+    assert_mandatory_options(options, "db")
+    module_spec= sumolib.ModuleSpec.Spec.from_string(args["MODULE"])
+    if module_spec.no_version_spec():
+        sys.exit("module has no version")
+    try:
+        module_spec.assert_exact()
+    except ValueError, e:
+        sys.exit(str(e))
+    db = db_from_json_file(options.db,
+            keep_locked= not options.dumpdb and (not options.dry_run))
+    db.del_dependency(module_spec.modulename,
+                      module_spec.versionname,
+                      args["DEPENDENCY"])
+    if options.dumpdb:
+        db.json_print()
+    else:
+        db.json_save(options.db, options.verbose, options.dry_run)
+        # ^^^ does also unlock the file
+
+def db_clone_replace_version(command, arguments, options):
+    """implement "db cloneversion/replaceversion"."""
+    args= get_command_args(arguments,
+                           ["MODULE","OLD-VERSION","NEW-VERSION"],
+                           extra_optional="SOURCESPEC")
+    assert_mandatory_options(options, "db")
+    do_replace= (command=="replaceversion")
+    modulename= args["MODULE"]
+    sourcespec= args.get("SOURCESPEC")
+
+    db = db_from_json_file(options.db,
+            keep_locked= not options.dumpdb and (not options.dry_run))
+    try:
+        db.patch_version(modulename,
+                         args["OLD-VERSION"], args["NEW-VERSION"],
+                         do_replace)
+    except ValueError, e:
+        sys.exit(str(e))
+
+    if not sourcespec:
+        # guess tag from versionname
+        changed= db.set_source_spec_by_tag(modulename, args["NEW-VERSION"],
+                                           args["NEW-VERSION"])
+    else:
+        try:
+            source_spec_obj= \
+                sumolib.repos.SourceSpec.from_string_sourcespec(sourcespec)
+        except ValueError, e:
+            sys.exit("Error: "+str(e))
+        changed= db.set_source_spec(modulename, args["NEW-VERSION"],
+                                    source_spec_obj)
+    print "Added module:"
+    report_db= db.partial_copy_by_list([(modulename, args["NEW-VERSION"])])
+    report_db.json_print()
+    if not changed:
+        print ("\nCAUTION: source specification of this module is "
+               "identical with that of \n"
+               "%s:%s, this is probably not what you want!") % \
+               (modulename, args["OLD-VERSION"])
+    sumolib.utils.ask_abort("Proceed ? ", options.yes)
+    if options.dumpdb:
+        db.json_print()
+    else:
+        db.json_save(options.db, options.verbose, options.dry_run)
+        # ^^^ does also unlock the file
+
+def db_clonemodule(arguments, options):
+    """implement "db clonemodule"."""
+    args= get_command_args(arguments,
+                           ["OLD-MODULE","NEW-MODULE"],
+                           extra_optional="VERSIONS")
+    assert_mandatory_options(options, "db")
+    db = db_from_json_file(options.db,
+            keep_locked= not options.dumpdb and (not options.dry_run))
+    db.clonemodule(args["OLD-MODULE"], args["NEW-MODULE"],
+                   args.get("VERSIONS"))
+    if options.dumpdb:
+        db.json_print()
+    else:
+        db.json_save(options.db, options.verbose, options.dry_run)
+        # ^^^ does also unlock the file
+
+def db_list(arguments, options):
+    """implement "db list"."""
+    get_command_args(arguments)
+    assert_mandatory_options(options, "db")
+    db= db_from_json_file(options.db)
+    result= sorted(db.iter_modulenames())
+    sumolib.JSON.dump(result)
+
+def db_show_newest_all(command, arguments, options):
+    """implement "db shownewest/showall"."""
+    args= get_command_args(arguments,
+                           extra_optional="MODULES")
+    assert_mandatory_options(options, "db")
+    showall= (command=="showall")
+    db= db_from_json_file(options.db)
+
+    modulespecs= []
+    if options.module:
+        modulespecs.extend(options.module)
+    if args.has_key("MODULES"):
+        modulespecs.extend(args["MODULES"])
+    if not modulespecs:
+        modulespecs= list(db.iter_modulenames())
+
+    result= {}
+
+    try:
+        modulespecs_obj= sumolib.ModuleSpec.Specs.from_strings(modulespecs,
+                                                        None,
+                                                        options.arch)
+    except ValueError, e:
+        sys.exit(str(e))
+
+    if options.dump_modules:
+        dump_modules(modulespecs_obj)
+        sys.exit(0)
+    for modulespec in modulespecs_obj:
+        modulename= modulespec.modulename
+
+        versions= db.sorted_moduleversions(modulename,
+                                           options.arch, False)
+        if not versions: # no versions match criteria
+            continue
+        versions= [v for v in versions \
+                   if modulespec.test(v)]
+
+        if not showall:
+            result[modulename]= versions[0]
+        else:
+            result[modulename]= versions
+    sumolib.JSON.dump(result)
+
+def db_find(arguments, options):
+    """implement "db find"."""
+    args= get_command_args(arguments, ["REGEXP"])
+    assert_mandatory_options(options, "db")
+    db= db_from_json_file(options.db)
+    if options.noignorecase:
+        rx_flags= 0
+    else:
+        rx_flags= re.IGNORECASE
+    rx= re.compile(args["REGEXP"], rx_flags)
+    results= db.search_modules(rx, options.arch)
+    if options.brief:
+        for (module,version) in results:
+            print "%s:%s" % (module,version)
+        return
+    newdb= db.partial_copy_by_list(results)
+    newdb.json_print()
+
+def build_list(arguments, options):
+    """implement "build_list"."""
+    get_command_args(arguments)
+    assert_mandatory_options(options, "builddb")
+    builddb= builddb_from_json_file(options.builddb)
+    for buildtag in builddb.iter_builds():
+        print buildtag
+
+def build_show(arguments, options):
+    """implement "build_show"."""
+    args= get_command_args(arguments, ["BUILDTAG"])
+    assert_mandatory_options(options, "builddb")
+    if options.buildtag:
+        sys.exit("error: you cannot use --buildtag here")
+
+    builddb= builddb_from_json_file(options.builddb)
+    if not builddb.has_build_tag(args["BUILDTAG"]):
+        sys.exit("error: BUILDTAG \"%s\" not found" % \
+                 args["BUILDTAG"])
+    new_builddb= sumolib.Databases.Builddb()
+    new_builddb.add_build(builddb, args["BUILDTAG"])
+    new_builddb.json_print()
+
+def build_state(arguments, options):
+    """implement "build_state"."""
+    args= get_command_args(arguments, ["BUILDTAG"],
+                           optional_args=["NEW-STATE"])
+    if options.buildtag:
+        sys.exit("error: you cannot use --buildtag here")
+
+    assert_mandatory_options(options, "builddb")
+    if options.readonly:
+        sys.exit("--readonly forbids changing the state of a build")
+
+    builddb= builddb_from_json_file(options.builddb,
+            keep_locked= not options.dry_run)
+    if not builddb.has_build_tag(args["BUILDTAG"]):
+        # builddb __del__ method should remove lockfiles
+        sys.exit("error: BUILDTAG \"%s\" not found" % \
+                 args["BUILDTAG"])
+    if not args.get("NEW-STATE"):
+        print "%-20s : %s" % (args["BUILDTAG"],
+                              builddb.state(args["BUILDTAG"]))
+    else:
+        try:
+            builddb.change_state(args["BUILDTAG"], args["NEW-STATE"])
+        except ValueError, e:
+            # builddb __del__ method should remove lockfiles
+            sys.exit(str(e))
+        builddb.json_save(options.builddb,
+                          options.verbose, options.dry_run)
+        # ^^^ does also unlock the file
+
+def build_delete(arguments, options):
+    """implement "build_delete"."""
+    args= get_command_args(arguments, ["BUILDTAG"])
+    assert_mandatory_options(options, "builddb")
+    if options.readonly:
+        sys.exit("--readonly forbids deleting a support")
+
+    if options.supportdir:
+        os.chdir(options.supportdir)
+
+    builddb= builddb_from_json_file(options.builddb)
+    if not builddb.has_build_tag(args["BUILDTAG"]):
+        sys.exit("error: BUILDTAG \"%s\" not found" % \
+                 args["BUILDTAG"])
+    try:
+        delete_modules(builddb, args["BUILDTAG"],
+                       options.verbose, options.dry_run)
+    except ValueError, e:
+        sys.exit(str(e))
+    builddb.json_save(options.builddb,
+                      options.verbose, options.dry_run)
+
+def build_cleanup(arguments, options):
+    """implement "build_cleanup"."""
+    args= get_command_args(arguments, ["BUILDTAG"])
+    if options.readonly:
+        sys.exit("--readonly forbids cleaning up")
+
+    if options.supportdir:
+        os.chdir(options.supportdir)
+
+    cleanup_modules(args["BUILDTAG"], options.verbose, options.dry_run)
+
+def build_try(arguments, options):
+    """implement "build_try"."""
+    # pylint: disable=R0914
+    #                          Too many local variables
+    # pylint: disable=R0912
+    #                          Too many branches
+    # pylint: disable=R0915
+    #                          Too many statements
+    args= get_command_args(arguments,
+                           extra_optional="MODULES")
+    assert_mandatory_options(options, "db", "builddb")
+
+    buildtag= options.buildtag
+
+    exclude_matcher= sumolib.utils.RegexpMatcher(options.exclude_states)
+
+    modulespecs= []
+    if options.module:
+        modulespecs.extend(options.module)
+    if args.has_key("MODULES"):
+        modulespecs.extend(args["MODULES"])
+    if not modulespecs:
+        sys.exit("error: module specs missing")
+
+    try:
+        modulespecs_obj= sumolib.ModuleSpec.Specs.from_strings(
+                             modulespecs,
+                             mspecs_from_build(options.builddb),
+                             options.arch)
+    except ValueError, e:
+        sys.exit(str(e))
+
+    if options.dump_modules:
+        dump_modules(modulespecs_obj)
+        sys.exit(0)
+
+    db= db_from_json_file(options.db, keep_locked= False)
+    if not os.path.exists(options.builddb):
+        builddb= sumolib.Databases.Builddb()
+    else:
+        builddb= builddb_from_json_file(options.builddb,
+                                        keep_locked= False)
+
+    buildcache= init_buildcache(options.scandb,
+                                builddb, db)
+
+    # ensure that each module is only mentioned once in the modulelist:
+    try:
+        modulespecs_obj.assert_unique()
+    except ValueError, e:
+        sys.exit(str(e))
+
+    modules_not_exact_spec= []
+    for spec in modulespecs_obj:
+        if not spec.is_exact_spec():
+            modules_not_exact_spec.append(spec.modulename)
+
+    # convert modulespecs to a set dict:
+    # { modulename1 : set(version1,version2),
+    #   modulename2 : set(version1,version2),
+    # }
+    try:
+        sets_dict= db.sets_dict(modulespecs_obj)
+    except ValueError, e:
+        sys.exit(str(e))
+
+    # add all missing dependencies:
+    added_modules= db.complete_sets_dict(sets_dict)
+
+    was_built= set()
+    needed_by_others= {}
+
+    for modulename in sets_dict.keys():
+        for versionname in sets_dict[modulename]:
+            if buildcache.was_built(modulename,versionname):
+                was_built.add((modulename,versionname))
+            for depname in db.iter_dependencies(modulename, versionname):
+                for dep_version in sets_dict[depname]:
+                    s= needed_by_others.setdefault((depname,dep_version),
+                                                   [])
+                    s.append((modulename,versionname,
+                             buildcache.relation(modulename,versionname,
+                                                 depname, dep_version)))
+
+    # now build the report structure:
+    report= {}
+    for modulename in sets_dict.keys():
+        mdict= report.setdefault(modulename, {})
+        no_of_versions= len(sets_dict[modulename])
+        for versionname in sets_dict[modulename]:
+            d= {}
+            mdict[versionname]= d
+            d["built"]= (modulename,versionname) in was_built
+            l= needed_by_others.get((modulename,versionname))
+            if l is not None:
+                dd= d.setdefault("dependents", {})
+                depmods_versioncount= {}
+                for (m,v,state) in l:
+                    depmods_versioncount.setdefault(m, 0)
+                    if state is None:
+                        state= "state: not tested"
+                    else:
+                        state= "state: %s" % state
+                    if no_of_versions>1:
+                        # do only apply the exclude_matcher when there is
+                        # more than ony possible version of module
+                        # 'modulename':
+                        if exclude_matcher.search(state):
+                            continue
+                    depmods_versioncount[m]+= 1
+                    dd["%s:%s" % (m,v)]= state
+                if min(depmods_versioncount.values())==0:
+                    # all versions of a dependent were removed,
+                    # remove modulename:versionname completely:
+                    del mdict[versionname]
+        if not mdict:
+            sys.exit("error: your '--exclude-states' option removes "
+                     "*ALL* versions of module '%s'. You may change "
+                     "the REGEXP or specify an exact version "
+                     "for the module to avoid this error." % \
+                     modulename)
+
+    if modules_not_exact_spec:
+        print "Not all modules have exactly specified versions.",
+        print "These modules need an "
+        print "exact version specification:"
+        for m in sorted(modules_not_exact_spec):
+            versions= report[m].keys()
+            if len(versions)>1:
+                print "    %s" % m
+            else:
+                print "    %-20s -> suggested version: %s" % \
+                      (m,versions[0])
+        print
+
+    if added_modules:
+        print "Not all dependencies were included in module",
+        print "specifications, these modules"
+        print "have to be added:\n   ",
+        print "\n    ".join(sorted(added_modules))
+        print
+
+    if not options.brief:
+        if not modules_not_exact_spec and not added_modules:
+            # everything complete, show modules that are not needed by
+            # other modules:
+            needed_modules= set([m for (m,_) in needed_by_others.keys()])
+            not_needed_modules= \
+                    set(report.keys()).difference(needed_modules)
+            print "The following modules are not needed by other modules",
+            print "in your module"
+            print "specification:\n   ",
+            print "\n    ".join(sorted(not_needed_modules))
+            print
+        print "List of modules that fullfill the given "+\
+              "module specification:"
+        sumolib.JSON.dump(report)
+
+    if buildtag is None:
+        if not options.buildtag_stem:
+            options.buildtag_stem= "AUTO"
+        buildtag= builddb.generate_buildtag(options.buildtag_stem)
+        print "Command 'new' would create build with tag '%s'\n" % \
+              buildtag
+
+    if not modules_not_exact_spec and not added_modules:
+        print "Your module specifications are complete. You can use",
+        print "these with command"
+        print "'new' to create a new build."
+    else:
+        print "Your module specifications are still incomplete,",
+        print "command 'new' can not"
+        print "be used with these."
+
+def build_new(arguments, options):
+    """implement "build_new"."""
+    # pylint: disable=R0912
+    #                          Too many branches
+    # pylint: disable=R0915
+    #                          Too many statements
+    args= get_command_args(arguments,
+                           extra_optional="MODULES")
+    assert_mandatory_options(options, "db", "builddb")
+    if options.readonly:
+        sys.exit("--readonly forbids creating a new build")
+
+    buildtag= options.buildtag
+
+    modulespecs= []
+    if options.module:
+        modulespecs.extend(options.module)
+    if args.has_key("MODULES"):
+        modulespecs.extend(args["MODULES"])
+    if not modulespecs:
+        sys.exit("error: module specs missing")
+
+    db= db_from_json_file(options.db, keep_locked= False)
+
+    try:
+        modulespecs_obj= sumolib.ModuleSpec.Specs.from_strings(
+                             modulespecs,
+                             mspecs_from_build(options.builddb),
+                             options.arch)
+    except ValueError, e:
+        sys.exit(str(e))
+
+    if options.dump_modules:
+        dump_modules(modulespecs_obj)
+        sys.exit(0)
+
+    try:
+        dist_dict= modulespecs_obj.to_dist_dict()
+    except ValueError, e:
+        sys.exit(str(e))
+    try:
+        db.assert_complete_modulelist(dist_dict)
+    except ValueError, e:
+        sys.exit(str(e))
+
+    if not os.path.exists(options.builddb):
+        builddb= sumolib.Databases.Builddb()
+    else:
+        builddb= builddb_from_json_file(options.builddb,
+                    keep_locked= not options.dry_run)
+    if buildtag is None:
+        if not options.buildtag_stem:
+            options.buildtag_stem= "AUTO"
+        buildtag= builddb.generate_buildtag(options.buildtag_stem)
+        sys.stderr.write("creating build with tag '%s'\n" % buildtag)
+    if builddb.has_build_tag(buildtag):
+        # builddb __del__ method should remove lockfiles
+        sys.exit("error: buildtag \"%s\" already taken" % buildtag)
+    # create a new build in builddb, initial state is "unstable":
+    builddb.new_build(buildtag, "unstable")
+    if options.supportdir:
+        os.chdir(options.supportdir)
+    # modifies builddb:
+    try:
+        create_modules(dist_dict, db, builddb, buildtag,
+                       options.extra,
+                       options.arch,
+                       options.no_checkout,
+                       options.verbose,
+                       options.dry_run)
+        if not options.no_checkout:
+            create_makefile(dist_dict, db, builddb, buildtag,
+                            options.verbose,
+                            options.dry_run)
+    except IOError, e:
+        db.unlock_file()
+        builddb.unlock_file()
+        raise
+
+    builddb.json_save(options.builddb, options.verbose, options.dry_run)
+    # ^^^ does also unlock the file
+    rmcleanup(buildtag)
+    if not options.no_make and not options.no_checkout:
+        call_make(options.builddb, buildtag,
+                  options.makeopts,
+                  options.verbose, options.dry_run)
+
+def build_find(arguments, options):
+    """implement "build_find"."""
+    args= get_command_args(arguments,
+                           extra_optional="MODULESPECS")
+    assert_mandatory_options(options, "db", "builddb")
+
+    modulespecs= []
+    if options.module:
+        modulespecs.extend(options.module)
+    if args.has_key("MODULESPECS"):
+        modulespecs.extend(args["MODULESPECS"])
+    if not modulespecs:
+        sys.exit("error: module specs missing")
+
+    try:
+        modulespecs_obj= sumolib.ModuleSpec.Specs.from_strings(
+                             modulespecs,
+                             mspecs_from_build(options.builddb),
+                             options.arch)
+    except ValueError, e:
+        sys.exit(str(e))
+
+    db= db_from_json_file(options.db)
+    builddb= builddb_from_json_file(options.builddb)
+
+    if options.dump_modules:
+        dump_modules(modulespecs_obj)
+        sys.exit(0)
+    new_builddb= builddb.filter_by_modulespecs(modulespecs_obj, db)
+    if new_builddb.is_empty():
+        print "no matching buildtrees found"
+    else:
+        if options.brief:
+            for buildtag in builddb.iter_builds():
+                print buildtag
+        else:
+            new_builddb.json_print()
+
+def build_useall(arguments, options):
+    """implement "build_useall"."""
+    args= get_command_args(arguments, ["BUILDTAG"])
+    assert_mandatory_options(options, "db", "builddb")
+    output= options.output
+    if not output:
+        _assume_dir("configure", options.dry_run)
+        output= os.path.join("configure","RELEASE")
+
+    builddb= builddb_from_json_file(options.builddb)
+    db= db_from_json_file(options.db)
+    lines= fullapprelease(options.supportdir \
+                             if options.supportdir else ".",
+                          args["BUILDTAG"],
+                          builddb,
+                          db,
+                          None,
+                          scan_aliases(options.alias),
+                          options.extra)
+    sumolib.utils.mk_text_file(output, lines,
+                               options.verbose, options.dry_run)
+
+def build_use(arguments, options):
+    """implement "build_use"."""
+    args= get_command_args(arguments,
+                           extra_optional="MODULES")
+    assert_mandatory_options(options, "db", "builddb")
+    buildtag= options.buildtag
+
+    modulespecs= []
+    if options.module:
+        modulespecs.extend(options.module)
+    if args.has_key("MODULES"):
+        modulespecs.extend(args["MODULES"])
+    if not modulespecs:
+        sys.exit("error: module specs missing")
+
+    try:
+        modulespecs_obj= sumolib.ModuleSpec.Specs.from_strings(
+                             modulespecs,
+                             mspecs_from_build(options.builddb),
+                             options.arch)
+    except ValueError, e:
+        sys.exit(str(e))
+
+    if options.dump_modules:
+        dump_modules(modulespecs_obj)
+        sys.exit(0)
+
+    output= options.output
+    if not output:
+        _assume_dir("configure", options.dry_run)
+        output= os.path.join("configure","RELEASE")
+
+    db= db_from_json_file(options.db)
+    builddb= builddb_from_json_file(options.builddb)
+
+    if options.dump_modules:
+        dump_modules(modulespecs_obj)
+        sys.exit(0)
+
+    lines= apprelease(options.supportdir \
+                         if options.supportdir else ".",
+                      buildtag,
+                      modulespecs_obj,
+                      builddb,
+                      db,
+                      scan_aliases(options.alias),
+                      options.extra)
+    sumolib.utils.mk_text_file(output, lines,
+                               options.verbose, options.dry_run)
+
+# -----------------------------------------------
 # command processing
 # -----------------------------------------------
 
@@ -1129,326 +1910,63 @@ def process_db(options, commands):
         sys.exit("unknown command: %s" % commands[0])
 
     if commands[0]=="convert":
-        args= get_command_args(commands[1:], ["SCANFILE"])
-        assert_mandatory_options(options, "db", "scandb")
-        if os.path.exists(options.db):
-            sys.exit("error, db file '%s' already exists" % options.db)
-        if os.path.exists(options.scandb):
-            sys.exit("error, scandb file '%s' already exists" % \
-                     options.scandb)
-        scandata= sumolib.JSON.loadfile(args["SCANFILE"])
-        deps= scandata["dependencies"]
-        repoinfo= scandata["repos"]
-        groups= scandata["groups"]
-        archs= scandata["archs"]
-        (buildcache, db)= create_database(deps, repoinfo, groups, archs,
-                                          options.dir_patch,
-                                          options.url_patch)
-        db.json_save(options.db, options.verbose, options.dry_run)
-        buildcache.json_save(options.scandb,
-                             options.verbose, options.dry_run)
+        db_convert(commands[1:], options)
         return
 
     if commands[0]=="convert-old":
-        args= get_command_args(commands[1:], ["OLD-DEPS-DB"])
-        assert_mandatory_options(options, "db", "scandb")
-        if os.path.exists(options.db):
-            sys.exit("error, db file '%s' already exists" % options.db)
-        if os.path.exists(options.scandb):
-            sys.exit("error, scandb file '%s' already exists" % \
-                     options.scandb)
-        old= sumolib.Databases.OldDependencies.from_json_file(
-                                                        args["OLD-DEPS-DB"],
-                                                        keep_locked=False)
-        (buildcache, db)= old.convert()
-        db.json_save(options.db, options.verbose, options.dry_run)
-        buildcache.json_save(options.scandb,
-                             options.verbose, options.dry_run)
+        db_convert_old(commands[1:], options)
         return
 
     if commands[0]=="appconvert":
-        args= get_command_args(commands[1:], ["SCANFILE"])
-        scandata= sumolib.JSON.loadfile(args["SCANFILE"])
-        deps= scandata["dependencies"]
-        repoinfo= scandata["repos"]
-        groups= scandata["groups"]
-        struc= create_app_data(deps, repoinfo, groups)
-        sumolib.JSON.dump(struc)
+        db_appconvert(options)
         return
 
     if commands[0]=="weight":
-        args= get_command_args(commands[1:], ["WEIGHT"],
-                               extra_mandatory= "MODULES")
-        assert_mandatory_options(options, "db")
-        try:
-            weight= int(args["WEIGHT"])
-        except ValueError, _:
-            sys.exit("error: weight must be an integer")
-        db= db_from_json_file(options.db,
-                keep_locked= not options.dumpdb and (not options.dry_run))
-        try:
-            modulespecs_obj= sumolib.ModuleSpec.Specs.from_strings(
-                                                            args["MODULES"],
-                                                            None)
-        except ValueError, e:
-            sys.exit(str(e))
-
-        if options.dump_modules:
-            dump_modules(modulespecs_obj)
-            sys.exit(0)
-        set_weight(db, weight, modulespecs_obj, options.trace)
-        if options.dumpdb:
-            db.json_print()
-        else:
-            db.json_save(options.db, options.verbose, options.dry_run)
-            # ^^^ does also unlock the file
+        db_weight(commands[1:], options)
         return
 
     if commands[0]=="filter":
-        args= get_command_args(commands[1:],
-                               extra_optional="MODULES")
-        assert_mandatory_options(options, "db")
-        modulespecs= []
-        if options.module:
-            modulespecs.extend(options.module)
-        if args.has_key("MODULES"):
-            modulespecs.extend(args["MODULES"])
-        if not modulespecs:
-            sys.exit("error: module specs missing")
-
-        db= db_from_json_file(options.db, keep_locked= False)
-        try:
-            modulespecs_obj= sumolib.ModuleSpec.Specs.from_strings(modulespecs,
-                                                            None,
-                                                            options.arch)
-        except ValueError, e:
-            sys.exit(str(e))
-
-        if options.dump_modules:
-            dump_modules(modulespecs_obj)
-            sys.exit(0)
-        db= db.partial_copy_by_modulespecs(modulespecs_obj)
-        db.json_print()
+        db_filter(commands[1:], options)
         return
 
     if commands[0]=="check":
-        assert_mandatory_options(options, "db")
-        get_command_args(commands[1:])
-        db = db_from_json_file(options.db,
-                                               keep_locked= False)
-        msg= db.check()
-        print "\n".join(msg)
+        db_check(commands[1:], options)
         return
 
     if commands[0]=="merge":
-        args= get_command_args(commands[1:], ["DB"])
-        assert_mandatory_options(options, "db")
-        db = db_from_json_file(options.db,
-                keep_locked= not options.dumpdb and (not options.dry_run))
-        db2= db_from_json_file(args["DB"])
-        db.merge(db2)
-        if options.dumpdb:
-            db.json_print()
-        else:
-            db.json_save(options.db, options.verbose, options.dry_run)
-            # ^^^ does also unlock the file
+        db_merge(commands[1:], options)
         return
 
     if commands[0]=="alias-add":
-        args= get_command_args(commands[1:],
-                               ["MODULE","DEPENDENCY","ALIAS"])
-        assert_mandatory_options(options, "db")
-        module_spec= sumolib.ModuleSpec.Spec.from_string(args["MODULE"])
-        try:
-            module_spec.assert_exact()
-        except ValueError, e:
-            sys.exit(str(e))
-        db = db_from_json_file(options.db,
-                keep_locked= not options.dumpdb and (not options.dry_run))
-        db.add_alias(module_spec.modulename,
-                     module_spec.versionname,
-                     args["ALIAS"], args["DEPENDENCY"])
-        if options.dumpdb:
-            db.json_print()
-        else:
-            db.json_save(options.db, options.verbose, options.dry_run)
-            # ^^^ does also unlock the file
+        db_alias_add(commands[1:], options)
         return
 
     if commands[0]=="dependency-add":
-        args= get_command_args(commands[1:], ["MODULE","DEPENDENCY"])
-        assert_mandatory_options(options, "db")
-        module_spec= sumolib.ModuleSpec.Spec.from_string(args["MODULE"])
-        try:
-            module_spec.assert_exact()
-        except ValueError, e:
-            sys.exit(str(e))
-        db = db_from_json_file(options.db,
-                keep_locked= not options.dumpdb and (not options.dry_run))
-        db.add_dependency(module_spec.modulename,
-                          module_spec.versionname,
-                          args["DEPENDENCY"])
-        if options.dumpdb:
-            db.json_print()
-        else:
-            db.json_save(options.db, options.verbose, options.dry_run)
-            # ^^^ does also unlock the file
+        db_dependency_add(commands[1:], options)
         return
 
     if commands[0]=="dependency-delete":
-        args= get_command_args(commands[1:], ["MODULE","DEPENDENCY"])
-        assert_mandatory_options(options, "db")
-        module_spec= sumolib.ModuleSpec.Spec.from_string(args["MODULE"])
-        if module_spec.no_version_spec():
-            sys.exit("module has no version")
-        try:
-            module_spec.assert_exact()
-        except ValueError, e:
-            sys.exit(str(e))
-        db = db_from_json_file(options.db,
-                keep_locked= not options.dumpdb and (not options.dry_run))
-        db.del_dependency(module_spec.modulename,
-                          module_spec.versionname,
-                          args["DEPENDENCY"])
-        if options.dumpdb:
-            db.json_print()
-        else:
-            db.json_save(options.db, options.verbose, options.dry_run)
-            # ^^^ does also unlock the file
+        db_dependency_delete(commands[1:], options)
         return
 
     if commands[0]=="cloneversion" or commands[0]=="replaceversion":
-        args= get_command_args(commands[1:],
-                               ["MODULE","OLD-VERSION","NEW-VERSION"],
-                               extra_optional="SOURCESPEC")
-        assert_mandatory_options(options, "db")
-        do_replace= (commands[0]=="replaceversion")
-        modulename= args["MODULE"]
-        sourcespec= args.get("SOURCESPEC")
-
-        db = db_from_json_file(options.db,
-                keep_locked= not options.dumpdb and (not options.dry_run))
-        try:
-            db.patch_version(modulename,
-                             args["OLD-VERSION"], args["NEW-VERSION"],
-                             do_replace)
-        except ValueError, e:
-            sys.exit(str(e))
-
-        if not sourcespec:
-            # guess tag from versionname
-            changed= db.set_source_spec_by_tag(modulename, args["NEW-VERSION"],
-                                               args["NEW-VERSION"])
-        else:
-            try:
-                source_spec_obj= \
-                    sumolib.repos.SourceSpec.from_string_sourcespec(sourcespec)
-            except ValueError, e:
-                sys.exit("Error: "+str(e))
-            changed= db.set_source_spec(modulename, args["NEW-VERSION"],
-                                        source_spec_obj)
-        print "Added module:"
-        report_db= db.partial_copy_by_list([(modulename, args["NEW-VERSION"])])
-        report_db.json_print()
-        if not changed:
-            print ("\nCAUTION: source specification of this module is "
-                   "identical with that of \n"
-                   "%s:%s, this is probably not what you want!") % \
-                   (modulename, args["OLD-VERSION"])
-        sumolib.utils.ask_abort("Proceed ? ", options.yes)
-        if options.dumpdb:
-            db.json_print()
-        else:
-            db.json_save(options.db, options.verbose, options.dry_run)
-            # ^^^ does also unlock the file
+        db_clone_replace_version(commands[0], commands[1:], options)
         return
 
     if commands[0]=="clonemodule":
-        args= get_command_args(commands[1:],
-                               ["OLD-MODULE","NEW-MODULE"],
-                               extra_optional="VERSIONS")
-        assert_mandatory_options(options, "db")
-        db = db_from_json_file(options.db,
-                keep_locked= not options.dumpdb and (not options.dry_run))
-        db.clonemodule(args["OLD-MODULE"], args["NEW-MODULE"],
-                       args.get("VERSIONS"))
-        if options.dumpdb:
-            db.json_print()
-        else:
-            db.json_save(options.db, options.verbose, options.dry_run)
-            # ^^^ does also unlock the file
+        db_clonemodule(commands[1:], options)
         return
 
     if commands[0]=="list":
-        get_command_args(commands[1:])
-        assert_mandatory_options(options, "db")
-        if len(commands)>1:
-            sys.exit("error: extra arguments following \"list\"")
-        db= db_from_json_file(options.db)
-        result= sorted(db.iter_modulenames())
-        sumolib.JSON.dump(result)
+        db_list(commands[1:], options)
         return
 
     if commands[0]=="shownewest" or commands[0]=="showall":
-        args= get_command_args(commands[1:],
-                               extra_optional="MODULES")
-        assert_mandatory_options(options, "db")
-        showall= (commands[0]=="showall")
-        db= db_from_json_file(options.db)
-
-        modulespecs= []
-        if options.module:
-            modulespecs.extend(options.module)
-        if args.has_key("MODULES"):
-            modulespecs.extend(args["MODULES"])
-        if not modulespecs:
-            modulespecs= list(db.iter_modulenames())
-
-        result= {}
-
-        try:
-            modulespecs_obj= sumolib.ModuleSpec.Specs.from_strings(modulespecs,
-                                                            None,
-                                                            options.arch)
-        except ValueError, e:
-            sys.exit(str(e))
-
-        if options.dump_modules:
-            dump_modules(modulespecs_obj)
-            sys.exit(0)
-        for modulespec in modulespecs_obj:
-            modulename= modulespec.modulename
-
-            versions= db.sorted_moduleversions(modulename,
-                                               options.arch, False)
-            if not versions: # no versions match criteria
-                continue
-            versions= [v for v in versions \
-                       if modulespec.test(v)]
-
-            if not showall:
-                result[modulename]= versions[0]
-            else:
-                result[modulename]= versions
-        sumolib.JSON.dump(result)
+        db_show_newest_all(commands[0], commands[1:], options)
         return
 
     if commands[0]=="find":
-        args= get_command_args(commands[1:], ["REGEXP"])
-        assert_mandatory_options(options, "db")
-        db= db_from_json_file(options.db)
-        if options.noignorecase:
-            rx_flags= 0
-        else:
-            rx_flags= re.IGNORECASE
-        rx= re.compile(args["REGEXP"], rx_flags)
-        results= db.search_modules(rx, options.arch)
-        if options.brief:
-            for (module,version) in results:
-                print "%s:%s" % (module,version)
-            return
-        newdb= db.partial_copy_by_list(results)
-        newdb.json_print()
+        db_find(commands[1:], options)
         return
 
 def process_build(options, commands):
@@ -1473,451 +1991,43 @@ def process_build(options, commands):
         options.extra= []
 
     if commands[0]=="list":
-        get_command_args(commands[1:])
-        assert_mandatory_options(options, "builddb")
-        builddb= builddb_from_json_file(options.builddb)
-        for buildtag in builddb.iter_builds():
-            print buildtag
+        build_list(commands[1:], options)
         return
 
     if commands[0]=="show":
-        args= get_command_args(commands[1:], ["BUILDTAG"])
-        assert_mandatory_options(options, "builddb")
-        if options.buildtag:
-            sys.exit("error: you cannot use --buildtag here")
-
-        builddb= builddb_from_json_file(options.builddb)
-        if not builddb.has_build_tag(args["BUILDTAG"]):
-            sys.exit("error: BUILDTAG \"%s\" not found" % \
-                     args["BUILDTAG"])
-        new_builddb= sumolib.Databases.Builddb()
-        new_builddb.add_build(builddb, args["BUILDTAG"])
-        new_builddb.json_print()
+        build_show(commands[1:], options)
         return
 
     if commands[0]=="state":
-        args= get_command_args(commands[1:], ["BUILDTAG"],
-                               optional_args=["NEW-STATE"])
-        if options.buildtag:
-            sys.exit("error: you cannot use --buildtag here")
-
-        assert_mandatory_options(options, "builddb")
-        if options.readonly:
-            sys.exit("--readonly forbids changing the state of a build")
-
-        builddb= builddb_from_json_file(options.builddb,
-                keep_locked= not options.dry_run)
-        if not builddb.has_build_tag(args["BUILDTAG"]):
-            # builddb __del__ method should remove lockfiles
-            sys.exit("error: BUILDTAG \"%s\" not found" % \
-                     args["BUILDTAG"])
-        if not args.get("NEW-STATE"):
-            print "%-20s : %s" % (args["BUILDTAG"],
-                                  builddb.state(args["BUILDTAG"]))
-        else:
-            try:
-                builddb.change_state(args["BUILDTAG"], args["NEW-STATE"])
-            except ValueError, e:
-                # builddb __del__ method should remove lockfiles
-                sys.exit(str(e))
-            builddb.json_save(options.builddb,
-                              options.verbose, options.dry_run)
-            # ^^^ does also unlock the file
+        build_state(commands[1:], options)
         return
 
     if commands[0]=="delete":
-        args= get_command_args(commands[1:], ["BUILDTAG"])
-        assert_mandatory_options(options, "builddb")
-        if options.readonly:
-            sys.exit("--readonly forbids deleting a support")
-
-        if options.supportdir:
-            os.chdir(options.supportdir)
-
-        builddb= builddb_from_json_file(options.builddb)
-        if not builddb.has_build_tag(args["BUILDTAG"]):
-            sys.exit("error: BUILDTAG \"%s\" not found" % \
-                     args["BUILDTAG"])
-        try:
-            delete_modules(builddb, args["BUILDTAG"],
-                           options.verbose, options.dry_run)
-        except ValueError, e:
-            sys.exit(str(e))
-        builddb.json_save(options.builddb,
-                          options.verbose, options.dry_run)
+        build_delete(commands[1:], options)
         return
 
     if commands[0]=="cleanup":
-        args= get_command_args(commands[1:], ["BUILDTAG"])
-        if options.readonly:
-            sys.exit("--readonly forbids cleaning up")
-
-        if options.supportdir:
-            os.chdir(options.supportdir)
-
-        cleanup_modules(args["BUILDTAG"], options.verbose, options.dry_run)
+        build_cleanup(commands[1:], options)
         return
 
     if commands[0]=="try":
-        args= get_command_args(commands[1:],
-                               extra_optional="MODULES")
-        assert_mandatory_options(options, "db", "builddb")
-
-        buildtag= options.buildtag
-
-        exclude_matcher= sumolib.utils.RegexpMatcher(options.exclude_states)
-
-        modulespecs= []
-        if options.module:
-            modulespecs.extend(options.module)
-        if args.has_key("MODULES"):
-            modulespecs.extend(args["MODULES"])
-        if not modulespecs:
-            sys.exit("error: module specs missing")
-
-        try:
-            modulespecs_obj= sumolib.ModuleSpec.Specs.from_strings(
-                                 modulespecs,
-                                 mspecs_from_build(options.builddb),
-                                 options.arch)
-        except ValueError, e:
-            sys.exit(str(e))
-
-        if options.dump_modules:
-            dump_modules(modulespecs_obj)
-            sys.exit(0)
-
-        db= db_from_json_file(options.db, keep_locked= False)
-        if not os.path.exists(options.builddb):
-            builddb= sumolib.Databases.Builddb()
-        else:
-            builddb= builddb_from_json_file(options.builddb,
-                                            keep_locked= False)
-
-        buildcache= init_buildcache(options.scandb,
-                                    builddb, db)
-
-        # ensure that each module is only mentioned once in the modulelist:
-        try:
-            modulespecs_obj.assert_unique()
-        except ValueError, e:
-            sys.exit(str(e))
-
-        modules_not_exact_spec= []
-        for spec in modulespecs_obj:
-            if not spec.is_exact_spec():
-                modules_not_exact_spec.append(spec.modulename)
-
-        # convert modulespecs to a set dict:
-        # { modulename1 : set(version1,version2),
-        #   modulename2 : set(version1,version2),
-        # }
-        try:
-            sets_dict= db.sets_dict(modulespecs_obj)
-        except ValueError, e:
-            sys.exit(str(e))
-
-        # add all missing dependencies:
-        added_modules= db.complete_sets_dict(sets_dict)
-
-        was_built= set()
-        needed_by_others= {}
-
-        for modulename in sets_dict.keys():
-            for versionname in sets_dict[modulename]:
-                if buildcache.was_built(modulename,versionname):
-                    was_built.add((modulename,versionname))
-                for depname in db.iter_dependencies(modulename, versionname):
-                    for dep_version in sets_dict[depname]:
-                        s= needed_by_others.setdefault((depname,dep_version),
-                                                       [])
-                        s.append((modulename,versionname,
-                                 buildcache.relation(modulename,versionname,
-                                                     depname, dep_version)))
-
-        # now build the report structure:
-        report= {}
-        for modulename in sets_dict.keys():
-            mdict= report.setdefault(modulename, {})
-            no_of_versions= len(sets_dict[modulename])
-            for versionname in sets_dict[modulename]:
-                d= {}
-                mdict[versionname]= d
-                d["built"]= (modulename,versionname) in was_built
-                l= needed_by_others.get((modulename,versionname))
-                if l is not None:
-                    dd= d.setdefault("dependents", {})
-                    depmods_versioncount= {}
-                    for (m,v,state) in l:
-                        depmods_versioncount.setdefault(m, 0)
-                        if state is None:
-                            state= "state: not tested"
-                        else:
-                            state= "state: %s" % state
-                        if no_of_versions>1:
-                            # do only apply the exclude_matcher when there is
-                            # more than ony possible version of module
-                            # 'modulename':
-                            if exclude_matcher.search(state):
-                                continue
-                        depmods_versioncount[m]+= 1
-                        dd["%s:%s" % (m,v)]= state
-                    if min(depmods_versioncount.values())==0:
-                        # all versions of a dependent were removed,
-                        # remove modulename:versionname completely:
-                        del mdict[versionname]
-            if not mdict:
-                sys.exit("error: your '--exclude-states' option removes "
-                         "*ALL* versions of module '%s'. You may change "
-                         "the REGEXP or specify an exact version "
-                         "for the module to avoid this error." % \
-                         modulename)
-
-        if modules_not_exact_spec:
-            print "Not all modules have exactly specified versions.",
-            print "These modules need an "
-            print "exact version specification:"
-            for m in sorted(modules_not_exact_spec):
-                versions= report[m].keys()
-                if len(versions)>1:
-                    print "    %s" % m
-                else:
-                    print "    %-20s -> suggested version: %s" % \
-                          (m,versions[0])
-            print
-
-        if added_modules:
-            print "Not all dependencies were included in module",
-            print "specifications, these modules"
-            print "have to be added:\n   ",
-            print "\n    ".join(sorted(added_modules))
-            print
-
-        if not options.brief:
-            if not modules_not_exact_spec and not added_modules:
-                # everything complete, show modules that are not needed by
-                # other modules:
-                needed_modules= set([m for (m,_) in needed_by_others.keys()])
-                not_needed_modules= \
-                        set(report.keys()).difference(needed_modules)
-                print "The following modules are not needed by other modules",
-                print "in your module"
-                print "specification:\n   ",
-                print "\n    ".join(sorted(not_needed_modules))
-                print
-            print "List of modules that fullfill the given "+\
-                  "module specification:"
-            sumolib.JSON.dump(report)
-
-        if buildtag is None:
-            if not options.buildtag_stem:
-                options.buildtag_stem= "AUTO"
-            buildtag= builddb.generate_buildtag(options.buildtag_stem)
-            print "Command 'new' would create build with tag '%s'\n" % \
-                  buildtag
-
-        if not modules_not_exact_spec and not added_modules:
-            print "Your module specifications are complete. You can use",
-            print "these with command"
-            print "'new' to create a new build."
-        else:
-            print "Your module specifications are still incomplete,",
-            print "command 'new' can not"
-            print "be used with these."
+        build_try(commands[1:], options)
         return
 
     if commands[0]=="new":
-        args= get_command_args(commands[1:],
-                               extra_optional="MODULES")
-        assert_mandatory_options(options, "db", "builddb")
-        if options.readonly:
-            sys.exit("--readonly forbids creating a new build")
-
-        buildtag= options.buildtag
-
-        modulespecs= []
-        if options.module:
-            modulespecs.extend(options.module)
-        if args.has_key("MODULES"):
-            modulespecs.extend(args["MODULES"])
-        if not modulespecs:
-            sys.exit("error: module specs missing")
-
-        db= db_from_json_file(options.db, keep_locked= False)
-
-        try:
-            modulespecs_obj= sumolib.ModuleSpec.Specs.from_strings(
-                                 modulespecs,
-                                 mspecs_from_build(options.builddb),
-                                 options.arch)
-        except ValueError, e:
-            sys.exit(str(e))
-
-        if options.dump_modules:
-            dump_modules(modulespecs_obj)
-            sys.exit(0)
-
-        try:
-            dist_dict= modulespecs_obj.to_dist_dict()
-        except ValueError, e:
-            sys.exit(str(e))
-        try:
-            db.assert_complete_modulelist(dist_dict)
-        except ValueError, e:
-            sys.exit(str(e))
-
-        if not os.path.exists(options.builddb):
-            builddb= sumolib.Databases.Builddb()
-        else:
-            builddb= builddb_from_json_file(options.builddb,
-                        keep_locked= not options.dry_run)
-        if buildtag is None:
-            if not options.buildtag_stem:
-                options.buildtag_stem= "AUTO"
-            buildtag= builddb.generate_buildtag(options.buildtag_stem)
-            sys.stderr.write("creating build with tag '%s'\n" % buildtag)
-        if builddb.has_build_tag(buildtag):
-            # builddb __del__ method should remove lockfiles
-            sys.exit("error: buildtag \"%s\" already taken" % buildtag)
-        # create a new build in builddb, initial state is "unstable":
-        builddb.new_build(buildtag, "unstable")
-        if options.supportdir:
-            os.chdir(options.supportdir)
-        # modifies builddb:
-        try:
-            create_modules(dist_dict, db, builddb, buildtag,
-                           options.extra,
-                           options.arch,
-                           options.no_checkout,
-                           options.verbose,
-                           options.dry_run)
-            if not options.no_checkout:
-                create_makefile(dist_dict, db, builddb, buildtag,
-                                options.verbose,
-                                options.dry_run)
-        except IOError, e:
-            db.unlock_file()
-            builddb.unlock_file()
-            raise
-
-        builddb.json_save(options.builddb, options.verbose, options.dry_run)
-        # ^^^ does also unlock the file
-        rmcleanup(buildtag)
-        if not options.no_make and not options.no_checkout:
-            call_make(options.builddb, buildtag,
-                      options.makeopts,
-                      options.verbose, options.dry_run)
+        build_new(commands[1:], options)
         return
+
     if commands[0]=="find":
-        args= get_command_args(commands[1:],
-                               extra_optional="MODULESPECS")
-        assert_mandatory_options(options, "db", "builddb")
-
-        modulespecs= []
-        if options.module:
-            modulespecs.extend(options.module)
-        if args.has_key("MODULESPECS"):
-            modulespecs.extend(args["MODULESPECS"])
-        if not modulespecs:
-            sys.exit("error: module specs missing")
-
-        try:
-            modulespecs_obj= sumolib.ModuleSpec.Specs.from_strings(
-                                 modulespecs,
-                                 mspecs_from_build(options.builddb),
-                                 options.arch)
-        except ValueError, e:
-            sys.exit(str(e))
-
-        db= db_from_json_file(options.db)
-        builddb= builddb_from_json_file(options.builddb)
-
-        if options.dump_modules:
-            dump_modules(modulespecs_obj)
-            sys.exit(0)
-        new_builddb= builddb.filter_by_modulespecs(modulespecs_obj, db)
-        if new_builddb.is_empty():
-            print "no matching buildtrees found"
-        else:
-            if options.brief:
-                for buildtag in builddb.iter_builds():
-                    print buildtag
-            else:
-                new_builddb.json_print()
+        build_find(commands[1:], options)
         return
+
     if commands[0]=="useall":
-        args= get_command_args(commands[1:], ["BUILDTAG"])
-        assert_mandatory_options(options, "db", "builddb")
-        if len(commands)>2:
-            sys.exit("error: extra arguments following \"%s\"" % commands[0])
-
-        output= options.output
-        if not output:
-            _assume_dir("configure", options.dry_run)
-            output= os.path.join("configure","RELEASE")
-
-        builddb= builddb_from_json_file(options.builddb)
-        db= db_from_json_file(options.db)
-        lines= fullapprelease(options.supportdir \
-                                 if options.supportdir else ".",
-                              args["BUILDTAG"],
-                              builddb,
-                              db,
-                              None,
-                              scan_aliases(options.alias),
-                              options.extra)
-        sumolib.utils.mk_text_file(output, lines,
-                                   options.verbose, options.dry_run)
+        build_useall(commands[1:], options)
         return
 
     if commands[0]=="use":
-        args= get_command_args(commands[1:],
-                               extra_optional="MODULES")
-        assert_mandatory_options(options, "db", "builddb")
-        buildtag= options.buildtag
-
-        modulespecs= []
-        if options.module:
-            modulespecs.extend(options.module)
-        if args.has_key("MODULES"):
-            modulespecs.extend(args["MODULES"])
-        if not modulespecs:
-            sys.exit("error: module specs missing")
-
-        if options.dump_modules:
-            dump_modules(modulespecs_obj)
-            sys.exit(0)
-
-        output= options.output
-        if not output:
-            _assume_dir("configure", options.dry_run)
-            output= os.path.join("configure","RELEASE")
-
-        db= db_from_json_file(options.db)
-        builddb= builddb_from_json_file(options.builddb)
-
-        try:
-            modulespecs_obj= sumolib.ModuleSpec.Specs.from_strings(
-                                 modulespecs,
-                                 mspecs_from_build(options.builddb),
-                                 options.arch)
-        except ValueError, e:
-            sys.exit(str(e))
-
-        if options.dump_modules:
-            dump_modules(modulespecs_obj)
-            sys.exit(0)
-
-        lines= apprelease(options.supportdir \
-                             if options.supportdir else ".",
-                          buildtag,
-                          modulespecs_obj,
-                          builddb,
-                          db,
-                          scan_aliases(options.alias),
-                          options.extra)
-        sumolib.utils.mk_text_file(output, lines,
-                                   options.verbose, options.dry_run)
+        build_use(commands[1:], options)
         return
 
 def process(options, commands):
