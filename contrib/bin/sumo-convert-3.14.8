@@ -130,7 +130,7 @@ fi
 
 # Write the sumo configuration file:
 
-sumo --no-default-config --buildtag-stem "$stem" --db $SUMODIR/database/DEPS.DB --builddb $SUMODIR/build/BUILDS.DB --supportdir $SUMODIR/build --#include $MODULES makeconfig DEFAULT
+sumo --no-default-config --buildtag-stem "$stem"  makeconfig sumo.config
 
 echo "A file '$MODULES' containing the module dependencies was created in "
 echo "directory 'configure'. You may review or modify that file."
