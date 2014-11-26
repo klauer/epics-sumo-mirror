@@ -924,6 +924,14 @@ Here is a short overview on command line options:
 ``--db DB``
     Define the name of the DB file. This option value is stored in the
     configuration file. 
+``--dbrepo REPOSITORY``
+    Define a REPOSITORY for the db file. REPOSITORY must consist of 'REPOTYPE
+    URL', REPOTYPE may be 'darcs', 'hg' or 'git'. Option --db must specify a
+    file path whose directory part will contain the repository for the db file.
+    Before reading the db file a 'pull' command will be executed. When the
+    file is changed, a 'commit' and a 'push' command will be executed. If the
+    repository doesn't exist the program tries to check out a working copy from
+    the given URL.",
 ``--builddb BUILDDB``
     Specify the :term:`BUILDDB` file. This option value is stored in the
     configuration file.

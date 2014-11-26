@@ -226,9 +226,28 @@ class Repo(object):
         tag= spec.get("tag")
         if tag is not None:
             cmd_l.extend(["-t", r"'^%s\s*$'" % tag])
+        cmd_l.append("-q")
         cmd_l.append(url)
         cmd_l.append(destdir)
         cmd= " ".join(cmd_l)
         sumolib.system.system(cmd, False, False, verbose, dry_run)
+    def commit(self, logmessage):
+        """commit changes."""
+        cmd="cd %s && darcs record -a -m '%s'" % (self.directory, logmessage)
+        (_,_)= sumolib.system.system(cmd,
+                                     True, False,
+                                     self.verbose, self.dry_run)
+    def push(self):
+        """push all changes changes."""
+        cmd="cd %s && darcs push -a %s" % (self.directory, self.remote_url)
+        (_,_)= sumolib.system.system(cmd,
+                                     True, False,
+                                     self.verbose, self.dry_run)
+    def pull(self):
+        """pull all changes changes."""
+        cmd="cd %s && darcs pull -a %s" % (self.directory, self.remote_url)
+        (_,_)= sumolib.system.system(cmd,
+                                     True, False,
+                                     self.verbose, self.dry_run)
 
 

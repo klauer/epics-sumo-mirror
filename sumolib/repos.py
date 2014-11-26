@@ -3,6 +3,8 @@
 
 # pylint: disable=C0103
 #                          Invalid name for type variable
+import os.path
+
 import sumolib.utils
 import sumolib.path
 import sumolib.tar
@@ -74,6 +76,8 @@ def repo_from_dir(directory, hints, verbose, dry_run):
 
 def checkout(repotype, spec, destdir, verbose, dry_run):
     """check out a working copy.
+
+    spec must be a dictionary with "url" and "tag" (optional).
     """
     # pylint: disable=R0913
     #                          Too many arguments
@@ -252,6 +256,16 @@ class SourceSpec(sumolib.JSON.Container):
             raise TypeError("error, 'url()' cannot be called for "
                             "SourceSpec objects of type '%s'" % type_)
         return self._set_get(pars, "url", new_val)
+    def spec_dict(self):
+        """return a dict with keys "url" and "tag"."""
+        if not self.is_repo():
+            raise TypeError("error, 'spec_dict()' can only be called for "
+                            "SourceSpec objects of type repository")
+        d= { "url": self.url()}
+        t= self.tag()
+        if t:
+            d["tag"]= t
+        return d
     def unpack(self):
         """return the internal dict, the sourcetype and the parameters.
         """
@@ -322,6 +336,63 @@ class SourceSpec(sumolib.JSON.Container):
             return False
         self_pars["tag"]= tag
         return True
+
+# ---------------------------------------------------------
+# ManagedRepo class
+
+class ManagedRepo(object):
+    """Object for managing data in a repository.
+
+    Do pull before read,
+    commit and push after write.
+    """
+    def __init__(self, repotype, spec, directory, verbose, dry_run):
+        """create the object.
+
+        spec must be a dictionary with "url" and "tag" (optional).
+
+        If repotype is None, create an empty object that basically
+        does nothing.
+        """
+        # pylint: disable=R0913
+        #                          Too many arguments
+        self.repotype= repotype
+        if repotype is None:
+            return
+        self.spec= spec
+        self.directory= directory
+        self.verbose= verbose
+        self.dry_run= dry_run
+        self.repo_obj= None
+    def prepare_read(self):
+        """do checkout or pull."""
+        if self.repotype is None:
+            return
+        if not os.path.isdir(self.directory):
+            # must check out
+            checkout(self.repotype, self.spec, self.directory,
+                     self.verbose, self.dry_run)
+            if not os.path.isdir(self.directory):
+                raise AssertionError("checkout of %s %s to %s failed" % \
+                                     (self.repotype,
+                                      repr(self.spec),
+                                      self.directory))
+        if not self.repo_obj:
+            self.repo_obj= \
+                repo_from_dir(self.directory, {}, self.verbose, self.dry_run)
+        # pylint: disable=E1103
+        #                          Instance of 'Repo' has no 'pull' member
+        self.repo_obj.pull()
+    def finish_write(self, message):
+        """do commit and push."""
+        if self.repotype is None:
+            return
+        if not self.repo_obj:
+            raise AssertionError("internal error, repo obj missing")
+        # pylint: disable=E1103
+        #                          Instance of 'Repo' has no '...' member
+        self.repo_obj.commit(message)
+        self.repo_obj.push()
 
 def _test():
     """perform internal tests."""
