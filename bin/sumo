@@ -41,7 +41,8 @@ assert __version__==sumolib.ModuleSpec.__version__
 assert __version__==sumolib.Databases.__version__
 assert __version__==sumolib.repos.__version__
 
-KNOWN_MAIN_COMMANDS=set(("edit","makeconfig","showconfig","db","build"))
+KNOWN_MAIN_COMMANDS=set(("lock","unlock","edit","makeconfig","showconfig",
+                         "db","build"))
 
 KNOWN_DB_COMMANDS=set(("alias-add", "appconvert", "check", "clonemodule",
                        "cloneversion", "convert", "convert-old",
@@ -2125,6 +2126,8 @@ def process(options, commands):
     #                          Too many branches
     # pylint: disable=R0915
     #                          Too many statements
+    # pylint: disable=R0911
+    #                          Too many return statements
     if not commands:
         print "command missing\n"
         print usage
@@ -2179,6 +2182,18 @@ def process(options, commands):
         config.save(commands[1], commands[2:])
         return
 
+    elif commands[0]=="lock":
+        if options.readonly:
+            sys.exit("--readonly forbids editing a database file")
+        args= get_command_args(commands[1:], ["FILE"])
+        sumolib.lock.lock_a_file(args["FILE"])
+        return
+    elif commands[0]=="unlock":
+        if options.readonly:
+            sys.exit("--readonly forbids editing a database file")
+        args= get_command_args(commands[1:], ["FILE"])
+        sumolib.lock.force_unlock_a_file(args["FILE"])
+        return
     elif commands[0]=="edit":
         if options.readonly:
             sys.exit("--readonly forbids editing a database file")
@@ -2240,6 +2255,8 @@ followed by a subcommand. These are the known maincommands:
   makeconfig         - generate a configuration file
   showconfig         - show which configuration files were loaded
   edit               - lock, then edit a file
+  lock               - just lock a file
+  unlock             - unlock a file
   db [subcommand]    - operation on the dependency database
   build [subcommand] - manage the build database and builds
 
@@ -2309,6 +2326,19 @@ specified, only options from this list are saved in the configuration file.
 showconfig {FILENAME}
 
 Show all the configuration files that were loaded.
+""",
+        "lock": """
+lock FILE
+
+Lock a FILE, then exit sumo. This is useful if you want to read or write a
+database file without sumo interfering. Don't forget to remove the lock later
+with the "unlock" command.
+""",
+        "unlock": """
+unlock FILE
+
+Unlock a FILE, then exit sumo. If you locked a database with "lock" before you
+should always unlock it later, otherwise sumo can't access the file.
 """,
         "edit": """
 edit FILE
