@@ -55,6 +55,16 @@ class Spec(object):
         if not self.versionname:
             return False
         return self.versionflag=="eq"
+    def assert_exact(self):
+        """raise ValueError exception if spec is not *exact*.
+
+        An exact module specification is a specification where for a module
+        there is exactly one version given.
+        """
+        if not self.is_exact_spec():
+            raise ValueError("error at specification '%s', module "
+                             "specification must be exact" % \
+                             self.to_string())
     @classmethod
     def from_string(cls, spec, default_archs= None):
         """create modulespec from a string.
