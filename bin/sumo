@@ -122,44 +122,6 @@ def _config_dir(build_tag, module_name, versionname, dry_run):
     return config_dir
 
 # -----------------------------------------------
-# buildtag handling
-# -----------------------------------------------
-
-def get_buildtag(options, commands, command_index,
-                 optional, check_conflict):
-    """get the buildtag from options or commands.
-
-    command_index:
-                   Index within commands where we expect
-                   the buildtag
-    optional:
-                   Allow that the buildtag is optional, return None if it
-                   is not given
-    check_conflict:
-                   Abort the program when the buildtag is given with both
-                   methods.
-
-    returns a tuple, either
-    ("option",TAG) or ("argument",TAG) or ("option",None)
-    """
-    o_buildtag= None
-    c_buildtag= None
-    if options.buildtag:
-        o_buildtag= options.buildtag
-    if len(commands)>=command_index+1:
-        c_buildtag= commands[command_index]
-    if not o_buildtag and not c_buildtag:
-        if optional:
-            return ("option",None)
-        sys.exit("error: buildtag missing")
-    if o_buildtag and c_buildtag and check_conflict:
-        sys.exit("error: buildtag given as option AND parameter")
-    if o_buildtag:
-        return ("option",o_buildtag)
-    return ("argument",c_buildtag)
-
-
-# -----------------------------------------------
 # load JSON files
 # -----------------------------------------------
 
@@ -1051,6 +1013,103 @@ def assert_mandatory_options(options, *opt_list):
         if not getattr(options, opt):
             sys.exit("--%s is mandatory here" % opt)
 
+def get_command_args(lst, mandatory_args=None,
+                     optional_args=None,
+                     extra_mandatory= None,
+                     extra_optional= None,
+                     debug=False):
+    """get a command.
+
+    extra_mandatory:
+        If given, extra arguments are required and stored under the given name
+        as a list.
+    extra_optional:
+        If given, extra arguments are allowed and stored under the given name
+        as a list.
+
+    Here are some examples:
+
+    >>> import pprint
+    >>>
+    >>> p=pprint.pprint
+    >>>
+    >>> def test(*args, **kwargs):
+          kwargs["debug"]= True
+    ...   pprint.pprint(get_command_args(*args, **kwargs))
+    ...
+    >>> test(["read","t.txt","verbose"],["cmd","file"],["mode"])
+    {'cmd': 'read', 'file': 't.txt', 'mode': 'verbose'}
+    >>> test(["read","t.txt"],["cmd","file"],["mode"])
+    {'cmd': 'read', 'file': 't.txt'}
+    >>> test(["read","t.txt","verbose","a1","a2"],["cmd","file"],["mode"])
+    error, extra arguments follow: a1 a2
+    None
+    >>> test(["read","t.txt","verbose","a1","a2"],["cmd","file"],["mode"],
+    ...      extra_mandatory="args")
+    {'args': ['a1', 'a2'], 'cmd': 'read', 'file': 't.txt', 'mode': 'verbose'}
+    >>> test(["read","t.txt","verbose","a1","a2"],["cmd","file"],["mode"],
+    ...      extra_optional="args")
+    {'args': ['a1', 'a2'], 'cmd': 'read', 'file': 't.txt', 'mode': 'verbose'}
+    >>> test(["read","t.txt","verbose"],["cmd","file"],["mode"],
+    ...      extra_mandatory="args")
+    error, mandatory argument args missing
+    None
+    >>> test(["read","t.txt","verbose"],["cmd","file"],["mode"],
+    ...      extra_optional="args")
+    {'cmd': 'read', 'file': 't.txt', 'mode': 'verbose'}
+    >>> test(["read"],["cmd","file"],["mode"])
+    error, mandatory argument missing: file
+    None
+    >>> test([],["cmd","file"],["mode"])
+    error, mandatory arguments missing: cmd file
+    None
+    """
+    # pylint: disable=R0913
+    #                          Too many arguments
+    # pylint: disable=R0912
+    #                          Too many branches
+    def ERR(msg):
+        if debug:
+            print msg
+            return
+        sys.exit(msg)
+    result= {}
+    if not mandatory_args:
+        mandatory_args= []
+    for i in xrange(len(mandatory_args)):
+        try:
+            result[mandatory_args[i]]= lst[i]
+        except IndexError, _:
+            missing= mandatory_args[i:]
+            ch= "s" if len(missing)>1 else ""
+            ERR("error, mandatory argument%s missing: %s" % \
+                (ch, " ".join(missing)))
+            return
+    start= len(mandatory_args)
+    if not optional_args:
+        optional_args= []
+    for i in xrange(len(optional_args)):
+        try:
+            result[optional_args[i]]= lst[i+start]
+        except IndexError, _:
+            break
+    rest= lst[len(mandatory_args)+len(optional_args):]
+    if not rest:
+        if extra_mandatory:
+            ERR("error, mandatory argument %s missing" % extra_mandatory)
+            return
+    else:
+        if extra_mandatory:
+            result[extra_mandatory]= rest
+        elif extra_optional:
+            result[extra_optional]= rest
+        else:
+            ch= "s" if len(rest)>1 else ""
+            ERR("error, extra argument%s follow: %s" % \
+                (ch, " ".join(rest)))
+            return
+    return result
+
 def process_db(options, commands):
     """do all the work.
     """
@@ -1070,16 +1129,14 @@ def process_db(options, commands):
         sys.exit("unknown command: %s" % commands[0])
 
     if commands[0]=="convert":
+        args= get_command_args(commands[1:], ["SCANFILE"])
         assert_mandatory_options(options, "db", "scandb")
-        if len(commands)!=2:
-            sys.exit("a filename must follow \"convert\"")
         if os.path.exists(options.db):
             sys.exit("error, db file '%s' already exists" % options.db)
         if os.path.exists(options.scandb):
             sys.exit("error, scandb file '%s' already exists" % \
                      options.scandb)
-        filename= commands[1]
-        scandata= sumolib.JSON.loadfile(filename)
+        scandata= sumolib.JSON.loadfile(args["SCANFILE"])
         deps= scandata["dependencies"]
         repoinfo= scandata["repos"]
         groups= scandata["groups"]
@@ -1093,17 +1150,16 @@ def process_db(options, commands):
         return
 
     if commands[0]=="convert-old":
+        args= get_command_args(commands[1:], ["OLD-DEPS-DB"])
         assert_mandatory_options(options, "db", "scandb")
-        if len(commands)!=2:
-            sys.exit("a filename must follow \"convert-old\"")
         if os.path.exists(options.db):
             sys.exit("error, db file '%s' already exists" % options.db)
         if os.path.exists(options.scandb):
             sys.exit("error, scandb file '%s' already exists" % \
                      options.scandb)
-        filename= commands[1]
-        old= sumolib.Databases.OldDependencies.from_json_file(filename,
-                                                           keep_locked=False)
+        old= sumolib.Databases.OldDependencies.from_json_file(
+                                                        args["OLD-DEPS-DB"],
+                                                        keep_locked=False)
         (buildcache, db)= old.convert()
         db.json_save(options.db, options.verbose, options.dry_run)
         buildcache.json_save(options.scandb,
@@ -1111,10 +1167,8 @@ def process_db(options, commands):
         return
 
     if commands[0]=="appconvert":
-        if len(commands)!=2:
-            sys.exit("a filename must follow \"convert\"")
-        filename= commands[1]
-        scandata= sumolib.JSON.loadfile(filename)
+        args= get_command_args(commands[1:], ["SCANFILE"])
+        scandata= sumolib.JSON.loadfile(args["SCANFILE"])
         deps= scandata["dependencies"]
         repoinfo= scandata["repos"]
         groups= scandata["groups"]
@@ -1123,22 +1177,19 @@ def process_db(options, commands):
         return
 
     if commands[0]=="weight":
+        args= get_command_args(commands[1:], ["WEIGHT"],
+                               extra_mandatory= "MODULES")
         assert_mandatory_options(options, "db")
-        if len(commands)<=1:
-            sys.exit("error: WEIGHT and module missing")
-        if len(commands)<=2:
-            sys.exit("error: no modules specified")
-        weight= commands[1]
-        modulespecs= commands[2:]
         try:
-            weight= int(weight)
+            weight= int(args["WEIGHT"])
         except ValueError, _:
             sys.exit("error: weight must be an integer")
         db= db_from_json_file(options.db,
                 keep_locked= not options.dumpdb and (not options.dry_run))
         try:
-            modulespecs_obj= sumolib.ModuleSpec.Specs.from_strings(modulespecs,
-                                                                None)
+            modulespecs_obj= sumolib.ModuleSpec.Specs.from_strings(
+                                                            args["MODULES"],
+                                                            None)
         except ValueError, e:
             sys.exit(str(e))
 
@@ -1154,12 +1205,14 @@ def process_db(options, commands):
         return
 
     if commands[0]=="filter":
+        args= get_command_args(commands[1:],
+                               extra_optional="MODULES")
         assert_mandatory_options(options, "db")
         modulespecs= []
         if options.module:
             modulespecs.extend(options.module)
-        if len(commands)>1:
-            modulespecs.extend(commands[1:])
+        if args.has_key("MODULES"):
+            modulespecs.extend(args["MODULES"])
         if not modulespecs:
             sys.exit("error: module specs missing")
 
@@ -1180,8 +1233,7 @@ def process_db(options, commands):
 
     if commands[0]=="check":
         assert_mandatory_options(options, "db")
-        if len(commands)>1:
-            sys.exit("error: extra arguments following \"check\"")
+        get_command_args(commands[1:])
         db = db_from_json_file(options.db,
                                                keep_locked= False)
         msg= db.check()
@@ -1189,12 +1241,11 @@ def process_db(options, commands):
         return
 
     if commands[0]=="merge":
+        args= get_command_args(commands[1:], ["DB"])
         assert_mandatory_options(options, "db")
-        if len(commands)!=2:
-            sys.exit("exactly one filename must follow \"merge\"")
         db = db_from_json_file(options.db,
                 keep_locked= not options.dumpdb and (not options.dry_run))
-        db2= db_from_json_file(commands[1])
+        db2= db_from_json_file(args["DB"])
         db.merge(db2)
         if options.dumpdb:
             db.json_print()
@@ -1204,17 +1255,19 @@ def process_db(options, commands):
         return
 
     if commands[0]=="alias-add":
+        args= get_command_args(commands[1:],
+                               ["MODULE","DEPENDENCY","ALIAS"])
         assert_mandatory_options(options, "db")
-        if len(commands)<4:
-            sys.exit("Three arguments must follow \"%s\"" % \
-                     commands[0])
-        module_spec= sumolib.ModuleSpec.Spec.from_string(commands[1])
-        (depname,dep_alias)= commands[2:4]
+        module_spec= sumolib.ModuleSpec.Spec.from_string(args["MODULE"])
+        try:
+            module_spec.assert_exact()
+        except ValueError, e:
+            sys.exit(str(e))
         db = db_from_json_file(options.db,
                 keep_locked= not options.dumpdb and (not options.dry_run))
         db.add_alias(module_spec.modulename,
                      module_spec.versionname,
-                     dep_alias, depname)
+                     args["ALIAS"], args["DEPENDENCY"])
         if options.dumpdb:
             db.json_print()
         else:
@@ -1223,17 +1276,18 @@ def process_db(options, commands):
         return
 
     if commands[0]=="dependency-add":
+        args= get_command_args(commands[1:], ["MODULE","DEPENDENCY"])
         assert_mandatory_options(options, "db")
-        if len(commands)<3:
-            sys.exit("Two arguments must follow \"%s\"" % \
-                     commands[0])
-        module_spec= sumolib.ModuleSpec.Spec.from_string(commands[1])
-        dep        = commands[2]
+        module_spec= sumolib.ModuleSpec.Spec.from_string(args["MODULE"])
+        try:
+            module_spec.assert_exact()
+        except ValueError, e:
+            sys.exit(str(e))
         db = db_from_json_file(options.db,
                 keep_locked= not options.dumpdb and (not options.dry_run))
         db.add_dependency(module_spec.modulename,
                           module_spec.versionname,
-                          dep)
+                          args["DEPENDENCY"])
         if options.dumpdb:
             db.json_print()
         else:
@@ -1242,20 +1296,20 @@ def process_db(options, commands):
         return
 
     if commands[0]=="dependency-delete":
+        args= get_command_args(commands[1:], ["MODULE","DEPENDENCY"])
         assert_mandatory_options(options, "db")
-        if len(commands)<3:
-            sys.exit("Two arguments must follow \"%s\"" % \
-                     commands[0])
-        module_spec= sumolib.ModuleSpec.Spec.from_string(commands[1])
-        dep        = commands[2]
+        module_spec= sumolib.ModuleSpec.Spec.from_string(args["MODULE"])
         if module_spec.no_version_spec():
             sys.exit("module has no version")
-
+        try:
+            module_spec.assert_exact()
+        except ValueError, e:
+            sys.exit(str(e))
         db = db_from_json_file(options.db,
                 keep_locked= not options.dumpdb and (not options.dry_run))
         db.del_dependency(module_spec.modulename,
                           module_spec.versionname,
-                          dep)
+                          args["DEPENDENCY"])
         if options.dumpdb:
             db.json_print()
         else:
@@ -1264,45 +1318,43 @@ def process_db(options, commands):
         return
 
     if commands[0]=="cloneversion" or commands[0]=="replaceversion":
+        args= get_command_args(commands[1:],
+                               ["MODULE","OLD-VERSION","NEW-VERSION"],
+                               extra_optional="SOURCESPEC")
         assert_mandatory_options(options, "db")
         do_replace= (commands[0]=="replaceversion")
-        if len(commands)<4:
-            sys.exit("at least three arguments must follow \"%s\"" % \
-                     commands[0])
-        (modulename, oldversion, newversion)= commands[1:4]
-        if len(commands)<=4:
-            sourcespec= None
-        else:
-            sourcespec= commands[4:]
+        modulename= args["MODULE"]
+        sourcespec= args.get("SOURCESPEC")
 
         db = db_from_json_file(options.db,
                 keep_locked= not options.dumpdb and (not options.dry_run))
         try:
-            db.patch_version(modulename, oldversion, newversion,
+            db.patch_version(modulename,
+                             args["OLD-VERSION"], args["NEW-VERSION"],
                              do_replace)
         except ValueError, e:
             sys.exit(str(e))
 
         if not sourcespec:
             # guess tag from versionname
-            changed= db.set_source_spec_by_tag(modulename, newversion,
-                                               newversion)
+            changed= db.set_source_spec_by_tag(modulename, args["NEW-VERSION"],
+                                               args["NEW-VERSION"])
         else:
             try:
                 source_spec_obj= \
                     sumolib.repos.SourceSpec.from_string_sourcespec(sourcespec)
             except ValueError, e:
                 sys.exit("Error: "+str(e))
-            changed= db.set_source_spec(modulename, newversion,
+            changed= db.set_source_spec(modulename, args["NEW-VERSION"],
                                         source_spec_obj)
         print "Added module:"
-        report_db= db.partial_copy_by_list([(modulename, newversion)])
+        report_db= db.partial_copy_by_list([(modulename, args["NEW-VERSION"])])
         report_db.json_print()
         if not changed:
             print ("\nCAUTION: source specification of this module is "
                    "identical with that of \n"
                    "%s:%s, this is probably not what you want!") % \
-                   (modulename, oldversion)
+                   (modulename, args["OLD-VERSION"])
         sumolib.utils.ask_abort("Proceed ? ", options.yes)
         if options.dumpdb:
             db.json_print()
@@ -1312,15 +1364,14 @@ def process_db(options, commands):
         return
 
     if commands[0]=="clonemodule":
+        args= get_command_args(commands[1:],
+                               ["OLD-MODULE","NEW-MODULE"],
+                               extra_optional="VERSIONS")
         assert_mandatory_options(options, "db")
-        if len(commands)<3:
-            sys.exit("at least two arguments must follow \"%s\"" % \
-                     commands[0])
-        (oldmodule, newodule)= commands[1:3]
-        versions= commands[3:]
         db = db_from_json_file(options.db,
                 keep_locked= not options.dumpdb and (not options.dry_run))
-        db.clonemodule(oldmodule, newodule, versions)
+        db.clonemodule(args["OLD-MODULE"], args["NEW-MODULE"],
+                       args.get("VERSIONS"))
         if options.dumpdb:
             db.json_print()
         else:
@@ -1329,6 +1380,7 @@ def process_db(options, commands):
         return
 
     if commands[0]=="list":
+        get_command_args(commands[1:])
         assert_mandatory_options(options, "db")
         if len(commands)>1:
             sys.exit("error: extra arguments following \"list\"")
@@ -1338,6 +1390,8 @@ def process_db(options, commands):
         return
 
     if commands[0]=="shownewest" or commands[0]=="showall":
+        args= get_command_args(commands[1:],
+                               extra_optional="MODULES")
         assert_mandatory_options(options, "db")
         showall= (commands[0]=="showall")
         db= db_from_json_file(options.db)
@@ -1345,9 +1399,8 @@ def process_db(options, commands):
         modulespecs= []
         if options.module:
             modulespecs.extend(options.module)
-        if len(commands)>1:
-            modulespecs.extend(commands[1:])
-
+        if args.has_key("MODULES"):
+            modulespecs.extend(args["MODULES"])
         if not modulespecs:
             modulespecs= list(db.iter_modulenames())
 
@@ -1381,16 +1434,14 @@ def process_db(options, commands):
         return
 
     if commands[0]=="find":
+        args= get_command_args(commands[1:], ["REGEXP"])
         assert_mandatory_options(options, "db")
-        if len(commands)<=1:
-            sys.exit("error: REGEXP missing")
         db= db_from_json_file(options.db)
-        regexp= commands[1]
         if options.noignorecase:
             rx_flags= 0
         else:
             rx_flags= re.IGNORECASE
-        rx= re.compile(regexp, rx_flags)
+        rx= re.compile(args["REGEXP"], rx_flags)
         results= db.search_modules(rx, options.arch)
         if options.brief:
             for (module,version) in results:
@@ -1422,64 +1473,50 @@ def process_build(options, commands):
         options.extra= []
 
     if commands[0]=="list":
+        get_command_args(commands[1:])
         assert_mandatory_options(options, "builddb")
-        if len(commands)>1:
-            sys.exit("error: extra arguments following \"%s\"" % commands[0])
         builddb= builddb_from_json_file(options.builddb)
         for buildtag in builddb.iter_builds():
             print buildtag
         return
 
     if commands[0]=="show":
+        args= get_command_args(commands[1:], ["BUILDTAG"])
         assert_mandatory_options(options, "builddb")
-        if len(commands)>2:
-            sys.exit("error: extra arguments following \"%s\"" % commands[0])
-
-        (_,buildtag)= get_buildtag(options, commands,
-                                   command_index=1,
-                                   optional= False,
-                                   check_conflict= True)
+        if options.buildtag:
+            sys.exit("error: you cannot use --buildtag here")
 
         builddb= builddb_from_json_file(options.builddb)
-        if not builddb.has_build_tag(buildtag):
-            sys.exit("error: buildtag \"%s\" not found" % buildtag)
+        if not builddb.has_build_tag(args["BUILDTAG"]):
+            sys.exit("error: BUILDTAG \"%s\" not found" % \
+                     args["BUILDTAG"])
         new_builddb= sumolib.Databases.Builddb()
-        new_builddb.add_build(builddb, buildtag)
+        new_builddb.add_build(builddb, args["BUILDTAG"])
         new_builddb.json_print()
         return
 
     if commands[0]=="state":
+        args= get_command_args(commands[1:], ["BUILDTAG"],
+                               optional_args=["NEW-STATE"])
+        if options.buildtag:
+            sys.exit("error: you cannot use --buildtag here")
+
         assert_mandatory_options(options, "builddb")
         if options.readonly:
             sys.exit("--readonly forbids changing the state of a build")
 
-        if len(commands)>3:
-            sys.exit("error: extra arguments following \"%s\"" % commands[0])
-
-        (buildtag_from,buildtag)= get_buildtag(options, commands,
-                                               command_index=1,
-                                               optional= False,
-                                               check_conflict= False)
-        if buildtag_from=="option":
-            state_idx= 1
-        else:
-            state_idx= 2
-
-        if len(commands)<=state_idx:
-            new_state= None
-        else:
-            new_state= commands[state_idx]
-
         builddb= builddb_from_json_file(options.builddb,
                 keep_locked= not options.dry_run)
-        if not builddb.has_build_tag(buildtag):
+        if not builddb.has_build_tag(args["BUILDTAG"]):
             # builddb __del__ method should remove lockfiles
-            sys.exit("error: buildtag \"%s\" not found" % buildtag)
-        if not new_state:
-            print "%-20s : %s" % (buildtag, builddb.state(buildtag))
+            sys.exit("error: BUILDTAG \"%s\" not found" % \
+                     args["BUILDTAG"])
+        if not args.get("NEW-STATE"):
+            print "%-20s : %s" % (args["BUILDTAG"],
+                                  builddb.state(args["BUILDTAG"]))
         else:
             try:
-                builddb.change_state(buildtag, new_state)
+                builddb.change_state(args["BUILDTAG"], args["NEW-STATE"])
             except ValueError, e:
                 # builddb __del__ method should remove lockfiles
                 sys.exit(str(e))
@@ -1489,25 +1526,20 @@ def process_build(options, commands):
         return
 
     if commands[0]=="delete":
+        args= get_command_args(commands[1:], ["BUILDTAG"])
         assert_mandatory_options(options, "builddb")
         if options.readonly:
             sys.exit("--readonly forbids deleting a support")
-        if len(commands)>2:
-            sys.exit("error: extra arguments following \"%s\"" % commands[0])
-
-        (_,buildtag)= get_buildtag(options, commands,
-                                   command_index=1,
-                                   optional= False,
-                                   check_conflict= True)
 
         if options.supportdir:
             os.chdir(options.supportdir)
 
         builddb= builddb_from_json_file(options.builddb)
-        if not builddb.has_build_tag(buildtag):
-            sys.exit("error: buildtag \"%s\" not found" % buildtag)
+        if not builddb.has_build_tag(args["BUILDTAG"]):
+            sys.exit("error: BUILDTAG \"%s\" not found" % \
+                     args["BUILDTAG"])
         try:
-            delete_modules(builddb, buildtag,
+            delete_modules(builddb, args["BUILDTAG"],
                            options.verbose, options.dry_run)
         except ValueError, e:
             sys.exit(str(e))
@@ -1516,26 +1548,21 @@ def process_build(options, commands):
         return
 
     if commands[0]=="cleanup":
+        args= get_command_args(commands[1:], ["BUILDTAG"])
         if options.readonly:
             sys.exit("--readonly forbids cleaning up")
-        if len(commands)>2:
-            sys.exit("error: extra arguments following \"%s\"" % commands[0])
 
-        (_,buildtag)= get_buildtag(options, commands,
-                                   command_index=1,
-                                   optional= False,
-                                   check_conflict= True)
         if options.supportdir:
             os.chdir(options.supportdir)
 
-        cleanup_modules(buildtag, options.verbose, options.dry_run)
+        cleanup_modules(args["BUILDTAG"], options.verbose, options.dry_run)
         return
 
     if commands[0]=="try":
+        args= get_command_args(commands[1:],
+                               extra_optional="MODULES")
         assert_mandatory_options(options, "db", "builddb")
 
-        # this command can no longer work this way,
-        # it has to be re-implemented
         buildtag= options.buildtag
 
         exclude_matcher= sumolib.utils.RegexpMatcher(options.exclude_states)
@@ -1543,8 +1570,8 @@ def process_build(options, commands):
         modulespecs= []
         if options.module:
             modulespecs.extend(options.module)
-        if len(commands)>1:
-            modulespecs.extend(commands[1:])
+        if args.has_key("MODULES"):
+            modulespecs.extend(args["MODULES"])
         if not modulespecs:
             sys.exit("error: module specs missing")
 
@@ -1700,6 +1727,8 @@ def process_build(options, commands):
         return
 
     if commands[0]=="new":
+        args= get_command_args(commands[1:],
+                               extra_optional="MODULES")
         assert_mandatory_options(options, "db", "builddb")
         if options.readonly:
             sys.exit("--readonly forbids creating a new build")
@@ -1709,8 +1738,8 @@ def process_build(options, commands):
         modulespecs= []
         if options.module:
             modulespecs.extend(options.module)
-        if len(commands)>1:
-            modulespecs.extend(commands[1:])
+        if args.has_key("MODULES"):
+            modulespecs.extend(args["MODULES"])
         if not modulespecs:
             sys.exit("error: module specs missing")
 
@@ -1780,13 +1809,15 @@ def process_build(options, commands):
                       options.verbose, options.dry_run)
         return
     if commands[0]=="find":
+        args= get_command_args(commands[1:],
+                               extra_optional="MODULESPECS")
         assert_mandatory_options(options, "db", "builddb")
 
         modulespecs= []
         if options.module:
             modulespecs.extend(options.module)
-        if len(commands)>1:
-            modulespecs.extend(commands[1:])
+        if args.has_key("MODULESPECS"):
+            modulespecs.extend(args["MODULESPECS"])
         if not modulespecs:
             sys.exit("error: module specs missing")
 
@@ -1815,14 +1846,10 @@ def process_build(options, commands):
                 new_builddb.json_print()
         return
     if commands[0]=="useall":
+        args= get_command_args(commands[1:], ["BUILDTAG"])
         assert_mandatory_options(options, "db", "builddb")
         if len(commands)>2:
             sys.exit("error: extra arguments following \"%s\"" % commands[0])
-
-        (_,buildtag)= get_buildtag(options, commands,
-                                   command_index=1,
-                                   optional= False,
-                                   check_conflict= True)
 
         output= options.output
         if not output:
@@ -1833,7 +1860,7 @@ def process_build(options, commands):
         db= db_from_json_file(options.db)
         lines= fullapprelease(options.supportdir \
                                  if options.supportdir else ".",
-                              buildtag,
+                              args["BUILDTAG"],
                               builddb,
                               db,
                               None,
@@ -1844,14 +1871,16 @@ def process_build(options, commands):
         return
 
     if commands[0]=="use":
+        args= get_command_args(commands[1:],
+                               extra_optional="MODULES")
         assert_mandatory_options(options, "db", "builddb")
         buildtag= options.buildtag
 
         modulespecs= []
         if options.module:
             modulespecs.extend(options.module)
-        if len(commands)>1:
-            modulespecs.extend(commands[1:])
+        if args.has_key("MODULES"):
+            modulespecs.extend(args["MODULES"])
         if not modulespecs:
             sys.exit("error: module specs missing")
 
@@ -1914,7 +1943,7 @@ def process(options, commands):
                 ENV_CONFIG,
                 ( "#include", "arch", "alias", "builddb", "buildtag_stem",
                   "db", "extra", "makeopts", "module", "progress",
-                  "readonly", "scandb", "dir_patch", "url_patch", 
+                  "readonly", "scandb", "dir_patch", "url_patch",
                   "supportdir", "verbose"))
 
     try:
@@ -2376,6 +2405,8 @@ def main():
     parse the command-line options and perform the command
     """
     # command-line options and command-line help:
+    # pylint: disable=R0915
+    #                          Too many statements
 
     parser = OptionParser(usage=usage,
                           version="%%prog %s" % __version__,
