@@ -448,7 +448,7 @@ def process(options, commands):
     config= sumolib.Config.ConfigFile.from_optionlist(
                 config_name,
                 ENV_CONFIG,
-                ( "#include",
+                ( "#preload","#opt-preload","#postload","#opt-postload",
                   "dir", "exclude_deps", "exclude_path", "group_basedir",
                   "hint", "ignore_changes", "ignore_name", "missing_repo",
                   "missing_tag", "progress",
@@ -653,16 +653,43 @@ def main():
                             "that have the form \"module:version\").",
                       metavar="OPTIONNAME"
                       )
-    parser.add_option("--#include",
+    parser.add_option("--#preload",
                       action="append",
                       type="string",
-                      help="Specify a an '#include' directive in the "
-                           "configuration file.  This option has only a "
+                      help="Specify a an '#preload' directive in the "
+                           "configuration file. This option has only a "
                            "meaning if a configuration file is created with "
-                           "the 'makeconfig' command. '#include' means that "
-                           "the following file(s) are included before the "
+                           "the 'makeconfig' command. '#preload' means that "
+                           "the following file(s) are loaded before the "
                            "rest of the configuration file. ",
-                      metavar="INCLUDEFILES"
+                      metavar="FILES"
+                      )
+    parser.add_option("--#opt-preload",
+                      action="append",
+                      type="string",
+                      help="This option does the same as --#preload but "
+                           "the file loading is optional. If they do not "
+                           "exist the program continues without an error. ",
+                      metavar="FILES"
+                      )
+    parser.add_option("--#postload",
+                      action="append",
+                      type="string",
+                      help="Specify a an '#postload' directive in the "
+                           "configuration file. This option has only a "
+                           "meaning if a configuration file is created with "
+                           "the 'makeconfig' command. '#postload' means that "
+                           "the following file(s) are loaded after the "
+                           "rest of the configuration file. ",
+                      metavar="FILES"
+                      )
+    parser.add_option("--#opt-postload",
+                      action="append",
+                      type="string",
+                      help="This option does the same as --#postload but "
+                           "the file loading is optional. If they do not "
+                           "exist the program continues without an error. ",
+                      metavar="FILES"
                       )
     parser.add_option("-d", "--dir",
                       action="append",

@@ -27,7 +27,7 @@ CONFIG=$ME-CONFIG.tmp
 MODULES=$ME-MODULES.tmp
 
 # create config file:
-$SUMO --no-default-config --#include $MODULES --arch vxWorks-68040 --arch vxWorks-ppc603 --db DEPS.DB --progress --scandb SCAN -D 'r"^/srv/csr/Epics",r"rcsadm@aragon.acc.bessy.de:/opt/Epics"' --verbose makeconfig $CONFIG
+$SUMO --no-default-config --#preload $MODULES --arch vxWorks-68040 --arch vxWorks-ppc603 --db DEPS.DB --progress --scandb SCAN -D 'r"^/srv/csr/Epics",r"rcsadm@aragon.acc.bessy.de:/opt/Epics"' --verbose makeconfig $CONFIG
 
 echo "generated config file:"
 cat $CONFIG

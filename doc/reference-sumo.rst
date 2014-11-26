@@ -556,6 +556,27 @@ The config option
 After the configuration files from default paths were read the program reads
 the all configuration files specified by the "-c" or "--config" option.
 
+Specify the loading of other files
+::::::::::::::::::::::::::::::::::
+
+In a configuration file you can specify names of other configuration files that
+can or must be loaded. These files are merged as described above.
+
+There are 4 special keys in the configuration file that are used to specify
+other files:
+
+-  #preload 
+-  #opt-preload
+-  #postload
+-  #opt-postload
+
+The value of each of these keys must be a list of strings that specify the
+filenames. The preload commands load the files *before* the rest of the
+configuration file, the postload command load the files *after* the
+configuration file. The opt- keys are used to specify *optional* files, it is
+not an error if these files don't exist. Note that the loaded files may also
+contain one or more of the load keys in the list above.
+
 Commands
 --------
 
@@ -933,11 +954,22 @@ Here is a short overview on command line options:
     list is the sum of both lists where it is ensured that for all elements the
     string up to the first colon ":" is unique (this is usefule for module
     specifications that have the form "module:version").
-``--#include FILE`` 
-    Specify a an '#include' directive in the configuration file.  This option
+``--#preload FILES`` 
+    Specify a an '#preload' directive in the configuration file. This option
     has only a meaning if a configuration file is created with the 'makeconfig'
-    command. '#include' means that the following file(s) are included before
-    the rest of the configuration file.
+    command. '#preload' means that the following file(s) are loaded before the
+    rest of the configuration file.
+``--#opt-preload FILES`` 
+    This option does the same as --#preload but the file loading is optional.
+    If they do not exist the program continues without an error.
+``--#postload FILES`` 
+    Specify a an '#postload' directive in the configuration file. This option
+    has only a meaning if a configuration file is created with the 'makeconfig'
+    command. '#postload' means that the following file(s) are loaded after the
+    rest of the configuration file.
+``--#opt-postload FILES`` 
+    This option does the same as --#postload but the file loading is optional.
+    If they do not exist the program continues without an error.
 ``--db DB``
     Define the name of the DB file. This option value is stored in the
     configuration file. 

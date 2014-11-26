@@ -100,23 +100,38 @@ class ConfigFile(object):
                 self._dict[key].extend(val)
             else:
                 self._dict[key]= val
-    def _load_file(self, filename):
+    def _load_file(self, filename, must_exist):
         """load filename.
 
         Note that the special key "#include" means that another config file is
         included much as with the #include directive in C.
         """
+        def _load_lst(dict_, keys):
+            """load lists from a dict."""
+            l= []
+            for k in keys:
+                v= dict_.get(k)
+                if not v:
+                    continue
+                l.extend(v)
+                del dict_[k]
+            return l
         if not os.path.exists(filename):
+            if not must_exist:
+                return
             raise IOError("error: file \"%s\" doesn't exist" % filename)
         data= sumolib.JSON.loadfile(filename)
         # pylint: disable=E1103
         #                     Instance of 'bool' has no 'items' member
-        includefiles= data.get("#include")
-        if includefiles:
-            for f in includefiles:
-                self._load_file(f)
-            del data["#include"]
+        for f in _load_lst(data, ["#include", "#preload"]):
+            self._load_file(f, must_exist= True)
+        for f in _load_lst(data, ["#opt-preload"]):
+            self._load_file(f, must_exist= False)
         self._merge(data)
+        for f in _load_lst(data, ["#postload"]):
+            self._load_file(f, must_exist= True)
+        for f in _load_lst(data, ["#opt-postload"]):
+            self._load_file(f, must_exist= False)
     def paths(self):
         """return the list of files that should be loaded or were loaded."""
         return self._paths
@@ -127,7 +142,7 @@ class ConfigFile(object):
                 if os.path.isfile(f):
                     self._paths.append(f)
         for filename in self._paths:
-            self._load_file(filename)
+            self._load_file(filename, must_exist= True)
     def save(self, filename, keys):
         """dump in json format"""
         # do not include "None" values:
@@ -190,10 +205,13 @@ class ConfigFile(object):
             list_merge_opts_set= set(list_merge_opts)
         # copy from option_obj to self:
         for opt in self._dict.keys():
-            if not hasattr(option_obj, opt):
+            # in the option object, "-" in option names is always
+            # replaced with "_":
+            oobj_opt= opt.replace("-", "_")
+            if not hasattr(option_obj, oobj_opt):
                 raise AssertionError(
                         "ERROR: key '%s' not in the option object" % opt)
-            val= getattr(option_obj, opt)
+            val= getattr(option_obj, oobj_opt)
             if val is not None:
                 existing= self._dict.get(opt)
                 if existing is None:
@@ -206,11 +224,12 @@ class ConfigFile(object):
 
         # copy from self to option_obj:
         for (opt, val) in self._dict.items():
-            if not hasattr(option_obj, opt):
+            oobj_opt= opt.replace("-", "_")
+            if not hasattr(option_obj, oobj_opt):
                 raise AssertionError(
                         "ERROR: key '%s' not in the option object" % opt)
             if val is not None:
-                setattr(option_obj, opt, val)
+                setattr(option_obj, oobj_opt, val)
 
 def _test():
     """perform internal tests."""

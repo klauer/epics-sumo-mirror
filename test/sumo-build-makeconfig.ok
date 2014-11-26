@@ -1,6 +1,6 @@
 generated config file:
 {
-    "#include": [
+    "#preload": [
         "sumo-build-makeconfig-MODULES.tmp"
     ],
     "alias": [
