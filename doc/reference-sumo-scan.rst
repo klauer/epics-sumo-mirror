@@ -259,8 +259,8 @@ Commands
 
 This is a list of all commands:
 
-makeconfig [FILENAME] {OPTIONNAMES}
-+++++++++++++++++++++++++++++++++++
+makeconfig FILENAME [OPTIONNAMES]
++++++++++++++++++++++++++++++++++
 
 Create a new configuration file from the options read from configuration files
 and options from the command line. If FILENAME is '-' dump to the console.

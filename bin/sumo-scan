@@ -586,7 +586,7 @@ where command is:
 
 The commands above can be combined!
 
-  makeconfig [FILENAME] {OPTIONNAMES}
+  makeconfig FILENAME [OPTIONNAMES]
           Create a new configuration file from the options read from
           configuration files and options from the command line. If FILENAME is
           '-' dump to the console. OPTIONNAMES is an optional list of long 

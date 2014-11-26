@@ -565,11 +565,12 @@ to be followed by a *subcommand*.
 maincommands
 ++++++++++++
 
-help command [command]
-::::::::::::::::::::::
+help [command...]
+:::::::::::::::::
 
 This command prints help for the given command. It can be invoked as::
 
+  help
   help MAINCOMMAND
   help SUBCOMMAND
   help MAINCOMMAND SUBCOMMAND
@@ -578,16 +579,16 @@ You get a list of all known MAINCOMMANDS with::
 
   help maincommand
 
-makeconfig [FILENAME] {OPTIONNAMES}
-:::::::::::::::::::::::::::::::::::
+makeconfig FILENAME [OPTIONNAMES]
+:::::::::::::::::::::::::::::::::
 
 Create a new configuration file from the options read from configuration files
 and options from the command line. If FILENAME is '-' dump to the console.
 OPTIONNAMES is an optional list of long option names. If OPTIONNAMES are
 specified, only options from this list are saved in the configuration file.
 
-edit [FILE]
-:::::::::::
+edit FILE
+:::::::::
 
 Start the editor specified by the environment variable "VISUAL" or "EDITOR"
 with that file. This command first aquires a file-lock on the file that is only
@@ -619,8 +620,8 @@ and the build database with --db and --builddb or a configuration file.
 subcommands for maincommand "db"
 ++++++++++++++++++++++++++++++++
 
-convert [SCANFILE]
-::::::::::::::::::
+convert SCANFILE
+::::::::::::::::
 
 Convert a :term:`scanfile` that was created by by 
 :doc:`"sumo-scan all"<reference-sumo-scan>` to a new dependency database.
@@ -632,8 +633,8 @@ file, with "--scandb" you specify the name of the scan database file. The scan
 database file contains information on what moduleversion can be used with what
 dependency version.
 
-convert-old [OLDDB]
-:::::::::::::::::::
+convert-old OLD-DEPS-DB
+:::::::::::::::::::::::
 
 Convert a 
 :ref:`dependency database <reference-sumo-db-The-dependency-database>` from the
@@ -645,8 +646,8 @@ file. The scan database file contains information on what :term:`version` of a
 :term:`module` is probably compatible with what version of a :term:`dependency`
 according to the data in the old dependency database.
 
-appconvert [SCANFILE]
-:::::::::::::::::::::
+appconvert SCANFILE
+:::::::::::::::::::
 
 Convert a :term:`scanfile` that was created by applying 
 :doc:`"sumo-scan all"<reference-sumo-scan>` to an application to a list of 
@@ -654,8 +655,8 @@ Convert a :term:`scanfile` that was created by applying
 format. The result is printed to the console. It can be used with
 --config to put these in the configuration file of sumo.
 
-weight [WEIGHT] [MODULES]
-:::::::::::::::::::::::::
+weight WEIGHT MODULES
+:::::::::::::::::::::
 
 Set the weight factor for modules. A weight determines where a module is placed
 in the generated RELEASE file. Modules there are sorted first by weight, then
@@ -672,7 +673,7 @@ list
 This command lists all :term:`modules` in the 
 :ref:`dependency database <reference-sumo-db-The-dependency-database>`.
 
-shownewest {MODULES}
+shownewest [MODULES]
 ::::::::::::::::::::
 
 This command shows the newest versions of modules by applying some trying to
@@ -682,7 +683,7 @@ Optional parameter MODULES specifies the names of :term:`modules` shown. If no
 :term:`modules` are given the command shows the newest :term:`versions` of all
 :term:`modules`.
 
-showall {MODULES}
+showall [MODULES]
 :::::::::::::::::
 
 This command shows all versions of the given modules. 
@@ -691,8 +692,8 @@ Optional parameter MODULES specifies the names of :term:`modules` shown. If no
 :term:`modules` are given the command shows all :term:`versions` of all
 :term:`modules`.
 
-filter [MODULES]
-::::::::::::::::
+filter MODULES...
+:::::::::::::::::
 
 This command prints only the parts of the dependency database that contain the
 given modules. 
@@ -700,8 +701,8 @@ given modules.
 Parameter MODULES is a list of :term:`modulespecs` MODULE:{+-}VERSION that
 specifies the :term:`modules` and :term:`versions` to operate on. 
 
-find [REGEXP]
-:::::::::::::
+find REGEXP
+:::::::::::
 
 This command shows all :term:`modules` whose names or :term:`sources` match a
 regexp.  Parameter REGEXP is a perl compatible :term:`regular expression`.  
@@ -712,16 +713,16 @@ check
 This command does a consistency check of the dependency database (:term:`DB`
 file).
 
-merge [DB]
-::::::::::
+merge DB
+::::::::
 
 This command merges a :term:`dependency database` with another
 :term:`dependency database`. The database that is modified must follow the
 command as parameter DB. The database that is added must be specified with the
 "--db" option.
 
-cloneversion [MODULE] [OLD-VERSION] [NEW-VERSION] {SOURCESPEC}
-::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+cloneversion MODULE OLD-VERSION NEW-VERSION [SOURCESPEC]
+::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 This command adds a new :term:`version` of a :term:`module` to the
 :term:`dependency database` by copying the old :term:`version`. MODULE here is
@@ -734,8 +735,8 @@ sourcespec is not given, the command adds NEW-VERSION as new tag to the source
 specification. The command always asks for a confirmation of the action unless
 option "-y" is used.
 
-replaceversion [MODULE] [OLD-VERSION] [NEW-VERSION]
-:::::::::::::::::::::::::::::::::::::::::::::::::::
+replaceversion MODULE OLD-VERSION NEW-VERSION
+:::::::::::::::::::::::::::::::::::::::::::::
 
 This command replaces a :term:`version` of a :term:`module` with a new
 :term:`version`. MODULE here is just the name of the module since the version
@@ -745,8 +746,8 @@ parameter. A sourcespec has the form "path PATH", "tar TARFILE", "REPOTYPE URL"
 or "REPOTYPE URL TAG".  REPOTYPE may be "darcs", "hg" or "git". Both, URL or
 TAG may be "*", in this case the original URL or TAG remains unchanged.
 
-clonemodule [OLD-MODULE] [NEW-MODULE] {VERSIONS}
-::::::::::::::::::::::::::::::::::::::::::::::::
+clonemodule OLD-MODULE NEW-MODULE [VERSIONS]
+::::::::::::::::::::::::::::::::::::::::::::
 
 Copy all :term:`versions` of the existing old :term:`module` and add this with
 the name of thew new :term:`module` to the :term:`dependency` database.
@@ -756,21 +757,21 @@ command copies all existing :term:`versions`. Note that this DOES NOT add the
 new :term:`module` as :term:`dependency` to any other :term:`modules`.
 
 dependency-delete MODULE DEPENDENCY
-:::::::::::::::::::::::::::::::::::::::::::::::
+:::::::::::::::::::::::::::::::::::
 
 Delete a :term:`dependency` of a :term:`module`. MODULE here is a
 :term:`modulespec` of the form MODULE:VERSION that specifies a single version
 of a module.
 
 dependency-add MODULE DEPENDENCY
-::::::::::::::::::::::::::::::::::::::::::::
+::::::::::::::::::::::::::::::::
 
 Add a :term:`dependency` to a :term:`module`. MODULE here is a
 :term:`modulespec` of the form MODULE:VERSION that specifies a single version
 of a module.
 
 alias-add MODULE DEPENDENCY ALIAS
-:::::::::::::::::::::::::::::::::::::::::::::
+:::::::::::::::::::::::::::::::::
 
 Define a new :term:`alias` for a :term:`dependency` of a :term:`module`. MODULE
 here is a :term:`modulespec` of the form MODULE:VERSION that specifies a single
@@ -779,8 +780,8 @@ version of a module.
 subcommands for maincommand "build"
 +++++++++++++++++++++++++++++++++++
 
-try [MODULES]
-:::::::::::::
+try MODULES
+:::::::::::
 
 This command helps to create :term:`module` specifications for the "new"
 command. Each MODULE here is a :term:`modulespec` of the form MODULE or
@@ -801,8 +802,8 @@ which is in many cases all you want to see.
 
 For an example see :ref:`try example <example-sumo-build-try>`.
 
-new [MODULES]
-:::::::::::::
+new MODULES
+:::::::::::
 
 This command creates a new :term:`build`. Each module given in MODULES here is
 a :term:`modulespec` of the form MODULE:VERSION that specifies a single version
@@ -817,8 +818,8 @@ completion, sets the state of the :term:`build` to "testing". If you want to
 skip this step, use option "--no-make". In order to provide arbitrary options
 to make use option "--makeopts". 
 
-find [MODULES]
-::::::::::::::
+find MODULES
+::::::::::::
 
 This command is used to find matching :term:`builds` for a given list of
 :term:`modulespecs`. Each module in MODULES here is a :term:`modulespec` of the
@@ -827,8 +828,8 @@ and some versions or a single version. The command prints a list of
 :term:`buildtags` of matching :term:`builds` on the console. If option --brief
 is given, the program just shows the buildtags. 
 
-useall [BUILDTAG]
-:::::::::::::::::
+useall BUILDTAG
+:::::::::::::::
 
 This command creates a configure/RELEASE file for an application. The command
 must be followed by buildtag. The release file created includes *all*
@@ -836,8 +837,8 @@ must be followed by buildtag. The release file created includes *all*
 option. Output to another file or the console can be specified with option
 '-o'. 
 
-use [MODULES]
-:::::::::::::
+use MODULES
+:::::::::::
 
 This command creates a configure/RELEASE file for an application. Each module
 given in MODULES here is a :term:`modulespec` of the form MODULE:VERSION that
@@ -854,14 +855,14 @@ list
 
 This command lists the names of all builds.
 
-show [BUILDTAG]
-:::::::::::::::
+show BUILDTAG
+:::::::::::::
 
 This command shows the data of a :term:`build`. The :term:`buildtag` must be
 given as an argument.
 
-state [BUILDTAG] {NEW-STATE}
-::::::::::::::::::::::::::::
+state BUILDTAG [NEW-STATE]
+::::::::::::::::::::::::::
 
 This command is used to show or change the :term:`state` of a :term:`build`.
 The :term:`buildtag` must be given as an argument. If there is no new
@@ -869,16 +870,16 @@ The :term:`buildtag` must be given as an argument. If there is no new
 :term:`build`. Otherwise the :term:`state` of the :term:`build` is changed
 to the given value. 
 
-delete [BUILDTAG]
-:::::::::::::::::
+delete BUILDTAG
+:::::::::::::::
 
 If no other :term:`build` depends on the :term:`build` specified by the
 :term:`buildtag`, the directories of the :term:`build` are removed and it's
 entry in the builddb is deleted. The :term:`buildtag` must be given as an
 argument.
 
-cleanup [BUILDTAG]
-::::::::::::::::::
+cleanup BUILDTAG
+::::::::::::::::
 
 This command removes the remains of a failed :term:`build`. If the command
 "new" is interrupted or stopped by an exception in the program, the
