@@ -1,0 +1,39 @@
+generated config file:
+{
+    "#include": [
+        "sumo-db-makeconfig-MODULES.tmp"
+    ],
+    "arch": [
+        "vxWorks-68040",
+        "vxWorks-ppc603"
+    ],
+    "db": "DEPS.DB",
+    "dir_patch": [
+        "r\"^/srv/csr/Epics\",r\"rcsadm@aragon.acc.bessy.de:/opt/Epics\""
+    ],
+    "progress": true,
+    "scandb": "SCAN",
+    "verbose": true
+}
+generated modules file:
+{
+    "module": [
+        "ALARM:R3-7",
+        "BASE:R3-14-12-2-1",
+        "BSPDEP_TIMER:R6-2",
+        "BSPDEP_VMETAS:R2-0",
+        "MCAN:R2-6-1",
+        "MISC_DBC:R3-0",
+        "MISC_DEBUGMSG:R3-0",
+        "SOFT_DEVHWCLIENT:R3-0"
+    ]
+}
+read modulespecs from config and modules file:
+ALARM:R3-7:vxWorks-68040:vxWorks-ppc603
+BASE:R3-14-12-2-1:vxWorks-68040:vxWorks-ppc603
+BSPDEP_TIMER:R6-2:vxWorks-68040:vxWorks-ppc603
+BSPDEP_VMETAS:R2-0:vxWorks-68040:vxWorks-ppc603
+MCAN:R2-6-1:vxWorks-68040:vxWorks-ppc603
+MISC_DBC:R3-0:vxWorks-68040:vxWorks-ppc603
+MISC_DEBUGMSG:R3-0:vxWorks-68040:vxWorks-ppc603
+SOFT_DEVHWCLIENT:R3-0:vxWorks-68040:vxWorks-ppc603
