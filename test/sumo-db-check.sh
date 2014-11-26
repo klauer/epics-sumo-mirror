@@ -14,6 +14,10 @@ else
         PYTHON=$1
 fi
 
+BINDIR=`pwd`/../bin
+SUMO_SCAN="$PYTHON $BINDIR/sumo-scan -C"
+SUMO="$PYTHON $BINDIR/sumo -C"
+
 PWD_NICE=`pwd`
 
 echo -e "\n-> Test sumo db check" >&2
@@ -47,8 +51,8 @@ HEE
 
 echo -e "sumo db --db samples/DB check:"
 
-$PYTHON ../bin/sumo db --db $DEPS check
+$SUMO db --db $DEPS check
 
 echo -e "\nsumo db --db samples/BUILDS check:"
 
-$PYTHON ../bin/sumo db --db $ME-DEPS.tmp check 2>&1 | tail -n 1
+$SUMO db --db $ME-DEPS.tmp check 2>&1 | tail -n 1

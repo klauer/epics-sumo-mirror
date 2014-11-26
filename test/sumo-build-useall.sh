@@ -14,6 +14,10 @@ else
         PYTHON=$1
 fi
 
+BINDIR=`pwd`/../bin
+SUMO_SCAN="$PYTHON $BINDIR/sumo-scan -C"
+SUMO="$PYTHON $BINDIR/sumo -C"
+
 PWD_NICE=`pwd`
 
 echo -e "\n-> Test sumo build useall" >&2
@@ -23,8 +27,8 @@ TESTDIR=tmp-sumo-build-new-2
 cd $TESTDIR > /dev/null
 
 echo -e "\nsumo-build useall MYAPP-001:"
-$PYTHON ../../bin/sumo build --builddb BUILDS.DB --db DEPS.DB useall MYAPP-001 -o - | sed -e "s#`pwd -P`##"
+$SUMO build --builddb BUILDS.DB --db DEPS.DB useall MYAPP-001 -o - | sed -e "s#`pwd -P`##"
 
 echo -e "\nsumo-build useall MYAPP-002:"
-$PYTHON ../../bin/sumo build --builddb BUILDS.DB --db DEPS.DB useall MYAPP-002 -o - | sed -e "s#`pwd -P`##"
+$SUMO build --builddb BUILDS.DB --db DEPS.DB useall MYAPP-002 -o - | sed -e "s#`pwd -P`##"
 

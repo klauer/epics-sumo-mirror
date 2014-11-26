@@ -14,6 +14,10 @@ else
         PYTHON=$1
 fi
 
+BINDIR=`pwd`/../bin
+SUMO_SCAN="$PYTHON $BINDIR/sumo-scan -C"
+SUMO="$PYTHON $BINDIR/sumo -C"
+
 REPOSRC="tmp-sumo-db-dbrepo-create/central"
 EXAMPLEDIR=tmp-$ME
 
@@ -28,9 +32,9 @@ darcs get -q ../$REPOSRC central-darcs
 hg clone -q ../$REPOSRC central-hg
 git clone --bare -q ../$REPOSRC central-git
 
-$PYTHON ../../bin/sumo db --db local-darcs/DEPS.DB --dbrepo "darcs central-darcs" -y cloneversion ALARM R3-7 R3-8-1
-$PYTHON ../../bin/sumo db --db local-hg/DEPS.DB --dbrepo "hg central-hg" -y cloneversion ALARM R3-7 R3-8-1
-$PYTHON ../../bin/sumo db --db local-git/DEPS.DB --dbrepo "git central-git" -y cloneversion ALARM R3-7 R3-8-1
+$SUMO db --db local-darcs/DEPS.DB --dbrepo "darcs central-darcs" -y cloneversion ALARM R3-7 R3-8-1
+$SUMO db --db local-hg/DEPS.DB --dbrepo "hg central-hg" -y cloneversion ALARM R3-7 R3-8-1
+$SUMO db --db local-git/DEPS.DB --dbrepo "git central-git" -y cloneversion ALARM R3-7 R3-8-1
 
 DDATE="Mon Jan 01 01:01:01 2014 +0100"
 DUSR="Homer.Simpson@burns.com"

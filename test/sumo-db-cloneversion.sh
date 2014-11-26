@@ -14,6 +14,10 @@ else
         PYTHON=$1
 fi
 
+BINDIR=`pwd`/../bin
+SUMO_SCAN="$PYTHON $BINDIR/sumo-scan -C"
+SUMO="$PYTHON $BINDIR/sumo -C"
+
 PWD_NICE=`pwd`
 
 echo -e "\n-> Test sumo db cloneversion with wrong sourcespec." >&2
@@ -21,5 +25,5 @@ echo -e "\n-> Test sumo db cloneversion with wrong sourcespec." >&2
 cp tmp-sumo-db-convert/DEPS.DB $ME-DEPS.tmp
 
 # this command is inteded to fail with "invalid sourcespec":
-$PYTHON ../bin/sumo db --db $ME-DEPS.tmp cloneversion ALARM R3-8-modified R3-4 '*' '*' R3-4 2>&1 | grep -v "'lockfile' not found"|| true
+$SUMO db --db $ME-DEPS.tmp cloneversion ALARM R3-8-modified R3-4 '*' '*' R3-4 2>&1 | grep -v "'lockfile' not found"|| true
 

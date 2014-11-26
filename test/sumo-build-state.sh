@@ -14,6 +14,10 @@ else
         PYTHON=$1
 fi
 
+BINDIR=`pwd`/../bin
+SUMO_SCAN="$PYTHON $BINDIR/sumo-scan -C"
+SUMO="$PYTHON $BINDIR/sumo -C"
+
 PWD_NICE=`pwd`
 
 echo -e "\n-> Test sumo build state (query)" >&2
@@ -21,7 +25,7 @@ echo -e "\n-> Test sumo build state (query)" >&2
 BUILDS=sumo-build-new-0-BUILD.tmp
 
 echo "state of AUTO-001:"
-$PYTHON ../bin/sumo build --builddb $BUILDS state AUTO-001
+$SUMO build --builddb $BUILDS state AUTO-001
 echo
 echo "state of AUTO-002:"
-$PYTHON ../bin/sumo build --builddb $BUILDS state AUTO-002
+$SUMO build --builddb $BUILDS state AUTO-002

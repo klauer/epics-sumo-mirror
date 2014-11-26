@@ -14,10 +14,14 @@ else
         PYTHON=$1
 fi
 
+BINDIR=`pwd`/../bin
+SUMO_SCAN="$PYTHON $BINDIR/sumo-scan -C"
+SUMO="$PYTHON $BINDIR/sumo -C"
+
 echo -e "\n-> Test sumo db convert-old." >&2
 
 set +o posix
-$PYTHON ../bin/sumo db convert-old data/samples/DB_IDCP_OLD --db $ME-DEPS.tmp --scandb $ME-SCAN.tmp 
+$SUMO db convert-old data/samples/DB_IDCP_OLD --db $ME-DEPS.tmp --scandb $ME-SCAN.tmp 
 echo "DB file:"
 cat $ME-DEPS.tmp
 echo

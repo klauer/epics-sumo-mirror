@@ -14,11 +14,15 @@ else
         PYTHON=$1
 fi
 
+BINDIR=`pwd`/../bin
+SUMO_SCAN="$PYTHON $BINDIR/sumo-scan -C"
+SUMO="$PYTHON $BINDIR/sumo -C"
+
 PWD_NICE=`pwd`
 
 echo -e "\n-> Test sumo db showall" >&2
 
 DEPS=tmp-sumo-db-convert/DEPS.DB
 
-$PYTHON ../bin/sumo db --arch vxWorks-68040 --arch vxWorks-ppc603 --db $DEPS showall ALARM 
+$SUMO db --arch vxWorks-68040 --arch vxWorks-ppc603 --db $DEPS showall ALARM 
 

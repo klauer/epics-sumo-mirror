@@ -14,6 +14,10 @@ else
         PYTHON=$1
 fi
 
+BINDIR=`pwd`/../bin
+SUMO_SCAN="$PYTHON $BINDIR/sumo-scan -C"
+SUMO="$PYTHON $BINDIR/sumo -C"
+
 PWD_NICE=`pwd`
 PWD_REAL=`pwd -P`
 
@@ -23,7 +27,7 @@ echo -e "\n-> Test sumo db replaceversion." >&2
 
 cp tmp-sumo-db-convert/DEPS.DB $ME-DEPS.tmp
 
-$PYTHON ../bin/sumo db --db $ME-DEPS.tmp dependency-delete ALARM:R3-8-modified BSPDEP_TIMER
+$SUMO db --db $ME-DEPS.tmp dependency-delete ALARM:R3-8-modified BSPDEP_TIMER
 echo "DB file:"
 cat $ME-DEPS.tmp | sed -e "s#$PWD_NICE##;s#$PWD_REAL##;s#\"[0-9a-f]\{12\}\"#\"ABCDABCDABCD\"#"
 

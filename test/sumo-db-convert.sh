@@ -16,6 +16,10 @@ else
         PYTHON=$1
 fi
 
+BINDIR=`pwd`/../bin
+SUMO_SCAN="$PYTHON $BINDIR/sumo-scan -C"
+SUMO="$PYTHON $BINDIR/sumo -C"
+
 EXAMPLEDIR=tmp-$ME
 
 echo -e "\n-> Test sumo db convert." >&2
@@ -38,7 +42,7 @@ rm -f $EXAMPLEDIR/DEPS.DB $EXAMPLEDIR/SCAN.DB
 
 set +o posix
 
-$PYTHON ../bin/sumo db convert tmp-sumo-scan-all/SCAN -D "r\"^$PWD_REAL\",r\"$PWD_NICE\"" -U "r\"^$PWD_REAL\",r\"$PWD_NICE\"" --db $EXAMPLEDIR/DEPS.DB --scandb $EXAMPLEDIR/SCAN.DB 2> >(grep -v 'no dependency info' 1>&2) 
+$SUMO db convert tmp-sumo-scan-all/SCAN -D "r\"^$PWD_REAL\",r\"$PWD_NICE\"" -U "r\"^$PWD_REAL\",r\"$PWD_NICE\"" --db $EXAMPLEDIR/DEPS.DB --scandb $EXAMPLEDIR/SCAN.DB 2> >(grep -v 'no dependency info' 1>&2) 
 
 echo "DB file:"
 cat $EXAMPLEDIR/DEPS.DB | sed -e "s#$PWD_NICE##;s#$PWD_REAL##;s#\"[0-9a-f]\{12\}\"#\"ABCDABCDABCD\"#"
