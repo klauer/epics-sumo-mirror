@@ -640,7 +640,7 @@ def create_app_data(deps, repoinfo, groups):
         subdir= values[0]
         versionedmodule_path= os.path.join(root_path, subdir)
         try:
-            r_dict= repoinfo.get[versionedmodule_path]
+            r_dict= repoinfo.get(versionedmodule_path)
         except KeyError, _:
             # shouldn't happen, but we just print a warning in this
             # case:
