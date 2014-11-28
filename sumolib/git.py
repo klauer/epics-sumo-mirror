@@ -217,10 +217,6 @@ class Repo(object):
         if not os.path.exists(os.path.join(directory,".git")):
             return
         obj= cls(directory, hints, verbose, dry_run)
-        # if there are unrecorded changes we cannot use this as a repository,
-        # we have to copy the whole directory instead:
-        if obj.local_changes:
-            return
         return obj
     def source_spec(self):
         """return a complete source specification (for SourceSpec class).
