@@ -374,6 +374,8 @@ class ManagedRepo(object):
 
         If repotype is None, create an empty object that basically
         does nothing.
+
+        Does checkout the repository if the directory does not yet exist.
         """
         # pylint: disable=R0913
         #                          Too many arguments
@@ -384,11 +386,6 @@ class ManagedRepo(object):
         self.directory= directory
         self.verbose= verbose
         self.dry_run= dry_run
-        self.repo_obj= None
-    def prepare_read(self):
-        """do checkout or pull."""
-        if self.repotype is None:
-            return
         if not os.path.isdir(self.directory):
             # must check out
             checkout(self.repotype, self.spec, self.directory,
@@ -398,12 +395,24 @@ class ManagedRepo(object):
                                      (self.repotype,
                                       repr(self.spec),
                                       self.directory))
-        if not self.repo_obj:
-            self.repo_obj= \
-                repo_from_dir(self.directory, {}, self.verbose, self.dry_run)
+        self.repo_obj= \
+            repo_from_dir(self.directory, {}, self.verbose, self.dry_run)
+    def local_changes(self):
+        """return if there are local changes."""
+        if self.repotype is None:
+            # for the "empty" ManagedRepo object just return <None>:
+            return
+        return self.repo_obj.local_changes
+    def commit(self, message):
+        """commit changes."""
+        self.repo_obj.commit(message)
+    def prepare_read(self):
+        """do checkout or pull."""
+        if self.repotype is None:
+            return
         # pylint: disable=E1103
         #                          Instance of 'Repo' has no 'pull' member
-        self.repo_obj.pull()
+        self.repo_obj.pull_merge()
     def finish_write(self, message):
         """do commit and push."""
         if self.repotype is None:

@@ -1,0 +1,22 @@
+Conflict in darcs repo:
+--------------------------
+Backing up ./DEPS.DB(.~0~)
+We have conflicts in the following files:
+./DEPS.DB
+
+error, 'darcs pull' failed
+
+Conflict in mercurial repo:
+--------------------------
+not updating: not a linear update
+(merge or update --check to force update)
+warning: conflicts during merge.
+merging DEPS.DB incomplete! (edit conflicts, then use 'hg resolve --mark')
+error, 'hg merge' failed
+
+Conflict in git repo:
+--------------------------
+Auto-merging DEPS.DB
+CONFLICT (content): Merge conflict in DEPS.DB
+Automatic merge failed; fix conflicts and then commit the result.
+error, 'git pull' failed

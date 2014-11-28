@@ -6,6 +6,7 @@
 
 import re
 import os.path
+import sys
 import sumolib.system
 
 __version__="2.2" #VERSION#
@@ -256,21 +257,47 @@ class Repo(object):
         sumolib.system.system(cmd, False, False, verbose, dry_run)
     def commit(self, logmessage):
         """commit changes."""
-        cmd="hg -R %s commit -m '%s'" % (self.directory, logmessage)
+        if not logmessage:
+            m_param=""
+        else:
+            m_param="-m '%s'" % logmessage
+        cmd="hg -R %s commit %s" % (self.directory, m_param)
         (_,_)= sumolib.system.system(cmd,
                                      True, False,
                                      self.verbose, self.dry_run)
+        self.local_changes= False
     def push(self):
         """push all changes changes."""
         cmd="hg push -R %s %s" % (self.directory, self.remote_url)
         (_,_)= sumolib.system.system(cmd,
                                      True, False,
                                      self.verbose, self.dry_run)
-    def pull(self):
-        """pull all changes changes.  """
+    def pull_merge(self):
+        """pull changes and try to merge."""
         # use "-u" to update to head:
-        cmd="hg pull -R %s -u %s" % (self.directory, self.remote_url)
-        (_,_)= sumolib.system.system(cmd,
-                                     True, False,
-                                     self.verbose, self.dry_run)
+        cmd="hg pull -q -R %s -u --config ui.merge=internal:merge %s" % \
+                (self.directory, self.remote_url)
+        try:
+            (_,stderr)= sumolib.system.system(cmd,
+                                              False, True,
+                                              self.verbose, self.dry_run)
+        finally:
+            sys.stderr.write(stderr)
+        must_merge= False
+        for l in stderr.splitlines():
+            if l.lower().startswith("warning: conflicts"):
+                msg="error, 'hg pull -u' created a conflict"
+                raise IOError(msg)
+            if l.lower().startswith("not updating:"):
+                must_merge= True
+        if not must_merge:
+            return
+        cmd=("hg merge -q -R %s --config ui.merge=internal:merge") % \
+                self.directory
+        (_,_,rc)= sumolib.system.system_rc(cmd,
+                                           False, False,
+                                           self.verbose, self.dry_run)
+        if rc:
+            msg="error, 'hg merge' failed"
+            raise IOError(msg)
 

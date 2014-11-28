@@ -40,13 +40,16 @@ def show_progress(cnt, cnt_max, message= None):
 # user interaction
 # -----------------------------------------------
 
-def ask_yes_no(question):
+def ask_yes_no(question, force_yes= None):
     """ask a yes or no question.
 
     returns:
       True  - if the user answered "yes" or "y"
       False - if the user answered "no" or "n"
     """
+    if force_yes is not None:
+        if force_yes:
+            return True
     question+= " "
     while True:
         inp= raw_input(question).lower().strip()
@@ -57,13 +60,14 @@ def ask_yes_no(question):
         print "\tplease enter 'y', 'yes, 'n' or 'no'"
         question=""
 
-def ask_abort(question, force_yes):
+def ask_abort(question, force_yes= None):
     """ask if the user wants to abort the program.
 
     Aborts the program if the user enters "y".
     """
-    if force_yes:
-        return
+    if force_yes is not None:
+        if force_yes:
+            return
     if not ask_yes_no(question + "Enter 'y' to continue or "
                                  "'n' to abort the program"):
         sys.exit("program aborted by user request")

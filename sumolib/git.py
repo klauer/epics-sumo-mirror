@@ -277,21 +277,30 @@ class Repo(object):
             sumolib.utils.changedir(cwd)
     def commit(self, logmessage):
         """commit changes."""
-        cmd="git -C %s commit -a -q -m '%s'" % (self.directory, logmessage)
+        if not logmessage:
+            m_param=""
+        else:
+            m_param="-m '%s'" % logmessage
+        cmd="git -C %s commit -a -q %s" % (self.directory, m_param)
         (_,_)= sumolib.system.system(cmd,
                                      True, False,
                                      self.verbose, self.dry_run)
+        self.local_changes= False
     def push(self):
         """push all changes changes."""
         cmd="git -C %s push -q %s" % (self.directory, self.remote_url)
         (_,_)= sumolib.system.system(cmd,
                                      True, False,
                                      self.verbose, self.dry_run)
-    def pull(self):
-        """pull all changes changes."""
+    def pull_merge(self):
+        """pull changes and try to merge."""
         cmd="git -C %s pull -q %s" % (self.directory, self.remote_url)
-        (_,_)= sumolib.system.system(cmd,
-                                     True, False,
-                                     self.verbose, self.dry_run)
+        (_,_,rc)= sumolib.system.system_rc(cmd,
+                                           False, False,
+                                           self.verbose, self.dry_run)
+        if rc:
+            msg="error, 'git pull' failed"
+            raise IOError(msg)
+
 
 
