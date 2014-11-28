@@ -383,14 +383,22 @@ def repo_info(deps, progress,
             cnt= sumolib.utils.show_progress(cnt, cnt_max)
         flagdict= hints.flags(path)
 
-        hints_param= repo_hints
         if flagdict.get("path"):
-            hints_param= repo_hints_path
-        elif flagdict.get("tagless"):
-            hints_param= repo_hints_local
+            repo_obj= sumolib.repos.src_from_dir(path, repo_hints_path,
+                                                 verbose, dry_run)
+        else:
+            if flagdict.get("tagless"):
+                hints_param= repo_hints_local
+            else:
+                hints_param= repo_hints
 
-        repo_obj= sumolib.repos.repo_from_dir(path, hints_param,
-                                           verbose, dry_run)
+            repo_obj= sumolib.repos.repo_from_dir(path, hints_param,
+                                                  verbose, dry_run)
+            if (not repo_obj) or repo_obj.local_changes:
+                # no valid repository found  - or -
+                # local changes
+                repo_obj= sumolib.repos.src_from_dir(path, hints_param,
+                                                     verbose, dry_run)
 
         new[path]= repo_obj.source_spec()
 

@@ -43,19 +43,13 @@ def repo_from_dir(directory, hints, verbose, dry_run):
         This patcher is applied to the directory that is stored in the object.
     "url patcher": sumolib.utils.RegexpPatcher
         This patcher is applied to the URL that is stored in the object.
-    "force path" : bool
-        If this is True, a Path object is always returned, even if a repository
-        was found.
     "force local": bool
-        If this is True, the returns repository object does not contain a
-        remote repoistory url even if there was one.
+        If this is True, the returned repository object does not contain a
+        remote repository url even if there was one.
     """
     if not isinstance(hints, dict):
         raise TypeError("hints parameter '%s' is of wrong type" % \
                         repr(hints))
-    if hints.get("force path"):
-        return sumolib.path.Repo.scan_dir(directory, hints, verbose, dry_run)
-
     obj= sumolib.darcs.Repo.scan_dir(directory, hints, verbose, dry_run)
     if obj is not None:
         return obj
@@ -65,6 +59,33 @@ def repo_from_dir(directory, hints, verbose, dry_run):
     obj= sumolib.git.Repo.scan_dir(directory, hints, verbose, dry_run)
     if obj is not None:
         return obj
+    return
+
+def src_from_dir(directory, hints, verbose, dry_run):
+    """scan a directory and return a repository object.
+
+    Hints must be a dictionary. This gives hints how the directory should be
+    scanned. Currently we know these keys in the dictionary:
+
+    "ignore changes": sumolib.utils.RegexpMatcher
+        All local changes in files that match the RegexpMatcher object are
+        ignored. By this we can get the remote repository and tag from a
+        directory although there are uncomitted changes. A common application
+        is to ignore changes in file "configure/RELEASE".
+    "dir patcher": sumolib.utils.RegexpPatcher
+        This patcher is applied to the directory that is stored in the object.
+    "url patcher": sumolib.utils.RegexpPatcher
+        This patcher is applied to the URL that is stored in the object.
+    "force path" : bool
+        If this is True, a Path object is always returned, even if a repository
+        was found.
+    """
+    if not isinstance(hints, dict):
+        raise TypeError("hints parameter '%s' is of wrong type" % \
+                        repr(hints))
+    if hints.get("force path"):
+        return sumolib.path.Repo.scan_dir(directory, hints, verbose, dry_run)
+
     obj= sumolib.tar.Repo.scan_dir(directory, hints, verbose, dry_run)
     if obj is not None:
         return obj
