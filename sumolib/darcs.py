@@ -24,8 +24,9 @@ class Repo(object):
     def _default_repo(self):
         """return the default repo."""
         try:
-            (reply,_)= sumolib.system.system("cd %s && darcs show repo" % \
-                                    self.directory,
+            (reply,_)= sumolib.system.system(
+                                    "darcs show repo --repodir %s" % \
+                                        self.directory,
                                     True, False,
                                     self.verbose, self.dry_run)
         except IOError, _:
@@ -229,21 +230,32 @@ class Repo(object):
         sumolib.system.system(cmd, False, False, verbose, dry_run)
     def commit(self, logmessage):
         """commit changes."""
-        cmd="cd %s && darcs record -a -m '%s'" % (self.directory, logmessage)
+        if not logmessage:
+            m_param=""
+        else:
+            m_param="-m '%s'" % logmessage
+        cmd="darcs record --repodir %s -a %s" % (self.directory, m_param)
         (_,_)= sumolib.system.system(cmd,
                                      True, False,
                                      self.verbose, self.dry_run)
+        self.local_changes= False
     def push(self):
         """push all changes changes."""
-        cmd="cd %s && darcs push -a %s" % (self.directory, self.remote_url)
+        cmd="darcs push --repodir %s -a %s" % (self.directory,
+                                               self.remote_url)
         (_,_)= sumolib.system.system(cmd,
                                      True, False,
                                      self.verbose, self.dry_run)
-    def pull(self):
-        """pull all changes changes."""
-        cmd="cd %s && darcs pull -a %s" % (self.directory, self.remote_url)
-        (_,_)= sumolib.system.system(cmd,
-                                     True, False,
-                                     self.verbose, self.dry_run)
-
+    def pull_merge(self):
+        """pull changes and try to merge."""
+        cmd="darcs pull --repodir %s -q -a %s" % (self.directory,
+                                                  self.remote_url)
+        (stdout,_)= sumolib.system.system(cmd,
+                                          True, False,
+                                          self.verbose, self.dry_run)
+        print stdout
+        for l in stdout.splitlines():
+            if l.lower().startswith("we have conflicts"):
+                msg="error, 'darcs pull' failed"
+                raise IOError(msg)
 

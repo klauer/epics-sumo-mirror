@@ -144,27 +144,50 @@ def repo_manager(filename, sourcespec_string, verbose, dry_run):
                                      source_spec_obj.spec_dict(),
                                      dir_, verbose, dry_run)
 
-def db_from_json_file(filename, sourcespec_string,
-                      verbose, dry_run, keep_locked= False):
+def db_from_json_file(filename, keep_locked= False):
     """load a db, exits gracefully in case of an error."""
-    mngr= repo_manager(filename, sourcespec_string,
-                       verbose, dry_run)
-    mngr.prepare_read() # executes a "pull" command
     try:
-        db= sumolib.Databases.Dependencies.from_json_file(filename, keep_locked)
+        db= sumolib.Databases.Dependencies.from_json_file(filename,
+                                                          keep_locked)
     except ValueError, e:
         sys.exit("Error while loading dependency database,\n%s" % str(e))
     except IOError, e:
         sys.exit("Error while loading dependency database,\n%s" % str(e))
+    return db
+
+def db_from_repo(options, keep_locked= False):
+    """load a db, exits gracefully in case of an error."""
+    # pylint: disable=R0913
+    #                          Too many arguments
+    mngr= repo_manager(options.db, options.dbrepo,
+                       options.verbose, options.dry_run)
+    if mngr.local_changes():
+        if not sumolib.utils.ask_yes_no(
+                "Uncommitted changes found in dependency database file,\n"
+                "answer 'y' to record them or 'n' to abort",
+                options.yes):
+            sys.exit(0)
+        # an empty logmessage here means that the user is asked for one:
+        mngr.commit(options.logmsg)
+
+    try:
+        mngr.prepare_read() # executes a "pull" command
+    except IOError, e:
+        sys.exit(str(e))
+    db= db_from_json_file(options.db, keep_locked)
     return (mngr, db)
 
-def db_json_save(filename, mngr, db, command, arguments, verbose, dry_run):
+def db_to_repo(options, mngr, db, command, arguments):
     """save a db and use the repo mngr."""
     # pylint: disable=R0913
     #                          Too many arguments
-    db.json_save(filename, verbose, dry_run)
+    db.json_save(options.db, options.verbose, options.dry_run)
     if mngr:
-        mngr.finish_write(repo_msg(command, arguments))
+        if options.logmsg:
+            msg= options.logmsg
+        else:
+            msg= repo_msg(command, arguments)
+        mngr.finish_write(msg)
 
 def builddb_from_json_file(filename, keep_locked= False):
     """load a builddb, exits gracefully in case of an error."""
@@ -1058,9 +1081,7 @@ def db_convert(arguments, options):
     mngr= repo_manager(options.db, options.dbrepo,
                        options.verbose, options.dry_run)
     mngr.prepare_read() # does a "pull"
-    db_json_save(options.db, mngr, db,
-                 "convert", arguments,
-                 options.verbose, options.dry_run)
+    db_to_repo(options, mngr, db, "convert", arguments)
     buildcache.json_save(options.scandb,
                          options.verbose, options.dry_run)
 
@@ -1080,9 +1101,7 @@ def db_convert_old(arguments, options):
     mngr= repo_manager(options.db, options.dbrepo,
                        options.verbose, options.dry_run)
     mngr.prepare_read()
-    db_json_save(options.db, mngr, db,
-                 "convert-old", arguments,
-                 options.verbose, options.dry_run)
+    db_to_repo(options, mngr, db, "convert-old", arguments)
     buildcache.json_save(options.scandb,
                          options.verbose, options.dry_run)
 
@@ -1105,10 +1124,8 @@ def db_weight(arguments, options):
         weight= int(args["WEIGHT"])
     except ValueError, _:
         sys.exit("error: weight must be an integer")
-    keep_locked= not options.dumpdb and (not options.dry_run)
-    (mngr, db)= db_from_json_file(options.db, options.dbrepo,
-                                  options.verbose, options.dry_run,
-                                  keep_locked)
+    (mngr, db)= db_from_repo(options,
+                             not options.dumpdb and (not options.dry_run))
     try:
         modulespecs_obj= sumolib.ModuleSpec.Specs.from_strings(
                                                         args["MODULES"],
@@ -1123,9 +1140,7 @@ def db_weight(arguments, options):
     if options.dumpdb:
         db.json_print()
     else:
-        db_json_save(options.db, mngr, db,
-                     "weight", arguments,
-                     options.verbose, options.dry_run)
+        db_to_repo(options, mngr, db, "weight", arguments)
         # ^^^ does also unlock the file
 
 def db_filter(arguments, options):
@@ -1141,9 +1156,7 @@ def db_filter(arguments, options):
     if not modulespecs:
         sys.exit("error: module specs missing")
 
-    (_, db)= db_from_json_file(options.db, options.dbrepo,
-                               options.verbose, options.dry_run,
-                               keep_locked= False)
+    (_, db)= db_from_repo(options)
     try:
         modulespecs_obj= sumolib.ModuleSpec.Specs.from_strings(modulespecs,
                                                         None,
@@ -1161,9 +1174,7 @@ def db_check(arguments, options):
     """implement "db check"."""
     assert_mandatory_options(options, "db")
     get_command_args(arguments)
-    (_, db)= db_from_json_file(options.db, options.dbrepo,
-                               options.verbose, options.dry_run,
-                               keep_locked= False)
+    (_, db)= db_from_repo(options)
     msg= db.check()
     print "\n".join(msg)
 
@@ -1171,20 +1182,14 @@ def db_merge(arguments, options):
     """implement "db merge"."""
     args= get_command_args(arguments, ["DB"])
     assert_mandatory_options(options, "db")
-    keep_locked= not options.dumpdb and (not options.dry_run)
-    (mngr, db)= db_from_json_file(options.db, options.dbrepo,
-                                  options.verbose, options.dry_run,
-                                  keep_locked)
-    db2= db_from_json_file(args["DB"], None,
-                           options.verbose, options.dry_run,
-                           keep_locked= False)
+    (mngr, db)= db_from_repo(options,
+                             not options.dumpdb and (not options.dry_run))
+    db2= db_from_json_file(args["DB"], keep_locked= False)
     db.merge(db2)
     if options.dumpdb:
         db.json_print()
     else:
-        db_json_save(options.db, mngr, db,
-                     "merge", arguments,
-                     options.verbose, options.dry_run)
+        db_to_repo(options, mngr, db, "merge", arguments)
         # ^^^ does also unlock the file
 
 def db_alias_add(arguments, options):
@@ -1197,19 +1202,15 @@ def db_alias_add(arguments, options):
         module_spec.assert_exact()
     except ValueError, e:
         sys.exit(str(e))
-    keep_locked= not options.dumpdb and (not options.dry_run)
-    (mngr, db)= db_from_json_file(options.db, options.dbrepo,
-                                  options.verbose, options.dry_run,
-                                  keep_locked)
+    (mngr, db)= db_from_repo(options,
+                             not options.dumpdb and (not options.dry_run))
     db.add_alias(module_spec.modulename,
                  module_spec.versionname,
                  args["ALIAS"], args["DEPENDENCY"])
     if options.dumpdb:
         db.json_print()
     else:
-        db_json_save(options.db, mngr, db,
-                     "alias-add", arguments,
-                     options.verbose, options.dry_run)
+        db_to_repo(options, mngr, db, "alias-add", arguments)
         # ^^^ does also unlock the file
 
 def db_dependency_add(arguments, options):
@@ -1221,19 +1222,15 @@ def db_dependency_add(arguments, options):
         module_spec.assert_exact()
     except ValueError, e:
         sys.exit(str(e))
-    keep_locked= not options.dumpdb and (not options.dry_run)
-    (mngr, db)= db_from_json_file(options.db, options.dbrepo,
-                                  options.verbose, options.dry_run,
-                                  keep_locked)
+    (mngr, db)= db_from_repo(options,
+                             not options.dumpdb and (not options.dry_run))
     db.add_dependency(module_spec.modulename,
                       module_spec.versionname,
                       args["DEPENDENCY"])
     if options.dumpdb:
         db.json_print()
     else:
-        db_json_save(options.db, mngr, db,
-                     "dependency-add", arguments,
-                     options.verbose, options.dry_run)
+        db_to_repo(options, mngr, db, "dependency-add", arguments)
         # ^^^ does also unlock the file
 
 def db_dependency_delete(arguments, options):
@@ -1247,19 +1244,15 @@ def db_dependency_delete(arguments, options):
         module_spec.assert_exact()
     except ValueError, e:
         sys.exit(str(e))
-    keep_locked= not options.dumpdb and (not options.dry_run)
-    (mngr, db)= db_from_json_file(options.db, options.dbrepo,
-                                  options.verbose, options.dry_run,
-                                  keep_locked)
+    (mngr, db)= db_from_repo(options,
+                             not options.dumpdb and (not options.dry_run))
     db.del_dependency(module_spec.modulename,
                       module_spec.versionname,
                       args["DEPENDENCY"])
     if options.dumpdb:
         db.json_print()
     else:
-        db_json_save(options.db, mngr, db,
-                     "dependency-delete", arguments,
-                     options.verbose, options.dry_run)
+        db_to_repo(options, mngr, db, "dependency-delete", arguments)
         # ^^^ does also unlock the file
 
 def db_clone_replace_version(command, arguments, options):
@@ -1272,10 +1265,8 @@ def db_clone_replace_version(command, arguments, options):
     modulename= args["MODULE"]
     sourcespec= args.get("SOURCESPEC")
 
-    keep_locked= not options.dumpdb and (not options.dry_run)
-    (mngr, db)= db_from_json_file(options.db, options.dbrepo,
-                                  options.verbose, options.dry_run,
-                                  keep_locked)
+    (mngr, db)= db_from_repo(options,
+                             not options.dumpdb and (not options.dry_run))
     try:
         db.patch_version(modulename,
                          args["OLD-VERSION"], args["NEW-VERSION"],
@@ -1307,9 +1298,7 @@ def db_clone_replace_version(command, arguments, options):
     if options.dumpdb:
         db.json_print()
     else:
-        db_json_save(options.db, mngr, db,
-                     command, arguments,
-                     options.verbose, options.dry_run)
+        db_to_repo(options, mngr, db, command, arguments)
         # ^^^ does also unlock the file
 
 def db_clonemodule(arguments, options):
@@ -1318,27 +1307,21 @@ def db_clonemodule(arguments, options):
                            ["OLD-MODULE","NEW-MODULE"],
                            extra_optional="VERSIONS")
     assert_mandatory_options(options, "db")
-    keep_locked= not options.dumpdb and (not options.dry_run)
-    (mngr, db)= db_from_json_file(options.db, options.dbrepo,
-                                  options.verbose, options.dry_run,
-                                  keep_locked)
+    (mngr, db)= db_from_repo(options,
+                             not options.dumpdb and (not options.dry_run))
     db.clonemodule(args["OLD-MODULE"], args["NEW-MODULE"],
                    args.get("VERSIONS"))
     if options.dumpdb:
         db.json_print()
     else:
-        db_json_save(options.db, mngr, db,
-                     "clonemodule", arguments,
-                     options.verbose, options.dry_run)
+        db_to_repo(options, mngr, db, "clonemodule", arguments)
         # ^^^ does also unlock the file
 
 def db_list(arguments, options):
     """implement "db list"."""
     get_command_args(arguments)
     assert_mandatory_options(options, "db")
-    (_, db)= db_from_json_file(options.db, options.dbrepo,
-                               options.verbose, options.dry_run,
-                               keep_locked= False)
+    (_, db)= db_from_repo(options)
     result= sorted(db.iter_modulenames())
     sumolib.JSON.dump(result)
 
@@ -1348,9 +1331,7 @@ def db_show_newest_all(command, arguments, options):
                            extra_optional="MODULES")
     assert_mandatory_options(options, "db")
     showall= (command=="showall")
-    (_, db)= db_from_json_file(options.db, options.dbrepo,
-                               options.verbose, options.dry_run,
-                               keep_locked= False)
+    (_, db)= db_from_repo(options)
 
     modulespecs= []
     if options.module:
@@ -1392,9 +1373,7 @@ def db_find(arguments, options):
     """implement "db find"."""
     args= get_command_args(arguments, ["REGEXP"])
     assert_mandatory_options(options, "db")
-    (_, db)= db_from_json_file(options.db, options.dbrepo,
-                               options.verbose, options.dry_run,
-                               keep_locked= False)
+    (_, db)= db_from_repo(options)
     if options.noignorecase:
         rx_flags= 0
     else:
@@ -1530,9 +1509,7 @@ def build_try(arguments, options):
         dump_modules(modulespecs_obj)
         sys.exit(0)
 
-    (_, db)= db_from_json_file(options.db, options.dbrepo,
-                               options.verbose, options.dry_run,
-                               keep_locked= False)
+    (_, db)= db_from_repo(options)
     if not os.path.exists(options.builddb):
         builddb= sumolib.Databases.Builddb()
     else:
@@ -1692,9 +1669,7 @@ def build_new(arguments, options):
     if not modulespecs:
         sys.exit("error: module specs missing")
 
-    (_, db)= db_from_json_file(options.db, options.dbrepo,
-                               options.verbose, options.dry_run,
-                               keep_locked= False)
+    (_, db)= db_from_repo(options)
 
     try:
         modulespecs_obj= sumolib.ModuleSpec.Specs.from_strings(
@@ -1781,9 +1756,7 @@ def build_find(arguments, options):
     except ValueError, e:
         sys.exit(str(e))
 
-    (_, db)= db_from_json_file(options.db, options.dbrepo,
-                               options.verbose, options.dry_run,
-                               keep_locked= False)
+    (_, db)= db_from_repo(options)
     builddb= builddb_from_json_file(options.builddb)
 
     if options.dump_modules:
@@ -1809,9 +1782,7 @@ def build_useall(arguments, options):
         output= os.path.join("configure","RELEASE")
 
     builddb= builddb_from_json_file(options.builddb)
-    (_, db)= db_from_json_file(options.db, options.dbrepo,
-                               options.verbose, options.dry_run,
-                               keep_locked= False)
+    (_, db)= db_from_repo(options)
     lines= fullapprelease(options.supportdir \
                              if options.supportdir else ".",
                           args["BUILDTAG"],
@@ -1855,9 +1826,7 @@ def build_use(arguments, options):
         _assume_dir("configure", options.dry_run)
         output= os.path.join("configure","RELEASE")
 
-    (_, db)= db_from_json_file(options.db, options.dbrepo,
-                               options.verbose, options.dry_run,
-                               keep_locked= False)
+    (_, db)= db_from_repo(options)
     builddb= builddb_from_json_file(options.builddb)
 
     if options.dump_modules:
@@ -2893,6 +2862,12 @@ def main():
                            (" ".join(("weight","merge",
                                       "clonemodule",
                                       "cloneversion", "replaceversion")))
+                      )
+    parser.add_option("--logmsg",
+                      action="store",
+                      type="string",
+                      help= "Specify a logmessage for automatic commits",
+                      metavar="BUILDTAG"
                       )
     parser.add_option("-t", "--buildtag",
                       action="store",
