@@ -2003,7 +2003,7 @@ def process_db(options, commands):
         return
 
     if commands[0]=="appconvert":
-        db_appconvert(options)
+        db_appconvert(commands[1:])
         return
 
     if commands[0]=="weight":
