@@ -46,6 +46,9 @@ def repo_from_dir(directory, hints, verbose, dry_run):
     "force local": bool
         If this is True, the returned repository object does not contain a
         remote repository url even if there was one.
+    "write check": bool
+        If this is True, when the repository data directory is not writable 
+        the function returns <None>.
     """
     if not isinstance(hints, dict):
         raise TypeError("hints parameter '%s' is of wrong type" % \
@@ -382,6 +385,7 @@ class ManagedRepo(object):
         self.repotype= repotype
         if repotype is None:
             return
+
         self.spec= spec
         self.directory= directory
         self.verbose= verbose
@@ -395,8 +399,19 @@ class ManagedRepo(object):
                                      (self.repotype,
                                       repr(self.spec),
                                       self.directory))
-        self.repo_obj= \
-            repo_from_dir(self.directory, {}, self.verbose, self.dry_run)
+        self.repo_obj= repo_from_dir(self.directory,
+                                     {"write check": True},
+                                     self.verbose, self.dry_run)
+        if self.repo_obj is None:
+            # this can happen for example, when the repository data directory,
+            # e.g. ".hg", is not writable. 
+            # In this case we silently fail. This is in case the current user
+            # has read- but not write access to the direcory and/or
+            # repository. 
+            # Setting self.repotype to <None> basically disables the
+            # ManagedRepo object.
+            self.repotype= None
+
     def local_changes(self):
         """return if there are local changes."""
         if self.repotype is None:
