@@ -107,12 +107,12 @@ echo "A file '$MODULES' containing the module dependencies was created in "
 echo "directory 'configure'. You may review or modify that file."
 echo
 echo "In order to build your application you first have to run"
-echo "    'sumo-build use"
+echo "    'sumo build use"
 echo "in order to create the file 'configure/RELEASE' from the "
 echo "'$MODULES' file."
 echo 
 echo "If 'sumo-build use' says that no build matches the modulespecs"
 echo "run"
-echo "    'sumo-build new'"
+echo "    'sumo build new'"
 echo "first."
 
