@@ -181,12 +181,19 @@ class Repo(object):
 
         This function returns <None> if no working repo was found.
 
+        If bool(hints["write check"]) is True, return <None> if the repository
+        directory is not writable.
+
         For parameter "hints" see comment at __init__.
         """
         # pylint: disable=R0201
         #                          Method could be a function
-        if not os.path.exists(os.path.join(directory,"_darcs")):
+        repodir= os.path.join(directory,"_darcs")
+        if not os.path.exists(repodir):
             return
+        if hints.get("write check"):
+            if not os.access(repodir, os.W_OK):
+                return
         obj= cls(directory, hints, verbose, dry_run)
         return obj
     def source_spec(self):
