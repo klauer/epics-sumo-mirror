@@ -41,7 +41,7 @@ cp $ORIG_DB $DB
 cd .. > /dev/null
 
 echo "* creating Sumo configuration files"
-sumo --db $SUMODIR/database/$DB --supportdir $SUMODIR/build --supportdir $SUMODIR/build --makeopts "-s" makeconfig
+sumo --db $SUMODIR/database/$DB --builddir $SUMODIR/build --builddir $SUMODIR/build --makeopts "-s" makeconfig
 
 #echo "* creating a BUILD containing just BASE R-3-14-8-2-1"
 #sumo build new BASE:R3-14-8-2-1 -t BASE-R3-14-8-2-1

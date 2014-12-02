@@ -88,9 +88,9 @@ def module_basedir_string(modulename):
 
 def builddb_fn(options):
     """return the path of the builddb file."""
-    if not options.supportdir:
+    if not options.builddir:
         return
-    return os.path.join(options.supportdir, BUILDDB)
+    return os.path.join(options.builddir, BUILDDB)
 
 def ensure_dir(dir_, dry_run):
     """create a dir if it doesn't already exist.
@@ -1397,7 +1397,7 @@ def db_find(arguments, options):
 def build_list(arguments, options):
     """implement "build_list"."""
     get_command_args(arguments)
-    assert_mandatory_options(options, "supportdir")
+    assert_mandatory_options(options, "builddir")
     builddb= builddb_from_json_file(builddb_fn(options))
     for buildtag in builddb.iter_builds():
         print buildtag
@@ -1405,7 +1405,7 @@ def build_list(arguments, options):
 def build_show(arguments, options):
     """implement "build_show"."""
     args= get_command_args(arguments, ["BUILDTAG"])
-    assert_mandatory_options(options, "supportdir")
+    assert_mandatory_options(options, "builddir")
     if options.buildtag:
         sys.exit("error: you cannot use --buildtag here")
 
@@ -1424,7 +1424,7 @@ def build_state(arguments, options):
     if options.buildtag:
         sys.exit("error: you cannot use --buildtag here")
 
-    assert_mandatory_options(options, "supportdir")
+    assert_mandatory_options(options, "builddir")
     if options.readonly:
         sys.exit("--readonly forbids changing the state of a build")
 
@@ -1450,12 +1450,11 @@ def build_state(arguments, options):
 def build_delete(arguments, options):
     """implement "build_delete"."""
     args= get_command_args(arguments, ["BUILDTAG"])
-    assert_mandatory_options(options, "supportdir")
+    assert_mandatory_options(options, "builddir")
     if options.readonly:
         sys.exit("--readonly forbids deleting a support")
 
-    if options.supportdir:
-        os.chdir(options.supportdir)
+    os.chdir(options.builddir)
 
     builddb= builddb_from_json_file(builddb_fn(options))
     if not builddb.has_build_tag(args["BUILDTAG"]):
@@ -1472,11 +1471,11 @@ def build_delete(arguments, options):
 def build_cleanup(arguments, options):
     """implement "build_cleanup"."""
     args= get_command_args(arguments, ["BUILDTAG"])
+    assert_mandatory_options(options, "builddir")
     if options.readonly:
         sys.exit("--readonly forbids cleaning up")
 
-    if options.supportdir:
-        os.chdir(options.supportdir)
+    os.chdir(options.builddir)
 
     cleanup_modules(args["BUILDTAG"], options.verbose, options.dry_run)
 
@@ -1490,7 +1489,7 @@ def build_try(arguments, options):
     #                          Too many statements
     args= get_command_args(arguments,
                            extra_optional="MODULES")
-    assert_mandatory_options(options, "db", "supportdir")
+    assert_mandatory_options(options, "db", "builddir")
 
     buildtag= options.buildtag
 
@@ -1662,7 +1661,7 @@ def build_new(arguments, options):
     #                          Too many statements
     args= get_command_args(arguments,
                            extra_optional="MODULES")
-    assert_mandatory_options(options, "db", "supportdir")
+    assert_mandatory_options(options, "db", "builddir")
     if options.readonly:
         sys.exit("--readonly forbids creating a new build")
 
@@ -1714,8 +1713,7 @@ def build_new(arguments, options):
         sys.exit("error: buildtag \"%s\" already taken" % buildtag)
     # create a new build in builddb, initial state is "unstable":
     builddb.new_build(buildtag, "unstable")
-    if options.supportdir:
-        os.chdir(options.supportdir)
+    os.chdir(options.builddir)
     # modifies builddb:
     try:
         create_modules(dist_dict, db, builddb, buildtag,
@@ -1745,7 +1743,7 @@ def build_find(arguments, options):
     """implement "build_find"."""
     args= get_command_args(arguments,
                            extra_optional="MODULESPECS")
-    assert_mandatory_options(options, "db", "supportdir")
+    assert_mandatory_options(options, "db", "builddir")
 
     modulespecs= []
     if options.module:
@@ -1782,7 +1780,7 @@ def build_find(arguments, options):
 def build_useall(arguments, options):
     """implement "build_useall"."""
     args= get_command_args(arguments, ["BUILDTAG"])
-    assert_mandatory_options(options, "db", "supportdir")
+    assert_mandatory_options(options, "db", "builddir")
     output= options.output
     if not output:
         _assume_dir("configure", options.dry_run)
@@ -1790,8 +1788,7 @@ def build_useall(arguments, options):
 
     builddb= builddb_from_json_file(builddb_fn(options))
     (_, db)= db_from_repo(options)
-    lines= fullapprelease(options.supportdir \
-                             if options.supportdir else ".",
+    lines= fullapprelease(options.builddir,
                           args["BUILDTAG"],
                           builddb,
                           db,
@@ -1805,7 +1802,7 @@ def build_use(arguments, options):
     """implement "build_use"."""
     args= get_command_args(arguments,
                            extra_optional="MODULES")
-    assert_mandatory_options(options, "db", "supportdir")
+    assert_mandatory_options(options, "db", "builddir")
     buildtag= options.buildtag
 
     modulespecs= []
@@ -1840,8 +1837,7 @@ def build_use(arguments, options):
         dump_modules(modulespecs_obj)
         sys.exit(0)
 
-    lines= apprelease(options.supportdir \
-                         if options.supportdir else ".",
+    lines= apprelease(options.builddir,
                       buildtag,
                       modulespecs_obj,
                       builddb,
@@ -2075,9 +2071,9 @@ def process_build(options, commands):
     if options.nolock:
         sumolib.lock.use_lockfile= False
 
-    # make the support directory absolute:
-    if options.supportdir:
-        options.supportdir= os.path.abspath(options.supportdir)
+    # make the module directory absolute:
+    if options.builddir:
+        options.builddir= os.path.abspath(options.builddir)
 
     if not commands:
         sys.exit("command missing")
@@ -2161,7 +2157,7 @@ def process(options, commands):
                   "arch", "alias", "buildtag_stem",
                   "db", "dbrepo", "extra", "makeopts", "module", "progress",
                   "readonly", "scandb", "dir_patch", "url_patch",
-                  "supportdir", "verbose"))
+                  "builddir", "verbose"))
 
     try:
         config.load(options.config)
@@ -2892,14 +2888,14 @@ def main():
                             "is unique.",
                       metavar="STEM"
                       )
-    parser.add_option("--supportdir",
+    parser.add_option("--builddir",
                       action="store",
                       type="string",
                       help= "Specify the support directory. If this option "
                             "is not given take the current working directory "
                             "as support directory.  This option value is "
                             "stored in the configuration file. ",
-                      metavar="SUPPORTDIR"
+                      metavar="BUILDDIR"
                       )
     parser.add_option("-o", "--output",
                       action="store",

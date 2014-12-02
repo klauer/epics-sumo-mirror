@@ -515,7 +515,7 @@ Here is an example of such a file::
       "makeopts": [
           "-s"
       ],
-      "supportdir": "/opt/Epics/sumo/build"
+      "builddir": "/opt/Epics/sumo/build"
   }
 
 Merging
@@ -652,7 +652,7 @@ This is the maincommand for all operations that work with builds and the build
 database (:term:`BUILDDB`).
 
 For all of the build subcommands you have to specify the dependency database
-and the build directory with --db and --supportdir or a configuration file.
+and the build directory with --db and --builddir or a configuration file.
 
 subcommands for maincommand "db"
 ++++++++++++++++++++++++++++++++
@@ -995,7 +995,7 @@ Here is a short overview on command line options:
     commands 'new' and 'try' if a buildtag is not specified. The program
     generates a new tag in the form 'stem-nnn' where 'nnn' is the smallest
     possible number that ensures that the buildtag is unique.
-``--supportdir SUPPORDIR``
+``--builddir BUILDDIR``
     Specify the support directory. If this option is not given take the current
     working directory as support directory.  This option value is stored in the
     configuration file.
