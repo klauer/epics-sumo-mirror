@@ -27,7 +27,7 @@ CONFIG=$ME-CONFIG.tmp
 MODULES=$ME-MODULES.tmp
 
 # create config file:
-$SUMO --no-default-config --#preload $MODULES --arch vxWorks-68040 --arch vxWorks-ppc603 --alias MCAN:MULTICAN --alias ALARM:BSPDEP_ALARM --builddb BUILDS.DB --buildtag-stem MYAPP --db DEPS.DB --extra "extra line" --makeopts "-sj" --progress --readonly --scandb SCAN --supportdir /supports --verbose makeconfig $CONFIG
+$SUMO --no-default-config --#preload $MODULES --arch vxWorks-68040 --arch vxWorks-ppc603 --alias MCAN:MULTICAN --alias ALARM:BSPDEP_ALARM --buildtag-stem MYAPP --db DEPS.DB --extra "extra line" --makeopts "-sj" --progress --readonly --scandb SCAN --supportdir /supports --verbose makeconfig $CONFIG
 
 echo "generated config file:"
 cat $CONFIG

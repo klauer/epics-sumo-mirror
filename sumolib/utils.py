@@ -167,7 +167,12 @@ def mk_text_file(filename, lines, verbose, dry_run):
 # -----------------------------------------------
 
 def changedir(newdir):
-    """return the current dir and change to a new dir."""
+    """return the current dir and change to a new dir.
+
+    If newdir is empty, return <None>.
+    """
+    if not newdir:
+        return
     cwd= os.getcwd()
     os.chdir(newdir)
     return cwd

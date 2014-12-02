@@ -511,7 +511,6 @@ option, each value is either a string or a list of strings.
 Here is an example of such a file::
 
   {
-      "builddb": "/opt/Epics/sumo/build/BUILDS.DB",
       "db": "/opt/Epics/sumo/database/DEPS.DB",
       "makeopts": [
           "-s"
@@ -653,7 +652,7 @@ This is the maincommand for all operations that work with builds and the build
 database (:term:`BUILDDB`).
 
 For all of the build subcommands you have to specify the dependency database
-and the build database with --db and --builddb or a configuration file.
+and the build directory with --db and --supportdir or a configuration file.
 
 subcommands for maincommand "db"
 ++++++++++++++++++++++++++++++++
@@ -981,15 +980,14 @@ Here is a short overview on command line options:
     file is changed, a 'commit' and a 'push' command will be executed. If the
     repository doesn't exist the program tries to check out a working copy from
     the given URL.",
-``--builddb BUILDDB``
-    Specify the :term:`BUILDDB` file. This option value is stored in the
-    configuration file.
 ``--scandb SCANDB``
     Specify the (optional) :term:`SCANDB` file. The scan database file contains
     information on what moduleversion can be used with what dependency version.
 ``--dumpdb``
     Dump the modified db on the console, currently only for the commands
     "weight", "merge", "cloneversion" and "replaceversion".
+``--logmsg`` LOGMESSAGE
+    Specify a logmessage for automatic commits when --dbrepo is used.
 ``-t BUILDTAG, --buildtag BUILDTAG``
     Specify a buildtag.
 ``--buildtag-stem STEM``

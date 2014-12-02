@@ -11,7 +11,6 @@ generated config file:
         "vxWorks-68040",
         "vxWorks-ppc603"
     ],
-    "builddb": "BUILDS.DB",
     "buildtag_stem": "MYAPP",
     "db": "DEPS.DB",
     "extra": [

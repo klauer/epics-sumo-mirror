@@ -22,10 +22,10 @@ PWD_NICE=`pwd`
 
 echo -e "\n-> Test sumo build state (query)" >&2
 
-BUILDS=sumo-build-new-0-BUILD.tmp
+SUPPORTDIR=tmp-sumo-build-new-0
 
 echo "state of AUTO-001:"
-$SUMO build --builddb $BUILDS state AUTO-001
+$SUMO build --supportdir $SUPPORTDIR state AUTO-001
 echo
 echo "state of AUTO-002:"
-$SUMO build --builddb $BUILDS state AUTO-002
+$SUMO build --supportdir $SUPPORTDIR state AUTO-002

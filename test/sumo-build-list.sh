@@ -27,5 +27,5 @@ TESTDIR=tmp-sumo-build-new-2
 cd $TESTDIR > /dev/null
 
 echo -e "sumo build list"
-$SUMO build --db DEPS.DB --builddb BUILDS.DB list
+$SUMO build --db DEPS.DB --supportdir . list
 
