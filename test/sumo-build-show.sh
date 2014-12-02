@@ -27,9 +27,9 @@ TESTDIR=tmp-sumo-build-new-2
 cd $TESTDIR > /dev/null
 
 echo -e "sumo build show MYAPP-001"
-$SUMO build --db DEPS.DB --supportdir . show MYAPP-001 
+$SUMO build --db DEPS.DB --builddir . show MYAPP-001 
 
 echo -e "\nsumo-build show MYAPP-002"
-$SUMO build --db DEPS.DB --supportdir . show MYAPP-002
+$SUMO build --db DEPS.DB --builddir . show MYAPP-002
 
 

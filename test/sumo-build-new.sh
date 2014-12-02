@@ -32,10 +32,10 @@ if [ ! -d $TESTDIR ]; then
 
     cd $TESTDIR > /dev/null
 
-    $SUMO build --arch vxWorks-68040 --arch vxWorks-ppc603 --db DEPS.DB --supportdir . --buildtag-stem BASE --no-make new BASE:R3-14-12-2-1 1>&2 
-    $SUMO build --arch vxWorks-68040 --arch vxWorks-ppc603 --db DEPS.DB --supportdir . state BASE-001 stable 1>&2 
-    $SUMO build --arch vxWorks-68040 --arch vxWorks-ppc603 --db DEPS.DB --supportdir . --buildtag-stem MYAPP --no-make new BASE:R3-14-12-2-1 ALARM:R3-8-modified MCAN:R2-6-3-gp BSPDEP_TIMER:R6-2 BSPDEP_VMETAS:TAGLESS-2-1-modified MISC_DBC:PATH-3-0 MISC_DEBUGMSG:R3-0 SOFT_DEVHWCLIENT:R3-0 1>&2 
-    $SUMO build --arch vxWorks-68040 --arch vxWorks-ppc603 --db DEPS.DB --supportdir . state MYAPP-001 testing 1>&2 
+    $SUMO build --arch vxWorks-68040 --arch vxWorks-ppc603 --db DEPS.DB --builddir . --buildtag-stem BASE --no-make new BASE:R3-14-12-2-1 1>&2 
+    $SUMO build --arch vxWorks-68040 --arch vxWorks-ppc603 --db DEPS.DB --builddir . state BASE-001 stable 1>&2 
+    $SUMO build --arch vxWorks-68040 --arch vxWorks-ppc603 --db DEPS.DB --builddir . --buildtag-stem MYAPP --no-make new BASE:R3-14-12-2-1 ALARM:R3-8-modified MCAN:R2-6-3-gp BSPDEP_TIMER:R6-2 BSPDEP_VMETAS:TAGLESS-2-1-modified MISC_DBC:PATH-3-0 MISC_DEBUGMSG:R3-0 SOFT_DEVHWCLIENT:R3-0 1>&2 
+    $SUMO build --arch vxWorks-68040 --arch vxWorks-ppc603 --db DEPS.DB --builddir . state MYAPP-001 testing 1>&2 
 else
     echo -e "\t$TESTDIR already exists, effectively skipping this test..." 1>&2
     cd $TESTDIR > /dev/null

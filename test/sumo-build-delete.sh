@@ -54,7 +54,7 @@ echo -e "\ncontents of BUILDS file:"
 cat BUILDS.DB
 
 echo -e "\ndelete build 'MYAPP-002'"
-$SUMO build --db DB --supportdir . delete MYAPP-002
+$SUMO build --db DB --builddir . delete MYAPP-002
 
 echo -e "\nbuild directories:"
 find . -name '*+*'
@@ -63,7 +63,7 @@ echo -e "\ncontents of BUILDS file:"
 cat BUILDS.DB
 
 echo -e "\ndelete build 'MYAPP-001'"
-$SUMO build --db DB --supportdir . delete MYAPP-001
+$SUMO build --db DB --builddir . delete MYAPP-001
 
 echo -e "\nbuild directories:"
 find . -name '*+*'
