@@ -103,7 +103,7 @@ class Repo(object):
 
         Returns the found tag or None if no tag on top was found.
         """
-        cmd= "darcs changes --last 1 --repodir %s" % self.directory
+        cmd= "darcs changes -a --last 1 --repodir %s" % self.directory
         (reply,_)= sumolib.system.system(cmd,
                              True, False,
                              self.verbose, self.dry_run)
