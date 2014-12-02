@@ -4,7 +4,7 @@ set -e
 
 SHARE=../share
 
-# define some environment variables:
+# Define some environment variables:
 source $SHARE/sumo.vars
 
 SUMO_SCAN_CONFIG="$SHARE/sumo-scan-3.14.12.config"
@@ -24,7 +24,7 @@ stem="$1"
 # Ensure that the convert tool is not run twice:
 
 if [ -e "$MODULES" ]; then
-    echo "File $MODULES exists, you app is already converted"
+    echo "File $MODULES exists, you app seems to be already converted"
     exit 0
 fi
 
@@ -40,9 +40,12 @@ fi
 # recognized by sumo-scan:
 
 if grep -q '^RULES *=' configure/CONFIG; then
-    echo "Error: you have to move the definition of 'RULES' from"
-    echo "configure/CONFIG to configure/RELEASE before you can proceed."
-    exit 1
+    echo "Warning: Your definition of 'RULES' is in file configure/CONFIG."
+    echo "This conversion script only examines file configure/RELEASE."
+    echo "If you run into problems, move the definition of 'RULES' from "
+    echo "configure/CONFIG to configure/RELEASE, remove configure/MODULES "
+    echo "and start this script again."
+    echo
 fi
 
 # The check-release utility is not compatible with sumo and must be
@@ -63,9 +66,11 @@ sumo-scan -c $SUMO_SCAN_CONFIG -d . all | sumo db --no-default-config appconvert
 # the HZB:
 
 if grep -q BASE:R3-14-12-2-1 $MODULES; then
-    sumo -c $MODULES --mergeoption "alias module" \
-            -m "BASE:R3-14-12-2-1-aragon6" \
-            makeconfig $MODULES alias module 
+    if [ `hostname` = "aragon" ]; then
+        echo "You are currently using BASE:R3-14-12-2-1 on host aragon."
+        echo "You may want to use BASE:R3-14-12-2-1-aragon6 instead,"
+        echo "in this case you have to edit file configure/MODULES."
+    fi
 fi
 
 if grep -q BESSYRULES:R2-5 $MODULES; then
@@ -81,38 +86,36 @@ if grep -q STREAM: $MODULES; then
             makeconfig $MODULES alias module 
 fi
 
-if grep -q ALARM: $MODULES; then
-    sumo -c $MODULES --mergeoption "alias module" \
-            -m "MISC_DBC:R3-0" \
-            makeconfig $MODULES alias module 
-fi
-
-if grep -q MCAN: $MODULES; then
-    sumo -c $MODULES --mergeoption "alias module" \
-            -m "MISC_DBC:R3-0 MISC_DEBUGMSG:R3-0" \
-            makeconfig $MODULES alias module 
-fi
-
-if grep -q EK: $MODULES; then
-    sumo -c $MODULES --mergeoption "alias module" \
-            -m "MISC_DEBUGMSG:R3-0" \
-            makeconfig $MODULES alias module 
-fi
+cp configure/RELEASE configure/RELEASE.orig
 
 # Write the sumo configuration file:
 
 sumo --no-default-config --buildtag-stem "$stem"  makeconfig sumo.config
 
-echo "A file '$MODULES' containing the module dependencies was created in "
-echo "directory 'configure'. You may review or modify that file."
-echo
-echo "In order to build your application you first have to run"
-echo "    'sumo build use"
-echo "in order to create the file 'configure/RELEASE' from the "
-echo "'$MODULES' file."
-echo 
-echo "If 'sumo-build use' says that no build matches the modulespecs"
-echo "run"
-echo "    'sumo build new'"
-echo "first."
+cat <<TEXT
+---------------------------------------------------------------
+finished!
+
+A file 'MODULES' containing the module dependencies was created in
+directory 'configure'. You may review or modify that file.
+
+In order to build your application you first have to run 
+
+    sumo build use
+
+in order to create the file 'configure/RELEASE' from
+'configure/MODULES'.
+
+If 'sumo build use' says that no build matches the modulespecs run 
+
+    sumo build new
+    
+If 'sumo build new' says that your module specifications are
+incomplete, run
+
+    sumo build try
+    
+and add missing dependency modules in configure/MODULES. 
+
+TEXT
 
