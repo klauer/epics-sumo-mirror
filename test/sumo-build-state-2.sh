@@ -22,14 +22,18 @@ PWD_NICE=`pwd`
 
 echo -e "\n-> Test sumo build state (setting)" >&2
 
-BUILDS=$ME-BUILD.tmp
-cp sumo-build-new-0-BUILD.tmp $BUILDS
+TESTDIR=tmp-$ME
+
+if [ ! -d $TESTDIR ]; then
+    mkdir $TESTDIR
+fi
+cp tmp-sumo-build-new-0/BUILDS.DB $TESTDIR
 
 echo -e "\nBUILDS before:"
-cat $BUILDS 
+cat $TESTDIR/BUILDS.DB
 
-$SUMO build --builddb $BUILDS state AUTO-002 stable
+$SUMO build --supportdir $TESTDIR state AUTO-002 stable
 
 echo -e "\nBUILDS after:"
-cat $BUILDS
+cat $TESTDIR/BUILDS.DB
 

@@ -39,7 +39,7 @@ cd $module > /dev/null
 
 sumo-scan -c $SUMO_SCAN_CONFIG -d . all | sumo --no-default-config appconvert - > $MODULES
 
-sumo --db $SUMODIR/database/DEPS.DB --builddb $SUMODIR/build/BUILDS.DB --supportdir $SUMODIR/build -c $MODULES makeconfig DEFAULT
+sumo --db $SUMODIR/database/DEPS.DB --supportdir $SUMODIR/build --supportdir $SUMODIR/build -c $MODULES makeconfig DEFAULT
 
 echo "creating configure/RELEASE"
 sumo build use 

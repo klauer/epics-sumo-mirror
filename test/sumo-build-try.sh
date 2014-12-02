@@ -23,15 +23,15 @@ PWD_NICE=`pwd`
 echo -e "\n-> Test sumo build try" >&2
 
 DEPS=tmp-sumo-db-convert/DEPS.DB
-BUILDS=sumo-build-new-0-BUILD.tmp
+SUPPORTDIR=tmp-sumo-build-new-0
 
 echo -e "try with modules missing:\n"
-$SUMO build --db $DEPS --builddb $BUILDS try ALARM:R3-8-modified MCAN BSPDEP_TIMER BSPDEP_VMETAS MISC_DBC 
+$SUMO build --db $DEPS --supportdir $SUPPORTDIR try ALARM:R3-8-modified MCAN BSPDEP_TIMER BSPDEP_VMETAS MISC_DBC 
 
 echo -e "\n----------------------------"
 echo -e "\ntry with complete modulelist:\n"
-$SUMO build --db $DEPS --builddb $BUILDS try BASE ALARM:R3-8-modified MCAN BSPDEP_TIMER BSPDEP_VMETAS MISC_DBC MISC_DEBUGMSG SOFT_DEVHWCLIENT
+$SUMO build --db $DEPS --supportdir $SUPPORTDIR try BASE ALARM:R3-8-modified MCAN BSPDEP_TIMER BSPDEP_VMETAS MISC_DBC MISC_DEBUGMSG SOFT_DEVHWCLIENT
 
 echo -e "\n----------------------------"
 echo -e "\ntry with completely versioned modulelist:\n"
-$SUMO build --db $DEPS --builddb $BUILDS try BASE:R3-14-12-2-1 ALARM:R3-8-modified MCAN:R2-6-1 BSPDEP_TIMER:R6-2 BSPDEP_VMETAS:TAGLESS-2-1-modified MISC_DBC:PATH-3-0 MISC_DEBUGMSG:R3-0 SOFT_DEVHWCLIENT:R3-0
+$SUMO build --db $DEPS --supportdir $SUPPORTDIR try BASE:R3-14-12-2-1 ALARM:R3-8-modified MCAN:R2-6-1 BSPDEP_TIMER:R6-2 BSPDEP_VMETAS:TAGLESS-2-1-modified MISC_DBC:PATH-3-0 MISC_DEBUGMSG:R3-0 SOFT_DEVHWCLIENT:R3-0

@@ -27,15 +27,15 @@ TESTDIR=tmp-sumo-build-new-2
 cd $TESTDIR > /dev/null
 
 echo -e "sumo build find MCAN -b:"
-$SUMO build --db DEPS.DB --builddb BUILDS.DB find MCAN 
+$SUMO build --db DEPS.DB --supportdir . find MCAN 
 
 echo -e "\nsumo-build find MCAN ALARM:R3-7"
-$SUMO build --db DEPS.DB --builddb BUILDS.DB find MCAN ALARM:R3-7
+$SUMO build --db DEPS.DB --supportdir . find MCAN ALARM:R3-7
 
 echo -e "\nsumo-build find MCAN ALARM:-R3-7:"
-$SUMO build --db DEPS.DB --builddb BUILDS.DB find MCAN ALARM:-R3-7 
+$SUMO build --db DEPS.DB --supportdir . find MCAN ALARM:-R3-7 
 
 echo -e "\nsumo-build find MCAN ALARM:+R3-8:"
-$SUMO build --db DEPS.DB --builddb BUILDS.DB find MCAN ALARM:+R3-8 
+$SUMO build --db DEPS.DB --supportdir . find MCAN ALARM:+R3-8 
 
 

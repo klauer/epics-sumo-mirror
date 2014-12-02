@@ -59,6 +59,7 @@ KNOWN_FILE_COMMANDS=set(("lock", "unlock", "edit"))
 
 CONFIG_NAME="sumo.config"
 ENV_CONFIG="SUMOCONFIG"
+BUILDDB="BUILDS.DB"
 
 # -----------------------------------------------
 # utilities
@@ -84,6 +85,12 @@ def module_dir_string(buildtag, modulename, versionname):
 def module_basedir_string(modulename):
     """create a module base directory string."""
     return modulename
+
+def builddb_fn(options):
+    """return the path of the builddb file."""
+    if not options.supportdir:
+        return
+    return os.path.join(options.supportdir, BUILDDB)
 
 def ensure_dir(dir_, dry_run):
     """create a dir if it doesn't already exist.
@@ -1390,19 +1397,19 @@ def db_find(arguments, options):
 def build_list(arguments, options):
     """implement "build_list"."""
     get_command_args(arguments)
-    assert_mandatory_options(options, "builddb")
-    builddb= builddb_from_json_file(options.builddb)
+    assert_mandatory_options(options, "supportdir")
+    builddb= builddb_from_json_file(builddb_fn(options))
     for buildtag in builddb.iter_builds():
         print buildtag
 
 def build_show(arguments, options):
     """implement "build_show"."""
     args= get_command_args(arguments, ["BUILDTAG"])
-    assert_mandatory_options(options, "builddb")
+    assert_mandatory_options(options, "supportdir")
     if options.buildtag:
         sys.exit("error: you cannot use --buildtag here")
 
-    builddb= builddb_from_json_file(options.builddb)
+    builddb= builddb_from_json_file(builddb_fn(options))
     if not builddb.has_build_tag(args["BUILDTAG"]):
         sys.exit("error: BUILDTAG \"%s\" not found" % \
                  args["BUILDTAG"])
@@ -1417,11 +1424,11 @@ def build_state(arguments, options):
     if options.buildtag:
         sys.exit("error: you cannot use --buildtag here")
 
-    assert_mandatory_options(options, "builddb")
+    assert_mandatory_options(options, "supportdir")
     if options.readonly:
         sys.exit("--readonly forbids changing the state of a build")
 
-    builddb= builddb_from_json_file(options.builddb,
+    builddb= builddb_from_json_file(builddb_fn(options),
             keep_locked= not options.dry_run)
     if not builddb.has_build_tag(args["BUILDTAG"]):
         # builddb __del__ method should remove lockfiles
@@ -1436,21 +1443,21 @@ def build_state(arguments, options):
         except ValueError, e:
             # builddb __del__ method should remove lockfiles
             sys.exit(str(e))
-        builddb.json_save(options.builddb,
+        builddb.json_save(builddb_fn(options),
                           options.verbose, options.dry_run)
         # ^^^ does also unlock the file
 
 def build_delete(arguments, options):
     """implement "build_delete"."""
     args= get_command_args(arguments, ["BUILDTAG"])
-    assert_mandatory_options(options, "builddb")
+    assert_mandatory_options(options, "supportdir")
     if options.readonly:
         sys.exit("--readonly forbids deleting a support")
 
     if options.supportdir:
         os.chdir(options.supportdir)
 
-    builddb= builddb_from_json_file(options.builddb)
+    builddb= builddb_from_json_file(builddb_fn(options))
     if not builddb.has_build_tag(args["BUILDTAG"]):
         sys.exit("error: BUILDTAG \"%s\" not found" % \
                  args["BUILDTAG"])
@@ -1459,7 +1466,7 @@ def build_delete(arguments, options):
                        options.verbose, options.dry_run)
     except ValueError, e:
         sys.exit(str(e))
-    builddb.json_save(options.builddb,
+    builddb.json_save(builddb_fn(options),
                       options.verbose, options.dry_run)
 
 def build_cleanup(arguments, options):
@@ -1483,7 +1490,7 @@ def build_try(arguments, options):
     #                          Too many statements
     args= get_command_args(arguments,
                            extra_optional="MODULES")
-    assert_mandatory_options(options, "db", "builddb")
+    assert_mandatory_options(options, "db", "supportdir")
 
     buildtag= options.buildtag
 
@@ -1500,7 +1507,7 @@ def build_try(arguments, options):
     try:
         modulespecs_obj= sumolib.ModuleSpec.Specs.from_strings(
                              modulespecs,
-                             mspecs_from_build(options.builddb),
+                             mspecs_from_build(builddb_fn(options)),
                              options.arch)
     except ValueError, e:
         sys.exit(str(e))
@@ -1510,10 +1517,10 @@ def build_try(arguments, options):
         sys.exit(0)
 
     (_, db)= db_from_repo(options)
-    if not os.path.exists(options.builddb):
+    if not os.path.exists(builddb_fn(options)):
         builddb= sumolib.Databases.Builddb()
     else:
-        builddb= builddb_from_json_file(options.builddb,
+        builddb= builddb_from_json_file(builddb_fn(options),
                                         keep_locked= False)
 
     buildcache= init_buildcache(options.scandb,
@@ -1655,7 +1662,7 @@ def build_new(arguments, options):
     #                          Too many statements
     args= get_command_args(arguments,
                            extra_optional="MODULES")
-    assert_mandatory_options(options, "db", "builddb")
+    assert_mandatory_options(options, "db", "supportdir")
     if options.readonly:
         sys.exit("--readonly forbids creating a new build")
 
@@ -1674,7 +1681,7 @@ def build_new(arguments, options):
     try:
         modulespecs_obj= sumolib.ModuleSpec.Specs.from_strings(
                              modulespecs,
-                             mspecs_from_build(options.builddb),
+                             mspecs_from_build(builddb_fn(options)),
                              options.arch)
     except ValueError, e:
         sys.exit(str(e))
@@ -1692,10 +1699,10 @@ def build_new(arguments, options):
     except ValueError, e:
         sys.exit(str(e))
 
-    if not os.path.exists(options.builddb):
+    if not os.path.exists(builddb_fn(options)):
         builddb= sumolib.Databases.Builddb()
     else:
-        builddb= builddb_from_json_file(options.builddb,
+        builddb= builddb_from_json_file(builddb_fn(options),
                     keep_locked= not options.dry_run)
     if buildtag is None:
         if not options.buildtag_stem:
@@ -1726,11 +1733,11 @@ def build_new(arguments, options):
         builddb.unlock_file()
         raise
 
-    builddb.json_save(options.builddb, options.verbose, options.dry_run)
+    builddb.json_save(builddb_fn(options), options.verbose, options.dry_run)
     # ^^^ does also unlock the file
     rmcleanup(buildtag)
     if not options.no_make and not options.no_checkout:
-        call_make(options.builddb, buildtag,
+        call_make(builddb_fn(options), buildtag,
                   options.makeopts,
                   options.verbose, options.dry_run)
 
@@ -1738,7 +1745,7 @@ def build_find(arguments, options):
     """implement "build_find"."""
     args= get_command_args(arguments,
                            extra_optional="MODULESPECS")
-    assert_mandatory_options(options, "db", "builddb")
+    assert_mandatory_options(options, "db", "supportdir")
 
     modulespecs= []
     if options.module:
@@ -1751,13 +1758,13 @@ def build_find(arguments, options):
     try:
         modulespecs_obj= sumolib.ModuleSpec.Specs.from_strings(
                              modulespecs,
-                             mspecs_from_build(options.builddb),
+                             mspecs_from_build(builddb_fn(options)),
                              options.arch)
     except ValueError, e:
         sys.exit(str(e))
 
     (_, db)= db_from_repo(options)
-    builddb= builddb_from_json_file(options.builddb)
+    builddb= builddb_from_json_file(builddb_fn(options))
 
     if options.dump_modules:
         dump_modules(modulespecs_obj)
@@ -1775,13 +1782,13 @@ def build_find(arguments, options):
 def build_useall(arguments, options):
     """implement "build_useall"."""
     args= get_command_args(arguments, ["BUILDTAG"])
-    assert_mandatory_options(options, "db", "builddb")
+    assert_mandatory_options(options, "db", "supportdir")
     output= options.output
     if not output:
         _assume_dir("configure", options.dry_run)
         output= os.path.join("configure","RELEASE")
 
-    builddb= builddb_from_json_file(options.builddb)
+    builddb= builddb_from_json_file(builddb_fn(options))
     (_, db)= db_from_repo(options)
     lines= fullapprelease(options.supportdir \
                              if options.supportdir else ".",
@@ -1798,7 +1805,7 @@ def build_use(arguments, options):
     """implement "build_use"."""
     args= get_command_args(arguments,
                            extra_optional="MODULES")
-    assert_mandatory_options(options, "db", "builddb")
+    assert_mandatory_options(options, "db", "supportdir")
     buildtag= options.buildtag
 
     modulespecs= []
@@ -1812,7 +1819,7 @@ def build_use(arguments, options):
     try:
         modulespecs_obj= sumolib.ModuleSpec.Specs.from_strings(
                              modulespecs,
-                             mspecs_from_build(options.builddb),
+                             mspecs_from_build(builddb_fn(options)),
                              options.arch)
     except ValueError, e:
         sys.exit(str(e))
@@ -1827,7 +1834,7 @@ def build_use(arguments, options):
         output= os.path.join("configure","RELEASE")
 
     (_, db)= db_from_repo(options)
-    builddb= builddb_from_json_file(options.builddb)
+    builddb= builddb_from_json_file(builddb_fn(options))
 
     if options.dump_modules:
         dump_modules(modulespecs_obj)
@@ -2067,6 +2074,11 @@ def process_build(options, commands):
     #                          Too many local variables
     if options.nolock:
         sumolib.lock.use_lockfile= False
+
+    # make the support directory absolute:
+    if options.supportdir:
+        options.supportdir= os.path.abspath(options.supportdir)
+
     if not commands:
         sys.exit("command missing")
     if commands[0] not in KNOWN_BUILD_COMMANDS:
@@ -2146,7 +2158,7 @@ def process(options, commands):
                 config_name,
                 ENV_CONFIG,
                 ( "#preload","#opt-preload","#postload","#opt-postload",
-                  "arch", "alias", "builddb", "buildtag_stem",
+                  "arch", "alias", "buildtag_stem",
                   "db", "dbrepo", "extra", "makeopts", "module", "progress",
                   "readonly", "scandb", "dir_patch", "url_patch",
                   "supportdir", "verbose"))
@@ -2178,7 +2190,7 @@ def process(options, commands):
             try:
                 modulespecs_obj= sumolib.ModuleSpec.Specs.from_strings(
                                      options.module,
-                                     mspecs_from_build(options.builddb),
+                                     mspecs_from_build(builddb_fn(options)),
                                      options.arch)
             except ValueError, e:
                 sys.exit(str(e))
@@ -2838,13 +2850,6 @@ def main():
                             "the program tries to check out a working copy "
                             "from the given URL.",
                       metavar="REPOSITORY"
-                      )
-    parser.add_option("--builddb",
-                      action="store",
-                      type="string",
-                      help= "Specify the BUILDDB file. This option value is "
-                            "stored in the configuration file. ",
-                      metavar="BUILDDB"
                       )
     parser.add_option("--scandb",
                       action="store",

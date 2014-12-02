@@ -87,7 +87,7 @@ Create a configuration file for sumo-db::
 
 Create a configuration file for sumo-build::
 
-  sumo-build --scandb $SUMODIR/SCAN.DB --db $SUMODIR/DEPS.DB --builddb $SUMODIR/BUILDS.DB --supportdir $SUMODIR --makeopts "-s" makeconfig
+  sumo-build --scandb $SUMODIR/SCAN.DB --db $SUMODIR/DEPS.DB --supportdir $SUMODIR --makeopts "-s" makeconfig
 
 Build the EPICS base
 ++++++++++++++++++++
@@ -134,7 +134,7 @@ Now we create a configuration file for sumo-db that contains the list of
 Here we create a configuration file for sumo-build that contains the
 :term:`modulespecs` and :term:`aliases` from file "MODULES" ::
 
-  sumo-build --db $SUMODIR/DEPS.DB --builddb $SUMODIR/BUILDS.DB --supportdir $SUMODIR -c MODULES makeconfig
+  sumo-build --db $SUMODIR/DEPS.DB --supportdir $SUMODIR -c MODULES makeconfig
 
 Create a build for an application
 ---------------------------------

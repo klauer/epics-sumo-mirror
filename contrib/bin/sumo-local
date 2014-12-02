@@ -40,13 +40,13 @@ mkdir database
 
 cp $SUMODIR/database/DEPS.DB database
 
-sumo --db $LOCAL_SUMODIR/database/DEPS.DB --builddb $LOCAL_SUMODIR/build/BUILDS.DB --supportdir $LOCAL_SUMODIR/build --makeopts "-s" makeconfig DEFAULT
+sumo --db $LOCAL_SUMODIR/database/DEPS.DB --supportdir $LOCAL_SUMODIR/build --supportdir $LOCAL_SUMODIR/build --makeopts "-s" makeconfig DEFAULT
 
 cp -a $dir $module-TEST
 
 sumo db cloneversion $module $version TEST path $LOCAL_SUMODIR/$module-TEST
 
-sumo --builddb $SUMODIR/build/BUILDS.DB makeconfig MODULES.tmp module -m ":build:$build" -m $module:TEST
+sumo --supportdir $SUMODIR/build makeconfig MODULES.tmp module -m ":build:$build" -m $module:TEST
 
 echo "you can re-create a build with:"
 echo 'sumo build new ":load:MODULES.tmp"'

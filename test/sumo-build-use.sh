@@ -26,6 +26,6 @@ TESTDIR=tmp-sumo-build-new-2
 
 cd $TESTDIR > /dev/null
 
-$SUMO build --db DEPS.DB --builddb BUILDS.DB use -t MYAPP-002 MCAN -o - | sed -e "s#`pwd -P`##"
+$SUMO build --db DEPS.DB --supportdir . use -t MYAPP-002 MCAN -o - | sed -e "s#`pwd -P`##"
 
 
