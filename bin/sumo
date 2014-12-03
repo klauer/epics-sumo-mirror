@@ -180,7 +180,7 @@ def db_from_repo(options, keep_locked= False):
     try:
         mngr.prepare_read() # executes a "pull" command
     except IOError, e:
-        sys.exit(str(e))
+        sys.exit("Error while loading dependency database,\n%s" % str(e))
     db= db_from_json_file(options.db, keep_locked)
     return (mngr, db)
 
@@ -188,7 +188,11 @@ def db_to_repo(options, mngr, db, command, arguments):
     """save a db and use the repo mngr."""
     # pylint: disable=R0913
     #                          Too many arguments
-    db.json_save(options.db, options.verbose, options.dry_run)
+    try:
+        db.json_save(options.db, options.verbose, options.dry_run)
+    except IOError, e:
+        # IOError may happen when the file cannot be locked
+        sys.exit("Error while saving dependency database,\n%s" % str(e))
     if mngr:
         if options.logmsg:
             msg= options.logmsg
@@ -201,9 +205,9 @@ def builddb_from_json_file(filename, keep_locked= False):
     try:
         builddb= sumolib.Databases.Builddb.from_json_file(filename, keep_locked)
     except ValueError, e:
-        sys.exit("Error while loading build database (builddb),\n%s" % str(e))
+        sys.exit("Error while loading build database,\n%s" % str(e))
     except IOError, e:
-        sys.exit("Error while loading build database (builddb),\n%s" % str(e))
+        sys.exit("Error while loading build database,\n%s" % str(e))
     return builddb
 
 def init_buildcache(scandb_name, builddb, db):
@@ -2198,13 +2202,30 @@ def process(options, commands):
         if options.readonly:
             sys.exit("--readonly forbids editing a database file")
         args= get_command_args(commands[1:], ["FILE"])
-        sumolib.lock.lock_a_file(args["FILE"])
+        l= sumolib.lock.MyLock(args["FILE"])
+        try:
+            l.lock()
+        except IOError, e:
+            if not l.was_locked:
+                raise
+            else:
+                sys.exit(str(e))
         return
     elif commands[0]=="unlock":
         if options.readonly:
             sys.exit("--readonly forbids editing a database file")
         args= get_command_args(commands[1:], ["FILE"])
-        sumolib.lock.force_unlock_a_file(args["FILE"])
+        l= sumolib.lock.MyLock(args["FILE"])
+        try:
+            l.lock()
+        except IOError, e:
+            if not l.was_locked:
+                raise
+        if not l.was_locked:
+            l.unlock()
+            sys.exit("error, cannot unlock '%s' since file wasn't locked" % \
+                     args["FILE"])
+        l.unlock(force= True)
         return
     elif commands[0]=="edit":
         if options.readonly:

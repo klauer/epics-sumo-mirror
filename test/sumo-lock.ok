@@ -1,0 +1,17 @@
+creating a lock
+listing of tmp-sumo-lock now:
+A
+A.lock
+removing the lock
+listing of tmp-sumo-lock now:
+A
+
+creating a lock
+try to create the lock again (should fail)
+file 'tmp-sumo-lock/A' is locked: simpson@burns.com:12345
+removing the lock
+listing of tmp-sumo-lock now:
+A
+
+unlock without locking before
+error, cannot unlock 'tmp-sumo-lock/A' since file wasn't locked

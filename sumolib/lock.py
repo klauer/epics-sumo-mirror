@@ -6,6 +6,8 @@
 
 import sys
 import os
+import platform
+import errno
 
 if __name__ == "__main__":
     # if this module is directly called like a script, we have to add the path
@@ -17,76 +19,110 @@ import sumolib.system
 
 __version__="2.2.3" #VERSION#
 
+use_lockfile= True
+
 try:
-    import lockfile
-    use_lockfile= True
-except ImportError, _lockfile_err:
-    if str(_lockfile_err) != 'No module named lockfile':
-        raise
+    import pwd
+except ImportError:
+    import getpass
+    pwd = None
+
+def current_user():
+    """return the current user in a hopefully portable way."""
+    if pwd:
+        return pwd.getpwuid(os.geteuid()).pw_name
     else:
-        sys.stderr.write("module 'lockfile' not found - " +\
-                         "file accesses will not be locked\n")
-        use_lockfile= False
+        return getpass.getuser()
 
 # -----------------------------------------------
-# file locking
+# file locking wrapper
 # -----------------------------------------------
 
-def lock_a_file(filename, timeout=20):
-    """lock a file.
-    """
-    timedelta= 5
-    tries= timeout / timedelta
-    if timeout % timedelta > 0:
-        tries+= 1
-    if not use_lockfile:
-        return None
-    lock= lockfile.LockFile(filename)
-    # patch for not working lockfile module:
-    lock.unique_name= "%s-%s" % (lock.unique_name, os.path.basename(filename))
-    try_= 1
-    while True:
-        try_+= 1
-        try:
-            lock.acquire(timedelta)
-            return lock
-        except lockfile.Error,e:
-            timeout-= timedelta
-            if timeout>0:
-                sys.stderr.write("waiting to aquire lock on "
-                                 "file '%s' (%2d of %2d tries)...\n" % \
-                                 (filename, try_, tries))
-                continue
-            extra= str(e)
-            if extra:
-                extra= " (%s)" % extra
-            txt= ("File locking of file %s failed after %d seconds%s. "
-                  "If you know that the file shouldn't be locked "
-                  "you may try to remove the lockfiles.") % \
-                 (filename, timeout, extra)
-            raise AssertionError(txt)
+# An extra locking mechanism (only for Linux) is implemented here in
+# order to lock the file when the sumo-edit tool is used at the same
+# time.
 
-def force_unlock_a_file(filename):
-    """enforce the removal of a lock."""
-    if not use_lockfile:
-        return
-    lock= lockfile.LockFile(filename)
-    if lock.i_am_locking():
-        lock.release()
-    else:
-        try:
-            lock.acquire(0)
-        except lockfile.AlreadyLocked:
-            lock.break_lock()
+class MyLock(object):
+    """Implement a simple file locking mechanism."""
+    # pylint: disable=R0903
+    #                          Too few public methods
+    def _mkfile(self):
+        """create a file, only for windows."""
+        if self.method=="link":
+            raise AssertionError("_mkfile should not be used for "
+                                 "method 'link'")
+    def lock(self):
+        """do the file locking.
+        Raises "IOError(message)" if the file is already locked, may raise
+        OSError on other errors from the operating system.
 
-def unlock_a_file(lock):
-    """unlock a file.
-    """
-    if not use_lockfile:
-        return
-    if lock is None:
-        raise AssertionError("unexpected: lock is None")
-    lock.release()
+        On linux, create a symbolic link, otherwise a directory. The symbolic
+        link has some information on the user, host and process ID.
+
+        On other systems the created directory contains a file whose name has
+        some information on the user, host and process ID.
+        """
+        if self.disabled:
+            return
+        if self.has_lock:
+            raise AssertionError("cannot lock '%s' twice" % self.filename)
+        self.info="%s@%s:%s" % (current_user(),
+                                platform.node(),
+                                os.getpid())
+        try:
+            if self.method=="link":
+                os.symlink(self.info, self.lockname)
+            else:
+                os.mkdir(self.lockname)
+                open(os.path.join(self.lockname,self.info),'w').close()
+        except OSError, e:
+            # probably "File exists"
+            if e.errno==errno.EEXIST:
+                self.was_locked= True
+                if self.method=="link":
+                    raise IOError("file '%s' is locked: %s" % \
+                                  (self.filename, os.readlink(self.lockname)))
+                else:
+                    txt= " ".join(os.listdir(self.lockname))
+                    raise IOError("file '%s' is locked: %s" % \
+                                  (self.filename, txt))
+        self.has_lock= True
+    def __init__(self, filename):
+        """create a portable lock.
+
+        """
+        if not use_lockfile:
+            self.disabled= True
+        else:
+            self.disabled= False
+        self.filename= filename
+        self.lockname= "%s.lock" % self.filename
+        self.has_lock= False
+        self.was_locked= False
+        self.info= None
+        if platform.system()=="Linux":
+            self.method= "link"
+        else:
+            self.method= "mkdir"
+    def unlock(self, force= False):
+        """unlock."""
+        if self.disabled:
+            return
+        if not force:
+            if not self.has_lock:
+                raise AssertionError("cannot unlock since a lock "
+                                     "wasn't taken")
+        if self.method=="link":
+            os.unlink(self.lockname)
+        else:
+            for f in os.listdir(self.lockname):
+                os.unlink(os.path.join(self.lockname,f))
+            os.rmdir(self.lockname)
+        self.has_lock= False
+
+# -----------------------------------------------
+# edit with lock:
+# -----------------------------------------------
 
 def edit_with_lock(filename, verbose, dry_run):
     """lock a file, edit it, then unlock the file."""
@@ -97,19 +133,21 @@ def edit_with_lock(filename, verbose, dry_run):
     if not ed_lst:
         raise IOError("error: environment variable 'VISUAL' or "
                          "'EDITOR' must be defined")
-    l= lock_a_file(filename)
-    found= False
-    errors= ["couldn't start editor(s):"]
-    for editor in ed_lst:
-        try:
-            sumolib.system.system("%s %s" % (editor, filename),
-                                  False, False, verbose, dry_run)
-            found= True
-            break
-        except IOError, e:
-            # cannot find or not start editor
-            errors.append(str(e))
-    unlock_a_file(l)
+    mylock= MyLock(filename).lock()
+    try:
+        found= False
+        errors= ["couldn't start editor(s):"]
+        for editor in ed_lst:
+            try:
+                sumolib.system.system("%s %s" % (editor, filename),
+                                      False, False, verbose, dry_run)
+                found= True
+                break
+            except IOError, e:
+                # cannot find or not start editor
+                errors.append(str(e))
+    finally:
+        mylock.unlock()
     if not found:
         raise IOError("\n".join(errors))
 
