@@ -972,6 +972,13 @@ Here is a short overview on command line options:
 ``--db DB``
     Define the name of the DB file. This option value is stored in the
     configuration file. 
+``--dbrepomode MODE``
+    Specify how sumo should use the dependency database repository. There are
+    three possible values: 'get', 'pull' and 'push'. With 'get' the foreign
+    repository is cloned if the local repository does not yet exist. With
+    'pull' sumo does a pull and merge before each read operation on the
+    database. With 'push' it additionally does a push after each modification
+    of the database. The default is 'get'."
 ``--dbrepo REPOSITORY``
     Define a REPOSITORY for the db file. REPOSITORY must consist of 'REPOTYPE
     URL', REPOTYPE may be 'darcs', 'hg' or 'git'. Option --db must specify a
