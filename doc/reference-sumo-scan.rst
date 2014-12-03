@@ -420,6 +420,10 @@ Here is a short overview on command line options:
     file.
 ``-t, --trace``
     Switch on some trace messages.
+``--exceptions``
+    On fatal errors that raise python exceptions, don't catch these. This will
+    show a python stacktrace instead of an error message and may be useful for
+    debugging the program."
 ``-v, --verbose``
     Show command calls. This option value is stored in the configuration file.
 ``-n, --dry-run``

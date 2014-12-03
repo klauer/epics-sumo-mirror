@@ -52,6 +52,8 @@ IGNORE_NAMES= set(["TOP", "EPICS_SUPPORT",
 CONFIG_NAME="sumo-scan.config"
 ENV_CONFIG="SUMOSCANCONFIG"
 
+catch_exceptions= True
+
 # -----------------------------------------------
 # RELEASE file scanning
 # -----------------------------------------------
@@ -450,6 +452,9 @@ def process(options, commands):
     #                          Too many branches
     # pylint: disable=R0915
     #                          Too many statements
+    global catch_exceptions
+    if options.exceptions:
+        catch_exceptions= False
     config_name= None
     if not options.no_default_config:
         config_name= CONFIG_NAME
@@ -466,14 +471,22 @@ def process(options, commands):
     try:
         config.load(options.config)
     except ValueError, e:
+        if not catch_exceptions:
+            raise
         sys.exit("Error while loading config file,\n%s" % str(e))
     except IOError, e:
+        if not catch_exceptions:
+            raise
         sys.exit("Error while loading config file,\n%s" % str(e))
     try:
         config.merge_options(options, options.mergeoption)
     except ValueError, e:
+        if not catch_exceptions:
+            raise
         sys.exit(str(e))
     except TypeError, e:
+        if not catch_exceptions:
+            raise
         sys.exit(str(e))
 
     if not commands:
@@ -836,6 +849,14 @@ def main():
     parser.add_option("--trace",
                       action="store_true",
                       help="Switch on some trace messages.",
+                      )
+    parser.add_option("--exceptions",
+                      action="store_true",
+                      help="On fatal errors that raise python "
+                           "exceptions, don't catch these. This will "
+                           "show a python stacktrace instead of an "
+                           "error message and may be useful for "
+                           "debugging the program."
                       )
     parser.add_option("-v", "--verbose",
                       action="store_true",

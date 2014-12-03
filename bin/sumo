@@ -61,6 +61,8 @@ CONFIG_NAME="sumo.config"
 ENV_CONFIG="SUMOCONFIG"
 BUILDDB="BUILDS.DB"
 
+catch_exceptions= True
+
 # -----------------------------------------------
 # utilities
 # -----------------------------------------------
@@ -164,8 +166,12 @@ def db_from_json_file(filename, keep_locked= False):
         db= sumolib.Databases.Dependencies.from_json_file(filename,
                                                           keep_locked)
     except ValueError, e:
+        if not catch_exceptions:
+            raise
         sys.exit(errtxt("Error while loading dependency database", e))
     except IOError, e:
+        if not catch_exceptions:
+            raise
         sys.exit(errtxt("Error while loading dependency database", e))
     return db
 
@@ -187,6 +193,8 @@ def db_from_repo(options, keep_locked= False):
     try:
         mngr.prepare_read() # executes a "pull" command
     except IOError, e:
+        if not catch_exceptions:
+            raise
         sys.exit(errtxt("Error while loading dependency database",e))
     db= db_from_json_file(options.db, keep_locked)
     return (mngr, db)
@@ -199,6 +207,8 @@ def db_to_repo(options, mngr, db, command, arguments):
         db.json_save(options.db, options.verbose, options.dry_run)
     except IOError, e:
         # IOError may happen when the file cannot be locked
+        if not catch_exceptions:
+            raise
         sys.exit(errtxt("Error while saving dependency database",e))
     if mngr:
         if options.logmsg:
@@ -212,8 +222,12 @@ def builddb_from_json_file(filename, keep_locked= False):
     try:
         builddb= sumolib.Databases.Builddb.from_json_file(filename, keep_locked)
     except ValueError, e:
+        if not catch_exceptions:
+            raise
         sys.exit(errtxt("Error while loading build database",e))
     except IOError, e:
+        if not catch_exceptions:
+            raise
         sys.exit(errtxt("Error while loading build database",e))
     return builddb
 
@@ -227,7 +241,11 @@ def init_buildcache(scandb_name, builddb, db):
                                                                  False)
         except ValueError, e:
             sys.exit(errtxt("Error while loading build database",e))
+            if not catch_exceptions:
+                raise
         except IOError, e:
+            if not catch_exceptions:
+                raise
             sys.exit(errtxt("Error while loading build database",e))
     buildcache.update_from_builddb(builddb, db)
     return buildcache
@@ -331,6 +349,8 @@ def _add_dependencies(module_dict, db, build_module_dict,
     try:
         db.assert_module(modulename, versionname)
     except KeyError, e:
+        if not catch_exceptions:
+            raise
         sys.exit(errtxt("Error in dependency database", e))
     for dep in db.iter_dependencies(modulename, versionname):
         if module_dict.has_key(dep):
@@ -828,6 +848,8 @@ def create_database(deps, repoinfo, groups, archs, dir_patches, url_patches):
                     try:
                         (_dep_name, _dep_version)= _path2namevname[dep_path]
                     except KeyError, _:
+                        if not catch_exceptions:
+                            raise
                         sys.exit(("at module %s version %s "+ \
                                   "path %s: "+ \
                                   "missing data for "+ \
@@ -898,6 +920,8 @@ def cleanup_modules(build_tag, verbose, dry_run):
     try:
         cleanup_struc= loadcleanup(build_tag, must_exist= True)
     except IOError, e:
+        if not catch_exceptions:
+            raise
         sys.exit(str(e))
 
     module_list= cleanup_struc["modules"]
@@ -988,6 +1012,8 @@ def call_make(builddb_name, buildtag,
         # sys.stderr.write("CALLING MAKE: %s\n" % cmd)
         sumolib.system.system(cmd, False, False, verbose, dry_run)
     except IOError, e:
+        if not catch_exceptions:
+            raise
         sys.exit("Error: make failed, %s" % str(e))
 
     builddb= builddb_from_json_file(builddb_name, keep_locked= not dry_run)
@@ -1138,6 +1164,8 @@ def db_weight(arguments, options):
     try:
         weight= int(args["WEIGHT"])
     except ValueError, _:
+        if not catch_exceptions:
+            raise
         sys.exit("error: weight must be an integer")
     (mngr, db)= db_from_repo(options,
                              not options.dumpdb and (not options.dry_run))
@@ -1146,6 +1174,8 @@ def db_weight(arguments, options):
                                                         args["MODULES"],
                                                         None)
     except ValueError, e:
+        if not catch_exceptions:
+            raise
         sys.exit(str(e))
 
     if options.dump_modules:
@@ -1177,6 +1207,8 @@ def db_filter(arguments, options):
                                                         None,
                                                         options.arch)
     except ValueError, e:
+        if not catch_exceptions:
+            raise
         sys.exit(str(e))
 
     if options.dump_modules:
@@ -1216,6 +1248,8 @@ def db_alias_add(arguments, options):
     try:
         module_spec.assert_exact()
     except ValueError, e:
+        if not catch_exceptions:
+            raise
         sys.exit(str(e))
     (mngr, db)= db_from_repo(options,
                              not options.dumpdb and (not options.dry_run))
@@ -1236,6 +1270,8 @@ def db_dependency_add(arguments, options):
     try:
         module_spec.assert_exact()
     except ValueError, e:
+        if not catch_exceptions:
+            raise
         sys.exit(str(e))
     (mngr, db)= db_from_repo(options,
                              not options.dumpdb and (not options.dry_run))
@@ -1258,6 +1294,8 @@ def db_dependency_delete(arguments, options):
     try:
         module_spec.assert_exact()
     except ValueError, e:
+        if not catch_exceptions:
+            raise
         sys.exit(str(e))
     (mngr, db)= db_from_repo(options,
                              not options.dumpdb and (not options.dry_run))
@@ -1287,6 +1325,8 @@ def db_clone_replace_version(command, arguments, options):
                          args["OLD-VERSION"], args["NEW-VERSION"],
                          do_replace)
     except ValueError, e:
+        if not catch_exceptions:
+            raise
         sys.exit(str(e))
 
     if not sourcespec:
@@ -1298,6 +1338,8 @@ def db_clone_replace_version(command, arguments, options):
             source_spec_obj= \
                 sumolib.repos.SourceSpec.from_string_sourcespec(sourcespec)
         except ValueError, e:
+            if not catch_exceptions:
+                raise
             sys.exit(errtxt("Error",e))
         changed= db.set_source_spec(modulename, args["NEW-VERSION"],
                                     source_spec_obj)
@@ -1363,6 +1405,8 @@ def db_show_newest_all(command, arguments, options):
                                                         None,
                                                         options.arch)
     except ValueError, e:
+        if not catch_exceptions:
+            raise
         sys.exit(str(e))
 
     if options.dump_modules:
@@ -1450,6 +1494,8 @@ def build_state(arguments, options):
             builddb.change_state(args["BUILDTAG"], args["NEW-STATE"])
         except ValueError, e:
             # builddb __del__ method should remove lockfiles
+            if not catch_exceptions:
+                raise
             sys.exit(str(e))
         builddb.json_save(builddb_fn(options),
                           options.verbose, options.dry_run)
@@ -1472,6 +1518,8 @@ def build_delete(arguments, options):
         delete_modules(builddb, args["BUILDTAG"],
                        options.verbose, options.dry_run)
     except ValueError, e:
+        if not catch_exceptions:
+            raise
         sys.exit(str(e))
     builddb.json_save(builddb_fn(options),
                       options.verbose, options.dry_run)
@@ -1517,6 +1565,8 @@ def build_try(arguments, options):
                              mspecs_from_build(builddb_fn(options)),
                              options.arch)
     except ValueError, e:
+        if not catch_exceptions:
+            raise
         sys.exit(str(e))
 
     if options.dump_modules:
@@ -1537,6 +1587,8 @@ def build_try(arguments, options):
     try:
         modulespecs_obj.assert_unique()
     except ValueError, e:
+        if not catch_exceptions:
+            raise
         sys.exit(str(e))
 
     modules_not_exact_spec= []
@@ -1551,6 +1603,8 @@ def build_try(arguments, options):
     try:
         sets_dict= db.sets_dict(modulespecs_obj)
     except ValueError, e:
+        if not catch_exceptions:
+            raise
         sys.exit(str(e))
 
     # add all missing dependencies:
@@ -1691,6 +1745,8 @@ def build_new(arguments, options):
                              mspecs_from_build(builddb_fn(options)),
                              options.arch)
     except ValueError, e:
+        if not catch_exceptions:
+            raise
         sys.exit(str(e))
 
     if options.dump_modules:
@@ -1700,10 +1756,14 @@ def build_new(arguments, options):
     try:
         dist_dict= modulespecs_obj.to_dist_dict()
     except ValueError, e:
+        if not catch_exceptions:
+            raise
         sys.exit(str(e))
     try:
         db.assert_complete_modulelist(dist_dict)
     except ValueError, e:
+        if not catch_exceptions:
+            raise
         sys.exit(str(e))
 
     if not os.path.exists(builddb_fn(options)):
@@ -1767,6 +1827,8 @@ def build_find(arguments, options):
                              mspecs_from_build(builddb_fn(options)),
                              options.arch)
     except ValueError, e:
+        if not catch_exceptions:
+            raise
         sys.exit(str(e))
 
     (_, db)= db_from_repo(options)
@@ -1827,6 +1889,8 @@ def build_use(arguments, options):
                              mspecs_from_build(builddb_fn(options)),
                              options.arch)
     except ValueError, e:
+        if not catch_exceptions:
+            raise
         sys.exit(str(e))
 
     if options.dump_modules:
@@ -2140,6 +2204,9 @@ def process(options, commands):
     #                          Too many statements
     # pylint: disable=R0911
     #                          Too many return statements
+    global catch_exceptions
+    if options.exceptions:
+        catch_exceptions= False
     if not commands:
         if options.list:
             pr_list(KNOWN_MAIN_COMMANDS)
@@ -2170,14 +2237,22 @@ def process(options, commands):
     try:
         config.load(options.config)
     except ValueError, e:
+        if not catch_exceptions:
+            raise
         sys.exit(errtxt("Error while loading config file",e))
     except IOError, e:
+        if not catch_exceptions:
+            raise
         sys.exit(errtxt("Error while loading config file",e))
     try:
         config.merge_options(options, options.mergeoption)
     except ValueError, e:
+        if not catch_exceptions:
+            raise
         sys.exit(str(e))
     except TypeError, e:
+        if not catch_exceptions:
+            raise
         sys.exit(str(e))
     if not commands:
         sys.exit("command missing")
@@ -2197,6 +2272,8 @@ def process(options, commands):
                                      mspecs_from_build(builddb_fn(options)),
                                      options.arch)
             except ValueError, e:
+                if not catch_exceptions:
+                    raise
                 sys.exit(str(e))
             config.set("module", modulespecs_obj.to_stringlist())
         config.save(commands[1], commands[2:])
@@ -2210,6 +2287,8 @@ def process(options, commands):
         try:
             l.lock()
         except IOError, e:
+            if not catch_exceptions:
+                raise
             if not l.was_locked:
                 raise
             else:
@@ -2243,6 +2322,8 @@ def process(options, commands):
             sumolib.lock.edit_with_lock(args["FILE"],
                                         options.verbose, options.dry_run)
         except IOError, e:
+            if not catch_exceptions:
+                raise
             sys.exit(str(e))
         if mngr:
             mngr.finish_write("edit")
@@ -3073,6 +3154,14 @@ def main():
                       action="store_true",
                       help="All questions the program may ask are treated "
                            "as if the user replied 'yes'.",
+                      )
+    parser.add_option("--exceptions",
+                      action="store_true",
+                      help="On fatal errors that raise python "
+                           "exceptions, don't catch these. This will "
+                           "show a python stacktrace instead of an "
+                           "error message and may be useful for "
+                           "debugging the program."
                       )
     parser.add_option("-v", "--verbose",
                       action="store_true",
