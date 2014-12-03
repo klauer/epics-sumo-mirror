@@ -189,12 +189,14 @@ class Container(object):
             # already locked
             return
         self.unlock_file()
-        self.lock= sumolib.lock.lock_a_file(filename)
+        # may raise IOError exception if file is locked:
+        self.lock= sumolib.lock.MyLock(filename)
+        self.lock.lock()
         self.lock_filename= filename
     def unlock_file(self):
         """remove a filelock if there is one."""
         if self.lock_filename is not None:
-            sumolib.lock.unlock_a_file(self.lock)
+            self.lock.unlock()
             self.lock= None
             self.lock_filename= None
     def __del__(self):
@@ -229,7 +231,9 @@ class Container(object):
             return result
         if not os.path.exists(filename):
             raise IOError("file \"%s\" not found" % filename)
-        l= sumolib.lock.lock_a_file(filename)
+        l= sumolib.lock.MyLock(filename)
+        # may raise IOError exception if file is locked:
+        l.lock()
         # If the line in "try" raises an exception, the file lock
         # is removed, then the exception is re-raised
 
@@ -237,15 +241,15 @@ class Container(object):
         # in case of a syntax error within the JSON file.
         try:
             result= cls(loadfile(filename))
-        except ValueError, _:
-            sumolib.lock.unlock_a_file(l)
+        except Exception, _:
+            l.unlock()
             raise
 
         if keep_locked:
             result.lock= l
             result.lock_filename= filename
         else:
-            sumolib.lock.unlock_a_file(l)
+            l.unlock()
         result.selfcheck("(created from JSON file %s)" % filename)
         return result
     def json_string(self):
@@ -261,21 +265,22 @@ class Container(object):
         if filename=="-":
             raise ValueError("filename must not be \"-\"")
         backup= "%s.bak" % filename
-        if not dry_run:
-            self.lock_file(filename)
-        if os.path.exists(backup):
-            if verbose:
-                print "remove %s" % backup
+        try:
             if not dry_run:
-                os.remove(backup)
-        if os.path.exists(filename):
-            if verbose:
-                print "rename %s to %s" % (filename, backup)
+                self.lock_file(filename)
+            if os.path.exists(backup):
+                if verbose:
+                    print "remove %s" % backup
+                if not dry_run:
+                    os.remove(backup)
+            if os.path.exists(filename):
+                if verbose:
+                    print "rename %s to %s" % (filename, backup)
+                if not dry_run:
+                    os.rename(filename, backup)
             if not dry_run:
-                os.rename(filename, backup)
-        if not dry_run:
-            dump_file(filename, self.to_dict())
-        if not dry_run:
+                dump_file(filename, self.to_dict())
+        finally:
             self.unlock_file()
 
 def _test():
