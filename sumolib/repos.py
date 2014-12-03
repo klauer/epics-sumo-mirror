@@ -370,10 +370,16 @@ class ManagedRepo(object):
     Do pull before read,
     commit and push after write.
     """
-    def __init__(self, repotype, spec, directory, verbose, dry_run):
+    def __init__(self, repotype, spec, mode, directory,
+                 verbose, dry_run):
         """create the object.
 
         spec must be a dictionary with "url" and "tag" (optional).
+
+        mode must be "get", "pull" or "push".
+          get: only create the repo if it doesn't yet exist, nothing else
+          pull: pull and merge before every read
+          push: like pull but push after every write
 
         If repotype is None, create an empty object that basically
         does nothing.
@@ -387,6 +393,9 @@ class ManagedRepo(object):
             return
 
         self.spec= spec
+        if mode not in ["get","pull","push"]:
+            raise AssertionError("unknown mode: %s" % repr(mode))
+        self.mode= mode
         self.directory= directory
         self.verbose= verbose
         self.dry_run= dry_run
@@ -427,7 +436,8 @@ class ManagedRepo(object):
             return
         # pylint: disable=E1103
         #                          Instance of 'Repo' has no 'pull' member
-        self.repo_obj.pull_merge()
+        if self.mode!='get':
+            self.repo_obj.pull_merge()
     def finish_write(self, message):
         """do commit and push."""
         if self.repotype is None:
@@ -437,7 +447,8 @@ class ManagedRepo(object):
         # pylint: disable=E1103
         #                          Instance of 'Repo' has no '...' member
         self.repo_obj.commit(message)
-        self.repo_obj.push()
+        if self.mode=='push':
+            self.repo_obj.push()
 
 def _test():
     """perform internal tests."""

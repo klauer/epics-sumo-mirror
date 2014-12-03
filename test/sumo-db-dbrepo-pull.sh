@@ -24,7 +24,7 @@ EXAMPLEDIR=tmp-$ME
 
 PWD_NICE=`pwd`
 
-echo -e "\n-> Test sumo db cloneversion with --dbrepo (repo pull)." >&2
+echo -e "\n-> Test sumo db cloneversion with --dbrepo (mode 'pull')." >&2
 
 rm -rf $EXAMPLEDIR
 mkdir $EXAMPLEDIR
@@ -53,6 +53,6 @@ $SUMO db --db local-git/DEPS.DB showall ALARM
 echo
 echo "sumo db showall ALARM with --dbrepo (fetch changes from central repo)"
 echo "----------------------------------------"
-$SUMO db --db local-darcs/DEPS.DB --dbrepo "darcs central-darcs" showall ALARM
-$SUMO db --db local-hg/DEPS.DB --dbrepo "hg central-hg" showall ALARM
-$SUMO db --db local-git/DEPS.DB --dbrepo "git central-git" showall ALARM
+$SUMO db --db local-darcs/DEPS.DB --dbrepo "darcs central-darcs" --dbrepomode pull showall ALARM
+$SUMO db --db local-hg/DEPS.DB --dbrepo "hg central-hg" --dbrepomode pull showall ALARM
+$SUMO db --db local-git/DEPS.DB --dbrepo "git central-git" --dbrepomode pull showall ALARM

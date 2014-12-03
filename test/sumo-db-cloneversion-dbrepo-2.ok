@@ -1,0 +1,160 @@
+Added module:
+{
+    "ALARM": {
+        "R3-8-1": {
+            "aliases": {
+                "BASE": "EPICS_BASE",
+                "BSPDEP_TIMER": "TIMER",
+                "MISC_DBC": "DBC"
+            },
+            "archs": {
+                "RTEMS-mvme2100": true,
+                "RTEMS-mvme5500": true,
+                "linux-x86": true,
+                "vxWorks-68040": true,
+                "vxWorks-ppc603": true
+            },
+            "dependencies": [
+                "BASE",
+                "BSPDEP_TIMER",
+                "MISC_DBC"
+            ],
+            "source": {
+                "darcs": {
+                    "tag": "R3-8-1",
+                    "url": "/home/pfeiffer/net/project/sumo/test/data/repos/support/alarm"
+                }
+            }
+        }
+    }
+}
+
+Added module:
+{
+    "ALARM": {
+        "R3-8-1": {
+            "aliases": {
+                "BASE": "EPICS_BASE",
+                "BSPDEP_TIMER": "TIMER",
+                "MISC_DBC": "DBC"
+            },
+            "archs": {
+                "RTEMS-mvme2100": true,
+                "RTEMS-mvme5500": true,
+                "linux-x86": true,
+                "vxWorks-68040": true,
+                "vxWorks-ppc603": true
+            },
+            "dependencies": [
+                "BASE",
+                "BSPDEP_TIMER",
+                "MISC_DBC"
+            ],
+            "source": {
+                "darcs": {
+                    "tag": "R3-8-1",
+                    "url": "/home/pfeiffer/net/project/sumo/test/data/repos/support/alarm"
+                }
+            }
+        }
+    }
+}
+
+Added module:
+{
+    "ALARM": {
+        "R3-8-1": {
+            "aliases": {
+                "BASE": "EPICS_BASE",
+                "BSPDEP_TIMER": "TIMER",
+                "MISC_DBC": "DBC"
+            },
+            "archs": {
+                "RTEMS-mvme2100": true,
+                "RTEMS-mvme5500": true,
+                "linux-x86": true,
+                "vxWorks-68040": true,
+                "vxWorks-ppc603": true
+            },
+            "dependencies": [
+                "BASE",
+                "BSPDEP_TIMER",
+                "MISC_DBC"
+            ],
+            "source": {
+                "darcs": {
+                    "tag": "R3-8-1",
+                    "url": "/home/pfeiffer/net/project/sumo/test/data/repos/support/alarm"
+                }
+            }
+        }
+    }
+}
+
+
+===========================================
+Test of darcs:
+
+Logs of local repository:
+-------------------------------------------
+Mon Jan 01 01:01:01 2014 +0100  Homer.Simpson@burns.com
+  * cloneversion ALARM R3-7 R3-8-1
+
+Mon Jan 01 01:01:01 2014 +0100  Homer.Simpson@burns.com
+  * initial record
+
+Logs of central repository:
+-------------------------------------------
+Mon Jan 01 01:01:01 2014 +0100  Homer.Simpson@burns.com
+  * initial record
+
+===========================================
+Test of mercurial:
+
+Logs of local repository:
+-------------------------------------------
+changeset:   1:ffffffffffff
+tag:         tip
+user:        Homer.Simpson@burns.com
+date:        Mon Jan 01 01:01:01 2014 +0100
+summary:     cloneversion ALARM R3-7 R3-8-1
+
+changeset:   0:ffffffffffff
+user:        Homer.Simpson@burns.com
+date:        Mon Jan 01 01:01:01 2014 +0100
+summary:     initial record
+
+
+Logs of central repository:
+-------------------------------------------
+changeset:   0:ffffffffffff
+tag:         tip
+user:        Homer.Simpson@burns.com
+date:        Mon Jan 01 01:01:01 2014 +0100
+summary:     initial record
+
+
+===========================================
+Test of git:
+
+Logs of local repository:
+-------------------------------------------
+commit ffffffffffff
+Author: Homer.Simpson@burns.com
+Date:   Mon Jan 01 01:01:01 2014 +0100
+
+    cloneversion ALARM R3-7 R3-8-1
+
+commit ffffffffffff
+Author: Homer.Simpson@burns.com
+Date:   Mon Jan 01 01:01:01 2014 +0100
+
+    initial record
+
+Logs of central repository:
+-------------------------------------------
+commit ffffffffffff
+Author: Homer.Simpson@burns.com
+Date:   Mon Jan 01 01:01:01 2014 +0100
+
+    initial record

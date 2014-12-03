@@ -17,6 +17,7 @@ sumo-db-find
 sumo-db-check
 sumo-db-dbrepo-create
 sumo-db-cloneversion-dbrepo
+sumo-db-cloneversion-dbrepo-2
 sumo-db-dbrepo-pull
 sumo-db-dbrepo-conflict
 sumo-db-makeconfig
