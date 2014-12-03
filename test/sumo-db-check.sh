@@ -55,4 +55,5 @@ $SUMO db --db $DEPS check
 
 echo -e "\nsumo db --db samples/BUILDS check:"
 
-$SUMO db --db $ME-DEPS.tmp check 2>&1 | tail -n 1
+$SUMO db --db $ME-DEPS.tmp check 2>&1 
+true

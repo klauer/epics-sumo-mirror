@@ -4,8 +4,8 @@ Backing up ./DEPS.DB(.~0~)
 We have conflicts in the following files:
 ./DEPS.DB
 
-Error while loading dependency database,
-error, 'darcs pull' failed
+Error while loading dependency database
+'darcs pull' failed
 
 Conflict in mercurial repo:
 --------------------------
@@ -13,13 +13,13 @@ not updating: not a linear update
 (merge or update --check to force update)
 warning: conflicts during merge.
 merging DEPS.DB incomplete! (edit conflicts, then use 'hg resolve --mark')
-Error while loading dependency database,
-error, 'hg merge' failed
+Error while loading dependency database
+'hg merge' failed
 
 Conflict in git repo:
 --------------------------
 Auto-merging DEPS.DB
 CONFLICT (content): Merge conflict in DEPS.DB
 Automatic merge failed; fix conflicts and then commit the result.
-Error while loading dependency database,
-error, 'git pull' failed
+Error while loading dependency database
+'git pull' failed

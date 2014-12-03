@@ -69,6 +69,13 @@ def script_shortname():
     """return the name of this script without a path component."""
     return os.path.basename(sys.argv[0])
 
+rx_exept= re.compile(r'^(Error|error|Err|err)[:, ] *')
+
+def errtxt(msg, e):
+    """Create an error message from an exception."""
+    e_txt= rx_exept.sub("", str(e))
+    return "%s\n%s" % (msg, e_txt)
+
 # -----------------------------------------------
 # directory utilities and filenames
 # -----------------------------------------------
@@ -157,9 +164,9 @@ def db_from_json_file(filename, keep_locked= False):
         db= sumolib.Databases.Dependencies.from_json_file(filename,
                                                           keep_locked)
     except ValueError, e:
-        sys.exit("Error while loading dependency database,\n%s" % str(e))
+        sys.exit(errtxt("Error while loading dependency database", e))
     except IOError, e:
-        sys.exit("Error while loading dependency database,\n%s" % str(e))
+        sys.exit(errtxt("Error while loading dependency database", e))
     return db
 
 def db_from_repo(options, keep_locked= False):
@@ -180,7 +187,7 @@ def db_from_repo(options, keep_locked= False):
     try:
         mngr.prepare_read() # executes a "pull" command
     except IOError, e:
-        sys.exit("Error while loading dependency database,\n%s" % str(e))
+        sys.exit(errtxt("Error while loading dependency database",e))
     db= db_from_json_file(options.db, keep_locked)
     return (mngr, db)
 
@@ -192,7 +199,7 @@ def db_to_repo(options, mngr, db, command, arguments):
         db.json_save(options.db, options.verbose, options.dry_run)
     except IOError, e:
         # IOError may happen when the file cannot be locked
-        sys.exit("Error while saving dependency database,\n%s" % str(e))
+        sys.exit(errtxt("Error while saving dependency database",e))
     if mngr:
         if options.logmsg:
             msg= options.logmsg
@@ -205,9 +212,9 @@ def builddb_from_json_file(filename, keep_locked= False):
     try:
         builddb= sumolib.Databases.Builddb.from_json_file(filename, keep_locked)
     except ValueError, e:
-        sys.exit("Error while loading build database,\n%s" % str(e))
+        sys.exit(errtxt("Error while loading build database",e))
     except IOError, e:
-        sys.exit("Error while loading build database,\n%s" % str(e))
+        sys.exit(errtxt("Error while loading build database",e))
     return builddb
 
 def init_buildcache(scandb_name, builddb, db):
@@ -219,11 +226,9 @@ def init_buildcache(scandb_name, builddb, db):
             buildcache= sumolib.Databases.BuildCache.from_json_file(scandb_name,
                                                                  False)
         except ValueError, e:
-            sys.exit("Error while loading build database (buildcache),\n%s" % \
-                     str(e))
+            sys.exit(errtxt("Error while loading build database",e))
         except IOError, e:
-            sys.exit("Error while loading build database (buildcache),\n%s" % \
-                     str(e))
+            sys.exit(errtxt("Error while loading build database",e))
     buildcache.update_from_builddb(builddb, db)
     return buildcache
 
@@ -326,7 +331,7 @@ def _add_dependencies(module_dict, db, build_module_dict,
     try:
         db.assert_module(modulename, versionname)
     except KeyError, e:
-        sys.exit("%s in db file" % str(e))
+        sys.exit(errtxt("Error in dependency database", e))
     for dep in db.iter_dependencies(modulename, versionname):
         if module_dict.has_key(dep):
             continue
@@ -983,8 +988,7 @@ def call_make(builddb_name, buildtag,
         # sys.stderr.write("CALLING MAKE: %s\n" % cmd)
         sumolib.system.system(cmd, False, False, verbose, dry_run)
     except IOError, e:
-        sys.stderr.write("error: make failed, %s" % str(e))
-        sys.exit(1)
+        sys.exit("Error: make failed, %s" % str(e))
 
     builddb= builddb_from_json_file(builddb_name, keep_locked= not dry_run)
     builddb.change_state(buildtag, "testing")
@@ -1294,7 +1298,7 @@ def db_clone_replace_version(command, arguments, options):
             source_spec_obj= \
                 sumolib.repos.SourceSpec.from_string_sourcespec(sourcespec)
         except ValueError, e:
-            sys.exit("Error: "+str(e))
+            sys.exit(errtxt("Error",e))
         changed= db.set_source_spec(modulename, args["NEW-VERSION"],
                                     source_spec_obj)
     print "Added module:"
@@ -2166,9 +2170,9 @@ def process(options, commands):
     try:
         config.load(options.config)
     except ValueError, e:
-        sys.exit("Error while loading config file,\n%s" % str(e))
+        sys.exit(errtxt("Error while loading config file",e))
     except IOError, e:
-        sys.exit("Error while loading config file,\n%s" % str(e))
+        sys.exit(errtxt("Error while loading config file",e))
     try:
         config.merge_options(options, options.mergeoption)
     except ValueError, e:
