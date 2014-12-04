@@ -2392,25 +2392,56 @@ Use "help [maincommand] for further details.
 """,
         "configuration":"""
 
-Many options that can be given on the command line can be taken from
-configuration files. 
+The philosphy
+-------------
+
+In sumo you can always specify all parameters for a command with command line
+options and arguments. Configuration files are files that have defaults for
+command line options. 
+
+All command line options start with a dash "-". Short command line options have
+the form "-<char>", long command line options have the form "--<string>".
+
+All command line options have a long form, some also have a short form.
+
+Some command line options take no argument, some options require an argument.
+Some command line options may be given more than once with an argument, they
+are used to define lists of values.
+
+The configuration file defines a map that maps keys to values, where keys are
+the names of long command line options and values are booleans, strings or
+lists or strings. Not all command line options can be set in a configuration
+file, "sumo -h" shows you which can.
 
 File format
 -----------
-A configuration file is always in JSON  format. Each key is the long name of a
-command line option, each value is either a string or a list of strings.
+
+A configuration file is always in JSON format. Each key is the long name of a
+command line option, each value is a boolean, a string or a list of strings.
+
+Here is an example of such a file:
+
+  {
+      "db": "/opt/Epics/sumo/database/DEPS.DB",
+      "makeopts": [
+          "-s"
+      ],
+      "builddir": "/opt/Epics/sumo/build"
+  }
 
 Merging
 -------
+
 Sumo can read several configuration files, in this case the data is *merged*.
 
-Merging means that keys are not yet defined are simply added. For keys that
-already exist and whose values are strings, the latter one overwrites the first
-one.  For keys that already exist and whose values are lists, the lists are
-simply concatenated.
+Merging means that keys not yet defined are simply added. For keys that already
+exist and whose values are strings, the latter one overwrites the first one.
+For keys that already exist and whose values are lists, the lists are simply
+concatenated.
 
 Default paths
 -------------
+
 Sumo reads and merges configuration files from various places, which one
 depends on your environment variable settings and command line options. 
 
@@ -2435,8 +2466,8 @@ The config option
 After the configuration files from default paths were read the program reads
 the all configuration files specified by the "-c" or "--config" option.
 
-Specify the loading of other files
-----------------------------------
+Loading other files
+-------------------
 
 In a configuration file you can specify names of other configuration files that
 can or must be loaded. These files are merged as described above.
@@ -2444,17 +2475,50 @@ can or must be loaded. These files are merged as described above.
 There are 4 special keys in the configuration file that are used to specify
 other files:
 
--  #preload 
--  #opt-preload
--  #postload
--  #opt-postload
+#preload [file list]
+  Load files *before* all other definitions
 
-The value of each of these keys must be a list of strings that specify the
-filenames. The preload commands load the files *before* the rest of the
-configuration file, the postload command load the files *after* the
-configuration file. The opt- keys are used to specify *optional* files, it is
-not an error if these files don't exist. Note that the loaded files may also
-contain one or more of the load keys in the list above.
+#opt-preload [file list]
+  Load files *before* all other definitions, if they exist. 
+
+#postload [file list]
+  Load files *after* all other definitions
+
+#opt-postload [file list]
+  Load files *after* all other definitions, if they exist.
+
+Note that the loaded files can also contain one or more these special keys.
+
+The default filename for the sumo configuration file
+----------------------------------------------------
+
+The default filename of this file is sumo.config.
+
+Keys in the sumo configuration file
++++++++++++++++++++++++++++++++++++
+
+This is the list of keys that may be used in a configuration file, for the meanings of the keys see the sumo command line option documentation or use "sumo -h".
+
+#preload       [list of strings]
+#opt-preload   [list of strings]
+#postload      [list of strings]
+#opt-postload  [list of strings]
+arch           [list of strings]
+alias          [list of strings]
+buildtag_stem  [string]
+db             [string]
+dbrepo         [string]
+dbrepomode     [string]
+extra          [list of strings]
+makeopts       [list of strings]
+module         [list of strings]
+progress       [boolean]
+readonly       [boolean]
+scandb         [string]
+dir_patch      [list of strings]
+url_patch      [list of strings]
+builddir       [string]
+verbose        [boolean]
 """,
         "makeconfig":"""
 makeconfig FILENAME [OPTIONNAMES]
@@ -2887,13 +2951,14 @@ def main():
                       action="append",
                       type="string",
                       help= "If an option with name OPTIONNAME is given "
-                            "here and it is a list option, the lists from "
-                            "the config file and the command line are "
-                            "merged. The new list is the sum of both lists "
-                            "where it is ensured that for all elements the "
-                            "string up to the first colon \":\" is unique "
-                            "(this is usefule for module specifications "
-                            "that have the form \"module:version\").",
+                            "here and it is a list option, the lists "
+                            "from the configuration file and the command "
+                            "line are merged. The new list is the sum of "
+                            "both lists where it is ensured that for all "
+                            "elements the string up to the first colon "
+                            "':' is unique (this is useful for module "
+                            "specifications that have the form "
+                            "'module:version').",
                       metavar="OPTIONNAME"
                       )
     parser.add_option("--#preload",
@@ -2937,39 +3002,44 @@ def main():
     parser.add_option("--db",
                       action="store",
                       type="string",
-                      help= "Define the name of the DB file. This option "
-                            "value is stored in the configuration file. ",
+                      help="Define the name of the DB file. "
+                           "A default for this option can be put in a "
+                           "configuration file.",
                       metavar="DB"
                       )
     parser.add_option("--dbrepomode",
                       action="store",
                       type="string",
-                      help= "Specify how sumo should use the dependency "
-                            "database repository. There are three possible "
-                            "values: 'get', 'pull' and 'push'. With 'get' "
-                            "the foreign repository is cloned if the local "
-                            "repository does not yet exist. With 'pull' "
-                            "sumo does a pull and merge before each read "
-                            "operation on the database. With 'push' it "
-                            "additionally does a push after each "
-                            "modification of the database. The default is "
-                            "'get'.",
+                      help="Specify how sumo should use the dependency "
+                           "database repository. There are three possible "
+                           "values: 'get', 'pull' and 'push'. With 'get' "
+                           "the foreign repository is cloned if the local "
+                           "repository does not yet exist. With 'pull' "
+                           "sumo does a pull and merge before each read "
+                           "operation on the database. With 'push' it "
+                           "additionally does a push after each "
+                           "modification of the database. The default is "
+                           "'get'. "
+                           "A default for this option can be put in a "
+                           "configuration file.",
                       metavar="MODE"
                       )
     parser.add_option("--dbrepo",
                       action="store",
                       type="string",
-                      help= "Define a REPOSITORY for the DB file. "
-                            "REPOSITORY must consist of 'REPOTYPE URL', "
-                            "REPOTYPE may be 'darcs', 'hg' or 'git'. Option "
-                            "--db must specify a file path whose directory "
-                            "part will contain the repository for the db "
-                            "file. Before reading the db file a 'pull' "
-                            "command will be executed.  When the file is "
-                            "changed, a 'commit' and a 'push' command will "
-                            "be executed. If the repository doesn't exist "
-                            "the program tries to check out a working copy "
-                            "from the given URL.",
+                      help="Define a REPOSITORY for the DB file. "
+                           "REPOSITORY must consist of 'REPOTYPE URL', "
+                           "REPOTYPE may be 'darcs', 'hg' or 'git'. Option "
+                           "--db must specify a file path whose directory "
+                           "part will contain the repository for the db "
+                           "file. Before reading the db file a 'pull' "
+                           "command will be executed.  When the file is "
+                           "changed, a 'commit' and a 'push' command will "
+                           "be executed. If the repository doesn't exist "
+                           "the program tries to check out a working copy "
+                           "from the given URL. "
+                           "A default for this option can be put in a "
+                           "configuration file.",
                       metavar="REPOSITORY"
                       )
     parser.add_option("--scandb",
@@ -3016,10 +3086,11 @@ def main():
     parser.add_option("--builddir",
                       action="store",
                       type="string",
-                      help= "Specify the support directory. If this option "
-                            "is not given take the current working directory "
-                            "as support directory.  This option value is "
-                            "stored in the configuration file. ",
+                      help="Specify the support directory. If this option "
+                           "is not given take the current working directory "
+                           "as support directory. "
+                           "A default for this option can be put in a "
+                           "configuration file.",
                       metavar="BUILDDIR"
                       )
     parser.add_option("-o", "--output",
@@ -3035,22 +3106,24 @@ def main():
     parser.add_option("-x", "--extra",
                       action="append",
                       type="string",
-                      help= "Specify an extra line that is added to the "
-                            "generated RELEASE file. This option value is "
-                            "stored in the configuration file. ",
+                      help="Specify an extra line that is added to the "
+                           "generated RELEASE file. "
+                           "A default for this option can be put in a "
+                           "configuration file.",
                       metavar="EXTRALINE"
                       )
     parser.add_option("-a", "--alias",
                       action="append",
                       type="string",
-                      help= "Define an alias for the commands 'use' and "
-                            "'useall'. An alias must have the form FROM:TO. "
-                            "The path of module named 'FROM' is put in the "
-                            "generated RELEASE file as a variable named "
-                            "'TO'. You can specify more than one of these by "
-                            "repeating this option or by joining values in a "
-                            "single string separated by spaces. This option "
-                            "value is stored in the configuration file. ",
+                      help="Define an alias for the commands 'use' and "
+                           "'useall'. An alias must have the form FROM:TO. "
+                           "The path of module named 'FROM' is put in the "
+                           "generated RELEASE file as a variable named "
+                           "'TO'. You can specify more than one of these by "
+                           "repeating this option or by joining values in a "
+                           "single string separated by spaces. "
+                           "A default for this option can be put in a "
+                           "configuration file.",
                       metavar="ALIAS"
                       )
     parser.add_option("--arch",
@@ -3060,19 +3133,20 @@ def main():
                            "You can specify more than one of these by "
                            "repeating this option or by joining values in "
                            "a single string separated by spaces. "
-                           "This option value is stored in the "
+                           "A default for this option can be put in a "
                            "configuration file.",
                       metavar="TARGETARCHITECTURE"
                       )
     parser.add_option("-m", "--module",
                       action="append",
-                      help= "Define a modulespec. If you specify modules "
-                            "with this option you don't have to put "
-                            "modulespecs after some of the commands.  You "
-                            "can specify more than one of these by repeating "
-                            "this option or by joining values in a single "
-                            "string separated by spaces.  This option value "
-                            "is stored in the configuration file. ",
+                      help="Define a modulespec. If you specify modules "
+                           "with this option you don't have to put "
+                           "modulespecs after some of the commands.  You "
+                           "can specify more than one of these by repeating "
+                           "this option or by joining values in a single "
+                           "string separated by spaces. "
+                           "A default for this option can be put in a "
+                           "configuration file.",
                       metavar="MODULESPEC"
                       )
     parser.add_option("-X", "--exclude-states",
@@ -3096,7 +3170,8 @@ def main():
                            "regular expression is applied to every source "
                            "path generated. You can specify more than one "
                            "PATCHEXPRESSION. "
-                           "This option value is stored in the CONFIGFILE.",
+                           "A default for this option can be put in a "
+                           "configuration file.",
                       metavar="PATCHEXPRESSION"
                       )
     parser.add_option("-U", "--url-patch",
@@ -3108,7 +3183,8 @@ def main():
                            "regular expression is applied to every source "
                            "url generated. You can specify more than one "
                            "PATCHEXPRESSION. "
-                           "This option value is stored in the CONFIGFILE.",
+                           "A default for this option can be put in a "
+                           "configuration file.",
                       metavar="PATCHEXPRESSION"
                       )
     parser.add_option("--noignorecase",
@@ -3133,14 +3209,14 @@ def main():
                            "You can specify more than one of these by "
                            "repeating this option or by joining values in "
                            "a single string separated by spaces. "
-                           "This option value is stored in the "
+                           "A default for this option can be put in a "
                            "configuration file.",
                       )
     parser.add_option("--readonly",
                       action="store_true",
                       help="Do not allow modifying the database files or "
                            "the support directory. "
-                           "This option value is stored in the "
+                           "A default for this option can be put in a "
                            "configuration file.",
                       )
     parser.add_option("--nolock",
@@ -3149,8 +3225,9 @@ def main():
                       )
     parser.add_option("-p", "--progress",
                       action="store_true",
-                      help= "Show progress on stderr. This option value is "
-                            "stored in the configuration file. "
+                      help="Show progress on stderr. "
+                           "A default for this option can be put in a "
+                           "configuration file.",
                       )
     parser.add_option("--trace",
                       action="store_true",
@@ -3184,8 +3261,9 @@ def main():
                       )
     parser.add_option("-v", "--verbose",
                       action="store_true",
-                      help="Show command calls. This option value is stored "
-                           "in the configuration file.",
+                      help="Show command calls. "
+                           "A default for this option can be put in a "
+                           "configuration file.",
                       )
     parser.add_option("-n", "--dry-run",
                       action="store_true",

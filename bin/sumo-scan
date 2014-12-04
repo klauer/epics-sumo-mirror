@@ -665,13 +665,14 @@ def main():
                       action="append",
                       type="string",
                       help= "If an option with name OPTIONNAME is given "
-                            "here and it is a list option, the lists from "
-                            "the config file and the command line are "
-                            "merged. The new list is the sum of both lists "
-                            "where it is ensured that for all elements the "
-                            "string up to the first colon \":\" is unique "
-                            "(this is usefule for module specifications "
-                            "that have the form \"module:version\").",
+                            "here and it is a list option, the lists "
+                            "from the configuration file and the command "
+                            "line are merged. The new list is the sum of "
+                            "both lists where it is ensured that for all "
+                            "elements the string up to the first colon "
+                            "':' is unique (this is useful for module "
+                            "specifications that have the form "
+                            "'module:version').",
                       metavar="OPTIONNAME"
                       )
     parser.add_option("--#preload",
@@ -719,7 +720,8 @@ def main():
                            "You can specify more than one of these by "
                            "repeating this option or by joining values in "
                            "a single string separated by spaces. "
-                           "This option value is stored in the CONFIGFILE.",
+                           "A default for this option can be put in a "
+                           "configuration file.",
                       metavar="DIR"
                       )
     parser.add_option("-i","--info-file",
@@ -737,7 +739,8 @@ def main():
                            "You can specify more than one of these by "
                            "repeating this option or by joining values in "
                            "a single string separated by spaces. "
-                           "This option value is stored in the CONFIGFILE.",
+                           "A default for this option can be put in a "
+                           "configuration file.",
                       metavar="NAME"
                       )
     parser.add_option("-g", "--group-basedir",
@@ -751,8 +754,8 @@ def main():
                            "You can specify more than one of these by "
                            "repeating this option or by joining values in "
                            "a single string separated by spaces. "
-                           "The value of this "
-                           "option is stored in the configuration file.",
+                           "A default for this option can be put in a "
+                           "configuration file.",
                       metavar="DIR"
                       )
     parser.add_option("--exclude-path",
@@ -763,7 +766,8 @@ def main():
                            "You can specify more than one of these by "
                            "repeating this option or by joining values in "
                            "a single string separated by spaces. "
-                           "This option value is stored in the CONFIGFILE.",
+                           "A default for this option can be put in a "
+                           "configuration file.",
                       metavar="REGEXP"
                       )
     parser.add_option("--exclude-deps",
@@ -771,7 +775,8 @@ def main():
                       type="string",
                       help="Exclude all paths whose dependencies "
                            "match REGEXP. "
-                           "This option value is stored in the CONFIGFILE.",
+                           "A default for this option can be put in a "
+                           "configuration file.",
                       metavar="REGEXP"
                       )
     parser.add_option("--ignore-changes",
@@ -787,7 +792,8 @@ def main():
                            "You can specify more than one of these by "
                            "repeating this option or by joining values in "
                            "a single string separated by spaces. "
-                           "This option value is stored in the CONFIGFILE.",
+                           "A default for this option can be put in a "
+                           "configuration file.",
                       metavar="REGEXP"
                       )
     parser.add_option("-D", "--dir-patch",
@@ -799,7 +805,8 @@ def main():
                            "regular expression is applied to every source "
                            "path generated. You can specify more than one "
                            "PATCHEXPRESSION. "
-                           "This option value is stored in the CONFIGFILE.",
+                           "A default for this option can be put in a "
+                           "configuration file.",
                       metavar="PATCHEXPRESSION"
                       )
     parser.add_option("-U", "--url-patch",
@@ -811,29 +818,34 @@ def main():
                            "regular expression is applied to every source "
                            "url generated. You can specify more than one "
                            "PATCHEXPRESSION. "
-                           "This option value is stored in the CONFIGFILE.",
+                           "A default for this option can be put in a "
+                           "configuration file.",
                       metavar="PATCHEXPRESSION"
                       )
     parser.add_option( "--hint",
                       action="append",
                       help="Specify a HINT. A HINT has the form "
-                      "REGEXP,FLAG{,FLAG}. REGEXP is a regular expression "
-                      "that is matched with the module path. FLAG is a "
-                      "string that gives hints how to treat that module. "
-                      "You can specify more than one hint. "
-                      "This option value is stored in the CONFIGFILE.",
+                           "REGEXP,FLAG{,FLAG}. REGEXP is a regular "
+                           "expression that is matched with the module "
+                           "path. FLAG is a string that gives hints how to "
+                           "treat that module. You can specify more than "
+                           "one hint. "
+                           "A default for this option can be put in a "
+                           "configuration file.",
                       metavar="HINT"
                       )
     parser.add_option("--missing-tag",
                       action="store_true",
                       help="Show directories where a repository was "
                            "found but no tag. "
-                           "This option value is stored in the CONFIGFILE.",
+                           "A default for this option can be put in a "
+                           "configuration file.",
                       )
     parser.add_option("--missing-repo",
                       action="store_true",
                       help="Show directories where no repository was found. "
-                           "This option value is stored in the CONFIGFILE.",
+                           "A default for this option can be put in a "
+                           "configuration file.",
                       )
     parser.add_option("-t", "--buildtag",
                       action="store",
@@ -843,8 +855,9 @@ def main():
                       )
     parser.add_option("-p", "--progress",
                       action="store_true",
-                      help= "Show progress on stderr. This option value is "
-                            "stored in the configuration file. "
+                      help="Show progress on stderr. "
+                           "A default for this option can be put in a "
+                           "configuration file.",
                       )
     parser.add_option("--trace",
                       action="store_true",
@@ -860,8 +873,9 @@ def main():
                       )
     parser.add_option("-v", "--verbose",
                       action="store_true",
-                      help="Show command calls. This option value is stored "
-                           "in the configuration file.",
+                      help="Show command calls. "
+                           "A default for this option can be put in a "
+                           "configuration file.",
                       )
     parser.add_option("-n", "--dry-run",
                       action="store_true",

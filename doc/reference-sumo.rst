@@ -499,82 +499,8 @@ Configuration Files
 +++++++++++++++++++
 
 Many options that can be given on the command line can be taken from
-configuration files. 
-
-File format
-:::::::::::
-
-A configuration file is always in `JSON
-<http://www.json.org>`_ format. Each key is the long name of a command line
-option, each value is either a string or a list of strings.
-
-Here is an example of such a file::
-
-  {
-      "db": "/opt/Epics/sumo/database/DEPS.DB",
-      "makeopts": [
-          "-s"
-      ],
-      "builddir": "/opt/Epics/sumo/build"
-  }
-
-Merging
-:::::::
-
-Sumo can read several configuration files, in this case the data is *merged*.
-
-Merging means that keys not yet defined are simply added. For keys that already
-exist and whose values are strings, the latter one overwrites the first one.
-For keys that already exist and whose values are lists, the lists are simply
-concatenated.
-
-Default paths
-:::::::::::::
-
-Sumo reads and merges configuration files from various places, which one
-depends on your environment variable settings and command line options. 
-
-First the program tries to read the file sumo.config from a list of default
-paths. The list of default paths can be set by the environment variable
-ENV_CONFIG which must be a colon (on Unix systems) or semicolon (on Windows
-systems) separated list of paths. 
-
-If ENV_CONFIG is not set, these are the predefined default paths:
-
-- /etc
-- [python-libdir]/sumolib
-- $HOME
-- your current working directory
-
-If you use the "--no-default-config" command line option, the list of default
-paths is made empty.
-
-The config option
-:::::::::::::::::
-
-After the configuration files from default paths were read the program reads
-the all configuration files specified by the "-c" or "--config" option.
-
-Specify the loading of other files
-::::::::::::::::::::::::::::::::::
-
-In a configuration file you can specify names of other configuration files that
-can or must be loaded. These files are merged as described above.
-
-There are 4 special keys in the configuration file that are used to specify
-other files:
-
--  #preload 
--  #opt-preload
--  #postload
--  #opt-postload
-
-The value of each of these keys must be a list of strings that specify the
-filenames. The preload commands load the files *before* the rest of the
-configuration file, the postload command load the files *after* the
-configuration file. The opt- keys are used to specify *optional* files, it is
-not an error if these files don't exist. Note that the loaded files may also
-contain one or more of the load keys in the list above.
+configuration files. For more details see
+:doc:`"configuration files "<configuration-files>`.
 
 Commands
 --------
@@ -927,6 +853,8 @@ The :term:`buildtag` must be given as an argument.
 Options
 -------
 
+.. _reference-sumo-Options:
+
 Here is a short overview on command line options:
 
 ``--version``
@@ -949,10 +877,10 @@ Here is a short overview on command line options:
     several standard locations (see documentation on configuration files).
 ``--mergeoption OPTIONNAME``
     If an option with name OPTIONNAME is given here and it is a list option,
-    the lists from the config file and the command line are merged. The new
-    list is the sum of both lists where it is ensured that for all elements the
-    string up to the first colon ":" is unique (this is usefule for module
-    specifications that have the form "module:version").
+    the lists from the configuration file and the command line are merged. The
+    new list is the sum of both lists where it is ensured that for all elements
+    the string up to the first colon ':' is unique (this is useful for module
+    specifications that have the form 'module:version').
 ``--#preload FILES`` 
     Specify a an '#preload' directive in the configuration file. This option
     has only a meaning if a configuration file is created with the 'makeconfig'
@@ -970,23 +898,25 @@ Here is a short overview on command line options:
     This option does the same as --#postload but the file loading is optional.
     If they do not exist the program continues without an error.
 ``--db DB``
-    Define the name of the DB file. This option value is stored in the
-    configuration file. 
+    Define the name of the DB file. A default for this option can be put in a
+    configuration file.
 ``--dbrepomode MODE``
     Specify how sumo should use the dependency database repository. There are
     three possible values: 'get', 'pull' and 'push'. With 'get' the foreign
     repository is cloned if the local repository does not yet exist. With
     'pull' sumo does a pull and merge before each read operation on the
     database. With 'push' it additionally does a push after each modification
-    of the database. The default is 'get'."
+    of the database. The default is 'get'." A default for this option can be
+    put in a configuration file.
 ``--dbrepo REPOSITORY``
     Define a REPOSITORY for the db file. REPOSITORY must consist of 'REPOTYPE
     URL', REPOTYPE may be 'darcs', 'hg' or 'git'. Option --db must specify a
     file path whose directory part will contain the repository for the db file.
-    Before reading the db file a 'pull' command will be executed. When the
-    file is changed, a 'commit' and a 'push' command will be executed. If the
+    Before reading the db file a 'pull' command will be executed. When the file
+    is changed, a 'commit' and a 'push' command will be executed. If the
     repository doesn't exist the program tries to check out a working copy from
-    the given URL.",
+    the given URL. A default for this option can be put in a configuration
+    file.
 ``--scandb SCANDB``
     Specify the (optional) :term:`SCANDB` file. The scan database file contains
     information on what moduleversion can be used with what dependency version.
@@ -1004,48 +934,50 @@ Here is a short overview on command line options:
     possible number that ensures that the buildtag is unique.
 ``--builddir BUILDDIR``
     Specify the support directory. If this option is not given take the current
-    working directory as support directory.  This option value is stored in the
-    configuration file.
+    working directory as support directory. A default for this option can be
+    put in a configuration file.
 ``-o OUTPUTFILE, --output OUTPUTFILE``
     Define the output for commands 'useall' and 'use'. If this option is not
     given, 'useall' and 'use' write to 'configure/RELEASE'. If this option is
     '-', the commands write to standard-out",
 ``-x EXTRALINE, --extra EXTRALLINE``
-    Specify an extra line that is added to the generated RELEASE file. This
-    option value is stored in the configuration file.
+    Specify an extra line that is added to the generated RELEASE file. A
+    default for this option can be put in a configuration file.
 ``-a ALIAS, --alias ALIAS``
     Define an alias for the commands 'use' and 'useall'. An alias must have the
     form FROM:TO. The path of module named 'FROM' is put in the generated
     RELEASE file as a variable named 'TO'. You can specify more than one of
     these by repeating this option or by joining values in a single string
-    separated by spaces. This option value is stored in the configuration file.
+    separated by spaces. A default for this option can be put in a
+    configuration file.
 ``--arch ARCH``
     Define the name of a targetarchitecture. You can specify more than one
     target architecture.  You can specify more than one of these by repeating
-    this option or by joining values in a single string separated by spaces.
-    This option value is stored in the configuration file.
+    this option or by joining values in a single string separated by spaces. A
+    default for this option can be put in a configuration file.
 ``-m MODULE, --module MODULE``
     Define a :term:`modulespec`. If you specify modules with this option you
     don't have to put :term:`modulespecs` after some of the commands. You can
     specify more than one of these by repeating this option or by joining
-    values in a single string separated by spaces.  This option value is stored
-    in the configuration file.
+    values in a single string separated by spaces. A default for this option
+    can be put in a configuration file.
 ``-X, --exclude-states``
     For command 'try' exclude all 'dependents' whose state does match one of
+    the regular expressions (REGEXP).
 ``-b, --brief``
     Create a more brief output for some commands.
 ``-D EXPRESSION, --dir-patch EXPRESSION``
     Specify a directory patchexpression. Such an expression consists of a tuple
     of 2 python strings. The first is the match expression, the second one is
     the replacement string. The regular expression is applied to every source
-    path generated. You can specify more than one patchexpression. This option
-    value is stored in the configuration file.
+    path generated. You can specify more than one patchexpression. A default
+    for this option can be put in a configuration file.
 ``-U EXPRESSION, --url-patch EXPRESSION``
     Specify a repository url patchexpression. Such an expression consists of a
     tuple of 2 python strings. The first is the match expression, the second
     one is the replacement string. The regular expression is applied to every
-    source url generated. You can specify more than one patchexpression. This
-    option value is stored in the configuration file.
+    source url generated. You can specify more than one patchexpression. A
+    default for this option can be put in a configuration file.
 ``--noignorecase``
     For command 'find', do NOT ignore case.
 ``--no-checkout``
@@ -1056,16 +988,16 @@ Here is a short overview on command line options:
 ``--makeopts MAKEOPTIONS``
     Specify extra option strings for make You can specify more than one of
     these by repeating this option or by joining values in a single string
-    separated by spaces.  This option value is stored in the configuration
-    file.
+    separated by spaces. A default for this option can be put in a
+    configuration file.
 ``--readonly``
-    Do not allow modifying the database files or the support directory.  This
-    option value is stored in the configuration file.
+    Do not allow modifying the database files or the support directory. A
+    default for this option can be put in a configuration file.
 ``--nolock``
     Do not use file locking.
 ``-p, --progress``
-    Show progress on stderr. This option value is stored in the configuration
-    file.
+    Show progress on stderr. A default for this option can be put in a
+    configuration file.
 ``--trace``
     Switch on some trace messages.
 ``--tracemore``
@@ -1081,6 +1013,7 @@ Here is a short overview on command line options:
     show a python stacktrace instead of an error message and may be useful for
     debugging the program."
 ``-v, --verbose``
-    Show command calls.  This option value is stored in the configuration file.
+    Show command calls. A default for this option can be put in a
+    configuration file.
 ``-n, --dry-run``
     Just show what the program would do.

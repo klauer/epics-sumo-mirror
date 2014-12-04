@@ -40,8 +40,10 @@ Contents:
 .. toctree::
    :maxdepth: 1
 
+   sumo-install
    introduction
    modulespecs
+   configuration-files
    reference-sumo-scan
    reference-sumo
    examples
@@ -60,6 +62,15 @@ You can download packages of the software here:
 * `latest version, tar.gz file <http://www-csr.bessy.de/control/sumo/sumo-dist/sumo.tar.gz>`_
 * `latest version, zip file <http://www-csr.bessy.de/control/sumo/sumo-dist/sumo.zip>`_
 * `older versions <http://www-csr.bessy.de/control/sumo/sumo-dist>`_
+
+Install
+=======
+
+Sumo uses `Python Distutils <https://docs.python.org/2/distutils>`_ for
+installation. 
+
+You find more details on how to install sumo at
+:doc:`sumo-install`.
 
 The source
 ==========
