@@ -746,24 +746,26 @@ subcommands for maincommand "build"
 try MODULES
 :::::::::::
 
-This command helps to create :term:`module` specifications for the "new"
-command. Each MODULE here is a :term:`modulespec` of the form MODULE or
+This command is intended to help you create :term:`module` specifications for
+the "new" command. 
+
+Each MODULE here is a :term:`modulespec` of the form MODULE or
 MODULE:{+-}VERSION that specifies just a module name, a module and some
 versions or a single version. You can specify an incomplete list of
-:term:`modules`.  The program then shows which :term:`modules` you have to
-include in your list since other :term:`modules` depend on them and shows
-information on all :term:`versions` of all :term:`modules` that satisfy your
-:term:`module` specifications. It also shows if your :term:`module`
-specifications are *complete* and *exact* meaning that all :term:`dependencies`
-are included and all :term:`modules` are specified with exactly a single
-:term:`version`.  Note that you can use option "--scandb" in order to give
-additional information which :term:`versions` of :term:`modules` are compatible
-with each other. 
+:term:`modules`.
 
-With option "--brief" or "-b", the output of the command is a shorter summary
-which is in many cases all you want to see.
+The detail of the output is determined by option "``--detail``" which is an
+integer between 0 and 3. 0, the default, gives the shortest, 3 gives the
+longest report. The program then shows which :term:`modules` you have to
 
-For an example see :ref:`try example <example-sumo-build-try>`.
+In any case the command shows which :term:`modules` are missing since they
+depend on other :term:`modules` of your specification and which ones are
+missing an exact :term:`version`.
+
+If you converted an existing support directory to sumo you have a scan database
+file which you can specify with option "--scandb" to this command.
+
+For a detailed example see :ref:`try example <example-sumo-build-try>`.
 
 new MODULES
 :::::::::::
@@ -966,6 +968,9 @@ Here is a short overview on command line options:
     the regular expressions (REGEXP).
 ``-b, --brief``
     Create a more brief output for some commands.
+``--detail``
+    Control the output of command 'try'. The value must be an integer between 0
+    (very short) and 3 (very long)."
 ``-D EXPRESSION, --dir-patch EXPRESSION``
     Specify a directory patchexpression. Such an expression consists of a tuple
     of 2 python strings. The first is the match expression, the second one is

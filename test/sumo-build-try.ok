@@ -1,4 +1,6 @@
-try with modules missing:
+
+----------------------------
+try with modules missing, detail 0:
 
 Not all modules have exactly specified versions. These modules need an 
 exact version specification:
@@ -13,7 +15,165 @@ have to be added:
     MISC_DEBUGMSG
     SOFT_DEVHWCLIENT
 
-List of modules that fullfill the given module specification:
+Command 'new' would create build with tag 'AUTO-003'
+
+Your module specifications are still incomplete, command 'new' can not
+be used with these.
+
+----------------------------
+try with modules missing, detail 1:
+
+Possible versions for unspecified/missing modules:
+
+BASE                R3-14-12-2-1
+BSPDEP_TIMER        R6-2
+BSPDEP_VMETAS       R2-0 R2-1 TAGLESS-2-1-modified
+MCAN                R2-6-1 R2-6-3-gp
+MISC_DBC            PATH-3-0
+MISC_DEBUGMSG       R3-0 R3-1
+SOFT_DEVHWCLIENT    R3-0
+
+Not all modules have exactly specified versions. These modules need an 
+exact version specification:
+    BSPDEP_TIMER         -> suggested version: R6-2
+    BSPDEP_VMETAS
+    MCAN
+    MISC_DBC             -> suggested version: PATH-3-0
+
+Not all dependencies were included in module specifications, these modules
+have to be added:
+    BASE
+    MISC_DEBUGMSG
+    SOFT_DEVHWCLIENT
+
+Command 'new' would create build with tag 'AUTO-003'
+
+Your module specifications are still incomplete, command 'new' can not
+be used with these.
+
+----------------------------
+try with modules missing, detail 2:
+
+Details on unspecified/missing modules:
+
+{
+    "BASE": {
+        "R3-14-12-2-1": {
+            "built": true,
+            "dependents": {
+                "ALARM:R3-8-modified": "state: not tested",
+                "BSPDEP_TIMER:R6-2": "state: stable",
+                "BSPDEP_VMETAS:R2-0": "state: stable",
+                "BSPDEP_VMETAS:R2-1": "state: not tested",
+                "BSPDEP_VMETAS:TAGLESS-2-1-modified": "state: not tested",
+                "MCAN:R2-6-1": "state: stable",
+                "MCAN:R2-6-3-gp": "state: not tested",
+                "MISC_DBC:PATH-3-0": "state: stable",
+                "MISC_DEBUGMSG:R3-0": "state: stable",
+                "MISC_DEBUGMSG:R3-1": "state: not tested",
+                "SOFT_DEVHWCLIENT:R3-0": "state: stable"
+            }
+        }
+    },
+    "BSPDEP_TIMER": {
+        "R6-2": {
+            "built": true,
+            "dependents": {
+                "ALARM:R3-8-modified": "state: not tested"
+            }
+        }
+    },
+    "BSPDEP_VMETAS": {
+        "R2-0": {
+            "built": true,
+            "dependents": {
+                "MCAN:R2-6-1": "state: stable",
+                "MCAN:R2-6-3-gp": "state: not tested"
+            }
+        },
+        "R2-1": {
+            "built": false,
+            "dependents": {
+                "MCAN:R2-6-1": "state: not tested",
+                "MCAN:R2-6-3-gp": "state: not tested"
+            }
+        },
+        "TAGLESS-2-1-modified": {
+            "built": false,
+            "dependents": {
+                "MCAN:R2-6-1": "state: not tested",
+                "MCAN:R2-6-3-gp": "state: not tested"
+            }
+        }
+    },
+    "MCAN": {
+        "R2-6-1": {
+            "built": true
+        },
+        "R2-6-3-gp": {
+            "built": false
+        }
+    },
+    "MISC_DBC": {
+        "PATH-3-0": {
+            "built": true,
+            "dependents": {
+                "ALARM:R3-8-modified": "state: not tested",
+                "MCAN:R2-6-1": "state: stable",
+                "MCAN:R2-6-3-gp": "state: not tested"
+            }
+        }
+    },
+    "MISC_DEBUGMSG": {
+        "R3-0": {
+            "built": true,
+            "dependents": {
+                "MCAN:R2-6-1": "state: stable",
+                "MCAN:R2-6-3-gp": "state: not tested"
+            }
+        },
+        "R3-1": {
+            "built": false,
+            "dependents": {
+                "MCAN:R2-6-1": "state: not tested",
+                "MCAN:R2-6-3-gp": "state: not tested"
+            }
+        }
+    },
+    "SOFT_DEVHWCLIENT": {
+        "R3-0": {
+            "built": true,
+            "dependents": {
+                "MCAN:R2-6-1": "state: stable",
+                "MCAN:R2-6-3-gp": "state: not tested"
+            }
+        }
+    }
+}
+
+Not all modules have exactly specified versions. These modules need an 
+exact version specification:
+    BSPDEP_TIMER         -> suggested version: R6-2
+    BSPDEP_VMETAS
+    MCAN
+    MISC_DBC             -> suggested version: PATH-3-0
+
+Not all dependencies were included in module specifications, these modules
+have to be added:
+    BASE
+    MISC_DEBUGMSG
+    SOFT_DEVHWCLIENT
+
+Command 'new' would create build with tag 'AUTO-003'
+
+Your module specifications are still incomplete, command 'new' can not
+be used with these.
+
+----------------------------
+try with modules missing, detail 3:
+
+Details on all modules:
+
 {
     "ALARM": {
         "R3-8-modified": {
@@ -118,6 +278,19 @@ List of modules that fullfill the given module specification:
     }
 }
 
+Not all modules have exactly specified versions. These modules need an 
+exact version specification:
+    BSPDEP_TIMER         -> suggested version: R6-2
+    BSPDEP_VMETAS
+    MCAN
+    MISC_DBC             -> suggested version: PATH-3-0
+
+Not all dependencies were included in module specifications, these modules
+have to be added:
+    BASE
+    MISC_DEBUGMSG
+    SOFT_DEVHWCLIENT
+
 Command 'new' would create build with tag 'AUTO-003'
 
 Your module specifications are still incomplete, command 'new' can not
@@ -125,7 +298,7 @@ be used with these.
 
 ----------------------------
 
-try with complete modulelist:
+try with complete modulelist, detail 0:
 
 Not all modules have exactly specified versions. These modules need an 
 exact version specification:
@@ -137,7 +310,162 @@ exact version specification:
     MISC_DEBUGMSG
     SOFT_DEVHWCLIENT     -> suggested version: R3-0
 
-List of modules that fullfill the given module specification:
+Command 'new' would create build with tag 'AUTO-003'
+
+Your module specifications are still incomplete, command 'new' can not
+be used with these.
+
+----------------------------
+
+try with complete modulelist, detail 1:
+
+Possible versions for unspecified/missing modules:
+
+BASE                R3-14-12-2-1
+BSPDEP_TIMER        R6-2
+BSPDEP_VMETAS       R2-0 R2-1 TAGLESS-2-1-modified
+MCAN                R2-6-1 R2-6-3-gp
+MISC_DBC            PATH-3-0
+MISC_DEBUGMSG       R3-0 R3-1
+SOFT_DEVHWCLIENT    R3-0
+
+Not all modules have exactly specified versions. These modules need an 
+exact version specification:
+    BASE                 -> suggested version: R3-14-12-2-1
+    BSPDEP_TIMER         -> suggested version: R6-2
+    BSPDEP_VMETAS
+    MCAN
+    MISC_DBC             -> suggested version: PATH-3-0
+    MISC_DEBUGMSG
+    SOFT_DEVHWCLIENT     -> suggested version: R3-0
+
+Command 'new' would create build with tag 'AUTO-003'
+
+Your module specifications are still incomplete, command 'new' can not
+be used with these.
+
+----------------------------
+
+try with complete modulelist, detail 2:
+
+Details on unspecified/missing modules:
+
+{
+    "BASE": {
+        "R3-14-12-2-1": {
+            "built": true,
+            "dependents": {
+                "ALARM:R3-8-modified": "state: not tested",
+                "BSPDEP_TIMER:R6-2": "state: stable",
+                "BSPDEP_VMETAS:R2-0": "state: stable",
+                "BSPDEP_VMETAS:R2-1": "state: not tested",
+                "BSPDEP_VMETAS:TAGLESS-2-1-modified": "state: not tested",
+                "MCAN:R2-6-1": "state: stable",
+                "MCAN:R2-6-3-gp": "state: not tested",
+                "MISC_DBC:PATH-3-0": "state: stable",
+                "MISC_DEBUGMSG:R3-0": "state: stable",
+                "MISC_DEBUGMSG:R3-1": "state: not tested",
+                "SOFT_DEVHWCLIENT:R3-0": "state: stable"
+            }
+        }
+    },
+    "BSPDEP_TIMER": {
+        "R6-2": {
+            "built": true,
+            "dependents": {
+                "ALARM:R3-8-modified": "state: not tested"
+            }
+        }
+    },
+    "BSPDEP_VMETAS": {
+        "R2-0": {
+            "built": true,
+            "dependents": {
+                "MCAN:R2-6-1": "state: stable",
+                "MCAN:R2-6-3-gp": "state: not tested"
+            }
+        },
+        "R2-1": {
+            "built": false,
+            "dependents": {
+                "MCAN:R2-6-1": "state: not tested",
+                "MCAN:R2-6-3-gp": "state: not tested"
+            }
+        },
+        "TAGLESS-2-1-modified": {
+            "built": false,
+            "dependents": {
+                "MCAN:R2-6-1": "state: not tested",
+                "MCAN:R2-6-3-gp": "state: not tested"
+            }
+        }
+    },
+    "MCAN": {
+        "R2-6-1": {
+            "built": true
+        },
+        "R2-6-3-gp": {
+            "built": false
+        }
+    },
+    "MISC_DBC": {
+        "PATH-3-0": {
+            "built": true,
+            "dependents": {
+                "ALARM:R3-8-modified": "state: not tested",
+                "MCAN:R2-6-1": "state: stable",
+                "MCAN:R2-6-3-gp": "state: not tested"
+            }
+        }
+    },
+    "MISC_DEBUGMSG": {
+        "R3-0": {
+            "built": true,
+            "dependents": {
+                "MCAN:R2-6-1": "state: stable",
+                "MCAN:R2-6-3-gp": "state: not tested"
+            }
+        },
+        "R3-1": {
+            "built": false,
+            "dependents": {
+                "MCAN:R2-6-1": "state: not tested",
+                "MCAN:R2-6-3-gp": "state: not tested"
+            }
+        }
+    },
+    "SOFT_DEVHWCLIENT": {
+        "R3-0": {
+            "built": true,
+            "dependents": {
+                "MCAN:R2-6-1": "state: stable",
+                "MCAN:R2-6-3-gp": "state: not tested"
+            }
+        }
+    }
+}
+
+Not all modules have exactly specified versions. These modules need an 
+exact version specification:
+    BASE                 -> suggested version: R3-14-12-2-1
+    BSPDEP_TIMER         -> suggested version: R6-2
+    BSPDEP_VMETAS
+    MCAN
+    MISC_DBC             -> suggested version: PATH-3-0
+    MISC_DEBUGMSG
+    SOFT_DEVHWCLIENT     -> suggested version: R3-0
+
+Command 'new' would create build with tag 'AUTO-003'
+
+Your module specifications are still incomplete, command 'new' can not
+be used with these.
+
+----------------------------
+
+try with complete modulelist, detail 3:
+
+Details on all modules:
+
 {
     "ALARM": {
         "R3-8-modified": {
@@ -242,6 +570,16 @@ List of modules that fullfill the given module specification:
     }
 }
 
+Not all modules have exactly specified versions. These modules need an 
+exact version specification:
+    BASE                 -> suggested version: R3-14-12-2-1
+    BSPDEP_TIMER         -> suggested version: R6-2
+    BSPDEP_VMETAS
+    MCAN
+    MISC_DBC             -> suggested version: PATH-3-0
+    MISC_DEBUGMSG
+    SOFT_DEVHWCLIENT     -> suggested version: R3-0
+
 Command 'new' would create build with tag 'AUTO-003'
 
 Your module specifications are still incomplete, command 'new' can not
@@ -249,13 +587,37 @@ be used with these.
 
 ----------------------------
 
-try with completely versioned modulelist:
+try with completely versioned modulelist, detail 0:
 
-The following modules are not needed by other modules in your module
-specification:
-    MCAN
+Command 'new' would create build with tag 'AUTO-003'
 
-List of modules that fullfill the given module specification:
+Your module specifications are complete. You can use these with command
+'new' to create a new build.
+
+----------------------------
+
+try with completely versioned modulelist, detail 1:
+
+Command 'new' would create build with tag 'AUTO-003'
+
+Your module specifications are complete. You can use these with command
+'new' to create a new build.
+
+----------------------------
+
+try with completely versioned modulelist, detail 2:
+
+Command 'new' would create build with tag 'AUTO-003'
+
+Your module specifications are complete. You can use these with command
+'new' to create a new build.
+
+----------------------------
+
+try with completely versioned modulelist, detail 3:
+
+Details on all modules:
+
 {
     "ALARM": {
         "R3-8-modified": {

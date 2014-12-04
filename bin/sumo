@@ -20,6 +20,7 @@ import re
 import errno
 import shutil
 import glob
+import textwrap
 
 import sumolib.system
 import sumolib.lock
@@ -1595,10 +1596,10 @@ def build_try(arguments, options):
             raise
         sys.exit(str(e))
 
-    modules_not_exact_spec= []
-    for spec in modulespecs_obj:
-        if not spec.is_exact_spec():
-            modules_not_exact_spec.append(spec.modulename)
+    # gather a list of all modules that don't have an exact specification:
+    modules_not_exact_spec= \
+        [spec.modulename for spec in modulespecs_obj
+                         if not spec.is_exact_spec()]
 
     # convert modulespecs to a set dict:
     # { modulename1 : set(version1,version2),
@@ -1610,12 +1611,24 @@ def build_try(arguments, options):
         if not catch_exceptions:
             raise
         sys.exit(str(e))
+    except KeyError, e:
+        if not catch_exceptions:
+            raise
+        sys.exit(str(e))
 
-    # add all missing dependencies:
+    # add all missing dependencies and complete the sets_dict:
     added_modules= db.complete_sets_dict(sets_dict)
 
     was_built= set()
     needed_by_others= {}
+
+    # examine the builds:
+    # was_built is a set of (modulename,versionname) or modules
+    #           that were built
+    # needed_by_others is a dict mapping
+    #           (depname,dep_version)->[(modulename,versionname,state)...]
+    #           where state is the build state of the build the modules
+    #           share
 
     for modulename in sets_dict.keys():
         for versionname in sets_dict[modulename]:
@@ -1650,7 +1663,7 @@ def build_try(arguments, options):
                         state= "state: %s" % state
                     if no_of_versions>1:
                         # do only apply the exclude_matcher when there is
-                        # more than ony possible version of module
+                        # more than one possible version of module
                         # 'modulename':
                         if exclude_matcher.search(state):
                             continue
@@ -1666,6 +1679,30 @@ def build_try(arguments, options):
                      "the REGEXP or specify an exact version "
                      "for the module to avoid this error." % \
                      modulename)
+
+    if options.detail>0:
+        wanted= set(modules_not_exact_spec)
+        wanted.update(added_modules)
+        if (options.detail==1) and wanted:
+            print "Possible versions for unspecified/missing modules:\n"
+            for m in sorted(wanted):
+                l= ["%-19s" % m]
+                l.extend(sorted(report[m].keys()))
+                st= " ".join(l)
+                print "\n".join(textwrap.wrap(st, width=70,
+                                subsequent_indent=" "*20))
+            print
+        elif (options.detail==2) and wanted:
+            short_report= {}
+            for (k,v) in report.items():
+                if k in wanted:
+                    short_report[k]= v
+            report= short_report
+            print "Details on unspecified/missing modules:\n"
+            sumolib.JSON.dump(short_report)
+        elif options.detail>=3:
+            print "Details on all modules:\n"
+            sumolib.JSON.dump(report)
 
     if modules_not_exact_spec:
         print "Not all modules have exactly specified versions.",
@@ -1686,22 +1723,6 @@ def build_try(arguments, options):
         print "have to be added:\n   ",
         print "\n    ".join(sorted(added_modules))
         print
-
-    if not options.brief:
-        if not modules_not_exact_spec and not added_modules:
-            # everything complete, show modules that are not needed by
-            # other modules:
-            needed_modules= set([m for (m,_) in needed_by_others.keys()])
-            not_needed_modules= \
-                    set(report.keys()).difference(needed_modules)
-            print "The following modules are not needed by other modules",
-            print "in your module"
-            print "specification:\n   ",
-            print "\n    ".join(sorted(not_needed_modules))
-            print
-        print "List of modules that fullfill the given "+\
-              "module specification:"
-        sumolib.JSON.dump(report)
 
     if buildtag is None:
         if not options.buildtag_stem:
@@ -2757,20 +2778,25 @@ this DOES NOT add the new module as dependency to any other modules.
         "try": """
 try MODULES
 
-This command helps to create module specifications for the "new" command. Each
-MODULE here is a modulespec of the form MODULE or MODULE:{+-}VERSION that
-specifies just a module name, a module and some versions or a single version.
-You can specify an incomplete list of modules.  The program then shows which
-modules you have to include in your list since other modules depend on them and
-shows information on all versions of all modules that satisfy your module
-specifications. It also shows if your module specifications are *complete* and
-*exact* meaning that all dependencies are included and all modules are
-specified with exactly a single version.  Note that you can use option
-"--scandb" in order to give additional information which versions of modules
-are compatible with each other. 
+This command is intended to help you create module specifications for the "new"
+command. 
 
-With option "--brief" or "-b", the output of the command is a shorter summary
-which is in many cases all you want to see.
+Each MODULE here is a modulespec of the form MODULE or MODULE:{+-}VERSION that
+specifies just a module name, a module and some versions or a single version.
+You can specify an incomplete list of modules.
+
+The detail of the output is determined by option "--detail" which is an integer
+between 0 and 3. 0, the default, gives the shortest, 3 gives the longest
+report. The program then shows which modules you have to
+
+In any case the command shows which modules are missing since they depend on
+other modules of your specification and which ones are missing an exact
+version.
+
+If you converted an existing support directory to sumo you have a scan database
+file which you can specify with option "--scandb" to this command.
+
+For a detailed example see the try example in the HTML documentation.
 """,
         "new": """
 new MODULES
@@ -3160,6 +3186,13 @@ def main():
     parser.add_option("-b", "--brief",
                       action="store_true",
                       help="Create a more brief output for some commands. ",
+                      )
+    parser.add_option("--detail",
+                      action="store",
+                      type="int",
+                      help="Control the output of command 'try'. The value "
+                           "must be an integer between 0 (very short) and "
+                           "3 (very long)."
                       )
     parser.add_option("-D", "--dir-patch",
                       action="append",
