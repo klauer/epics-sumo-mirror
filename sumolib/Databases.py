@@ -653,8 +653,13 @@ class Dependencies(sumolib.JSON.Container):
             archs= modulespec.archs
             s= new.setdefault(modulename, set())
             found= False
-            for version in self.iter_versions(modulename,
-                                              archs, must_exist= True):
+            try:
+                versions= list(self.iter_versions(modulename,
+                                                  archs, must_exist= True))
+            except KeyError, _:
+                raise KeyError("error: module '%s' not found in "
+                               "dependency database" % modulename)
+            for version in versions:
                 if not modulespec.test(version):
                     continue
                 if not self.check_archs(modulename, version, archs):
