@@ -902,10 +902,14 @@ def set_weight(db, weight, modulespecs, trace):
 def delete_modules(builddb, build_tag, verbose, dry_run):
     """delete modules of a build.
     """
+    dependends= []
     for b in builddb.iter_builds():
         if builddb.is_linked_to(b, build_tag):
-            raise ValueError("error: other builds depend on build %s" % \
-                              build_tag)
+            dependends.append(b)
+    if dependends:
+        raise ValueError("Error, the following builds dependend on "
+                         "build %s:\n%s" % \
+                         (build_tag," ".join(sorted(dependends))))
     for modulename, versionname in builddb.iter_modules(build_tag):
         if builddb.module_link(build_tag, modulename):
             continue
