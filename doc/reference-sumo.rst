@@ -294,8 +294,6 @@ support directory it also gathers information on what version of a module
 depends on what version of another module. In order to keep this information
 although the dependency database doesn't contain versions of dependencies, this
 information is held in a separate file, the scan database or :term:`SCANDB`.
-This file is also created when a :term:`dependency database` is converted from
-the old to the new format with command "convert-old".
 
 Here is an example on how this file looks like::
 
@@ -595,19 +593,6 @@ mandatory here. With "--db" you specify the name of the new created
 file, with "--scandb" you specify the name of the scan database file. The scan
 database file contains information on what moduleversion can be used with what
 dependency version.
-
-convert-old OLD-DEPS-DB
-:::::::::::::::::::::::
-
-Convert a 
-:ref:`dependency database <reference-sumo-db-The-dependency-database>` from the
-old to the new format. Note that options "--db" and "--scandb" are mandatory
-here. With "--db" you specify the name of the new created 
-:ref:`dependency database <reference-sumo-db-The-dependency-database>` file,
-with "--scandb" you specify the name of the scan database or :term:`SCANDB`
-file. The scan database file contains information on what :term:`version` of a
-:term:`module` is probably compatible with what version of a :term:`dependency`
-according to the data in the old dependency database.
 
 appconvert SCANFILE
 :::::::::::::::::::

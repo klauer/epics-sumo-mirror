@@ -1,6 +1,5 @@
 sumo-scan-all
 sumo-lock
-sumo-db-convert-old
 sumo-db-convert
 sumo-db-dependency-delete
 sumo-db-dependency-add
