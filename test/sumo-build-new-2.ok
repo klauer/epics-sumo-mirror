@@ -9,12 +9,14 @@ BUILDS.DB
 BUILDS.DB.bak
 DEPS.DB
 Makefile-BASE-001
+Makefile-DISABLED
 Makefile-MYAPP-001
 Makefile-MYAPP-002
 MCAN
 MISC_DBC
 MISC_DEBUGMSG
 SOFT_DEVHWCLIENT
+sumo.config
 
 > ls tmp-sumo-build-new-2/ALARM:
 R3-7+MYAPP-002
@@ -31,6 +33,16 @@ content of BUILDS.DB:
             "BASE": "R3-14-12-2-1"
         },
         "state": "stable"
+    },
+    "DISABLED": {
+        "linked": {
+            "BASE": "BASE-001"
+        },
+        "modules": {
+            "BASE": "R3-14-12-2-1",
+            "BSPDEP_TIMER": "R6-2"
+        },
+        "state": "disabled"
     },
     "MYAPP-001": {
         "linked": {

@@ -492,6 +492,7 @@ Here are the meanings of the :term:`state` string:
 * unstable: the :term:`build` has been created but not yet compiled
 * testing: the :term:`build` has been compiled successfully
 * stable: the :term:`build` has been tested in production successfully
+* disabled the :term:`build` should no longer be used
 
 Configuration Files
 +++++++++++++++++++

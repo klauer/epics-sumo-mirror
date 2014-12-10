@@ -161,8 +161,6 @@ was found.
 If for example file "mymodules" has this content::
 
   {
-      "db": "/home/pfeiffer/net/project/tmp/SUMO/DEPS.DB", 
-      "maxstate": "stable", 
       "module": [
           "AGILENT-SUPPORT:R0-11", 
           "AGILENT:R2-3", 

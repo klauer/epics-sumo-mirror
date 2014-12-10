@@ -32,8 +32,15 @@ cp tmp-sumo-build-new-0/BUILDS.DB $TESTDIR
 echo -e "\nBUILDS before:"
 cat $TESTDIR/BUILDS.DB
 
+echo -e "\nNow change state of AUTO-002 to stable"
 $SUMO build --builddir $TESTDIR state AUTO-002 stable
 
-echo -e "\nBUILDS after:"
+echo -e "\nBUILDS now:"
+cat $TESTDIR/BUILDS.DB
+
+echo -e "\nNow change state of AUTO-001 to disabled, changes AUTO-002,too"
+$SUMO build --builddir $TESTDIR -y state AUTO-001 disabled
+
+echo -e "\nBUILDS now:"
 cat $TESTDIR/BUILDS.DB
 
