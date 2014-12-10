@@ -124,7 +124,7 @@ dependents:
   This shows the modules that depend on the given module. In the example above
   we see that ALARM:R3-2 depends on BSPDEP:R3-0, BSPDEP:R3-1, BSPDEP:R3-2 or
   BSPDEP:R3-3. The string "state: not tested" shows if there exists a build
-  where both modules were built togeher. On this case, there is no such build.
+  where both modules were built together. On this case, there is no such build.
   Otherwise the string could be "state: <STATE>" where <STATE> is the state of
   the build where both modules are part of.
 

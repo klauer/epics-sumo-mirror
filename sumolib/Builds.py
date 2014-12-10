@@ -36,14 +36,23 @@ class DB(sumolib.JSON.Container):
     """the buildtree database."""
     # pylint: disable=R0904
     #                          Too many public methods
-    states= set(("stable","testing","unstable"))
+    states= set(("stable","testing","unstable","disabled"))
     @classmethod
-    def check_state(cls, state):
+    def check_state(cls, state, new_build):
         """checks if a state is allowed."""
         if not state in cls.states:
             raise ValueError("unknown state: %s" % repr(state))
+        if new_build:
+            if state=="disabled":
+                raise ValueError("state 'disabled' not allowed for a "
+                                 "new build")
     def selfcheck(self, msg):
-        """raise exception if obj doesn't look like a builddb."""
+        """raise exception if obj doesn't look like a builddb.
+
+        This does not do a *complete* check of the datastructure, it only
+        ensures that the JSON datastructure isn't something completely
+        different.
+        """
         def _somevalue(d):
             """return kind of arbitrary value of a dict."""
             keys= d.keys()
@@ -121,12 +130,17 @@ class DB(sumolib.JSON.Container):
         """create a new build with the given state.
         """
         # may raise ValueError:
-        self.__class__.check_state(state)
+        self.__class__.check_state(state, new_build= True)
         d= self.datadict()
         if d.has_key(build_tag):
             raise ValueError("cannot create, build %s already exists" % \
                                build_tag)
         d[build_tag]= { "state": state }
+    def is_disabled(self, build_tag):
+        """returns True if the build is marked disabled.
+        """
+        d= self.datadict()
+        return d[build_tag]["state"] == "disabled"
     def is_stable(self, build_tag):
         """returns True if the build is marked stable.
         """
@@ -151,7 +165,7 @@ class DB(sumolib.JSON.Container):
     def change_state(self, build_tag, new_state):
         """sets the state to a new value."""
         # may raise ValueError:
-        self.__class__.check_state(new_state)
+        self.__class__.check_state(new_state, new_build= False)
         d= self.datadict()
         d[build_tag]["state"]= new_state
     def is_fully_linked(self, build_tag):
@@ -212,6 +226,25 @@ class DB(sumolib.JSON.Container):
             if v== other_build_tag:
                 return True
         return False
+    def linked_builds(self, build_tag):
+        """return a set of tags of all builds that depend on this.
+        """
+        dependends= set()
+        for b in self.iter_builds():
+            if self.is_linked_to(b, build_tag):
+                dependends.add(b)
+        return dependends
+    def rec_linked_builds(self, build_tag):
+        """return a set of tags of all builds that recursively depend on this.
+        """
+        all_= set((build_tag,))
+        checked= set()
+        while len(checked)!=len(all_):
+            for b in all_.difference(checked):
+                checked.add(b)
+                all_.update(self.linked_builds(b))
+        all_.remove(build_tag)
+        return all_
     def filter_by_modulespecs(self, modulespecs, db):
         """return a new Builddb that satisfies the given list of specs.
 
@@ -308,6 +341,9 @@ class BuildCache(sumolib.JSON.Container):
         d= self.datadict()
         for buildtag in builddb.iter_builds():
             state= builddb.state(buildtag)
+            # skip builds marked "disabled":
+            if builddb.is_disabled(buildtag):
+                continue
             # skip builds marked "unstable":
             if builddb.is_unstable(buildtag):
                 continue

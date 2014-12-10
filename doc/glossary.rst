@@ -129,8 +129,8 @@ Here we define some of the terms used in the following text.
       See :term:`state`.
 
   state
-      This is a string describing the maturity of a :term:`module` or a
-      :term:`dependency`.  A *state* may be one of three strings:
+      This is a string describing the maturity of a :term:`build`. A *state*
+      may be one of the following strings:
   
       stable
         Modules and dependencies that are known to work.
@@ -140,6 +140,10 @@ Here we define some of the terms used in the following text.
   
       unstable
         Modules and their dependencies that are just being built.
+  
+      disabled
+        The build should no longer be used, it has a defect or cannot be
+        recreated due to changes in the dependency database.
   
   builds
       See :term:`build`.

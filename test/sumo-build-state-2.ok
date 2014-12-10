@@ -37,7 +37,9 @@ BUILDS before:
     }
 }
 
-BUILDS after:
+Now change state of AUTO-002 to stable
+
+BUILDS now:
 {
     "AUTO-001": {
         "modules": {
@@ -72,5 +74,47 @@ BUILDS after:
             "SOFT_DEVHWCLIENT": "R3-0"
         },
         "state": "stable"
+    }
+}
+
+Now change state of AUTO-001 to disabled, changes AUTO-002,too
+The following builds depend on build AUTO-001:
+AUTO-002
+
+BUILDS now:
+{
+    "AUTO-001": {
+        "modules": {
+            "ALARM": "R3-7",
+            "BASE": "R3-14-12-2-1",
+            "BSPDEP_TIMER": "R6-2",
+            "BSPDEP_VMETAS": "R2-0",
+            "MCAN": "R2-6-1",
+            "MISC_DBC": "PATH-3-0",
+            "MISC_DEBUGMSG": "R3-0",
+            "SOFT_DEVHWCLIENT": "R3-0"
+        },
+        "state": "disabled"
+    },
+    "AUTO-002": {
+        "linked": {
+            "BASE": "AUTO-001",
+            "BSPDEP_TIMER": "AUTO-001",
+            "BSPDEP_VMETAS": "AUTO-001",
+            "MISC_DBC": "AUTO-001",
+            "MISC_DEBUGMSG": "AUTO-001",
+            "SOFT_DEVHWCLIENT": "AUTO-001"
+        },
+        "modules": {
+            "ALARM": "R3-8-modified",
+            "BASE": "R3-14-12-2-1",
+            "BSPDEP_TIMER": "R6-2",
+            "BSPDEP_VMETAS": "R2-0",
+            "MCAN": "R2-6-1",
+            "MISC_DBC": "PATH-3-0",
+            "MISC_DEBUGMSG": "R3-0",
+            "SOFT_DEVHWCLIENT": "R3-0"
+        },
+        "state": "disabled"
     }
 }

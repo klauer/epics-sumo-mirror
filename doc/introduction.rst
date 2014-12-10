@@ -94,8 +94,8 @@ Databases are always files in `JSON <http://www.json.org>`_ format.
 The concept of states
 ---------------------
 
-In order to distinguish the maturity of :term:`builds` we distinguish 3
-different :term:`build` :term:`states`:
+In order to distinguish the maturity of :term:`builds` we distinguish the
+following :term:`build` :term:`states`:
 
 stable
   Stable means that the :term:`build` is used in production and is not known to
@@ -109,6 +109,10 @@ testing
 unstable
   Unstable means that the :term:`build` is just created. This is also the state
   of a build if it's compilation fails.
+
+disabled
+  The build should no longer be used, it has a defect or cannot be recreated
+  due to changes in the dependency database.
 
 The concept of architectures
 ----------------------------
