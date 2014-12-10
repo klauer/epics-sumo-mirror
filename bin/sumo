@@ -28,7 +28,8 @@ import sumolib.JSON
 import sumolib.utils
 import sumolib.Config
 import sumolib.ModuleSpec
-import sumolib.Databases
+import sumolib.Dependencies
+import sumolib.Builds
 import sumolib.repos
 
 # version of the program:
@@ -40,7 +41,8 @@ assert __version__==sumolib.JSON.__version__
 assert __version__==sumolib.utils.__version__
 assert __version__==sumolib.Config.__version__
 assert __version__==sumolib.ModuleSpec.__version__
-assert __version__==sumolib.Databases.__version__
+assert __version__==sumolib.Dependencies.__version__
+assert __version__==sumolib.Builds.__version__
 assert __version__==sumolib.repos.__version__
 
 KNOWN_MAIN_COMMANDS=set(("help","lock","unlock","edit","makeconfig",
@@ -168,8 +170,8 @@ def repo_manager(filename, sourcespec_string, mode,
 def db_from_json_file(filename, keep_locked= False):
     """load a db, exits gracefully in case of an error."""
     try:
-        db= sumolib.Databases.Dependencies.from_json_file(filename,
-                                                          keep_locked)
+        db= sumolib.Dependencies.DB.from_json_file(filename,
+                                                   keep_locked)
     except ValueError, e:
         if not catch_exceptions:
             raise
@@ -225,7 +227,7 @@ def db_to_repo(options, mngr, db, command, arguments):
 def builddb_from_json_file(filename, keep_locked= False):
     """load a builddb, exits gracefully in case of an error."""
     try:
-        builddb= sumolib.Databases.Builddb.from_json_file(filename, keep_locked)
+        builddb= sumolib.Builds.DB.from_json_file(filename, keep_locked)
     except ValueError, e:
         if not catch_exceptions:
             raise
@@ -239,10 +241,10 @@ def builddb_from_json_file(filename, keep_locked= False):
 def init_buildcache(scandb_name, builddb, db):
     """load a builddb, exits gracefully in case of an error."""
     if not scandb_name:
-        buildcache= sumolib.Databases.BuildCache()
+        buildcache= sumolib.Builds.BuildCache()
     else:
         try:
-            buildcache= sumolib.Databases.BuildCache.from_json_file(scandb_name,
+            buildcache= sumolib.Builds.BuildCache.from_json_file(scandb_name,
                                                                  False)
         except ValueError, e:
             sys.exit(errtxt("Error while loading build database",e))
@@ -751,7 +753,7 @@ def create_database(deps, repoinfo, groups, archs, dir_patches, url_patches):
             dir_patcher.add(eval(p))
     _path2namevname= {}
     _namevname2path= {}
-    db= sumolib.Databases.Dependencies()
+    db= sumolib.Dependencies.DB()
     # we first create the map from modulenames to versiondata. In this loop we
     # populate the versiondata only with the source specification. We also
     # create two maps:
@@ -834,7 +836,7 @@ def create_database(deps, repoinfo, groups, archs, dir_patches, url_patches):
     #sumolib.JSON.dump(_path2namevname)
     #sys.exit(0)
 
-    buildcache= sumolib.Databases.BuildCache()
+    buildcache= sumolib.Builds.BuildCache()
 
     # here we populate the versiondata with the dependency specifications:
     for modulename in db.iter_modulenames():
@@ -976,7 +978,7 @@ def create_modules(dist_dict, db, builddb, build_tag, extra_lines,
 
     if builddb.is_fully_linked(build_tag):
         # the new build would contain only links, this is probably not wanted.
-        if sumolib.Databases.Builddb.is_generated_buildtag(build_tag):
+        if sumolib.Builds.DB.is_generated_buildtag(build_tag):
             # we never want an autotag build that consists only of links
             sys.exit("error: this build with an auto generated tag "
                      "would consist only of links. You can as well "
@@ -1454,7 +1456,7 @@ def build_show(arguments, options):
     if not builddb.has_build_tag(args["BUILDTAG"]):
         sys.exit("error: BUILDTAG \"%s\" not found" % \
                  args["BUILDTAG"])
-    new_builddb= sumolib.Databases.Builddb()
+    new_builddb= sumolib.Builds.DB()
     new_builddb.add_build(builddb, args["BUILDTAG"])
     new_builddb.json_print()
 
@@ -1564,7 +1566,7 @@ def build_try(arguments, options):
 
     (_, db)= db_from_repo(options)
     if not os.path.exists(builddb_fn(options)):
-        builddb= sumolib.Databases.Builddb()
+        builddb= sumolib.Builds.DB()
     else:
         builddb= builddb_from_json_file(builddb_fn(options),
                                         keep_locked= False)
@@ -1776,7 +1778,7 @@ def build_new(arguments, options):
         sys.exit(str(e))
 
     if not os.path.exists(builddb_fn(options)):
-        builddb= sumolib.Databases.Builddb()
+        builddb= sumolib.Builds.DB()
     else:
         builddb= builddb_from_json_file(builddb_fn(options),
                     keep_locked= not options.dry_run)
