@@ -112,7 +112,6 @@ class Repo(object):
         # pylint: disable=R0914
         #                          Too many local variables
         p_basename= os.path.basename
-        p_dirname = os.path.dirname
         p_dirjoin = os.path.join
         p_abspath = os.path.abspath
         p_isdir =   os.path.isdir
@@ -155,7 +154,7 @@ class Repo(object):
         # to remove one directory hierarchy:
         ap_renamed_subdir= p_dirjoin(ap_tempdir, p_basename(destdir))
         os.rename(ap_subdir, ap_renamed_subdir)
-        shutil.move(ap_renamed_subdir, p_dirname(ap_tempdir))
+        shutil.move(ap_renamed_subdir, ap_destdir)
         os.rmdir(ap_tempdir)
 
 
