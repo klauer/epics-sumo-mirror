@@ -72,7 +72,7 @@ $SUMO db -y --logmsg "local changes" --db local-darcs/DEPS.DB --dbrepo "darcs ce
 echo
 echo "Conflict in mercurial repo:"
 echo "--------------------------"
-$SUMO db -y --logmsg "local changes" --db local-hg/DEPS.DB --dbrepo "hg central-hg" --dbrepomode pull showall ALARM 2>&1 || true
+$SUMO db -y --logmsg "local changes" --db local-hg/DEPS.DB --dbrepo "hg central-hg" --dbrepomode pull showall ALARM 2>&1 | sed -e 's/\(not updating:\).*/\1/;/(merge or update/d'
 echo
 echo "Conflict in git repo:"
 echo "--------------------------"
