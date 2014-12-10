@@ -64,7 +64,7 @@ def _scan(filenames, external_definitions= None,
             l.append("%s=\"%s\"" % (k,v))
         l.append("")
         extra= " ".join(l)
-    cmd=("echo -e \"%s\\n" +\
+    cmd=("/bin/echo -e \"%s\\n" +\
          ".EXPORT_ALL_VARIABLES:\\n" +\
 	 "scan_makefile_pe:\\n" +\
 	 "\\t@printenv\\n\" | %s " +\
