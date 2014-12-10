@@ -7,6 +7,7 @@
 import re
 import os.path
 import sumolib.system
+import os
 
 __version__="2.3.1" #VERSION#
 
@@ -15,6 +16,11 @@ assert __version__==sumolib.system.__version__
 # -----------------------------------------------
 # Repo class
 # -----------------------------------------------
+
+# The following setting is necessary in order to prevent darcs from showing
+# messages in color. This is needed since some of the functions here match
+# on certain parts of the output of darcs.
+os.environ["DARCS_DONT_COLOR"]= "1"
 
 class Repo(object):
     """represent a darcs repository."""
