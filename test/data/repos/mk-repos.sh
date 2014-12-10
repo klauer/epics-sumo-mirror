@@ -18,7 +18,10 @@ function MK_DARCS
     fi
     cd $destpath > /dev/null
     cp -a $sourcepath/* .
-    sync
+    # without this sleep, darcs sometimes fails in a way that it doesn't see
+    # changes in a local file.
+    sleep 1
+    #sync
     #echo "DIR : $sourcepath"
     if [ ! -e _darcs ]; then
         darcs init
