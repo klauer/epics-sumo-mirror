@@ -101,7 +101,7 @@ deps:
 
 # how to generate an out file:
 %.out: %.sh 
-	sh ./$< $(PYTHON) > $@
+	bash ./$< $(PYTHON) > $@
 
 ifeq "$(CREATE_TESTS)" "yes"
 %.ok: %.out
