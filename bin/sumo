@@ -977,13 +977,7 @@ def create_modules(dist_dict, db, builddb, build_tag, extra_lines,
     add_modules(dist_dict, db, builddb, build_tag)
 
     if builddb.is_fully_linked(build_tag):
-        # the new build would contain only links, this is probably not wanted.
-        if sumolib.Builds.DB.is_generated_buildtag(build_tag):
-            # we never want an autotag build that consists only of links
-            sys.exit("error: this build with an auto generated tag "
-                     "would consist only of links. You can as well "
-                     "use one of the existing builds. Just try "
-                     "'sumo build use'.")
+        # the new build would contain only links, this is maybe not wanted.
         sys.stderr.write("Note: The generated build '%s' consists only of "
                          "links.\n" % build_tag)
 
