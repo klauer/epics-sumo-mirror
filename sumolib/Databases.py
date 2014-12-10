@@ -35,52 +35,6 @@ def warn(text):
 # class definitions
 # -----------------------------------------------
 
-class OldDependencies(sumolib.JSON.Container):
-    """convert the old dependency database to the new format.
-
-    returns a BuildCache and a Dependency object.
-    """
-    def __init__(self, dict_= None):
-        """create the object."""
-        super(OldDependencies, self).__init__(dict_)
-    def convert(self):
-        """convert to a Dependencies and BuildCache object.
-        """
-        new= {}
-        buildcache= BuildCache()
-        for (modulename, moduledict) in self.datadict().items():
-            new_moduledict= new.setdefault(modulename, {})
-            for (versionname, versiondict) in moduledict.items():
-                new_versiondict= new_moduledict.setdefault(versionname, {})
-                for (propertyname, proptertydict) in versiondict.items():
-                    if propertyname=="state":
-                        continue
-                    if propertyname!="dependencies":
-                        new_versiondict[propertyname]= \
-                                copy.deepcopy(proptertydict)
-                        continue
-                    s= set()
-                    for (dep_name, dep_dict) in proptertydict.items():
-                        # a kind of self-dependency shouldn't be there but
-                        # sometimes it is:
-                        if dep_name==modulename:
-                            continue
-                        s.add(dep_name)
-                        for dep_version in dep_dict.keys():
-                            buildcache.add_dependency(modulename,
-                                                      versionname,
-                                                      dep_name,
-                                                      dep_version,
-                                                      "scanned")
-                                                      #dep_dict[dep_version])
-                        # ^^^ we use "scanned" on purpose here, we do not want
-                        # to take old state values from a converted database
-                        # since we cannot trust that these can easily be built
-                        # on the local machine. update_from_builddb will take
-                        # state values from builds, though.
-                    new_versiondict["dependencies"]= sorted(list(s))
-        return (buildcache, Dependencies(new))
-
 class Dependencies(sumolib.JSON.Container):
     """the dependency database."""
     # pylint: disable=R0904
