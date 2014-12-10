@@ -9,8 +9,7 @@ Error while loading dependency database
 
 Conflict in mercurial repo:
 --------------------------
-not updating: not a linear update
-(merge or update --check to force update)
+not updating:
 warning: conflicts during merge.
 merging DEPS.DB incomplete! (edit conflicts, then use 'hg resolve --mark')
 Error while loading dependency database
