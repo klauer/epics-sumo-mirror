@@ -301,13 +301,19 @@ class Repo(object):
                                      self.verbose, self.dry_run)
     def pull_merge(self):
         """pull changes and try to merge."""
-        cmd="git -C %s pull -q %s" % (self.directory, self.remote_url)
+        cmd="git -C %s fetch %s -q" % (self.directory, self.remote_url)
+        (_,_)= sumolib.system.system(cmd,
+                                     True, False,
+                                     self.verbose, self.dry_run)
+
+        cmd="git -C %s merge FETCH_HEAD -q" % self.directory
+
         (_,_,rc)= sumolib.system.system_rc(cmd,
-                                           False, False,
+                                           True, False,
                                            self.verbose, self.dry_run)
         if rc:
             msg="error, 'git pull' failed"
             raise IOError(msg)
 
-
+# git fetch <remote> -q   --> geht!
 

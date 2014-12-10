@@ -18,8 +18,5 @@ Error while loading dependency database
 
 Conflict in git repo:
 --------------------------
-Auto-merging DEPS.DB
-CONFLICT (content): Merge conflict in DEPS.DB
-Automatic merge failed; fix conflicts and then commit the result.
 Error while loading dependency database
 'git pull' failed
