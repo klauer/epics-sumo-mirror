@@ -462,10 +462,10 @@ def process(options, commands):
                 config_name,
                 ENV_CONFIG,
                 ( "#preload","#opt-preload","#postload","#opt-postload",
-                  "dir", "exclude_deps", "exclude_path", "group_basedir",
-                  "hint", "ignore_changes", "ignore_name", "missing_repo",
-                  "missing_tag", "progress",
-                  "dir_patch", "url_patch",
+                  "dir", "exclude-deps", "exclude-path", "group-basedir",
+                  "hint", "ignore-changes", "ignore-name", "missing-repo",
+                  "missing-tag", "progress",
+                  "dir-patch", "url-patch",
                   "verbose"))
 
     try:

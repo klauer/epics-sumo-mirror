@@ -15,21 +15,21 @@ You first have to create a file sumo-scan.config with this content::
           "/opt/csr/Epics/R3.14.12/base/3-14-12-2-1",
           "/opt/Epics/R3.14.12/support"
       ],
-      "exclude_deps": "home/",
-      "exclude_path": [
+      "exclude-deps": "home/",
+      "exclude-path": [
           "apps/crateCtrl/XXXXX",
           "busy/vendor",
           "monoapps",
           "std/vendor",
           "devIocStats/vendor"
       ],
-      "group_basedir": [
+      "group-basedir": [
           "/opt/Epics/R3.14.12/support",
           "/opt/Epics/R3.14.12"
       ],
       "hint": [
       ],
-      "ignore_name": [
+      "ignore-name": [
           "TOP",
           "EPICS_SUPPORT",
           "SUPPORT",
@@ -39,7 +39,7 @@ You first have to create a file sumo-scan.config with this content::
           "MSI"
       ],
       "progress": true,
-      "url_patch": [
+      "url-patch": [
           "r\"^([^:]*)$\",r\"rcsadm@aragon.acc.bessy.de:\\1\"",
           "r\"^([^@]*)$\",r\"rcsadm@\\1\"",
           "r\"\\b(aragon)(?:|\\.acc):\",r\"\\1.acc.bessy.de:\"",
@@ -48,7 +48,7 @@ You first have to create a file sumo-scan.config with this content::
           "r\"/(srv|opt)/csr/(repositories/controls/darcs)\",r\"/opt/\\2\"",
           "r\"/srv/csr/Epics\",\"/opt/Epics\""
       ],
-      "dir_patch": [
+      "dir-patch": [
           "r\"/(srv|opt)/csr/(repositories/controls/darcs)\",r\"/opt/\\2\"",
           "r\"/srv/csr/Epics\",\"/opt/Epics\""
       ]

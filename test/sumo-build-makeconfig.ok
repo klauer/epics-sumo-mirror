@@ -12,7 +12,7 @@ generated config file:
         "vxWorks-ppc603"
     ],
     "builddir": "/supports",
-    "buildtag_stem": "MYAPP",
+    "buildtag-stem": "MYAPP",
     "db": "DEPS.DB",
     "extra": [
         "extra line"
