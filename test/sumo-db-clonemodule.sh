@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 ME=`basename $0 .sh`
 
