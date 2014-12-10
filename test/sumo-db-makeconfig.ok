@@ -8,7 +8,7 @@ generated config file:
         "vxWorks-ppc603"
     ],
     "db": "DEPS.DB",
-    "dir_patch": [
+    "dir-patch": [
         "r\"^/srv/csr/Epics\",r\"rcsadm@aragon.acc.bessy.de:/opt/Epics\""
     ],
     "progress": true,

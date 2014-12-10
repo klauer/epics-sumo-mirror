@@ -133,15 +133,15 @@ dir
   A list of directories to parse, for details see
   :ref:`sumo-scan options <reference-sumo-scan-Options>`.
 
-exclude_deps
+exclude-deps
   A list of regular expressions for dependencies to exclude, for details see
   :ref:`sumo-scan options <reference-sumo-scan-Options>`.
 
-exclude_path
+exclude-path
   A list of regular expressions for paths to exclude, for details see
   :ref:`sumo-scan options <reference-sumo-scan-Options>`.
 
-group_basedir
+group-basedir
   A list of existing support directories, for details see
   :ref:`sumo-scan options <reference-sumo-scan-Options>`.
 
@@ -149,19 +149,19 @@ hint
   A list of conversion hints, for details see
   :ref:`sumo-scan options <reference-sumo-scan-Options>`.
 
-ignore_changes
+ignore-changes
   A list of regular expressions for changes to ignore,
   for details see :ref:`sumo-scan options <reference-sumo-scan-Options>`.
 
-ignore_name
+ignore-name
   A list of names that are ignored in RELEASE files,
   for details see :ref:`sumo-scan options <reference-sumo-scan-Options>`.
 
-missing_repo
+missing-repo
   A boolean flag that controls the printing of warnings,
   for details see :ref:`sumo-scan options <reference-sumo-scan-Options>`.
 
-missing_tag
+missing-tag
   A boolean flag that controls the printing of warnings,
   for details see :ref:`sumo-scan options <reference-sumo-scan-Options>`.
 
@@ -169,11 +169,11 @@ progress
   A boolean flag that controls the printing of progress markers,
   for details see :ref:`sumo-scan options <reference-sumo-scan-Options>`.
 
-dir_patch
+dir-patch
   A list of directory patch expressions, 
   for details see :ref:`sumo-scan options <reference-sumo-scan-Options>`.
 
-url_patch
+url-patch
   A list of url patch expressions, 
   for details see :ref:`sumo-scan options <reference-sumo-scan-Options>`.
 
@@ -215,7 +215,7 @@ alias
   A list of module aliases in the form FROM:TO,
   for details see :ref:`sumo options <reference-sumo-Options>`.
 
-buildtag_stem
+buildtag-stem
   A string that specifies a buildtag stem,
   for details see :ref:`sumo options <reference-sumo-Options>`.
 
@@ -256,11 +256,11 @@ scandb
   The filename of the scan database,
   for details see :ref:`sumo options <reference-sumo-Options>`.
   
-dir_patch
+dir-patch
   A list of directory patch expressions, 
   for details see :ref:`sumo options <reference-sumo-Options>`.
 
-url_patch
+url-patch
   A list of url patch expressions, 
   for details see :ref:`sumo options <reference-sumo-Options>`.
 

@@ -2258,9 +2258,9 @@ def process(options, commands):
                 config_name,
                 ENV_CONFIG,
                 ( "#preload","#opt-preload","#postload","#opt-postload",
-                  "arch", "alias", "buildtag_stem",
+                  "arch", "alias", "buildtag-stem",
                   "db", "dbrepo", "dbrepomode", "extra", "makeopts", "module",
-                  "progress", "readonly", "scandb", "dir_patch", "url_patch",
+                  "progress", "readonly", "scandb", "dir-patch", "url-patch",
                   "builddir", "verbose"))
 
     try:
