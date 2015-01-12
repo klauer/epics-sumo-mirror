@@ -48,18 +48,13 @@ class Repo(object):
         # pylint: disable=W0613
         #                          Unused argument
         return cls(directory, hints, verbose, dry_run)
-    def source_spec(self, patcher= None):
+    def source_spec(self):
         """return a complete source specification (for SourceSpec class).
         """
-        def p(st):
-            """apply patcher if it is given."""
-            if patcher is None:
-                return st
-            return patcher.apply(st)
         if self.directory is None:
             raise AssertionError("cannot create source_spec from "
                                  "empty object")
-        d= {"path": p(self.directory)}
+        d= {"path": self.directory}
         return d
     @staticmethod
     def checkout(spec, destdir, verbose, dry_run):
