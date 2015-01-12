@@ -492,7 +492,7 @@
         }
     },
     "SOFT_DEVHWCLIENT": {
-        "R3-0": {
+        "TAR-3-0": {
             "aliases": {
                 "BASE": "EPICS_BASE"
             },

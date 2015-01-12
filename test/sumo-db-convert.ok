@@ -489,7 +489,7 @@ DB file:
         }
     },
     "SOFT_DEVHWCLIENT": {
-        "R3-0": {
+        "TAR-3-0": {
             "aliases": {
                 "BASE": "EPICS_BASE"
             },
@@ -644,7 +644,7 @@ SCANDB file:
                 "R3-0": "scanned"
             },
             "SOFT_DEVHWCLIENT": {
-                "R3-0": "scanned"
+                "TAR-3-0": "scanned"
             }
         },
         "R2-6-3-gp": {
@@ -664,7 +664,7 @@ SCANDB file:
                 "R3-0": "scanned"
             },
             "SOFT_DEVHWCLIENT": {
-                "R3-0": "scanned"
+                "TAR-3-0": "scanned"
             }
         }
     },
@@ -695,7 +695,7 @@ SCANDB file:
         }
     },
     "SOFT_DEVHWCLIENT": {
-        "R3-0": {
+        "TAR-3-0": {
             "BASE": {
                 "R3-14-12-2-1": "scanned"
             }

@@ -147,15 +147,14 @@ def repo_manager(filename, sourcespec_string, mode,
                  verbose, dry_run):
     """create a ManagedRepo object."""
     if not sourcespec_string:
-        return sumolib.repos.ManagedRepo(None,None,None,None,verbose,dry_run)
+        return sumolib.repos.ManagedRepo(None,None,None,verbose,dry_run)
     if not mode:
         mode= 'get'
     source_spec_obj= \
         sumolib.repos.SourceSpec.from_string_sourcespec(
                                           sourcespec_string.split())
     (dir_,_)= os.path.split(filename)
-    return sumolib.repos.ManagedRepo(source_spec_obj.sourcetype(),
-                                     source_spec_obj.spec_dict(),
+    return sumolib.repos.ManagedRepo(source_spec_obj,
                                      mode,
                                      dir_, verbose, dry_run)
 
@@ -547,11 +546,11 @@ def create_source(db, modulename, versionname,
     """
     # pylint: disable=R0913
     #                          Too many arguments
-    (sourcetype, sourcedata)= db.module_source_dict(modulename, versionname)
-    sumolib.repos.checkout(sourcetype,
-                        sourcedata,
-                        destdir,
-                        verbose, dry_run)
+    sourcespec= sumolib.repos.SourceSpec(db.module_source_dict(modulename,
+                                                               versionname))
+    sumolib.repos.checkout(sourcespec,
+                           destdir,
+                           verbose, dry_run)
 
 def delete_module(builddir, build_tag, modulename, versionname,
                   must_exist,
@@ -694,12 +693,17 @@ def create_app_data(deps, repoinfo, groups):
         sourcespec_obj= sumolib.repos.SourceSpec(r_dict)
         if sourcespec_obj.sourcetype()=="path":
             versionname= "PATH-%s" % subdir
-        else:
+        elif sourcespec_obj.sourcetype()=="tar":
+            versionname= "TAR-%s" % subdir
+        elif sourcespec_obj.is_repo():
             tag= sourcespec_obj.tag()
             if tag is None:
                 versionname= "TAGLESS-%s" % subdir
             else:
                 versionname= tag
+        else:
+            raise AssertionError("unsupported sourcetype: %s" % \
+                                 sourcespec_obj.sourcetype())
         specs_by_path[versionedmodule_path]= (module_name,versionname)
 
     for (aliasname, path) in deps[app_path].items():
@@ -775,7 +779,20 @@ def create_database(deps, repoinfo, groups, archs, dir_patches, url_patches):
                     # repodata is just the path in this case:
                     src_sourcespec.path(dir_patcher.apply(
                                             src_sourcespec.path()))
-                if src_sourcespec.is_repo():
+                elif src_sourcespec.sourcetype()=="tar":
+                    # the source is a tar file, not a repository. We
+                    # generate the unique versionname:
+                    if subdir.startswith("TAR-"):
+                        # Try to handle a subdir that was created by this set
+                        # of tools. Such a subdir may already be named
+                        # "TAR-<name>+<treetag>". We want to take <name> as
+                        # versionname in this case:
+                        versionname= sumolib.utils.split_treetag(subdir)[0]
+                    else:
+                        versionname= "TAR-%s" % subdir
+                    # we apply not the dir_patched to the path of the tar file
+                    # here.
+                elif src_sourcespec.is_repo():
                     tag= src_sourcespec.tag()
 
                     if tag is None:
@@ -799,6 +816,9 @@ def create_database(deps, repoinfo, groups, archs, dir_patches, url_patches):
                         versionname= tag
                     src_sourcespec.url(url_patcher.apply(
                                            src_sourcespec.url()))
+                else:
+                    raise AssertionError("unsupported sourcetype: %s" % \
+                                         src_sourcespec.sourcetype())
 
                 module_archs= archs.get(versionedmodule_path, [])
                 if not module_archs:

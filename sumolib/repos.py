@@ -98,13 +98,18 @@ def src_from_dir(directory, hints, verbose, dry_run):
 # ---------------------------------------------------------
 # check out:
 
-def checkout(repotype, spec, destdir, verbose, dry_run):
+def checkout(sourcespec, destdir, verbose, dry_run):
     """check out a working copy.
 
-    spec must be a dictionary with "url" and "tag" (optional).
+    sourcespec must be a SourceSpec object.
     """
     # pylint: disable=R0913
     #                          Too many arguments
+    if not isinstance(sourcespec, SourceSpec):
+        raise TypeError("error, '%s' is not of type SourceSpec" % \
+                        repr(sourcespec))
+    repotype= sourcespec.sourcetype()
+    spec= sourcespec.spec_val()
     if repotype == "darcs":
         sumolib.darcs.Repo.checkout(spec, destdir, verbose, dry_run)
     elif repotype == "hg":
@@ -129,55 +134,6 @@ class SourceSpec(sumolib.JSON.Container):
     def __init__(self, dict_= None):
         """create the object."""
         super(SourceSpec, self).__init__(dict_)
-    @classmethod
-    def from_param(cls, sourcetype, url=None, tag=None,
-                   rev=None, tar=None, path=None):
-        """create by parameters.
-        """
-        # pylint: disable=R0912
-        #                          Too many branches
-        # pylint: disable=R0913
-        #                          Too many arguments
-        if sourcetype not in known_sources:
-            raise ValueError("unknown source type: '%s'" % sourcetype)
-        if sourcetype=="path":
-            if not path:
-                raise ValueError("'path' missing for sourcetype 'path'")
-            return cls({"path": path})
-        if sourcetype=="tar":
-            if not tar:
-                raise ValueError("'tar' missing for sourcetype 'tar'")
-            return cls({"tar": tar})
-        if sourcetype=="darcs":
-            if not url:
-                raise ValueError("'url' missing for sourcetype 'darcs'")
-            d= {"url": url}
-            if tag:
-                d["tag"]= tag
-            return cls({sourcetype: d})
-        if sourcetype=="hg":
-            if not url:
-                raise ValueError("'url' missing for sourcetype 'hg'")
-            d= {"url": url}
-            if tag and rev:
-                raise ValueError("you cannot specify tag AND revision")
-            if tag:
-                d["tag"]= tag
-            if rev:
-                d["rev"]= rev
-            return cls({sourcetype: d})
-        if sourcetype=="git":
-            if not url:
-                raise ValueError("'url' missing for sourcetype 'git'")
-            d= {"url": url}
-            if tag and rev:
-                raise ValueError("you cannot specify tag AND revision")
-            if tag:
-                d["tag"]= tag
-            if rev:
-                d["rev"]= rev
-            return cls({sourcetype: d})
-        raise AssertionError("unknown sourcetype: %s" % sourcetype)
     @classmethod
     def from_string_sourcespec(cls, elms):
         """scan a source specification.
@@ -234,72 +190,55 @@ class SourceSpec(sumolib.JSON.Container):
         """return if SourceSpec refers to a repository.
         """
         return self.sourcetype() in known_repos
-    @staticmethod
-    def _set_get(dict_, name, new_val= None):
-        """get or set a property."""
-        if new_val is None:
-            return dict_.get(name)
-        dict_[name]= new_val
-        return new_val
-    def tag(self, new_val= None):
-        """return the tag."""
-        (_, _, pars)= self.unpack()
-        # pylint: disable=W0212
-        #                          Access to protected member
-        return self.__class__._set_get(pars, "tag", new_val)
-    def rev(self, new_val= None):
-        """return the revision number."""
-        (_, _, pars)= self.unpack()
-        # pylint: disable=W0212
-        #                          Access to protected member
-        return self.__class__._set_get(pars, "rev", new_val)
     def path(self, new_val= None):
         """return the path if the type is "path"."""
-        (d, type_, pars)= self.unpack()
+        (d, type_, pars)= self._unpack()
         if type_!= "path":
             raise TypeError("error, 'path()' can only be called for "
                             "SourceSpec objects of type 'path'")
         if new_val is None:
             return pars
         d[type_]= new_val
-        return new_val
-    def tar(self, new_val= None):
-        """return the tar if the type is "tar"."""
-        (d, type_, pars)= self.unpack()
-        if type_!= "tar":
-            raise TypeError("error, 'tar()' can only be called for "
-                            "SourceSpec objects of type 'tar'")
+    def tag(self, new_val= None):
+        """return the tag if it exists."""
+        (_, type_, pars)= self._unpack()
+        if not isinstance(pars, dict):
+            if new_val is not None:
+                raise ValueError("error, cannot set tag on type %s" % type_)
+            return
         if new_val is None:
-            return pars
-        d[type_]= new_val
-        return new_val
+            return pars.get("tag")
+        pars["tag"]= new_val
     def url(self, new_val= None):
-        """return the url if the type is a repository."""
-        (_, type_, pars)= self.unpack()
-        if type_ in known_no_repos:
-            raise TypeError("error, 'url()' cannot be called for "
-                            "SourceSpec objects of type '%s'" % type_)
-        return self._set_get(pars, "url", new_val)
-    def spec_dict(self):
-        """return a dict with keys "url" and "tag"."""
-        if not self.is_repo():
-            raise TypeError("error, 'spec_dict()' can only be called for "
-                            "SourceSpec objects of type repository")
-        d= { "url": self.url()}
-        t= self.tag()
-        if t:
-            d["tag"]= t
-        return d
-    def unpack(self):
+        """return the url if it exists."""
+        (_, type_, pars)= self._unpack()
+        if not isinstance(pars, dict):
+            if new_val is not None:
+                raise ValueError("error, cannot set url on type %s" % type_)
+            return
+        if new_val is None:
+            return pars.get("url")
+        pars["url"]= new_val
+    def spec_val(self):
+        """return the *value* of the source specification.
+
+        As SourceSpec is currently used this can be a string (type "path") or a
+        dict (all other types).
+        """
+        (_, _, pars)= self._unpack()
+        return pars
+    def _unpack(self):
         """return the internal dict, the sourcetype and the parameters.
         """
         d= self.datadict()
         type_= sumolib.utils.single_key(d)
         return (d, type_, d[type_])
-    def copy(self, other):
+    def copy_spec(self, other):
         """simply overwrite self with other."""
-        (self_d, self_type, _)= self.unpack()
-        (_, other_type, other_pars)= other.unpack()
+        (self_d, self_type, _)= self._unpack()
+        # pylint: disable=W0212
+        #                          Access to a protected member
+        (_, other_type, other_pars)= other._unpack()
         del self_d[self_type]
         # reconstruct other_pars if it is an object. For dicts this creates a
         # second independent dict:
@@ -311,11 +250,13 @@ class SourceSpec(sumolib.JSON.Container):
 
         returns True if the spec was changed, False if it wasn't.
         """
-        (self_d, self_type, self_pars)   = self.unpack()
-        (_, other_type, other_pars)= other.unpack()
+        (self_d, self_type, self_pars)   = self._unpack()
+        # pylint: disable=W0212
+        #                          Access to a protected member
+        (_, other_type, other_pars)= other._unpack()
 
         if self_type!=other_type:
-            self.copy(other)
+            self.copy_spec(other)
             return True
 
         if isinstance(other_pars, basestring):
@@ -350,7 +291,7 @@ class SourceSpec(sumolib.JSON.Container):
 
         returns True if the spec was changed, False if it wasn't.
         """
-        (_, self_type, self_pars)   = self.unpack()
+        (_, self_type, self_pars)   = self._unpack()
         if self_type in known_no_repos:
             raise ValueError("you cannot provide just a new tag for "
                              "a source specification of "
@@ -370,9 +311,12 @@ class ManagedRepo(object):
     Do pull before read,
     commit and push after write.
     """
-    def __init__(self, repotype, spec, mode, directory,
+    def __init__(self, sourcespec,
+                 mode, directory,
                  verbose, dry_run):
         """create the object.
+
+        sourcespec must be a SourceSpec object or <None>.
 
         spec must be a dictionary with "url" and "tag" (optional).
 
@@ -381,18 +325,21 @@ class ManagedRepo(object):
           pull: pull and merge before every read
           push: like pull but push after every write
 
-        If repotype is None, create an empty object that basically
+        If sourcespec is None, create an empty object that basically
         does nothing.
 
         Does checkout the repository if the directory does not yet exist.
         """
         # pylint: disable=R0913
         #                          Too many arguments
-        self.repotype= repotype
-        if repotype is None:
+        self.sourcespec= sourcespec
+        if sourcespec is None:
             return
 
-        self.spec= spec
+        if not isinstance(sourcespec, SourceSpec):
+            raise TypeError("error, '%s' is not of type SourceSpec" % \
+                            repr(sourcespec))
+
         if mode not in ["get","pull","push"]:
             raise AssertionError("unknown mode: %s" % repr(mode))
         self.mode= mode
@@ -401,12 +348,11 @@ class ManagedRepo(object):
         self.dry_run= dry_run
         if not os.path.isdir(self.directory):
             # must check out
-            checkout(self.repotype, self.spec, self.directory,
+            checkout(self.sourcespec, self.directory,
                      self.verbose, self.dry_run)
             if not os.path.isdir(self.directory):
-                raise AssertionError("checkout of %s %s to %s failed" % \
-                                     (self.repotype,
-                                      repr(self.spec),
+                raise AssertionError("checkout of %s to %s failed" % \
+                                     (self.sourcespec,
                                       self.directory))
         self.repo_obj= repo_from_dir(self.directory,
                                      {"write check": True},
@@ -417,13 +363,13 @@ class ManagedRepo(object):
             # In this case we silently fail. This is in case the current user
             # has read- but not write access to the direcory and/or
             # repository.
-            # Setting self.repotype to <None> basically disables the
+            # Setting self.sourcespec to <None> basically disables the
             # ManagedRepo object.
-            self.repotype= None
+            self.sourcespec= None
 
     def local_changes(self):
         """return if there are local changes."""
-        if self.repotype is None:
+        if self.sourcespec is None:
             # for the "empty" ManagedRepo object just return <None>:
             return
         return self.repo_obj.local_changes
@@ -432,7 +378,7 @@ class ManagedRepo(object):
         self.repo_obj.commit(message)
     def prepare_read(self):
         """do checkout or pull."""
-        if self.repotype is None:
+        if self.sourcespec is None:
             return
         # pylint: disable=E1103
         #                          Instance of 'Repo' has no 'pull' member
@@ -440,7 +386,7 @@ class ManagedRepo(object):
             self.repo_obj.pull_merge()
     def finish_write(self, message):
         """do commit and push."""
-        if self.repotype is None:
+        if self.sourcespec is None:
             return
         if not self.repo_obj:
             raise AssertionError("internal error, repo obj missing")

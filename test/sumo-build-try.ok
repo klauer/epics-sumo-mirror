@@ -31,7 +31,7 @@ BSPDEP_VMETAS       R2-0 R2-1 TAGLESS-2-1-modified
 MCAN                R2-6-1 R2-6-3-gp
 MISC_DBC            PATH-3-0
 MISC_DEBUGMSG       R3-0 R3-1
-SOFT_DEVHWCLIENT    R3-0
+SOFT_DEVHWCLIENT    TAR-3-0
 
 Not all modules have exactly specified versions. These modules need an 
 exact version specification:
@@ -71,7 +71,7 @@ Details on unspecified/missing modules:
                 "MISC_DBC:PATH-3-0": "state: stable",
                 "MISC_DEBUGMSG:R3-0": "state: stable",
                 "MISC_DEBUGMSG:R3-1": "state: not tested",
-                "SOFT_DEVHWCLIENT:R3-0": "state: stable"
+                "SOFT_DEVHWCLIENT:TAR-3-0": "state: stable"
             }
         }
     },
@@ -141,7 +141,7 @@ Details on unspecified/missing modules:
         }
     },
     "SOFT_DEVHWCLIENT": {
-        "R3-0": {
+        "TAR-3-0": {
             "built": true,
             "dependents": {
                 "MCAN:R2-6-1": "state: stable",
@@ -198,7 +198,7 @@ Details on all modules:
                 "MISC_DBC:PATH-3-0": "state: stable",
                 "MISC_DEBUGMSG:R3-0": "state: stable",
                 "MISC_DEBUGMSG:R3-1": "state: not tested",
-                "SOFT_DEVHWCLIENT:R3-0": "state: stable"
+                "SOFT_DEVHWCLIENT:TAR-3-0": "state: stable"
             }
         }
     },
@@ -268,7 +268,7 @@ Details on all modules:
         }
     },
     "SOFT_DEVHWCLIENT": {
-        "R3-0": {
+        "TAR-3-0": {
             "built": true,
             "dependents": {
                 "MCAN:R2-6-1": "state: stable",
@@ -308,7 +308,7 @@ exact version specification:
     MCAN
     MISC_DBC             -> suggested version: PATH-3-0
     MISC_DEBUGMSG
-    SOFT_DEVHWCLIENT     -> suggested version: R3-0
+    SOFT_DEVHWCLIENT     -> suggested version: TAR-3-0
 
 Command 'new' would create build with tag 'AUTO-003'
 
@@ -327,7 +327,7 @@ BSPDEP_VMETAS       R2-0 R2-1 TAGLESS-2-1-modified
 MCAN                R2-6-1 R2-6-3-gp
 MISC_DBC            PATH-3-0
 MISC_DEBUGMSG       R3-0 R3-1
-SOFT_DEVHWCLIENT    R3-0
+SOFT_DEVHWCLIENT    TAR-3-0
 
 Not all modules have exactly specified versions. These modules need an 
 exact version specification:
@@ -337,7 +337,7 @@ exact version specification:
     MCAN
     MISC_DBC             -> suggested version: PATH-3-0
     MISC_DEBUGMSG
-    SOFT_DEVHWCLIENT     -> suggested version: R3-0
+    SOFT_DEVHWCLIENT     -> suggested version: TAR-3-0
 
 Command 'new' would create build with tag 'AUTO-003'
 
@@ -365,7 +365,7 @@ Details on unspecified/missing modules:
                 "MISC_DBC:PATH-3-0": "state: stable",
                 "MISC_DEBUGMSG:R3-0": "state: stable",
                 "MISC_DEBUGMSG:R3-1": "state: not tested",
-                "SOFT_DEVHWCLIENT:R3-0": "state: stable"
+                "SOFT_DEVHWCLIENT:TAR-3-0": "state: stable"
             }
         }
     },
@@ -435,7 +435,7 @@ Details on unspecified/missing modules:
         }
     },
     "SOFT_DEVHWCLIENT": {
-        "R3-0": {
+        "TAR-3-0": {
             "built": true,
             "dependents": {
                 "MCAN:R2-6-1": "state: stable",
@@ -453,7 +453,7 @@ exact version specification:
     MCAN
     MISC_DBC             -> suggested version: PATH-3-0
     MISC_DEBUGMSG
-    SOFT_DEVHWCLIENT     -> suggested version: R3-0
+    SOFT_DEVHWCLIENT     -> suggested version: TAR-3-0
 
 Command 'new' would create build with tag 'AUTO-003'
 
@@ -490,7 +490,7 @@ Details on all modules:
                 "MISC_DBC:PATH-3-0": "state: stable",
                 "MISC_DEBUGMSG:R3-0": "state: stable",
                 "MISC_DEBUGMSG:R3-1": "state: not tested",
-                "SOFT_DEVHWCLIENT:R3-0": "state: stable"
+                "SOFT_DEVHWCLIENT:TAR-3-0": "state: stable"
             }
         }
     },
@@ -560,7 +560,7 @@ Details on all modules:
         }
     },
     "SOFT_DEVHWCLIENT": {
-        "R3-0": {
+        "TAR-3-0": {
             "built": true,
             "dependents": {
                 "MCAN:R2-6-1": "state: stable",
@@ -578,7 +578,7 @@ exact version specification:
     MCAN
     MISC_DBC             -> suggested version: PATH-3-0
     MISC_DEBUGMSG
-    SOFT_DEVHWCLIENT     -> suggested version: R3-0
+    SOFT_DEVHWCLIENT     -> suggested version: TAR-3-0
 
 Command 'new' would create build with tag 'AUTO-003'
 
@@ -637,7 +637,7 @@ Details on all modules:
                 "MCAN:R2-6-1": "state: stable",
                 "MISC_DBC:PATH-3-0": "state: stable",
                 "MISC_DEBUGMSG:R3-0": "state: stable",
-                "SOFT_DEVHWCLIENT:R3-0": "state: stable"
+                "SOFT_DEVHWCLIENT:TAR-3-0": "state: stable"
             }
         }
     },
@@ -680,7 +680,7 @@ Details on all modules:
         }
     },
     "SOFT_DEVHWCLIENT": {
-        "R3-0": {
+        "TAR-3-0": {
             "built": true,
             "dependents": {
                 "MCAN:R2-6-1": "state: stable"

@@ -12,7 +12,7 @@ sumo build find MCAN -b:
             "MCAN": "R2-6-3-gp",
             "MISC_DBC": "PATH-3-0",
             "MISC_DEBUGMSG": "R3-0",
-            "SOFT_DEVHWCLIENT": "R3-0"
+            "SOFT_DEVHWCLIENT": "TAR-3-0"
         },
         "state": "testing"
     },
@@ -33,7 +33,7 @@ sumo build find MCAN -b:
             "MCAN": "R2-6-3-gp",
             "MISC_DBC": "PATH-3-0",
             "MISC_DEBUGMSG": "R3-0",
-            "SOFT_DEVHWCLIENT": "R3-0"
+            "SOFT_DEVHWCLIENT": "TAR-3-0"
         },
         "state": "unstable"
     }
@@ -59,7 +59,7 @@ sumo-build find MCAN ALARM:R3-7
             "MCAN": "R2-6-3-gp",
             "MISC_DBC": "PATH-3-0",
             "MISC_DEBUGMSG": "R3-0",
-            "SOFT_DEVHWCLIENT": "R3-0"
+            "SOFT_DEVHWCLIENT": "TAR-3-0"
         },
         "state": "unstable"
     }
@@ -85,7 +85,7 @@ sumo-build find MCAN ALARM:-R3-7:
             "MCAN": "R2-6-3-gp",
             "MISC_DBC": "PATH-3-0",
             "MISC_DEBUGMSG": "R3-0",
-            "SOFT_DEVHWCLIENT": "R3-0"
+            "SOFT_DEVHWCLIENT": "TAR-3-0"
         },
         "state": "unstable"
     }
@@ -106,7 +106,7 @@ sumo-build find MCAN ALARM:+R3-8:
             "MCAN": "R2-6-3-gp",
             "MISC_DBC": "PATH-3-0",
             "MISC_DEBUGMSG": "R3-0",
-            "SOFT_DEVHWCLIENT": "R3-0"
+            "SOFT_DEVHWCLIENT": "TAR-3-0"
         },
         "state": "testing"
     }
