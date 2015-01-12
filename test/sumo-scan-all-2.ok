@@ -21,7 +21,7 @@
         "/tmp-sumo-build-new-2/MISC_DEBUGMSG/R3-0+MYAPP-001": [
             "ANY"
         ],
-        "/tmp-sumo-build-new-2/SOFT_DEVHWCLIENT/R3-0+MYAPP-001": [
+        "/tmp-sumo-build-new-2/SOFT_DEVHWCLIENT/TAR-3-0+MYAPP-001": [
             "ANY"
         ]
     },
@@ -42,7 +42,7 @@
             "ALARM": "/tmp-sumo-build-new-2/ALARM/R3-8-modified+MYAPP-001",
             "DBC": "/tmp-sumo-build-new-2/MISC_DBC/PATH-3-0+MYAPP-001",
             "DEBUGMSG": "/tmp-sumo-build-new-2/MISC_DEBUGMSG/R3-0+MYAPP-001",
-            "DEVHWCLIENT": "/tmp-sumo-build-new-2/SOFT_DEVHWCLIENT/R3-0+MYAPP-001",
+            "DEVHWCLIENT": "/tmp-sumo-build-new-2/SOFT_DEVHWCLIENT/TAR-3-0+MYAPP-001",
             "EPICS_BASE": "/tmp-sumo-build-new-2/BASE/R3-14-12-2-1+BASE-001",
             "VMETAS": "/tmp-sumo-build-new-2/BSPDEP_VMETAS/TAGLESS-2-1-modified+MYAPP-001"
         },
@@ -52,7 +52,7 @@
         "/tmp-sumo-build-new-2/MISC_DEBUGMSG/R3-0+MYAPP-001": {
             "EPICS_BASE": "/tmp-sumo-build-new-2/BASE/R3-14-12-2-1+BASE-001"
         },
-        "/tmp-sumo-build-new-2/SOFT_DEVHWCLIENT/R3-0+MYAPP-001": {
+        "/tmp-sumo-build-new-2/SOFT_DEVHWCLIENT/TAR-3-0+MYAPP-001": {
             "EPICS_BASE": "/tmp-sumo-build-new-2/BASE/R3-14-12-2-1+BASE-001"
         }
     },
@@ -94,7 +94,7 @@
         },
         "SOFT_DEVHWCLIENT": {
             "/tmp-sumo-build-new-2/SOFT_DEVHWCLIENT": [
-                "R3-0+MYAPP-001"
+                "TAR-3-0+MYAPP-001"
             ]
         }
     },
@@ -138,8 +138,8 @@
                 "url": "/data/repos/support/misc/debugmsg"
             }
         },
-        "/tmp-sumo-build-new-2/SOFT_DEVHWCLIENT/R3-0+MYAPP-001": {
-            "path": "/tmp-sumo-build-new-2/SOFT_DEVHWCLIENT/R3-0+MYAPP-001"
+        "/tmp-sumo-build-new-2/SOFT_DEVHWCLIENT/TAR-3-0+MYAPP-001": {
+            "path": "/tmp-sumo-build-new-2/SOFT_DEVHWCLIENT/TAR-3-0+MYAPP-001"
         }
     }
 }

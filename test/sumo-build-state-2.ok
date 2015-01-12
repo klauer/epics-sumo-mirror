@@ -10,7 +10,7 @@ BUILDS before:
             "MCAN": "R2-6-1",
             "MISC_DBC": "PATH-3-0",
             "MISC_DEBUGMSG": "R3-0",
-            "SOFT_DEVHWCLIENT": "R3-0"
+            "SOFT_DEVHWCLIENT": "TAR-3-0"
         },
         "state": "stable"
     },
@@ -31,7 +31,7 @@ BUILDS before:
             "MCAN": "R2-6-1",
             "MISC_DBC": "PATH-3-0",
             "MISC_DEBUGMSG": "R3-0",
-            "SOFT_DEVHWCLIENT": "R3-0"
+            "SOFT_DEVHWCLIENT": "TAR-3-0"
         },
         "state": "unstable"
     }
@@ -50,7 +50,7 @@ BUILDS now:
             "MCAN": "R2-6-1",
             "MISC_DBC": "PATH-3-0",
             "MISC_DEBUGMSG": "R3-0",
-            "SOFT_DEVHWCLIENT": "R3-0"
+            "SOFT_DEVHWCLIENT": "TAR-3-0"
         },
         "state": "stable"
     },
@@ -71,7 +71,7 @@ BUILDS now:
             "MCAN": "R2-6-1",
             "MISC_DBC": "PATH-3-0",
             "MISC_DEBUGMSG": "R3-0",
-            "SOFT_DEVHWCLIENT": "R3-0"
+            "SOFT_DEVHWCLIENT": "TAR-3-0"
         },
         "state": "stable"
     }
@@ -92,7 +92,7 @@ BUILDS now:
             "MCAN": "R2-6-1",
             "MISC_DBC": "PATH-3-0",
             "MISC_DEBUGMSG": "R3-0",
-            "SOFT_DEVHWCLIENT": "R3-0"
+            "SOFT_DEVHWCLIENT": "TAR-3-0"
         },
         "state": "disabled"
     },
@@ -113,7 +113,7 @@ BUILDS now:
             "MCAN": "R2-6-1",
             "MISC_DBC": "PATH-3-0",
             "MISC_DEBUGMSG": "R3-0",
-            "SOFT_DEVHWCLIENT": "R3-0"
+            "SOFT_DEVHWCLIENT": "TAR-3-0"
         },
         "state": "disabled"
     }

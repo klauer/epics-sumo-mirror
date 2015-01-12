@@ -317,12 +317,15 @@ class DB(sumolib.JSON.Container):
         d= self.datadict()[modulename][versionname]
         return d.has_key("dependencies")
     def module_source_dict(self, modulename, versionname):
+        """return a dict {type:dict} for the module source."""
+        return self.datadict()[modulename][versionname]["source"]
+    def module_source_pair(self, modulename, versionname):
         """return a tuple (type,dict) for the module source."""
         l= self.datadict()[modulename][versionname]["source"]
         return sumolib.utils.single_key_item(l)
     def module_source_string(self, modulename, versionname):
         """return the source url or tar-file or path for a module."""
-        (tp,val)= self.module_source_dict(modulename, versionname)
+        (tp,val)= self.module_source_pair(modulename, versionname)
         if tp not in sumolib.repos.known_sources:
             raise AssertionError("unexpected source tag %s at %s:%s" % \
                     (tp, modulename, versionname))
