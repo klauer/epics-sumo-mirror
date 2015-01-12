@@ -92,18 +92,13 @@ class Repo(object):
             if tar_file is None:
                 return
         return cls(directory, tar_file, hints, verbose, dry_run)
-    def source_spec(self, patcher= None):
+    def source_spec(self):
         """return a complete source specification (for SourceSpec class).
         """
-        def p(st):
-            """apply patcher if it is given."""
-            if patcher is None:
-                return st
-            return patcher.apply(st)
         if self.directory is None:
             raise AssertionError("cannot create source_spec from "
                                  "empty object")
-        d= {"tar": p(self.tar_file)}
+        d= {"tar": self.tar_file}
         return d
     @staticmethod
     def checkout(spec, destdir, verbose, dry_run):
