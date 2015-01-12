@@ -256,8 +256,8 @@ class DB(sumolib.JSON.Container):
                 continue
             for versionname in self.iter_versions(modulename,
                                                   archs, False):
-                url= self.module_source_url(modulename, versionname)
-                if rx_object.search(url):
+                repr_st= self.module_source_string(modulename, versionname)
+                if rx_object.search(repr_st):
                     results.append((modulename, versionname))
         return sorted(results)
     def get_archs(self, modulename, versionname):
@@ -320,18 +320,14 @@ class DB(sumolib.JSON.Container):
         """return a tuple (type,dict) for the module source."""
         l= self.datadict()[modulename][versionname]["source"]
         return sumolib.utils.single_key_item(l)
-    def module_source_url(self, modulename, versionname):
+    def module_source_string(self, modulename, versionname):
         """return the source url or tar-file or path for a module."""
         (tp,val)= self.module_source_dict(modulename, versionname)
         if tp not in sumolib.repos.known_sources:
             raise AssertionError("unexpected source tag %s at %s:%s" % \
                     (tp, modulename, versionname))
-        # currently all known_repos have an "url" property:
-        if tp in sumolib.repos.known_repos:
-            return val["url"]
-        # all others (not repos) are expected to have just a single
-        # "string" property:
-        return val
+        # due to variety of source specs, just return the "repr" string here:
+        return repr(val)
     def iter_dependencies(self, modulename, versionname):
         """return an iterator on dependency modulenames of a module."""
         md= self.datadict().get(modulename)
