@@ -3,7 +3,7 @@
 # creates a fake epics support directory.
 
 REPODIR=`(cd ../repos > /dev/null && pwd)`
-PWD=`pwd`
+OLD_PWD=`pwd`
 
 function MK_PATH {
     # $1: path
@@ -150,6 +150,7 @@ function MK_TAR {
     mv $newdir $module/$version
     # create fake binary directories:
     make -C $module/$version 1>&2
+    cd $OLD_PWD > /dev/null
 }
 
 mkdir base
