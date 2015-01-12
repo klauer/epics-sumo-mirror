@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -e
+
 # creates a fake epics support directory.
 
 REPODIR=`(cd ../repos > /dev/null && pwd)`
