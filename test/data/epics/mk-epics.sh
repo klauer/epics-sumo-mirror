@@ -164,14 +164,14 @@ MK_DARCS         support/alarm 3-8
 MK_DARCS_NEWTAG  support/alarm 3-8 "R3-8-modified"
 MK_PATH          support/apps/genericTemplate 3-0
 MK_DARCS         support/apps/iocWatch 3-0
-MK_DARCS         support/asyn 4-17-2 
+MK_TAR           support/asyn/asyn-4-17-2.tar.gz support
 MK_DARCS         support/bessyRules 2-5
 MK_DARCS         support/bspDep/cpuBoardInit 4-1
 MK_DARCS_MISSING support/bspDep/timer 6-2
 MK_HG            support/bspDep/VMEtas 2-0 R2-0
 MK_HG            support/bspDep/VMEtas 2-1 R2-1
 MK_HG_TAGLESS    support/bspDep/VMEtas 2-1-modified R2-1
-MK_DARCS         support/csm 4-1
+MK_TAR           support/csm/csm-4-1.tar.gz support
 MK_DARCS         support/devIocStats 3-1-9-bessy3
 MK_DARCS_TAGLESS support/ek 2-2
 MK_DARCS         support/genSub 1-6-1

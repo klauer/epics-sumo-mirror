@@ -145,13 +145,13 @@ MK_DARCS $SRCDIR/support/alarm/3-7                support/alarm            R3-7
 MK_DARCS $SRCDIR/support/alarm/3-8                support/alarm            R3-8
 MK_DARCS $SRCDIR/support/apps/genericTemplate/3-0 support/apps/genericTemplate R3-0
 MK_DARCS $SRCDIR/support/apps/iocWatch/3-0        support/apps/iocWatch        R3-0
-MK_DARCS $SRCDIR/support/asyn/4-17-2              support/asyn             R4-17-2
+MK_TAR   $SRCDIR/support/asyn/4-17-2 asyn-4-17-2  support/asyn 
 MK_DARCS $SRCDIR/support/bessyRules/2-5           support/bessyRules       R2-5
 MK_DARCS $SRCDIR/support/bspDep/cpuBoardInit/4-1  support/bspDep/cpuBoardInit      R4-1
 MK_DARCS $SRCDIR/support/bspDep/timer/6-2         support/bspDep/timer     R6-2
 MK_HG    $SRCDIR/support/bspDep/VMEtas/2-0        support/bspDep/VMEtas    R2-0
 MK_HG    $SRCDIR/support/bspDep/VMEtas/2-1        support/bspDep/VMEtas    R2-1
-MK_DARCS $SRCDIR/support/csm/4-1                  support/csm              R4-1
+MK_TAR   $SRCDIR/support/csm/4-1 csm-4-1          support/csm
 MK_DARCS $SRCDIR/support/devIocStats/3-1-9-bessy3 support/devIocStats      R3-1-9-bessy3
 MK_DARCS $SRCDIR/support/ek/2-2                   support/ek               R2-2
 MK_DARCS $SRCDIR/support/genSub/1-6-1             support/genSub           R1-6-1

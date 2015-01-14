@@ -349,9 +349,8 @@
             }
         },
         "/data/epics/support/asyn/4-17-2": {
-            "darcs": {
-                "tag": "R4-17-2",
-                "url": "/data/repos/support/asyn"
+            "tar": {
+                "url": "/data/epics/support/asyn-4-17-2.tar.gz"
             }
         },
         "/data/epics/support/bessyRules/2-5": {
@@ -391,9 +390,8 @@
             }
         },
         "/data/epics/support/csm/4-1": {
-            "darcs": {
-                "tag": "R4-1",
-                "url": "/data/repos/support/csm"
+            "tar": {
+                "url": "/data/epics/support/csm-4-1.tar.gz"
             }
         },
         "/data/epics/support/devIocStats/3-1-9-bessy3": {
@@ -447,7 +445,9 @@
             }
         },
         "/data/epics/support/soft/devHwClient/3-0": {
-            "tar": "/data/epics/support/soft/devHwClient-3-0.tar.gz"
+            "tar": {
+                "url": "/data/epics/support/soft/devHwClient-3-0.tar.gz"
+            }
         }
     }
 }

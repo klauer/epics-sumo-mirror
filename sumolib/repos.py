@@ -172,10 +172,14 @@ class SourceSpec(sumolib.JSON.Container):
         """
         if elms[0] not in known_sources:
             raise ValueError("unknown source type: '%s'" % elms[0])
-        if elms[0]=="path" or elms[0]=="tar":
+        if elms[0]=="path":
             if len(elms)!=2:
                 raise ValueError("invalid source spec: '%s'" % (" ".join(elms)))
             return cls({elms[0]: elms[1]})
+        if elms[0]=="tar":
+            if len(elms)!=2:
+                raise ValueError("invalid source spec: '%s'" % (" ".join(elms)))
+            return cls({elms[0]: {"url":elms[1]}})
         if len(elms)==2:
             return cls({elms[0]:{"url":elms[1]}})
         elif len(elms)==3:

@@ -8,11 +8,13 @@ import os.path
 import shutil
 import sumolib.system
 import sumolib.utils
+import sumolib.fileurl
 
 __version__="2.3.1" #VERSION#
 
 assert __version__==sumolib.system.__version__
 assert __version__==sumolib.utils.__version__
+assert __version__==sumolib.fileurl.__version__
 
 # -----------------------------------------------
 # Repo class
@@ -53,7 +55,7 @@ class Repo(object):
             if result is not None:
                 return result
         return
-    def __init__(self, directory, tar_file, hints, verbose, dry_run):
+    def __init__(self, directory, tar_url, hints, verbose, dry_run):
         """initialize."""
         # pylint: disable=R0913
         #                          Too many arguments
@@ -61,15 +63,18 @@ class Repo(object):
         patcher= self._hint("dir patcher")
         if patcher is not None:
             directory= patcher.apply(directory)
+        patcher= self._hint("url patcher")
+        if patcher is not None:
+            tar_url= patcher.apply(tar_url)
         self.directory= directory
         self.verbose= verbose
         self.dry_run= dry_run
-        self.tar_file= tar_file
+        self.tar_url= tar_url
     def __str__(self):
         """return a human readable representation."""
         lines= [ "tar file",
                  "dir: %s" % repr(self.directory),
-                 "tar file: %s" % repr(self.tar_file)
+                 "tar url: %s" % repr(self.tar_url)
                ]
         return "\n".join(lines)
     def name(self):
@@ -98,32 +103,37 @@ class Repo(object):
         if self.directory is None:
             raise AssertionError("cannot create source_spec from "
                                  "empty object")
-        d= {"tar": self.tar_file}
+        pars= {}
+        d= {"tar": pars}
+        pars["url"]= self.tar_url
         return d
     @staticmethod
     def checkout(spec, destdir, verbose, dry_run):
-        """spec must be a string.
+        """spec must be a dictionary with key "url".
+
+        The tar file is placed in basename(destdir).
         """
         # pylint: disable=R0914
         #                          Too many local variables
-        p_basename= os.path.basename
-        p_dirjoin = os.path.join
-        p_abspath = os.path.abspath
-        p_isdir =   os.path.isdir
-        def only_dir(dir_):
+        # pylint: disable=R0912
+        #                          Too many branches
+        def single_subdir(dir_):
             """If dir_ has a single subdir, return it."""
             contents= os.listdir(dir_)
             if len(contents)!=1:
                 return
-            subdir= p_dirjoin(dir_,contents[0])
-            if p_isdir(subdir):
+            subdir= os.path.join(dir_,contents[0])
+            if os.path.isdir(subdir):
                 return subdir
             return
 
-        if not isinstance(spec, basestring):
-            raise TypeError("spec '%s' must be a string here" % repr(spec))
-        ap_spec= p_abspath(spec)
-        ext= os.path.splitext(spec)[1]
+        url       = spec["url"]
+        ap_destdir= os.path.abspath(destdir)
+
+        ap_file=  os.path.join(os.path.dirname(ap_destdir),
+                               os.path.basename(url))
+
+        ext= os.path.splitext(ap_file)[1]
         if ext==".tar":
             tar_args= "-xf"
         elif ext==".gz":
@@ -131,23 +141,28 @@ class Repo(object):
         elif ext==".bz2":
             tar_args= "-xjf"
         else:
-            raise ValueError("unknown file %s extension at %s" % (ext,spec))
-        ap_destdir= p_abspath(destdir)
+            raise ValueError("unknown file %s extension at %s" % \
+                             (ext,url))
+
+        # we must first fetch the file
+        sumolib.fileurl.get(url, ap_file, verbose, dry_run)
+
         ap_tempdir= destdir+".tmp"
         os.makedirs(ap_tempdir)
         cwd= sumolib.utils.changedir(ap_tempdir)
         try:
-            sumolib.system.system("tar %s %s" % (tar_args, ap_spec),
-                               False, False, verbose, dry_run)
+            sumolib.system.system("tar %s %s" % (tar_args, ap_file),
+                                  False, False, verbose, dry_run)
         finally:
             sumolib.utils.changedir(cwd)
-        ap_subdir= only_dir(ap_tempdir)
+        ap_subdir= single_subdir(ap_tempdir)
         if not ap_subdir:
+            # The files lie directly in ap_tempdir:
             os.rename(ap_tempdir, ap_destdir)
             return
-        # if the tar file created a single directory within ap_tempdir we have
+        # The tar file created a single directory within ap_tempdir so we have
         # to remove one directory hierarchy:
-        ap_renamed_subdir= p_dirjoin(ap_tempdir, p_basename(destdir))
+        ap_renamed_subdir= os.path.join(ap_tempdir, os.path.basename(destdir))
         os.rename(ap_subdir, ap_renamed_subdir)
         shutil.move(ap_renamed_subdir, ap_destdir)
         os.rmdir(ap_tempdir)

@@ -244,7 +244,7 @@ DB file:
         }
     },
     "ASYN": {
-        "R4-17-2": {
+        "TAR-4-17-2": {
             "aliases": {
                 "BASE": "EPICS_BASE"
             },
@@ -259,9 +259,8 @@ DB file:
                 "BASE"
             ],
             "source": {
-                "darcs": {
-                    "tag": "R4-17-2",
-                    "url": "/data/repos/support/asyn"
+                "tar": {
+                    "url": "file:///data/epics/support/asyn-4-17-2.tar.gz"
                 }
             }
         }
@@ -413,7 +412,7 @@ DB file:
         }
     },
     "CSM": {
-        "R4-1": {
+        "TAR-4-1": {
             "aliases": {
                 "BASE": "EPICS_BASE"
             },
@@ -428,9 +427,8 @@ DB file:
                 "BASE"
             ],
             "source": {
-                "darcs": {
-                    "tag": "R4-1",
-                    "url": "/data/repos/support/csm"
+                "tar": {
+                    "url": "ssh:///data/epics/support/csm-4-1.tar.gz"
                 }
             }
         }
@@ -656,7 +654,9 @@ DB file:
                 "BASE"
             ],
             "source": {
-                "tar": "/data/epics/support/soft/devHwClient-3-0.tar.gz"
+                "tar": {
+                    "url": "/data/epics/support/soft/devHwClient-3-0.tar.gz"
+                }
             }
         }
     }
