@@ -2469,10 +2469,10 @@ depends on your environment variable settings and command line options.
 
 First the program tries to read the file sumo.config from a list of default
 paths. The list of default paths can be set by the environment variable
-ENV_CONFIG which must be a colon (on Unix systems) or semicolon (on Windows
+SUMOCONFIG which must be a colon (on Unix systems) or semicolon (on Windows
 systems) separated list of paths. 
 
-If ENV_CONFIG is not set, these are the predefined default paths:
+If SUMOCONFIG is not set, these are the predefined default paths:
 
 - /etc
 - [python-libdir]/sumolib
