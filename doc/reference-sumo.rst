@@ -198,20 +198,30 @@ in the build database or :term:`BUILDDB`.  This is the form of the
 source data
 :::::::::::
 
-*source data* describes where the :term:`sources` of a :term:`module` can
-be found. It is a map with a single key. The key has one of the following values:
+*source data* describes where the :term:`sources` of a :term:`module` can be
+found. It is a map with a single key. The key has one of the following values:
 
-- path: This specifies a *directory* with the sources. The sources can be
-  copied from a directory of via ssh from a remote host.
-- tar: This specifies a *tar file* with the sources. The tar file can be on the
-  local file system or a remote host that can be reached with the the ftp or
-  http protocol.
-- darcs: This specifies a *darcs repository*. The repository may reside on the
-  local host or a remote host.
-- hg: This specifies a *mercurial repository*. The repository may reside on the
-  local host or a remote host.
-- git: This specifies a *git repository*. The repository may reside on the
-  local host or a remote host.
+- path: This specifies a *directory* with the sources. The sources are copied
+  from that location.
+- tar: This specifies a *tar file* with the sources. The tar file is fetched
+  and extracted.
+- darcs: This specifies a *darcs repository*. 
+- hg: This specifies a *mercurial repository*. 
+- git: This specifies a *git repository*. 
+
+In the following description of source data, *FILEURL* means a string that is
+either the path of a file on the local filesystem *or* an url of a file with
+this form:
+
+- ``http://``
+- ``ftp://``
+- ``ssh://``
+- ``file://``
+
+In the following description of source data, *PATCHFILES* means a list of
+strings that are names of *patchfiles*. These are applied to the source with
+the patch utility after the source is fetched. The strings specifying
+patchfiles are FILEURLs.
   
 path
 ^^^^
@@ -241,12 +251,17 @@ sources. The filename must have one of these extensions:
 - .tar.gz : a tar file compressed with gzip
 - .tar.bz2 : a tar file compressed with bzip2
 
-The *source data* has always this form:: 
+The *source data* has this form:: 
+
   {
       "tar": {
-          "url": "TARFILE"
+          "patches": PATCHFILES,
+          "url": "FILEURL"
       }
   }
+
+The key "patches" is optional. If it is given the patches are applied to the
+source in the given order.
 
 "TARFILE" may be a filename or an URL with one of these forms:
 
@@ -258,86 +273,86 @@ The *source data* has always this form::
 darcs
 ^^^^^
 
-For key "darcs" the value is a map containing the key "url" for the string
-defining the darcs source repository. If there is now tag specified, *source
-data* has this form::
+This is used to specify a source from a darcs repository.  
+
+The *source data* has this form:: 
 
   {
       "darcs": {
-          "url": "REPOSITORY"
-      }
-  }
-
-If a tag is given, it has this form::
-
-  {
-      "darcs": {
+          "patches": PATCHFILES,
           "tag": "TAG",
           "url": "REPOSITORY"
       }
   }
+
+The key "patches" is optional. If it is given the patches are applied to the
+source in the given order.
+
+The key "tag" is also optional, if it is given it specifies the darcs tag that
+is used to fetch the source. 
+
+The key "url" is a darcs repository specification (see manual of darcs for
+further information).
 
 hg
 ^^
 
-For key "hg" the value is a map containing the key "url" for the string
-defining the mercurial source repository. If the version in the repository is
-not specified, *source data* has this form::
+This is used to specify a source from a mercurial repository.  
+
+The *source data* has this form:: 
 
   {
       "hg": {
-          "url": "REPOSITORY"
-      }
-  }
-
-If a mercurial revision is specified, *source data* has this form::
-
-  {
-      "hg": {
+          "patches": PATCHFILES,
           "rev": "REVISION",
-          "url": "REPOSITORY"
-      }
-  }
-
-If a mercurial tag is specified, *source data* has this form::
-
-  {
-      "hg": {
           "tag": "TAG",
           "url": "REPOSITORY"
       }
   }
+
+The key "patches" is optional. If it is given the patches are applied to the
+source in the given order.
+
+The key "rev" is optional, if it is given it specifies the mercurial revision
+that is used to fetch the source. Note that "rev" and "tag" MUST NOT be given
+both.
+
+The key "tag" is also optional, if it is given it specifies the mercurial tag
+that is used to fetch the source. Note that "rev" and "tag" MUST NOT be given
+both.
+
+The key "url" is a darcs repository specification (see manual of mercurial for
+further information).
 
 git
 ^^^
 
-For key "git" the value is a map containing the key "url" for the string
-defining the git source repository. If the version in the repository is not
-specified, *source data* has this form::
+This is used to specify a source from a git repository.  
+
+The *source data* has this form:: 
 
   {
       "git": {
-          "url": "REPOSITORY"
-      }
-  }
-
-If a git revision is specified, *source data* has this form::
-
-  {
-      "git": {
+          "patches": PATCHFILES,
           "rev": "REVISION",
-          "url": "REPOSITORY"
-      }
-  }
-
-If a git tag is specified, *source data* has this form::
-
-  {
-      "git": {
           "tag": "TAG",
           "url": "REPOSITORY"
       }
   }
+
+The key "patches" is optional. If it is given the patches are applied to the
+source in the given order.
+
+The key "rev" is optional, if it is given it specifies the git revision
+that is used to fetch the source. Note that "rev" and "tag" MUST NOT be given
+both.
+
+The key "tag" is also optional, if it is given it specifies the git tag
+that is used to fetch the source. Note that "rev" and "tag" MUST NOT be given
+both.
+
+The key "url" is a darcs repository specification (see manual of git for
+further information).
 
 The scan database
 +++++++++++++++++
@@ -730,9 +745,10 @@ This command adds a new :term:`version` of a :term:`module` to the
 :term:`dependency database` by copying the old :term:`version`. MODULE here is
 just the name of the module since the version follows as a separate argument.
 If sourcespec is given, the command changes the source part according to this
-parameter. A sourcespec has the form "path PATH", "tar TARFILE", "REPOTYPE URL"
-or "REPOTYPE URL TAG".  REPOTYPE may be "darcs", "hg" or "git". Both, URL or
-TAG may be "*", in this case the original URL or TAG remain unchanged. If
+parameter. A sourcespec has the form "path PATH", "tar TARFILE [PATCHES]",
+"REPOTYPE URL" or "REPOTYPE URL TAG [PATCHES]". REPOTYPE may be "darcs", "hg"
+or "git". Both, URL or TAG may be "*", in this case the original URL or TAG
+remain unchanged. PATCHES is a list of patchfiles or URLs of patchfiles. If
 sourcespec is not given, the command adds NEW-VERSION as new tag to the source
 specification. The command always asks for a confirmation of the action unless
 option "-y" is used.

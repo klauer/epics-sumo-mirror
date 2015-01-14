@@ -131,6 +131,45 @@ function MK_TAR
     cd $old > /dev/null
   }
 
+# create a patch file
+function MK_PATCH
+  {
+    old=`pwd`
+    source_base="$1"
+    source1="$2"
+    source2="$3"
+    patchdir="$4"
+    patchname="$5"
+
+    if [ ! -d $patchdir/tmp ]; then
+        mkdir -p $patchdir/tmp
+    fi
+    cd $patchdir/tmp > /dev/null
+    cp -a $source_base/$source1 .
+    if [ -n "$EPICSBASE" ]; then
+        cd $source1 > /dev/null
+        sed -i configure/RELEASE -e "s#^\(EPICS_BASE\) *=.*#\1=$EPICSBASE#"
+        sed -i configure/RELEASE -e "s#^\(SUPPORT\) *=.*#\1=$SUPPORTDIR#"
+        sed -i configure/RELEASE -e "s#^\(EPICS_SUPPORT\) *=.*#\1=$SUPPORTDIR#"
+        cd .. > /dev/null
+    fi
+    cp -a $source_base/$source2 .
+    if [ -n "$EPICSBASE" ]; then
+        cd $source2 > /dev/null
+        sed -i configure/RELEASE -e "s#^\(EPICS_BASE\) *=.*#\1=$EPICSBASE#"
+        sed -i configure/RELEASE -e "s#^\(SUPPORT\) *=.*#\1=$SUPPORTDIR#"
+        sed -i configure/RELEASE -e "s#^\(EPICS_SUPPORT\) *=.*#\1=$SUPPORTDIR#"
+        cd .. > /dev/null
+    fi
+    # diff has exit code 1 when there were differences:
+    (diff -u $source1 $source2 > ../$patchname) || true
+    cd .. > /dev/null
+    rm -rf tmp
+    cd $old > /dev/null
+  }
+
+
+
 mkdir base
 mkdir -p support/apps
 
@@ -143,6 +182,7 @@ SUPPORTDIR=$EPICSDIR/support
 
 MK_DARCS $SRCDIR/support/alarm/3-7                support/alarm            R3-7
 MK_DARCS $SRCDIR/support/alarm/3-8                support/alarm            R3-8
+MK_PATCH $SRCDIR/support/alarm 3-8 3-8-p          support  alarm-3-8-p.patch 
 MK_DARCS $SRCDIR/support/apps/genericTemplate/3-0 support/apps/genericTemplate R3-0
 MK_DARCS $SRCDIR/support/apps/iocWatch/3-0        support/apps/iocWatch        R3-0
 MK_TAR   $SRCDIR/support/asyn/4-17-2 asyn-4-17-2  support/asyn 
