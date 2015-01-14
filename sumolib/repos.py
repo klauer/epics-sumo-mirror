@@ -6,6 +6,8 @@
 import os.path
 
 import sumolib.utils
+import sumolib.JSON
+import sumolib.patch
 import sumolib.path
 import sumolib.tar
 import sumolib.darcs
@@ -15,6 +17,8 @@ import sumolib.git
 __version__="2.3.1" #VERSION#
 
 assert __version__==sumolib.utils.__version__
+assert __version__==sumolib.JSON.__version__
+assert __version__==sumolib.patch.__version__
 assert __version__==sumolib.path.__version__
 assert __version__==sumolib.tar.__version__
 assert __version__==sumolib.darcs.__version__
@@ -122,6 +126,10 @@ def checkout(sourcespec, destdir, verbose, dry_run):
         sumolib.path.Repo.checkout(spec, destdir, verbose, dry_run)
     else:
         raise ValueError("unsupported repotype: %s" % repotype)
+    p= sourcespec.patches()
+    if p:
+        sumolib.patch.apply_patches(destdir, p, verbose, dry_run)
+
 
 # ---------------------------------------------------------
 # SourceSpec class:
@@ -134,13 +142,15 @@ class SourceSpec(sumolib.JSON.Container):
     def __init__(self, dict_= None):
         """create the object."""
         super(SourceSpec, self).__init__(dict_)
+    # pylint: disable=C0301
+    #                          Line too long
     @classmethod
     def from_string_sourcespec(cls, elms):
         """scan a source specification.
 
         A sourcespec is a list of strings. Currently we support here:
-        ["path",PATH] or ["tar",TARFILE] or
-        [<repotype>,URL] or [<repotype>,URL,TAG].
+        ["path",PATH] or ["tar",TARFILE,{PATCHFILES}] or
+        [<repotype>,URL] or [<repotype>,URL,TAG,{PATCHFILES}]
 
         where <repotype> may be one of the strings in
         sumolib.repos.known_repos
@@ -166,26 +176,33 @@ class SourceSpec(sumolib.JSON.Container):
             ...
         ValueError: invalid source spec: 'darcs'
         >>> SourceSpec.from_string_sourcespec(["darcs","abc","R1-2","xy"])
-        Traceback (most recent call last):
-            ...
-        ValueError: invalid source spec: 'darcs abc R1-2 xy'
+        SourceSpec({'darcs': {'url': 'abc', 'tag': 'R1-2', 'patches': ['xy']}})
+        >>> SourceSpec.from_string_sourcespec(["darcs","abc","R1-2","xy","z"])
+        SourceSpec({'darcs': {'url': 'abc', 'tag': 'R1-2', 'patches': ['xy', 'z']}})
         """
         if elms[0] not in known_sources:
             raise ValueError("unknown source type: '%s'" % elms[0])
+        if len(elms)<2:
+            raise ValueError("invalid source spec: '%s'" % (" ".join(elms)))
         if elms[0]=="path":
             if len(elms)!=2:
                 raise ValueError("invalid source spec: '%s'" % (" ".join(elms)))
             return cls({elms[0]: elms[1]})
         if elms[0]=="tar":
-            if len(elms)!=2:
+            if len(elms)<2:
                 raise ValueError("invalid source spec: '%s'" % (" ".join(elms)))
-            return cls({elms[0]: {"url":elms[1]}})
-        if len(elms)==2:
-            return cls({elms[0]:{"url":elms[1]}})
-        elif len(elms)==3:
-            return cls({elms[0]:{"url":elms[1], "tag":elms[2]}})
-        else:
-            raise ValueError("invalid source spec: '%s'" % (" ".join(elms)))
+            d= { "url": elms[1] }
+            if len(elms)>2:
+                d["patches"]= elms[2:]
+            return cls({elms[0]: d})
+        d= { "url": elms[1] }
+        if len(elms)>2:
+            d["tag"]= elms[2]
+        if len(elms)>3:
+            d["patches"]= elms[3:]
+        return cls({elms[0]: d})
+    # pylint: enable=C0301
+    #                          Line too long
     def sourcetype(self):
         """return the type of the source."""
         d= self.datadict()
@@ -223,6 +240,16 @@ class SourceSpec(sumolib.JSON.Container):
         if new_val is None:
             return pars.get("url")
         pars["url"]= new_val
+    def patches(self, new_val= None):
+        """return the patches if they exist."""
+        (_, type_, pars)= self._unpack()
+        if not isinstance(pars, dict):
+            if new_val is not None:
+                raise ValueError("error, cannot set patches on type %s" % type_)
+            return
+        if new_val is None:
+            return pars.get("patches")
+        pars["patches"]= new_val
     def spec_val(self):
         """return the *value* of the source specification.
 
@@ -264,13 +291,13 @@ class SourceSpec(sumolib.JSON.Container):
             return True
 
         if isinstance(other_pars, basestring):
-            # this is only the case for type "path" or type "tar":
+            # this is only the case for type "path":
             if other_pars=="*":
                 return False
             self_d[self_type]= other_pars
             return True
         if isinstance(other_pars, dict):
-            # usually a repository type:
+            # tar file or a repository type
             original= dict(self_pars)
             self_pars.clear()
             changed= False

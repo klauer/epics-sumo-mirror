@@ -1,4 +1,4 @@
-# note: mk-repos.sh creates TWO directories, "base" and "support"
+# note: mk-src.sh creates TWO directories, "base" and "support"
 
 all: stamp
 

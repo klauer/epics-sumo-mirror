@@ -1,10 +1,10 @@
 #!/bin/sh
-# This is a shell archive (produced by GNU sharutils 4.13.5).
+# This is a shell archive (produced by GNU sharutils 4.14.2).
 # To extract the files from this archive, save it to some FILE, remove
 # everything before the '#!/bin/sh' line above, then type 'sh FILE'.
 #
-lock_dir=_sh26447
-# Made on 2014-09-22 15:39 CEST by <pfeiffer@tarn.acc.bessy.de>.
+lock_dir=_sh12860
+# Made on 2015-01-14 09:32 CET by <pfeiffer@tarn.acc.bessy.de>.
 # Source directory was '/net/aragon/srv/projects/ctl/pfeiffer/csr-home/project/sumo/test/data/src'.
 #
 # Existing files will *not* be overwritten, unless '-c' is specified.
@@ -524,6 +524,21 @@ lock_dir=_sh26447
 #    315 -rw-r--r-- support/alarm/3-7/configure/Makefile
 #    133 -rw-r--r-- support/alarm/3-7/configure/RULES
 #    457 -rw-r--r-- support/alarm/3-7/Makefile
+#     25 -rw-r--r-- support/alarm/3-8-p/LICENSE
+#    192 -rw-r--r-- support/alarm/3-8-p/configure/O.RTEMS-mvme5500/Makefile
+#    501 -rw-r--r-- support/alarm/3-8-p/configure/CONFIG_APP
+#    190 -rw-r--r-- support/alarm/3-8-p/configure/O.vxWorks-68040/Makefile
+#    633 -rw-r--r-- support/alarm/3-8-p/configure/CONFIG
+#     53 -rw-r--r-- support/alarm/3-8-p/configure/RULES.ioc
+#     54 -rw-r--r-- support/alarm/3-8-p/configure/RULES_TOP
+#    192 -rw-r--r-- support/alarm/3-8-p/configure/O.vxWorks-ppc603/Makefile
+#    182 -rw-r--r-- support/alarm/3-8-p/configure/O.linux-x86/Makefile
+#   1015 -rw-r--r-- support/alarm/3-8-p/configure/RELEASE
+#    192 -rw-r--r-- support/alarm/3-8-p/configure/O.RTEMS-mvme2100/Makefile
+#     55 -rw-r--r-- support/alarm/3-8-p/configure/RULES_DIRS
+#    315 -rw-r--r-- support/alarm/3-8-p/configure/Makefile
+#    133 -rw-r--r-- support/alarm/3-8-p/configure/RULES
+#    463 -rw-r--r-- support/alarm/3-8-p/Makefile
 #     25 -rw-r--r-- support/asyn/4-17-2/LICENSE
 #    192 -rw-r--r-- support/asyn/4-17-2/configure/O.RTEMS-mvme5500/Makefile
 #    501 -rw-r--r-- support/asyn/4-17-2/configure/CONFIG_APP
@@ -24532,6 +24547,645 @@ SHAR_EOF
 else
 test `LC_ALL=C wc -c < 'support/alarm/3-7/Makefile'` -ne 457 && \
   ${echo} "restoration warning:  size of 'support/alarm/3-7/Makefile' is not 457"
+  fi
+fi
+# ============= support/alarm/3-8-p/LICENSE ==============
+if test ! -d 'support/alarm/3-8-p'; then
+  mkdir 'support/alarm/3-8-p'
+if test $? -eq 0
+then ${echo} "x - created directory support/alarm/3-8-p."
+else ${echo} "x - failed to create directory support/alarm/3-8-p."
+     exit 1
+fi
+fi
+if test -n "${keep_file}" && test -f 'support/alarm/3-8-p/LICENSE'
+then
+${echo} "x - SKIPPING support/alarm/3-8-p/LICENSE (file already exists)"
+
+else
+${echo} "x - extracting support/alarm/3-8-p/LICENSE (text)"
+  sed 's/^X//' << 'SHAR_EOF' > 'support/alarm/3-8-p/LICENSE' &&
+This is the BLA license.
+SHAR_EOF
+  (set 20 14 09 12 14 00 00 'support/alarm/3-8-p/LICENSE'
+   eval "${shar_touch}") && \
+  chmod 0644 'support/alarm/3-8-p/LICENSE'
+if test $? -ne 0
+then ${echo} "restore of support/alarm/3-8-p/LICENSE failed"
+fi
+  if ${md5check}
+  then (
+       ${MD5SUM} -c >/dev/null 2>&1 || ${echo} 'support/alarm/3-8-p/LICENSE': 'MD5 check failed'
+       ) << \SHAR_EOF
+dba94118eb3ba7843e2f87173e3e80e3  support/alarm/3-8-p/LICENSE
+SHAR_EOF
+
+else
+test `LC_ALL=C wc -c < 'support/alarm/3-8-p/LICENSE'` -ne 25 && \
+  ${echo} "restoration warning:  size of 'support/alarm/3-8-p/LICENSE' is not 25"
+  fi
+fi
+# ============= support/alarm/3-8-p/configure/O.RTEMS-mvme5500/Makefile ==============
+if test ! -d 'support/alarm/3-8-p'; then
+  mkdir 'support/alarm/3-8-p'
+if test $? -eq 0
+then ${echo} "x - created directory support/alarm/3-8-p."
+else ${echo} "x - failed to create directory support/alarm/3-8-p."
+     exit 1
+fi
+fi
+if test ! -d 'support/alarm/3-8-p/configure'; then
+  mkdir 'support/alarm/3-8-p/configure'
+if test $? -eq 0
+then ${echo} "x - created directory support/alarm/3-8-p/configure."
+else ${echo} "x - failed to create directory support/alarm/3-8-p/configure."
+     exit 1
+fi
+fi
+if test ! -d 'support/alarm/3-8-p/configure/O.RTEMS-mvme5500'; then
+  mkdir 'support/alarm/3-8-p/configure/O.RTEMS-mvme5500'
+if test $? -eq 0
+then ${echo} "x - created directory support/alarm/3-8-p/configure/O.RTEMS-mvme5500."
+else ${echo} "x - failed to create directory support/alarm/3-8-p/configure/O.RTEMS-mvme5500."
+     exit 1
+fi
+fi
+if test -n "${keep_file}" && test -f 'support/alarm/3-8-p/configure/O.RTEMS-mvme5500/Makefile'
+then
+${echo} "x - SKIPPING support/alarm/3-8-p/configure/O.RTEMS-mvme5500/Makefile (file already exists)"
+
+else
+${echo} "x - extracting support/alarm/3-8-p/configure/O.RTEMS-mvme5500/Makefile (text)"
+  sed 's/^X//' << 'SHAR_EOF' > 'support/alarm/3-8-p/configure/O.RTEMS-mvme5500/Makefile' &&
+#This Makefile created by makeMakefile.pl
+X
+X
+all :
+X	$(MAKE) -f ../Makefile TOP=../.. T_A=RTEMS-mvme5500  $@
+X
+X.DEFAULT: force
+X	$(MAKE) -f ../Makefile TOP=../.. T_A=RTEMS-mvme5500  $@
+X
+force:  ;
+SHAR_EOF
+  (set 20 13 01 23 18 37 27 'support/alarm/3-8-p/configure/O.RTEMS-mvme5500/Makefile'
+   eval "${shar_touch}") && \
+  chmod 0644 'support/alarm/3-8-p/configure/O.RTEMS-mvme5500/Makefile'
+if test $? -ne 0
+then ${echo} "restore of support/alarm/3-8-p/configure/O.RTEMS-mvme5500/Makefile failed"
+fi
+  if ${md5check}
+  then (
+       ${MD5SUM} -c >/dev/null 2>&1 || ${echo} 'support/alarm/3-8-p/configure/O.RTEMS-mvme5500/Makefile': 'MD5 check failed'
+       ) << \SHAR_EOF
+dfc9386f6740dbea86d571eb35941368  support/alarm/3-8-p/configure/O.RTEMS-mvme5500/Makefile
+SHAR_EOF
+
+else
+test `LC_ALL=C wc -c < 'support/alarm/3-8-p/configure/O.RTEMS-mvme5500/Makefile'` -ne 192 && \
+  ${echo} "restoration warning:  size of 'support/alarm/3-8-p/configure/O.RTEMS-mvme5500/Makefile' is not 192"
+  fi
+fi
+# ============= support/alarm/3-8-p/configure/CONFIG_APP ==============
+if test -n "${keep_file}" && test -f 'support/alarm/3-8-p/configure/CONFIG_APP'
+then
+${echo} "x - SKIPPING support/alarm/3-8-p/configure/CONFIG_APP (file already exists)"
+
+else
+${echo} "x - extracting support/alarm/3-8-p/configure/CONFIG_APP (text)"
+  sed 's/^X//' << 'SHAR_EOF' > 'support/alarm/3-8-p/configure/CONFIG_APP' &&
+# CONFIG_APP
+X
+include $(TOP)/configure/RELEASE
+-include $(TOP)/configure/RELEASE.$(EPICS_HOST_ARCH)
+-include $(TOP)/configure/RELEASE.Common.$(T_A)
+-include $(TOP)/configure/RELEASE.$(EPICS_HOST_ARCH).$(T_A)
+X
+CONFIG=$(EPICS_BASE)/configure
+include $(CONFIG)/CONFIG
+X
+INSTALL_LOCATION = $(TOP)
+ifdef INSTALL_LOCATION_APP
+INSTALL_LOCATION = $(INSTALL_LOCATION_APP)
+endif
+X
+ifdef T_A
+-include $(TOP)/configure/O.$(T_A)/CONFIG_APP_INCLUDE
+endif
+X
+# dbst based database optimization (default: NO)
+DB_OPT = NO
+SHAR_EOF
+  (set 20 13 01 23 18 36 45 'support/alarm/3-8-p/configure/CONFIG_APP'
+   eval "${shar_touch}") && \
+  chmod 0644 'support/alarm/3-8-p/configure/CONFIG_APP'
+if test $? -ne 0
+then ${echo} "restore of support/alarm/3-8-p/configure/CONFIG_APP failed"
+fi
+  if ${md5check}
+  then (
+       ${MD5SUM} -c >/dev/null 2>&1 || ${echo} 'support/alarm/3-8-p/configure/CONFIG_APP': 'MD5 check failed'
+       ) << \SHAR_EOF
+ac72624bbc323c0ea69066bef45f0230  support/alarm/3-8-p/configure/CONFIG_APP
+SHAR_EOF
+
+else
+test `LC_ALL=C wc -c < 'support/alarm/3-8-p/configure/CONFIG_APP'` -ne 501 && \
+  ${echo} "restoration warning:  size of 'support/alarm/3-8-p/configure/CONFIG_APP' is not 501"
+  fi
+fi
+# ============= support/alarm/3-8-p/configure/O.vxWorks-68040/Makefile ==============
+if test ! -d 'support/alarm/3-8-p/configure/O.vxWorks-68040'; then
+  mkdir 'support/alarm/3-8-p/configure/O.vxWorks-68040'
+if test $? -eq 0
+then ${echo} "x - created directory support/alarm/3-8-p/configure/O.vxWorks-68040."
+else ${echo} "x - failed to create directory support/alarm/3-8-p/configure/O.vxWorks-68040."
+     exit 1
+fi
+fi
+if test -n "${keep_file}" && test -f 'support/alarm/3-8-p/configure/O.vxWorks-68040/Makefile'
+then
+${echo} "x - SKIPPING support/alarm/3-8-p/configure/O.vxWorks-68040/Makefile (file already exists)"
+
+else
+${echo} "x - extracting support/alarm/3-8-p/configure/O.vxWorks-68040/Makefile (text)"
+  sed 's/^X//' << 'SHAR_EOF' > 'support/alarm/3-8-p/configure/O.vxWorks-68040/Makefile' &&
+#This Makefile created by makeMakefile.pl
+X
+X
+all :
+X	$(MAKE) -f ../Makefile TOP=../.. T_A=vxWorks-68040  $@
+X
+X.DEFAULT: force
+X	$(MAKE) -f ../Makefile TOP=../.. T_A=vxWorks-68040  $@
+X
+force:  ;
+SHAR_EOF
+  (set 20 13 01 23 18 37 27 'support/alarm/3-8-p/configure/O.vxWorks-68040/Makefile'
+   eval "${shar_touch}") && \
+  chmod 0644 'support/alarm/3-8-p/configure/O.vxWorks-68040/Makefile'
+if test $? -ne 0
+then ${echo} "restore of support/alarm/3-8-p/configure/O.vxWorks-68040/Makefile failed"
+fi
+  if ${md5check}
+  then (
+       ${MD5SUM} -c >/dev/null 2>&1 || ${echo} 'support/alarm/3-8-p/configure/O.vxWorks-68040/Makefile': 'MD5 check failed'
+       ) << \SHAR_EOF
+a41d810d06a5eac0f6a86fa131cbce05  support/alarm/3-8-p/configure/O.vxWorks-68040/Makefile
+SHAR_EOF
+
+else
+test `LC_ALL=C wc -c < 'support/alarm/3-8-p/configure/O.vxWorks-68040/Makefile'` -ne 190 && \
+  ${echo} "restoration warning:  size of 'support/alarm/3-8-p/configure/O.vxWorks-68040/Makefile' is not 190"
+  fi
+fi
+# ============= support/alarm/3-8-p/configure/CONFIG ==============
+if test -n "${keep_file}" && test -f 'support/alarm/3-8-p/configure/CONFIG'
+then
+${echo} "x - SKIPPING support/alarm/3-8-p/configure/CONFIG (file already exists)"
+
+else
+${echo} "x - extracting support/alarm/3-8-p/configure/CONFIG (text)"
+  sed 's/^X//' << 'SHAR_EOF' > 'support/alarm/3-8-p/configure/CONFIG' &&
+# CONFIG
+include $(TOP)/configure/CONFIG_APP
+X
+# Make any application-specific changes to the EPICS build
+# configuration variables in this file.
+X
+# Set this when you only want to compile this application
+# for a subset of the cross-compiled target architectures
+# that Base is built for.
+#CROSS_COMPILER_TARGET_ARCHS = vxWorks-68040
+X
+# Set this when your IOC and the host use different paths
+# to access the application. This will be needed to boot
+# from a Microsoft FTP server or with some NFS mounts.
+# You must rebuild in the iocBoot directory for this to
+# take effect.
+#IOCS_APPL_TOP = <path to application top as seen by IOC>
+SHAR_EOF
+  (set 20 13 01 23 18 36 45 'support/alarm/3-8-p/configure/CONFIG'
+   eval "${shar_touch}") && \
+  chmod 0644 'support/alarm/3-8-p/configure/CONFIG'
+if test $? -ne 0
+then ${echo} "restore of support/alarm/3-8-p/configure/CONFIG failed"
+fi
+  if ${md5check}
+  then (
+       ${MD5SUM} -c >/dev/null 2>&1 || ${echo} 'support/alarm/3-8-p/configure/CONFIG': 'MD5 check failed'
+       ) << \SHAR_EOF
+9129ef02ce40a3f9b79dcbd73775a0fb  support/alarm/3-8-p/configure/CONFIG
+SHAR_EOF
+
+else
+test `LC_ALL=C wc -c < 'support/alarm/3-8-p/configure/CONFIG'` -ne 633 && \
+  ${echo} "restoration warning:  size of 'support/alarm/3-8-p/configure/CONFIG' is not 633"
+  fi
+fi
+# ============= support/alarm/3-8-p/configure/RULES.ioc ==============
+if test -n "${keep_file}" && test -f 'support/alarm/3-8-p/configure/RULES.ioc'
+then
+${echo} "x - SKIPPING support/alarm/3-8-p/configure/RULES.ioc (file already exists)"
+
+else
+${echo} "x - extracting support/alarm/3-8-p/configure/RULES.ioc (text)"
+  sed 's/^X//' << 'SHAR_EOF' > 'support/alarm/3-8-p/configure/RULES.ioc' &&
+#RULES.ioc
+include $(EPICS_BASE)/configure/RULES.ioc
+SHAR_EOF
+  (set 20 13 01 23 18 36 45 'support/alarm/3-8-p/configure/RULES.ioc'
+   eval "${shar_touch}") && \
+  chmod 0644 'support/alarm/3-8-p/configure/RULES.ioc'
+if test $? -ne 0
+then ${echo} "restore of support/alarm/3-8-p/configure/RULES.ioc failed"
+fi
+  if ${md5check}
+  then (
+       ${MD5SUM} -c >/dev/null 2>&1 || ${echo} 'support/alarm/3-8-p/configure/RULES.ioc': 'MD5 check failed'
+       ) << \SHAR_EOF
+984351848e2ca752e9f593fbdae22694  support/alarm/3-8-p/configure/RULES.ioc
+SHAR_EOF
+
+else
+test `LC_ALL=C wc -c < 'support/alarm/3-8-p/configure/RULES.ioc'` -ne 53 && \
+  ${echo} "restoration warning:  size of 'support/alarm/3-8-p/configure/RULES.ioc' is not 53"
+  fi
+fi
+# ============= support/alarm/3-8-p/configure/RULES_TOP ==============
+if test -n "${keep_file}" && test -f 'support/alarm/3-8-p/configure/RULES_TOP'
+then
+${echo} "x - SKIPPING support/alarm/3-8-p/configure/RULES_TOP (file already exists)"
+
+else
+${echo} "x - extracting support/alarm/3-8-p/configure/RULES_TOP (text)"
+  sed 's/^X//' << 'SHAR_EOF' > 'support/alarm/3-8-p/configure/RULES_TOP' &&
+#RULES_TOP
+include $(EPICS_BASE)/configure/RULES_TOP
+X
+SHAR_EOF
+  (set 20 13 01 23 18 36 45 'support/alarm/3-8-p/configure/RULES_TOP'
+   eval "${shar_touch}") && \
+  chmod 0644 'support/alarm/3-8-p/configure/RULES_TOP'
+if test $? -ne 0
+then ${echo} "restore of support/alarm/3-8-p/configure/RULES_TOP failed"
+fi
+  if ${md5check}
+  then (
+       ${MD5SUM} -c >/dev/null 2>&1 || ${echo} 'support/alarm/3-8-p/configure/RULES_TOP': 'MD5 check failed'
+       ) << \SHAR_EOF
+3ac1caca9d5025b246d6dd177988b513  support/alarm/3-8-p/configure/RULES_TOP
+SHAR_EOF
+
+else
+test `LC_ALL=C wc -c < 'support/alarm/3-8-p/configure/RULES_TOP'` -ne 54 && \
+  ${echo} "restoration warning:  size of 'support/alarm/3-8-p/configure/RULES_TOP' is not 54"
+  fi
+fi
+# ============= support/alarm/3-8-p/configure/O.vxWorks-ppc603/Makefile ==============
+if test ! -d 'support/alarm/3-8-p/configure/O.vxWorks-ppc603'; then
+  mkdir 'support/alarm/3-8-p/configure/O.vxWorks-ppc603'
+if test $? -eq 0
+then ${echo} "x - created directory support/alarm/3-8-p/configure/O.vxWorks-ppc603."
+else ${echo} "x - failed to create directory support/alarm/3-8-p/configure/O.vxWorks-ppc603."
+     exit 1
+fi
+fi
+if test -n "${keep_file}" && test -f 'support/alarm/3-8-p/configure/O.vxWorks-ppc603/Makefile'
+then
+${echo} "x - SKIPPING support/alarm/3-8-p/configure/O.vxWorks-ppc603/Makefile (file already exists)"
+
+else
+${echo} "x - extracting support/alarm/3-8-p/configure/O.vxWorks-ppc603/Makefile (text)"
+  sed 's/^X//' << 'SHAR_EOF' > 'support/alarm/3-8-p/configure/O.vxWorks-ppc603/Makefile' &&
+#This Makefile created by makeMakefile.pl
+X
+X
+all :
+X	$(MAKE) -f ../Makefile TOP=../.. T_A=vxWorks-ppc603  $@
+X
+X.DEFAULT: force
+X	$(MAKE) -f ../Makefile TOP=../.. T_A=vxWorks-ppc603  $@
+X
+force:  ;
+SHAR_EOF
+  (set 20 13 01 23 18 37 27 'support/alarm/3-8-p/configure/O.vxWorks-ppc603/Makefile'
+   eval "${shar_touch}") && \
+  chmod 0644 'support/alarm/3-8-p/configure/O.vxWorks-ppc603/Makefile'
+if test $? -ne 0
+then ${echo} "restore of support/alarm/3-8-p/configure/O.vxWorks-ppc603/Makefile failed"
+fi
+  if ${md5check}
+  then (
+       ${MD5SUM} -c >/dev/null 2>&1 || ${echo} 'support/alarm/3-8-p/configure/O.vxWorks-ppc603/Makefile': 'MD5 check failed'
+       ) << \SHAR_EOF
+8e29400ab5164c86c8983742a9703ea3  support/alarm/3-8-p/configure/O.vxWorks-ppc603/Makefile
+SHAR_EOF
+
+else
+test `LC_ALL=C wc -c < 'support/alarm/3-8-p/configure/O.vxWorks-ppc603/Makefile'` -ne 192 && \
+  ${echo} "restoration warning:  size of 'support/alarm/3-8-p/configure/O.vxWorks-ppc603/Makefile' is not 192"
+  fi
+fi
+# ============= support/alarm/3-8-p/configure/O.linux-x86/Makefile ==============
+if test ! -d 'support/alarm/3-8-p/configure/O.linux-x86'; then
+  mkdir 'support/alarm/3-8-p/configure/O.linux-x86'
+if test $? -eq 0
+then ${echo} "x - created directory support/alarm/3-8-p/configure/O.linux-x86."
+else ${echo} "x - failed to create directory support/alarm/3-8-p/configure/O.linux-x86."
+     exit 1
+fi
+fi
+if test -n "${keep_file}" && test -f 'support/alarm/3-8-p/configure/O.linux-x86/Makefile'
+then
+${echo} "x - SKIPPING support/alarm/3-8-p/configure/O.linux-x86/Makefile (file already exists)"
+
+else
+${echo} "x - extracting support/alarm/3-8-p/configure/O.linux-x86/Makefile (text)"
+  sed 's/^X//' << 'SHAR_EOF' > 'support/alarm/3-8-p/configure/O.linux-x86/Makefile' &&
+#This Makefile created by makeMakefile.pl
+X
+X
+all :
+X	$(MAKE) -f ../Makefile TOP=../.. T_A=linux-x86  $@
+X
+X.DEFAULT: force
+X	$(MAKE) -f ../Makefile TOP=../.. T_A=linux-x86  $@
+X
+force:  ;
+SHAR_EOF
+  (set 20 13 01 23 18 37 27 'support/alarm/3-8-p/configure/O.linux-x86/Makefile'
+   eval "${shar_touch}") && \
+  chmod 0644 'support/alarm/3-8-p/configure/O.linux-x86/Makefile'
+if test $? -ne 0
+then ${echo} "restore of support/alarm/3-8-p/configure/O.linux-x86/Makefile failed"
+fi
+  if ${md5check}
+  then (
+       ${MD5SUM} -c >/dev/null 2>&1 || ${echo} 'support/alarm/3-8-p/configure/O.linux-x86/Makefile': 'MD5 check failed'
+       ) << \SHAR_EOF
+c120161b735b0f3ed9921bbddeeba068  support/alarm/3-8-p/configure/O.linux-x86/Makefile
+SHAR_EOF
+
+else
+test `LC_ALL=C wc -c < 'support/alarm/3-8-p/configure/O.linux-x86/Makefile'` -ne 182 && \
+  ${echo} "restoration warning:  size of 'support/alarm/3-8-p/configure/O.linux-x86/Makefile' is not 182"
+  fi
+fi
+# ============= support/alarm/3-8-p/configure/RELEASE ==============
+if test -n "${keep_file}" && test -f 'support/alarm/3-8-p/configure/RELEASE'
+then
+${echo} "x - SKIPPING support/alarm/3-8-p/configure/RELEASE (file already exists)"
+
+else
+${echo} "x - extracting support/alarm/3-8-p/configure/RELEASE (text)"
+  sed 's/^X//' << 'SHAR_EOF' > 'support/alarm/3-8-p/configure/RELEASE' &&
+#RELEASE Location of external products
+# Run "gnumake clean uninstall install" in the application
+# top directory each time this file is changed.
+#
+# NOTE: The build does not check dependancies on files
+# external to this application. Thus you should run
+# "gnumake clean uninstall install" in the top directory
+# each time EPICS_BASE, SNCSEQ, or any other external
+# module defined in the RELEASE file is rebuilt.
+X
+TEMPLATE_TOP=$(EPICS_BASE)/templates/makeBaseApp/top
+X
+# If you don't want to install into $(TOP) then
+# define INSTALL_LOCATION_APP here
+#INSTALL_LOCATION_APP=<fullpathname>
+X
+#If using the sequencer, point SNCSEQ at its top directory:
+#SNCSEQ=$(EPICS_BASE)/../modules/soft/seq
+X
+EPICS_SUPPORT=/opt/Epics/R3.14.12/support
+X
+TIMER=$(EPICS_SUPPORT)/bspDep/timer/6-2
+DBC=$(EPICS_SUPPORT)/misc/dbc/3-0
+X
+# EPICS_BASE usually appears last so other apps can override stuff:
+EPICS_BASE=/opt/Epics/R3.14.12/base/3-14-12-2-1
+X
+#Capfast users may need the following definitions
+#CAPFAST_TEMPLATES=
+#SCH2EDIF_PATH=
+SHAR_EOF
+  (set 20 13 01 23 18 36 45 'support/alarm/3-8-p/configure/RELEASE'
+   eval "${shar_touch}") && \
+  chmod 0644 'support/alarm/3-8-p/configure/RELEASE'
+if test $? -ne 0
+then ${echo} "restore of support/alarm/3-8-p/configure/RELEASE failed"
+fi
+  if ${md5check}
+  then (
+       ${MD5SUM} -c >/dev/null 2>&1 || ${echo} 'support/alarm/3-8-p/configure/RELEASE': 'MD5 check failed'
+       ) << \SHAR_EOF
+08b705ea010c41b56bf091ab2e422a15  support/alarm/3-8-p/configure/RELEASE
+SHAR_EOF
+
+else
+test `LC_ALL=C wc -c < 'support/alarm/3-8-p/configure/RELEASE'` -ne 1015 && \
+  ${echo} "restoration warning:  size of 'support/alarm/3-8-p/configure/RELEASE' is not 1015"
+  fi
+fi
+# ============= support/alarm/3-8-p/configure/O.RTEMS-mvme2100/Makefile ==============
+if test ! -d 'support/alarm/3-8-p/configure/O.RTEMS-mvme2100'; then
+  mkdir 'support/alarm/3-8-p/configure/O.RTEMS-mvme2100'
+if test $? -eq 0
+then ${echo} "x - created directory support/alarm/3-8-p/configure/O.RTEMS-mvme2100."
+else ${echo} "x - failed to create directory support/alarm/3-8-p/configure/O.RTEMS-mvme2100."
+     exit 1
+fi
+fi
+if test -n "${keep_file}" && test -f 'support/alarm/3-8-p/configure/O.RTEMS-mvme2100/Makefile'
+then
+${echo} "x - SKIPPING support/alarm/3-8-p/configure/O.RTEMS-mvme2100/Makefile (file already exists)"
+
+else
+${echo} "x - extracting support/alarm/3-8-p/configure/O.RTEMS-mvme2100/Makefile (text)"
+  sed 's/^X//' << 'SHAR_EOF' > 'support/alarm/3-8-p/configure/O.RTEMS-mvme2100/Makefile' &&
+#This Makefile created by makeMakefile.pl
+X
+X
+all :
+X	$(MAKE) -f ../Makefile TOP=../.. T_A=RTEMS-mvme2100  $@
+X
+X.DEFAULT: force
+X	$(MAKE) -f ../Makefile TOP=../.. T_A=RTEMS-mvme2100  $@
+X
+force:  ;
+SHAR_EOF
+  (set 20 13 01 23 18 37 27 'support/alarm/3-8-p/configure/O.RTEMS-mvme2100/Makefile'
+   eval "${shar_touch}") && \
+  chmod 0644 'support/alarm/3-8-p/configure/O.RTEMS-mvme2100/Makefile'
+if test $? -ne 0
+then ${echo} "restore of support/alarm/3-8-p/configure/O.RTEMS-mvme2100/Makefile failed"
+fi
+  if ${md5check}
+  then (
+       ${MD5SUM} -c >/dev/null 2>&1 || ${echo} 'support/alarm/3-8-p/configure/O.RTEMS-mvme2100/Makefile': 'MD5 check failed'
+       ) << \SHAR_EOF
+59a83a4fc327573b2585990895611455  support/alarm/3-8-p/configure/O.RTEMS-mvme2100/Makefile
+SHAR_EOF
+
+else
+test `LC_ALL=C wc -c < 'support/alarm/3-8-p/configure/O.RTEMS-mvme2100/Makefile'` -ne 192 && \
+  ${echo} "restoration warning:  size of 'support/alarm/3-8-p/configure/O.RTEMS-mvme2100/Makefile' is not 192"
+  fi
+fi
+# ============= support/alarm/3-8-p/configure/RULES_DIRS ==============
+if test -n "${keep_file}" && test -f 'support/alarm/3-8-p/configure/RULES_DIRS'
+then
+${echo} "x - SKIPPING support/alarm/3-8-p/configure/RULES_DIRS (file already exists)"
+
+else
+${echo} "x - extracting support/alarm/3-8-p/configure/RULES_DIRS (text)"
+  sed 's/^X//' << 'SHAR_EOF' > 'support/alarm/3-8-p/configure/RULES_DIRS' &&
+#RULES_DIRS
+include $(EPICS_BASE)/configure/RULES_DIRS
+SHAR_EOF
+  (set 20 13 01 23 18 36 45 'support/alarm/3-8-p/configure/RULES_DIRS'
+   eval "${shar_touch}") && \
+  chmod 0644 'support/alarm/3-8-p/configure/RULES_DIRS'
+if test $? -ne 0
+then ${echo} "restore of support/alarm/3-8-p/configure/RULES_DIRS failed"
+fi
+  if ${md5check}
+  then (
+       ${MD5SUM} -c >/dev/null 2>&1 || ${echo} 'support/alarm/3-8-p/configure/RULES_DIRS': 'MD5 check failed'
+       ) << \SHAR_EOF
+5c2015f77114575364d7d94e33680e6b  support/alarm/3-8-p/configure/RULES_DIRS
+SHAR_EOF
+
+else
+test `LC_ALL=C wc -c < 'support/alarm/3-8-p/configure/RULES_DIRS'` -ne 55 && \
+  ${echo} "restoration warning:  size of 'support/alarm/3-8-p/configure/RULES_DIRS' is not 55"
+  fi
+fi
+# ============= support/alarm/3-8-p/configure/Makefile ==============
+if test -n "${keep_file}" && test -f 'support/alarm/3-8-p/configure/Makefile'
+then
+${echo} "x - SKIPPING support/alarm/3-8-p/configure/Makefile (file already exists)"
+
+else
+${echo} "x - extracting support/alarm/3-8-p/configure/Makefile (text)"
+  sed 's/^X//' << 'SHAR_EOF' > 'support/alarm/3-8-p/configure/Makefile' &&
+# Makefile
+X
+TOP=..
+X
+include $(TOP)/configure/CONFIG
+X
+# Set the following to NO to disable consistency checking of
+# the support applications defined in $(TOP)/configure/RELEASE
+CHECK_RELEASE = YES
+X
+TARGETS = $(CONFIG_TARGETS)
+CONFIGS += $(subst ../,,$(wildcard $(CONFIG_INSTALLS)))
+X
+include $(TOP)/configure/RULES
+X
+SHAR_EOF
+  (set 20 13 01 23 18 36 45 'support/alarm/3-8-p/configure/Makefile'
+   eval "${shar_touch}") && \
+  chmod 0644 'support/alarm/3-8-p/configure/Makefile'
+if test $? -ne 0
+then ${echo} "restore of support/alarm/3-8-p/configure/Makefile failed"
+fi
+  if ${md5check}
+  then (
+       ${MD5SUM} -c >/dev/null 2>&1 || ${echo} 'support/alarm/3-8-p/configure/Makefile': 'MD5 check failed'
+       ) << \SHAR_EOF
+11c16a437511c2b4a0eb096a03a542b3  support/alarm/3-8-p/configure/Makefile
+SHAR_EOF
+
+else
+test `LC_ALL=C wc -c < 'support/alarm/3-8-p/configure/Makefile'` -ne 315 && \
+  ${echo} "restoration warning:  size of 'support/alarm/3-8-p/configure/Makefile' is not 315"
+  fi
+fi
+# ============= support/alarm/3-8-p/configure/RULES ==============
+if test -n "${keep_file}" && test -f 'support/alarm/3-8-p/configure/RULES'
+then
+${echo} "x - SKIPPING support/alarm/3-8-p/configure/RULES (file already exists)"
+
+else
+${echo} "x - extracting support/alarm/3-8-p/configure/RULES (text)"
+  sed 's/^X//' << 'SHAR_EOF' > 'support/alarm/3-8-p/configure/RULES' &&
+#CONFIG
+include $(EPICS_BASE)/configure/RULES
+X
+# Library should be rebuilt because LIBOBJS may have changed.
+$(LIBNAME): ../Makefile
+SHAR_EOF
+  (set 20 13 01 23 18 36 45 'support/alarm/3-8-p/configure/RULES'
+   eval "${shar_touch}") && \
+  chmod 0644 'support/alarm/3-8-p/configure/RULES'
+if test $? -ne 0
+then ${echo} "restore of support/alarm/3-8-p/configure/RULES failed"
+fi
+  if ${md5check}
+  then (
+       ${MD5SUM} -c >/dev/null 2>&1 || ${echo} 'support/alarm/3-8-p/configure/RULES': 'MD5 check failed'
+       ) << \SHAR_EOF
+428cb074ce349ada36fa3a0bc61fc02b  support/alarm/3-8-p/configure/RULES
+SHAR_EOF
+
+else
+test `LC_ALL=C wc -c < 'support/alarm/3-8-p/configure/RULES'` -ne 133 && \
+  ${echo} "restoration warning:  size of 'support/alarm/3-8-p/configure/RULES' is not 133"
+  fi
+fi
+# ============= support/alarm/3-8-p/Makefile ==============
+if test -n "${keep_file}" && test -f 'support/alarm/3-8-p/Makefile'
+then
+${echo} "x - SKIPPING support/alarm/3-8-p/Makefile (file already exists)"
+
+else
+${echo} "x - extracting support/alarm/3-8-p/Makefile (text)"
+  sed 's/^X//' << 'SHAR_EOF' > 'support/alarm/3-8-p/Makefile' &&
+# mockup EPICS base for sumo tests
+VERSION="ALARM:R3-8-patch"
+X
+archs= linux-x86  RTEMS-mvme2100  RTEMS-mvme5500  vxWorks-68040  vxWorks-ppc603
+X
+mockdirs= dbd include
+archdirs= lib
+X
+all_generated= $(archdirs) $(mockdirs) MAKESTAMP
+X
+all: $(mockdirs) $(archdirs)
+X	@echo "$(VERSION)" > MAKESTAMP
+X		
+clean:
+X	@rm -rf $(all_generated)
+X
+$(mockdirs): %:
+X	@mkdir $@
+X	@echo "dummy" > $@/dummyfile
+X
+$(archdirs): %:
+X	@mkdir $@
+X	@for a in $(archs); do mkdir -p $@/$$a; done; 
+X
+SHAR_EOF
+  (set 20 15 01 14 09 09 53 'support/alarm/3-8-p/Makefile'
+   eval "${shar_touch}") && \
+  chmod 0644 'support/alarm/3-8-p/Makefile'
+if test $? -ne 0
+then ${echo} "restore of support/alarm/3-8-p/Makefile failed"
+fi
+  if ${md5check}
+  then (
+       ${MD5SUM} -c >/dev/null 2>&1 || ${echo} 'support/alarm/3-8-p/Makefile': 'MD5 check failed'
+       ) << \SHAR_EOF
+0103e7276fbc23d4569ac5ebbb1b57b9  support/alarm/3-8-p/Makefile
+SHAR_EOF
+
+else
+test `LC_ALL=C wc -c < 'support/alarm/3-8-p/Makefile'` -ne 463 && \
+  ${echo} "restoration warning:  size of 'support/alarm/3-8-p/Makefile' is not 463"
   fi
 fi
 # ============= support/asyn/4-17-2/LICENSE ==============
