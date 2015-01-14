@@ -12,6 +12,9 @@
         "/tmp-sumo-build-new-2/BSPDEP_VMETAS/TAGLESS-2-1-modified+MYAPP-001": [
             "ANY"
         ],
+        "/tmp-sumo-build-new-2/CSM/TAR-4-1+MYAPP-001": [
+            "ANY"
+        ],
         "/tmp-sumo-build-new-2/MCAN/R2-6-3-gp+MYAPP-001": [
             "ANY"
         ],
@@ -36,6 +39,9 @@
             "EPICS_BASE": "/tmp-sumo-build-new-2/BASE/R3-14-12-2-1+BASE-001"
         },
         "/tmp-sumo-build-new-2/BSPDEP_VMETAS/TAGLESS-2-1-modified+MYAPP-001": {
+            "EPICS_BASE": "/tmp-sumo-build-new-2/BASE/R3-14-12-2-1+BASE-001"
+        },
+        "/tmp-sumo-build-new-2/CSM/TAR-4-1+MYAPP-001": {
             "EPICS_BASE": "/tmp-sumo-build-new-2/BASE/R3-14-12-2-1+BASE-001"
         },
         "/tmp-sumo-build-new-2/MCAN/R2-6-3-gp+MYAPP-001": {
@@ -75,6 +81,11 @@
         "BSPDEP_VMETAS": {
             "/tmp-sumo-build-new-2/BSPDEP_VMETAS": [
                 "TAGLESS-2-1-modified+MYAPP-001"
+            ]
+        },
+        "CSM": {
+            "/tmp-sumo-build-new-2/CSM": [
+                "TAR-4-1+MYAPP-001"
             ]
         },
         "MCAN": {
@@ -122,6 +133,9 @@
                 "rev": "ABCDABCDABCD",
                 "url": "/data/epics/support/bspDep/VMEtas/2-1-modified"
             }
+        },
+        "/tmp-sumo-build-new-2/CSM/TAR-4-1+MYAPP-001": {
+            "path": "/tmp-sumo-build-new-2/CSM/TAR-4-1+MYAPP-001"
         },
         "/tmp-sumo-build-new-2/MCAN/R2-6-3-gp+MYAPP-001": {
             "darcs": {

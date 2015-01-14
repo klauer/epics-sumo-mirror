@@ -44,10 +44,14 @@ set +o posix
 
 $SUMO db convert tmp-sumo-scan-all/SCAN -D "r\"^$PWD_REAL\",r\"$PWD_NICE\"" -U "r\"^$PWD_REAL\",r\"$PWD_NICE\"" --db $EXAMPLEDIR/DEPS.DB --scandb $EXAMPLEDIR/SCAN.DB 2> >(grep -v 'no dependency info' 1>&2) 
 
+# now, in order to be able to test the URL of tar files later, patch the
+# created file:
+sed -i 's#"url": "\([^"]*support/asyn-4-17-2[^"]*\)"#"url": "file://\1"#' $EXAMPLEDIR/DEPS.DB
+sed -i 's#"url": "\([^"]*support/csm-4-1[^"]*\)"#"url": "ssh://\1"#' $EXAMPLEDIR/DEPS.DB
+
 echo "DB file:"
 cat $EXAMPLEDIR/DEPS.DB | sed -e "s#$PWD_NICE##;s#$PWD_REAL##;s#\"[0-9a-f]\{12\}\"#\"ABCDABCDABCD\"#"
 echo
 echo "SCANDB file:"
 cat $EXAMPLEDIR/SCAN.DB
-
 

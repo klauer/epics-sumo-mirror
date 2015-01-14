@@ -22,8 +22,8 @@ How it works
 
 Information on all known :term:`modules` and module :term:`versions` is kept in
 the :term:`dependency database`. This file also contains a :term:`source`
-specification for each module that may be a directory, tar file or a repository
-specification.
+specification for each module that may be a directory, tar file or url or a
+repository specification.
 
 A complete and consistent set of modules that is compiled is called a
 :term:`build`.  All :term:`builds` are kept in a single directory, the
@@ -198,91 +198,144 @@ in the build database or :term:`BUILDDB`.  This is the form of the
 source data
 :::::::::::
 
-The *source data* describes where the :term:`sources` of the :term:`module` can
-be found. It is a map with a single key. The key either has the value "path",
-"tar", "darcs", "hg" or "git". If the key is "path" the  value is a string, the
-path of the source. In case of "tar" the value is the name of the tar file. If
-the key is "darcs" or "hg", the value is a map. This map has a key "url" whose
-value is the repository url. The map may also have a key "tag" which is the
-repository tag or a key "rev" which is the revision number.  Here is the
-structure of the *source data*::
+*source data* describes where the :term:`sources` of a :term:`module` can
+be found. It is a map with a single key. The key has one of the following values:
+
+- path: This specifies a *directory* with the sources. The sources can be
+  copied from a directory of via ssh from a remote host.
+- tar: This specifies a *tar file* with the sources. The tar file can be on the
+  local file system or a remote host that can be reached with the the ftp or
+  http protocol.
+- darcs: This specifies a *darcs repository*. The repository may reside on the
+  local host or a remote host.
+- hg: This specifies a *mercurial repository*. The repository may reside on the
+  local host or a remote host.
+- git: This specifies a *git repository*. The repository may reside on the
+  local host or a remote host.
+  
+path
+^^^^
+
+This is used to specify a directory that contains all the sources. 
+
+For a directory in the local host, the *source data* has this form::
 
   {
-      "path": PATH
+      "path": "PATH"
   }
 
-or::
+For a directory on a remote host that can be accessed with ssh, the *source
+data* has this form::
 
   {
-      "tar": TARFILE
+      "path": "USER@HOST:REMOTEPATH"
   }
 
-or::
+tar
+^^^
+
+This is used to specify a tar, gzip tar or bzip tar file that contains the
+sources. The filename must have one of these extensions:
+
+- .tar : a simple tar file
+- .tar.gz : a tar file compressed with gzip
+- .tar.bz2 : a tar file compressed with bzip2
+
+The *source data* has always this form:: 
+  {
+      "tar": {
+          "url": "TARFILE"
+      }
+  }
+
+"TARFILE" may be a filename or an URL with one of these forms:
+
+- ``http://``
+- ``ftp://``
+- ``ssh://``
+- ``file://``
+
+darcs
+^^^^^
+
+For key "darcs" the value is a map containing the key "url" for the string
+defining the darcs source repository. If there is now tag specified, *source
+data* has this form::
 
   {
       "darcs": {
-          "url": URL
+          "url": "REPOSITORY"
       }
   }
 
-or::
+If a tag is given, it has this form::
 
   {
       "darcs": {
-          "tag": TAG,
-          "url": URL
+          "tag": "TAG",
+          "url": "REPOSITORY"
       }
   }
 
-or::
+hg
+^^
+
+For key "hg" the value is a map containing the key "url" for the string
+defining the mercurial source repository. If the version in the repository is
+not specified, *source data* has this form::
 
   {
       "hg": {
-          "url": URL
+          "url": "REPOSITORY"
       }
   }
 
-or::
+If a mercurial revision is specified, *source data* has this form::
 
   {
       "hg": {
-          "rev": REVISION,
-          "url": URL
+          "rev": "REVISION",
+          "url": "REPOSITORY"
       }
   }
 
-or::
+If a mercurial tag is specified, *source data* has this form::
 
   {
       "hg": {
-          "tag": TAG,
-          "url": URL
+          "tag": "TAG",
+          "url": "REPOSITORY"
       }
   }
 
-or::
+git
+^^^
+
+For key "git" the value is a map containing the key "url" for the string
+defining the git source repository. If the version in the repository is not
+specified, *source data* has this form::
 
   {
       "git": {
-          "url": URL
+          "url": "REPOSITORY"
       }
   }
 
-or::
+If a git revision is specified, *source data* has this form::
 
   {
       "git": {
-          "rev": REVISION,
-          "url": URL
+          "rev": "REVISION",
+          "url": "REPOSITORY"
       }
   }
 
-or::
+If a git tag is specified, *source data* has this form::
 
   {
       "git": {
-          "tag": TAG,
-          "url": URL
+          "tag": "TAG",
+          "url": "REPOSITORY"
       }
   }
 
