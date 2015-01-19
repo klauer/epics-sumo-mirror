@@ -278,28 +278,28 @@ def alias(alias_dict, modulename):
 # cleanup file handling
 # -----------------------------------------------
 
-def cleanupfilename(build_tag):
+def cleanupfilename(build_tag, dir_):
     """create the name of the cleanup file."""
-    return "cleanup-%s" % build_tag
+    return os.path.join(dir_,"cleanup-%s" % build_tag)
 
-def rmcleanup(build_tag):
+def rmcleanup(build_tag, dir_):
     """remove the cleanup file."""
-    fn= cleanupfilename(build_tag)
+    fn= cleanupfilename(build_tag, dir_)
     if os.path.exists(fn):
         return os.remove(fn)
 
-def loadcleanup(build_tag, must_exist= False):
+def loadcleanup(build_tag, dir_, must_exist= False):
     """load the cleanup file."""
-    fn= cleanupfilename(build_tag)
+    fn= cleanupfilename(build_tag, dir_)
     if os.path.exists(fn):
         return sumolib.JSON.loadfile(fn)
     if must_exist:
         raise IOError("file '%s' not found" % fn)
     return {"modules": [] }
 
-def savecleanup(build_tag, struc):
+def savecleanup(build_tag, dir_, struc):
     """save the cleanup file."""
-    fn= cleanupfilename(build_tag)
+    fn= cleanupfilename(build_tag, dir_)
     sumolib.JSON.dump_file(fn, struc)
 
 # -----------------------------------------------
@@ -498,9 +498,10 @@ def create_makefile(builddir, dist_dict, db, builddb, build_tag,
                                                          versionname)
     filename= makefilename(builddir, build_tag)
     if not dry_run:
-        cleanup_struc= loadcleanup(build_tag)
+        cleanup_struc= loadcleanup(build_tag, builddir)
         cleanup_struc["makefile"]= filename
-        savecleanup(build_tag, cleanup_struc)
+        ensure_dir(builddir, dry_run)
+        savecleanup(build_tag, builddir, cleanup_struc)
     module_dirs= sorted(paths.values())
     stamps= [os.path.join(p,"stamp") for p in module_dirs]
     fh= sumolib.utils.file_w_open(filename, verbose, dry_run)
@@ -935,7 +936,7 @@ def cleanup_modules(builddir, build_tag, verbose, dry_run):
     the script.
     """
     try:
-        cleanup_struc= loadcleanup(build_tag, must_exist= True)
+        cleanup_struc= loadcleanup(build_tag, builddir, must_exist= True)
     except IOError, e:
         if not catch_exceptions:
             raise
@@ -954,7 +955,7 @@ def cleanup_modules(builddir, build_tag, verbose, dry_run):
         if os.path.exists(makefile):
             os.remove(makefile)
     if not dry_run:
-        rmcleanup(build_tag)
+        rmcleanup(build_tag, builddir)
 
 def create_modules(builddir, dist_dict, db, builddb, build_tag,
                    extra_lines,
@@ -975,7 +976,7 @@ def create_modules(builddir, dist_dict, db, builddb, build_tag,
     # used to clean up the support directory.
     # Load the cleanup file in case other parts of the script have saved
     # someting there:
-    cleanup_struc= loadcleanup(build_tag)
+    cleanup_struc= loadcleanup(build_tag, builddir)
     module_list  = cleanup_struc.setdefault("modules", [])
 
     # add all modules specified by dist_dict to builddb under tag build_tag:
@@ -996,7 +997,8 @@ def create_modules(builddir, dist_dict, db, builddb, build_tag,
                             "versionname": versionname})
 
     if not dry_run and not no_checkout:
-        savecleanup(build_tag, cleanup_struc)
+        ensure_dir(builddir, dry_run)
+        savecleanup(build_tag, builddir, cleanup_struc)
     if no_checkout:
         return
     for module_dict in module_list:
@@ -1827,7 +1829,7 @@ def build_new(arguments, options):
 
     builddb.json_save(builddb_fn(options), options.verbose, options.dry_run)
     # ^^^ does also unlock the file
-    rmcleanup(buildtag)
+    rmcleanup(buildtag, options.builddir)
     if not options.no_make and not options.no_checkout:
         # call_make will set the build state to "testing" if it succeeds:
         call_make(options.builddir,
