@@ -220,7 +220,7 @@ class ConfigFile(object):
             # replaced with "_":
             oobj_opt= opt.replace("-", "_")
             if not hasattr(option_obj, oobj_opt):
-                raise AssertionError(
+                raise AssertionError(\
                         "ERROR: key '%s' not in the option object" % opt)
             val= getattr(option_obj, oobj_opt)
             if val is not None:
@@ -237,7 +237,7 @@ class ConfigFile(object):
         for (opt, val) in self._dict.items():
             oobj_opt= opt.replace("-", "_")
             if not hasattr(option_obj, oobj_opt):
-                raise AssertionError(
+                raise AssertionError(\
                         "ERROR: key '%s' not in the option object" % opt)
             if val is not None:
                 setattr(option_obj, oobj_opt, val)
