@@ -68,7 +68,7 @@ def _scan(filenames, external_definitions= None,
          ".EXPORT_ALL_VARIABLES:\\n" +\
 	 "scan_makefile_pe:\\n" +\
 	 "\\t@printenv\\n\" | %s " +\
-	 "make -s -e -f - scan_makefile_pe") % (include_cmd,extra)
+	 "make -s -f - scan_makefile_pe") % (include_cmd,extra)
     data= {}
     (reply,_)= sumolib.system.system(cmd, True, False, verbose, dry_run)
     if dry_run:
@@ -116,7 +116,7 @@ def scan(filenames, external_definitions= None, pre= None,
     else:
         if not pre: # empty dict
             pre.update(_scan([], external_definitions, warnings,
-                       verbose, dry_run))
+                             verbose, dry_run))
     post= _scan(filenames, external_definitions, warnings, verbose, dry_run)
     new= {}
     for (k,v) in post.items():
