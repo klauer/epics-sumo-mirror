@@ -64,7 +64,7 @@ sumo-scan -c $SUMO_SCAN_CONFIG -d . all | sumo db --no-default-config appconvert
 # We must use BASE:R-3-14-8-2-1 instead of BASE:R-3-14-8-2-0:
 
 if grep -q BASE:R3-14-8-2-0 $MODULES; then
-    sumo -c $MODULES --mergeoption "alias module" \
+    sumo -c $MODULES --append "alias module" \
             -m BASE:R3-14-8-2-1 \
             makeconfig $MODULES alias module 
 fi
@@ -74,43 +74,43 @@ fi
 # the HZB:
 
 if grep -q APPS_GENERICTEMPLATE:R3-6 $MODULES; then
-    sumo -c $MODULES --mergeoption "alias module" \
+    sumo -c $MODULES --append "alias module" \
             -m "APPS_GENERICTEMPLATE:R3-6-RULES-1-1 RULES-1-1:R1-1" \
             makeconfig $MODULES alias module 
 fi
 
 if grep -q APPS_IOCWATCH:R2-2 $MODULES; then
-    sumo -c $MODULES --mergeoption "alias module" \
+    sumo -c $MODULES --append "alias module" \
             -m "APPS_IOCWATCH:R2-2-RULES-1-1 RULES-1-1:R1-1" \
             makeconfig $MODULES alias module 
 fi
 
 if grep -q APPS_MOTOR:TAGLESS-2-6-2-2 $MODULES; then
-    sumo -c $MODULES --mergeoption "alias module" \
+    sumo -c $MODULES --append "alias module" \
             -m "APPS_MOTOR:TAGLESS-2-6-2-2-RULES-1-5 RULES-1-5:R1-5" \
             makeconfig $MODULES alias module 
 fi
 
 if grep -q APPS_SCOPESAVERESTORE:R1-1 $MODULES; then
-    sumo -c $MODULES --mergeoption "alias module" \
+    sumo -c $MODULES --append "alias module" \
             -m "APPS_SCOPESAVERESTORE:R1-1-RULES-1-4-1 RULES-1-4-1:R1-4-1" \
             makeconfig $MODULES alias module 
 fi
 
 if grep -q APPS_VACUUM:TAGLESS-1-1-1 $MODULES; then
-    sumo -c $MODULES --mergeoption "alias module" \
+    sumo -c $MODULES --append "alias module" \
             -m "APPS_VACUUM:TAGLESS-1-1-1-RULES-1-15 RULES-1-15:R1-15" \
             makeconfig $MODULES alias module 
 fi
 
 if grep -q HIGHLAND-V375:TAGLESS-1-2 $MODULES; then
-    sumo -c $MODULES --mergeoption "alias module" \
+    sumo -c $MODULES --append "alias module" \
             -m "HIGHLAND-V375:TAGLESS-1-2-RULES-1-9 RULES-1-9:R1-9" \
             makeconfig $MODULES alias module 
 fi
 
 #if grep -q STD:PATH-2-6-2 $MODULES; then
-#    sumo -c $MODULES --mergeoption "alias module" \
+#    sumo -c $MODULES --append "alias module" \
 #            -m "STD:R2-8-bessy2" \
 #            makeconfig $MODULES alias module 
 #fi
@@ -118,7 +118,7 @@ fi
 # STD:PATH-2-6-2 needs a special GENSUB support:
 
 if grep -q STD:PATH-2-6-2 $MODULES; then
-    sumo -c $MODULES --mergeoption "alias module" \
+    sumo -c $MODULES --append "alias module" \
             -m "SYNAPPS_5-2-0-1_SUPPORT_GENSUB:PATH-1-6a" \
             makeconfig $MODULES alias module 
 fi
@@ -126,7 +126,7 @@ fi
 # We must use a special version of APPS_GENERICBOOT:
 
 if grep -q APPS_GENERICBOOT:R0-9 $MODULES; then
-    sumo -c $MODULES --mergeoption "alias module" \
+    sumo -c $MODULES --append "alias module" \
             -m "APPS_GENERICBOOT:R0-9-EPICS-3-14-8" \
             makeconfig $MODULES alias module 
 fi

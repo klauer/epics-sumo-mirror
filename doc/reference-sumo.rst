@@ -932,12 +932,11 @@ Here is a short overview on command line options:
     If this option is not given and --no-default-config is not given, the
     program tries to load the default configuration file sumo-scan.config from
     several standard locations (see documentation on configuration files).
-``--mergeoption OPTIONNAME``
+``-A``, ``--append OPTIONNAME``
     If an option with name OPTIONNAME is given here and it is a list option,
-    the lists from the configuration file and the command line are merged. The
-    new list is the sum of both lists where it is ensured that for all elements
-    the string up to the first colon ':' is unique (this is useful for module
-    specifications that have the form 'module:version').
+    the list from the command line is *appended* to the list from the
+    configuration file. The default is that options from the command line
+    *override* option values from the configuration file.
 ``--#preload FILES`` 
     Specify a an '#preload' directive in the configuration file. This option
     has only a meaning if a configuration file is created with the 'makeconfig'
