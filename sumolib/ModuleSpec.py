@@ -42,10 +42,10 @@ class Spec(object):
         self.archs= archs
     def __repr__(self):
         """return repr string."""
-        return "%s(%s,%s,%s,%s)" % (self.__class__.__name__,
-                                 repr(self.modulename),
-                                 repr(self.versionname),
-                                 repr(self.versionflag),
+        return "%s(%s,%s,%s,%s)" % (self.__class__.__name__,\
+                                 repr(self.modulename),\
+                                 repr(self.versionname),\
+                                 repr(self.versionflag),\
                                  repr(self.archs))
     def no_version_spec(self):
         """returns True if there is no version spec."""
@@ -241,7 +241,7 @@ class Spec(object):
         True
         """
         return Spec.compare_versions(self.versionname, version,
-                                           self.versionflag)
+                                     self.versionflag)
 
 class Specs(object):
     """A class representing a list of Spec objects."""
@@ -320,9 +320,9 @@ class Specs(object):
                     json_specs= json_data.get("module")
                     if json_specs:
                         idx= Specs._from_strings(module_dict, idx,
-                                                       json_specs,
-                                                       builddb_fn,
-                                                       default_archs)
+                                                 json_specs,
+                                                 builddb_fn,
+                                                 default_archs)
                     continue
                 if special[0]=="build":
                     if len(special)<=1:
@@ -330,9 +330,9 @@ class Specs(object):
                     build_specs= builddb_fn(special[1])
 
                     idx= Specs._from_strings(module_dict, idx,
-                                                   build_specs,
-                                                   builddb_fn,
-                                                   default_archs)
+                                             build_specs,
+                                             builddb_fn,
+                                             default_archs)
                     continue
 
                 raise ValueError("unexpected spec: %s" % s)
