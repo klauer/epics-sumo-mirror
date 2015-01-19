@@ -1,5 +1,5 @@
-sumo db showall ALARM without --dbrepo:
-----------------------------------------
+sumo db show ALARM without --dbrepo:
+------------------------------------
 {
     "ALARM": [
         "R3-8-modified",
@@ -22,8 +22,8 @@ sumo db showall ALARM without --dbrepo:
 }
 
 
-sumo db showall ALARM with --dbrepo (fetch changes from central repo)
-----------------------------------------
+sumo db show ALARM with --dbrepo (fetch changes from central repo)
+------------------------------------------------------------------
 
 {
     "ALARM": [

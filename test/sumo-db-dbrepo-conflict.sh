@@ -45,13 +45,13 @@ git clone -q ../$CHG_REPO/central-git delme-git
 git -C delme-git config push.default simple
 git -C delme-git push -q ../central-git
 
-#echo "sumo db showall ALARM without --dbrepo:"
+#echo "sumo db show ALARM without --dbrepo:"
 #echo "----------------------------------------"
-#$SUMO db --db local-darcs/DEPS.DB showall ALARM
-#$SUMO db --db local-hg/DEPS.DB showall ALARM
-#$SUMO db --db local-git/DEPS.DB showall ALARM
+#$SUMO db --db local-darcs/DEPS.DB show ALARM
+#$SUMO db --db local-hg/DEPS.DB show ALARM
+#$SUMO db --db local-git/DEPS.DB show ALARM
 #echo
-#echo "sumo db showall ALARM with --dbrepo (fetch changes from central repo)"
+#echo "sumo db show ALARM with --dbrepo (fetch changes from central repo)"
 #echo "----------------------------------------"
 
 # provoke a pull conflict by applying the changes that were done in the central
@@ -67,13 +67,13 @@ $SUMO db --db local-git/DEPS.DB --dbrepo "darcs central-git" --dbrepomode get -y
 # git pull : $?!=0
 
 echo "Conflict in darcs repo:"
-echo "--------------------------"
-$SUMO db -y --logmsg "local changes" --db local-darcs/DEPS.DB --dbrepo "darcs central-darcs" --dbrepomode pull showall ALARM 2>&1 || true
+echo "-----------------------"
+$SUMO db -y --logmsg "local changes" --db local-darcs/DEPS.DB --dbrepo "darcs central-darcs" --dbrepomode pull show ALARM 2>&1 || true
 echo
 echo "Conflict in mercurial repo:"
-echo "--------------------------"
-$SUMO db -y --logmsg "local changes" --db local-hg/DEPS.DB --dbrepo "hg central-hg" --dbrepomode pull showall ALARM 2>&1 | sed -e 's/\(not updating:\).*/\1/;/(merge or update/d'
+echo "---------------------------"
+$SUMO db -y --logmsg "local changes" --db local-hg/DEPS.DB --dbrepo "hg central-hg" --dbrepomode pull show ALARM 2>&1 | sed -e 's/\(not updating:\).*/\1/;/(merge or update/d'
 echo
 echo "Conflict in git repo:"
-echo "--------------------------"
-$SUMO db -y --logmsg "local changes" --db local-git/DEPS.DB --dbrepo "git central-git" --dbrepomode pull showall ALARM 2>&1 || true
+echo "---------------------"
+$SUMO db -y --logmsg "local changes" --db local-git/DEPS.DB --dbrepo "git central-git" --dbrepomode pull show ALARM 2>&1 || true

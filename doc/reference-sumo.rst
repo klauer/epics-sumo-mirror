@@ -700,8 +700,8 @@ Optional parameter MODULES specifies the names of :term:`modules` shown. If no
 :term:`modules` are given the command shows the newest :term:`versions` of all
 :term:`modules`.
 
-showall [MODULES]
-:::::::::::::::::
+show [MODULES]
+::::::::::::::
 
 This command shows all versions of the given modules. 
 
