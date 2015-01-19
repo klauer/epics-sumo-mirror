@@ -59,7 +59,7 @@ catch_exceptions= True
 # -----------------------------------------------
 
 def scan_config_file(filename, external_definitions= None,
-                      verbose= False, dry_run= False):
+                     verbose= False, dry_run= False):
     """scan CONFIG file.
 
     return CROSS_COMPILER_TARGET_ARCHS.
@@ -67,10 +67,10 @@ def scan_config_file(filename, external_definitions= None,
     wanted= { 'CROSS_COMPILER_TARGET_ARCHS': None
             }
     data= sumolib.makefile_scan.scan(filename,
-                             external_definitions,
-                             makefile_scan_pre,
-                             False,
-                             verbose, dry_run)
+                                     external_definitions,
+                                     makefile_scan_pre,
+                                     False,
+                                     verbose, dry_run)
     for k in wanted.keys():
         wanted[k]= data[k]
     return wanted
@@ -82,10 +82,10 @@ def scan_release_file(filename,
     """scan a release file.
     """
     data= sumolib.makefile_scan.scan(filename,
-                             external_definitions,
-                             makefile_scan_pre,
-                             True, # warnings
-                             verbose, dry_run)
+                                     external_definitions,
+                                     makefile_scan_pre,
+                                     True, # warnings
+                                     verbose, dry_run)
     dependencies= {}
     for (k,v) in data.items():
         if not os.path.exists(v):
@@ -114,12 +114,12 @@ def scan_support_deps(support_path,
 
 
 def support_configure_data(support_trees,
-                    buildtag,
-                    ignore_names,
-                    exclude_matcher,
-                    trace,
-                    progress= False,
-                    verbose= False, dry_run= False):
+                           buildtag,
+                           ignore_names,
+                           exclude_matcher,
+                           trace,
+                           progress= False,
+                           verbose= False, dry_run= False):
     """scan EPICS configuration files a whole file-tree of EPICS supports.
     """
     # pylint: disable=R0915
@@ -431,14 +431,14 @@ def get_configuration(options):
         ignore_names= set()
     (deps, archs)= \
        support_configure_data(options.dir,
-                       options.buildtag,
-                       ignore_names,
-                       exclude_matcher,
-                       options.trace,
-                       options.progress,
-                       options.verbose,
-                       options.dry_run
-                      )
+                              options.buildtag,
+                              ignore_names,
+                              exclude_matcher,
+                              options.trace,
+                              options.progress,
+                              options.verbose,
+                              options.dry_run
+                             )
     return (deps, archs)
 
 # pylint: disable=R0912
@@ -458,9 +458,9 @@ def process(options, commands):
     config_name= None
     if not options.no_default_config:
         config_name= CONFIG_NAME
-    config= sumolib.Config.ConfigFile.from_optionlist(
-                config_name,
-                ENV_CONFIG,
+    config= sumolib.Config.ConfigFile.from_optionlist(\
+                config_name,\
+                ENV_CONFIG,\
                 ( "#preload","#opt-preload","#postload","#opt-postload",
                   "dir", "exclude-deps", "exclude-path", "group-basedir",
                   "hint", "ignore-changes", "ignore-name", "missing-repo",
@@ -642,15 +642,15 @@ def main():
     parser.add_option("--summary",
                       action="store_true",
                       help="Print a summary of the function of the program.",
-                      )
+                     )
     parser.add_option("--doc",
                       action="store_true",
                       help="Print a longer description of the program.",
-                      )
+                     )
     parser.add_option("--test",
                       action="store_true",
                       help="Perform simple self-test.",
-                      )
+                     )
     parser.add_option("-c", "--config",
                       action="append",
                       type="string",
@@ -663,12 +663,12 @@ def main():
                            "contents of all configuration files are "
                            "merged. ",
                       metavar="CONFIGFILE"
-                      )
+                     )
     parser.add_option("-C", "--no-default-config",
                       action="store_true",
                       help="If this option is given the program doesn't load "
                            "the default configuration.",
-                      )
+                     )
     parser.add_option("-A", "--append",
                       action="append",
                       type="string",
@@ -690,7 +690,7 @@ def main():
                            "the following file(s) are loaded before the "
                            "rest of the configuration file. ",
                       metavar="FILES"
-                      )
+                     )
     parser.add_option("--#opt-preload",
                       action="append",
                       type="string",
@@ -698,7 +698,7 @@ def main():
                            "the file loading is optional. If they do not "
                            "exist the program continues without an error. ",
                       metavar="FILES"
-                      )
+                     )
     parser.add_option("--#postload",
                       action="append",
                       type="string",
@@ -709,7 +709,7 @@ def main():
                            "the following file(s) are loaded after the "
                            "rest of the configuration file. ",
                       metavar="FILES"
-                      )
+                     )
     parser.add_option("--#opt-postload",
                       action="append",
                       type="string",
@@ -717,7 +717,7 @@ def main():
                            "the file loading is optional. If they do not "
                            "exist the program continues without an error. ",
                       metavar="FILES"
-                      )
+                     )
     parser.add_option("-d", "--dir",
                       action="append",
                       type="string",
@@ -728,14 +728,14 @@ def main():
                            "A default for this option can be put in a "
                            "configuration file.",
                       metavar="DIR"
-                      )
+                     )
     parser.add_option("-i","--info-file",
                       action="store",
                       type="string",
                       help="Read information from INFOFILE. This is a "
                            "file generated by this script in a prevous run.",
                       metavar="INFOFILE"
-                      )
+                     )
     parser.add_option("-N", "--ignore-name",
                       action="append",
                       help="Define macro names in the RELEASE files that "
@@ -747,7 +747,7 @@ def main():
                            "A default for this option can be put in a "
                            "configuration file.",
                       metavar="NAME"
-                      )
+                     )
     parser.add_option("-g", "--group-basedir",
                       action="append",
                       help="Option \"-g\" or \"--group-basedir\" must be "
@@ -762,7 +762,7 @@ def main():
                            "A default for this option can be put in a "
                            "configuration file.",
                       metavar="DIR"
-                      )
+                     )
     parser.add_option("--exclude-path",
                       action="append",
                       type="string",
@@ -774,7 +774,7 @@ def main():
                            "A default for this option can be put in a "
                            "configuration file.",
                       metavar="REGEXP"
-                      )
+                     )
     parser.add_option("--exclude-deps",
                       action="store",
                       type="string",
@@ -783,7 +783,7 @@ def main():
                            "A default for this option can be put in a "
                            "configuration file.",
                       metavar="REGEXP"
-                      )
+                     )
     parser.add_option("--ignore-changes",
                       action="append",
                       type="string",
@@ -800,7 +800,7 @@ def main():
                            "A default for this option can be put in a "
                            "configuration file.",
                       metavar="REGEXP"
-                      )
+                     )
     parser.add_option("-D", "--dir-patch",
                       action="append",
                       help="Specify a directory PATCHEXPRESSION. Such an "
@@ -813,7 +813,7 @@ def main():
                            "A default for this option can be put in a "
                            "configuration file.",
                       metavar="PATCHEXPRESSION"
-                      )
+                     )
     parser.add_option("-U", "--url-patch",
                       action="append",
                       help="Specify a repository url PATCHEXPRESSION. Such "
@@ -826,8 +826,8 @@ def main():
                            "A default for this option can be put in a "
                            "configuration file.",
                       metavar="PATCHEXPRESSION"
-                      )
-    parser.add_option( "--hint",
+                     )
+    parser.add_option("--hint",
                       action="append",
                       help="Specify a HINT. A HINT has the form "
                            "REGEXP,FLAG{,FLAG}. REGEXP is a regular "
@@ -838,36 +838,36 @@ def main():
                            "A default for this option can be put in a "
                            "configuration file.",
                       metavar="HINT"
-                      )
+                     )
     parser.add_option("--missing-tag",
                       action="store_true",
                       help="Show directories where a repository was "
                            "found but no tag. "
                            "A default for this option can be put in a "
                            "configuration file.",
-                      )
+                     )
     parser.add_option("--missing-repo",
                       action="store_true",
                       help="Show directories where no repository was found. "
                            "A default for this option can be put in a "
                            "configuration file.",
-                      )
+                     )
     parser.add_option("-t", "--buildtag",
                       action="store",
                       type="string",
                       help="Scan only directories of the given buildtag.",
                       metavar="BUILDTAG"
-                      )
+                     )
     parser.add_option("-p", "--progress",
                       action="store_true",
                       help="Show progress on stderr. "
                            "A default for this option can be put in a "
                            "configuration file.",
-                      )
+                     )
     parser.add_option("--trace",
                       action="store_true",
                       help="Switch on some trace messages.",
-                      )
+                     )
     parser.add_option("--exceptions",
                       action="store_true",
                       help="On fatal errors that raise python "
@@ -875,17 +875,17 @@ def main():
                            "show a python stacktrace instead of an "
                            "error message and may be useful for "
                            "debugging the program."
-                      )
+                     )
     parser.add_option("-v", "--verbose",
                       action="store_true",
                       help="Show command calls. "
                            "A default for this option can be put in a "
                            "configuration file.",
-                      )
+                     )
     parser.add_option("-n", "--dry-run",
                       action="store_true",
                       help="Just show what the program would do.",
-                      )
+                     )
 
     # x= sys.argv
     (options, args) = parser.parse_args()
