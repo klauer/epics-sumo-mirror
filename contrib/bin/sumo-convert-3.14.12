@@ -74,14 +74,14 @@ if grep -q BASE:R3-14-12-2-1 $MODULES; then
 fi
 
 if grep -q BESSYRULES:R2-5 $MODULES; then
-    sumo -c $MODULES --mergeoption "alias module" \
+    sumo -c $MODULES --append "alias module" \
             -m "BESSYRULES:R2-8" \
             makeconfig $MODULES alias module 
 fi
 
 if grep -q STREAM: $MODULES; then
     sed -i -e 's/STREAM:/STREAMDEVICE:/g' $MODULES
-    sumo -c $MODULES --mergeoption "alias module" \
+    sumo -c $MODULES --append "alias module" \
             -a "STREAMDEVICE:STREAM" \
             makeconfig $MODULES alias module 
 fi

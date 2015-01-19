@@ -14,12 +14,12 @@ Sources of module specifications
 Module specifications can come from three sources (not taking into account
 :term:`commands` that read files):
 
-A configuration file
-++++++++++++++++++++
+The configuration file
+++++++++++++++++++++++
 
 This is a `JSON <http://www.json.org>`_ file that contains settings for some or
-all of the :term:`commandline options`. The option "--module" that is stored
-with the key "module" in this file and is a list of strings.
+all of the :term:`commandline options`. Modules are stored here with the key
+"module" as a list of strings.
 
 The command line option "-m" or "--module"
 ++++++++++++++++++++++++++++++++++++++++++
@@ -35,23 +35,44 @@ Arguments to a command
 Some :term:`commands` may be followed by arguments that must be module
 specifications.
 
-Merging
--------
+Combining all module specifications
+-----------------------------------
 
-The module specifications from the various sources are first concatenated to a
-single list of module specifications in this order:
+There are two possibilities, how module specifications from these three sources
+are combined:
+
+Override mode
++++++++++++++
+
+Each new set of module specifications overrides the previous one in this order:
 
 - configuration file
 - command line options
 - command arguments
+
+Append mode
++++++++++++
+
+When command line option::
+
+  -A module
+
+is given, module specifications from all three sources are combined into a
+single list in this order:
+
+- configuration file
+- command line options
+- command arguments
+
+Processing the list
++++++++++++++++++++
 
 This list is then processed in order to get a list of module specifications
 where each module is mentioned just once. The order of modules is the same as
 they were given in the sources.
 
 If a module is specified more than once the last specification overwrites the
-first one, but the *place* of the module in the list is the one where it was
-found first. Here is an example:
+first one. Here is an example:
 
 A_Module:Version1 B_Module:Version2 A_Module:Version3
 

@@ -479,7 +479,7 @@ def process(options, commands):
             raise
         sys.exit("Error while loading config file,\n%s" % str(e))
     try:
-        config.merge_options(options, options.mergeoption)
+        config.merge_options(options, options.append)
     except ValueError, e:
         if not catch_exceptions:
             raise
@@ -525,7 +525,15 @@ def process(options, commands):
     options.group_basedir  = sumolib.utils.opt_join(options.group_basedir)
     options.ignore_changes = sumolib.utils.opt_join(options.ignore_changes)
     options.ignore_name    = sumolib.utils.opt_join(options.ignore_name)
-    options.mergeoption    = sumolib.utils.opt_join(options.mergeoption)
+
+    # ^^^ A set of all options where lists from the command line are *appended*
+    # to lists from the config file. The default is that lists from the command
+    # line overwrite settings from the config file.
+    if not options.append:
+        options.append= set()
+    else:
+        options.append= sumolib.utils.opt_join(options.append)
+        options.append= set(options.append)
 
     if options.dir:
         (deps, archs)= get_configuration(options)
@@ -661,20 +669,17 @@ def main():
                       help="If this option is given the program doesn't load "
                            "the default configuration.",
                       )
-    parser.add_option("--mergeoption",
+    parser.add_option("-A", "--append",
                       action="append",
                       type="string",
-                      help= "If an option with name OPTIONNAME is given "
-                            "here and it is a list option, the lists "
-                            "from the configuration file and the command "
-                            "line are merged. The new list is the sum of "
-                            "both lists where it is ensured that for all "
-                            "elements the string up to the first colon "
-                            "':' is unique (this is useful for module "
-                            "specifications that have the form "
-                            "'module:version').",
+                      help="If an option with name OPTIONNAME is given "
+                           "here and it is a list option, the list from "
+                           "the command line is *appended* to the list "
+                           "from the configuration file. The default is "
+                           "that options from the command line *override* "
+                           "option values from the configuration file.",
                       metavar="OPTIONNAME"
-                      )
+                     )
     parser.add_option("--#preload",
                       action="append",
                       type="string",

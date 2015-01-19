@@ -172,28 +172,17 @@ class ConfigFile(object):
             return
         sumolib.JSON.dump_file(filename, dump)
 
-    def merge_options(self, option_obj, list_merge_opts):
+    def merge_options(self, option_obj, merge_opts_set):
         """create from an option object.
 
         Merge Config object with command line options and
         command line options with Config object.
 
-        All options that are part of the list <list_merge_opts> must be lists.
-        For these options the lists are *merged*, meaning that the new list is
-        the sum of both lists. It is ensured that for all elements the string
-        up to the first colon ":" is unique in the list (in order to be usable
-        for module specs in the form "module:version").
+        All options that are part of the set <merge_opts_set> must be lists.
+        For these options the lists are concatenated.
         """
         # pylint: disable=R0912
         #                          Too many branches
-        def list2dict(l):
-            """convert ["k1:v1","k2:v2"...] to {"k1":"v1","k2":"v2"...}.
-            """
-            return dict([s.split(":",1) for s in l])
-        def dict2list(d):
-            """convert {"k1":"v1","k2":"v2"...} to ["k1:v1","k2:v2"...].
-            """
-            return sorted([":".join((k,v)) for (k,v) in d.items()])
         def list_merge(a,b,name):
             """merge two lists."""
             if not isinstance(a, list):
@@ -202,18 +191,17 @@ class ConfigFile(object):
             if not isinstance(b, list):
                 raise TypeError("error: %s from command line options "
                                 "is not a list" % name)
-            d= list2dict(a)
-            d.update(list2dict(b))
-            return dict2list(d)
+            new= a[:]
+            new.append(b)
+            return new
 
-        if list_merge_opts is None:
-            list_merge_opts_set= set()
+        if merge_opts_set is None:
+            merge_opts_set= set()
         else:
-            for opt in list_merge_opts:
+            for opt in merge_opts_set:
                 if not hasattr(option_obj, opt):
                     raise ValueError(
                         "error: '%s' is not a known option" % opt)
-            list_merge_opts_set= set(list_merge_opts)
         # copy from option_obj to self:
         for opt in self._dict.keys():
             # in the option object, "-" in option names is always
@@ -228,7 +216,7 @@ class ConfigFile(object):
                 if existing is None:
                     self._dict[opt]= val
                 else:
-                    if opt not in list_merge_opts_set:
+                    if opt not in merge_opts_set:
                         self._dict[opt]= val
                     else:
                         self._dict[opt]= list_merge(existing, val, opt)

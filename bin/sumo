@@ -1196,7 +1196,10 @@ def db_filter(arguments, options):
     if options.module:
         modulespecs.extend(options.module)
     if args.has_key("MODULES"):
-        modulespecs.extend(args["MODULES"])
+        if "module" in options.append:
+            modulespecs.extend(args["MODULES"])
+        else:
+            modulespecs= args["MODULES"]
     if not modulespecs:
         sys.exit("error: module specs missing")
 
@@ -1392,7 +1395,10 @@ def db_show_newest_all(command, arguments, options):
     if options.module:
         modulespecs.extend(options.module)
     if args.has_key("MODULES"):
-        modulespecs.extend(args["MODULES"])
+        if "module" in options.append:
+            modulespecs.extend(args["MODULES"])
+        else:
+            modulespecs= args["MODULES"]
     if not modulespecs:
         modulespecs= list(db.iter_modulenames())
 
@@ -1565,7 +1571,10 @@ def build_try(arguments, options):
     if options.module:
         modulespecs.extend(options.module)
     if args.has_key("MODULES"):
-        modulespecs.extend(args["MODULES"])
+        if "module" in options.append:
+            modulespecs.extend(args["MODULES"])
+        else:
+            modulespecs= args["MODULES"]
     if not modulespecs:
         sys.exit("error: module specs missing")
 
@@ -1763,7 +1772,10 @@ def build_new(arguments, options):
     if options.module:
         modulespecs.extend(options.module)
     if args.has_key("MODULES"):
-        modulespecs.extend(args["MODULES"])
+        if "module" in options.append:
+            modulespecs.extend(args["MODULES"])
+        else:
+            modulespecs= args["MODULES"]
     if not modulespecs:
         sys.exit("error: module specs missing")
 
@@ -1840,14 +1852,17 @@ def build_new(arguments, options):
 def build_find(arguments, options):
     """implement "build_find"."""
     args= get_command_args(arguments,
-                           extra_optional="MODULESPECS")
+                           extra_optional="MODULES")
     assert_mandatory_options(options, "db", "builddir")
 
     modulespecs= []
     if options.module:
         modulespecs.extend(options.module)
-    if args.has_key("MODULESPECS"):
-        modulespecs.extend(args["MODULESPECS"])
+    if args.has_key("MODULES"):
+        if "module" in options.append:
+            modulespecs.extend(args["MODULES"])
+        else:
+            modulespecs= args["MODULES"]
     if not modulespecs:
         sys.exit("error: module specs missing")
 
@@ -1908,7 +1923,10 @@ def build_use(arguments, options):
     if options.module:
         modulespecs.extend(options.module)
     if args.has_key("MODULES"):
-        modulespecs.extend(args["MODULES"])
+        if "module" in options.append:
+            modulespecs.extend(args["MODULES"])
+        else:
+            modulespecs= args["MODULES"]
     if not modulespecs:
         sys.exit("error: module specs missing")
 
@@ -2270,7 +2288,7 @@ def process(options, commands):
             raise
         sys.exit(errtxt("Error while loading config file",e))
     try:
-        config.merge_options(options, options.mergeoption)
+        config.merge_options(options, options.append)
     except ValueError, e:
         if not catch_exceptions:
             raise
@@ -2970,18 +2988,15 @@ def main():
                       help="If this option is given the program doesn't load "
                            "the default configuration.",
                      )
-    parser.add_option("--mergeoption",
+    parser.add_option("-A", "--append",
                       action="append",
                       type="string",
-                      help= "If an option with name OPTIONNAME is given "
-                            "here and it is a list option, the lists "
-                            "from the configuration file and the command "
-                            "line are merged. The new list is the sum of "
-                            "both lists where it is ensured that for all "
-                            "elements the string up to the first colon "
-                            "':' is unique (this is useful for module "
-                            "specifications that have the form "
-                            "'module:version').",
+                      help="If an option with name OPTIONNAME is given "
+                           "here and it is a list option, the list from "
+                           "the command line is *appended* to the list "
+                           "from the configuration file. The default is "
+                           "that options from the command line *override* "
+                           "option values from the configuration file.",
                       metavar="OPTIONNAME"
                      )
     parser.add_option("--#preload",
@@ -3310,7 +3325,15 @@ def main():
     options.alias      = sumolib.utils.opt_join(options.alias, do_sort= True)
     options.module     = sumolib.utils.opt_join(options.module)
     options.makeopts   = sumolib.utils.opt_join(options.makeopts)
-    options.mergeoption= sumolib.utils.opt_join(options.mergeoption)
+
+    # ^^^ A set of all options where lists from the command line are *appended*
+    # to lists from the config file. The default is that lists from the command
+    # line overwrite settings from the config file.
+    if not options.append:
+        options.append= set()
+    else:
+        options.append= sumolib.utils.opt_join(options.append)
+        options.append= set(options.append)
 
     if options.summary:
         print_summary()
