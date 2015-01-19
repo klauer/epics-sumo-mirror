@@ -45,14 +45,14 @@ git clone -q ../$CHG_REPO/central-git delme-git
 git -C delme-git config push.default simple
 git -C delme-git push -q ../central-git
 
-echo "sumo db showall ALARM without --dbrepo:"
-echo "----------------------------------------"
-$SUMO db --db local-darcs/DEPS.DB showall ALARM
-$SUMO db --db local-hg/DEPS.DB showall ALARM
-$SUMO db --db local-git/DEPS.DB showall ALARM
+echo "sumo db show ALARM without --dbrepo:"
+echo "------------------------------------"
+$SUMO db --db local-darcs/DEPS.DB show ALARM
+$SUMO db --db local-hg/DEPS.DB show ALARM
+$SUMO db --db local-git/DEPS.DB show ALARM
 echo
-echo "sumo db showall ALARM with --dbrepo (fetch changes from central repo)"
-echo "----------------------------------------"
-$SUMO db --db local-darcs/DEPS.DB --dbrepo "darcs central-darcs" --dbrepomode pull showall ALARM
-$SUMO db --db local-hg/DEPS.DB --dbrepo "hg central-hg" --dbrepomode pull showall ALARM
-$SUMO db --db local-git/DEPS.DB --dbrepo "git central-git" --dbrepomode pull showall ALARM
+echo "sumo db show ALARM with --dbrepo (fetch changes from central repo)"
+echo "------------------------------------------------------------------"
+$SUMO db --db local-darcs/DEPS.DB --dbrepo "darcs central-darcs" --dbrepomode pull show ALARM
+$SUMO db --db local-hg/DEPS.DB --dbrepo "hg central-hg" --dbrepomode pull show ALARM
+$SUMO db --db local-git/DEPS.DB --dbrepo "git central-git" --dbrepomode pull show ALARM

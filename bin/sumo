@@ -52,7 +52,7 @@ KNOWN_DB_COMMANDS=set(("alias-add", "appconvert", "check", "clonemodule",
                        "cloneversion", "convert",
                        "filter", "find",
                        "list", "merge", "dependency-add",
-                       "dependency-delete", "replaceversion", "showall",
+                       "dependency-delete", "replaceversion", "show",
                        "shownewest", "weight"))
 
 KNOWN_BUILD_COMMANDS=set(("cleanup", "delete", "find", "list",
@@ -1384,11 +1384,11 @@ def db_list(arguments, options):
     sumolib.JSON.dump(result)
 
 def db_show_newest_all(command, arguments, options):
-    """implement "db shownewest/showall"."""
+    """implement "db shownewest/show"."""
     args= get_command_args(arguments,
                            extra_optional="MODULES")
     assert_mandatory_options(options, "db")
-    showall= (command=="showall")
+    showall= (command=="show")
     (_, db)= db_from_repo(options)
 
     modulespecs= []
@@ -2164,7 +2164,7 @@ def process_db(options, commands):
         db_list(commands[1:], options)
         return
 
-    if commands[0]=="shownewest" or commands[0]=="showall":
+    if commands[0]=="shownewest" or commands[0]=="show":
         db_show_newest_all(commands[0], commands[1:], options)
         return
 
@@ -2615,7 +2615,7 @@ subcommands here:
                  delete a dependency of a module
   list         - list modules
   shownewest   - show newest module versions
-  showall      - show all modules
+  show         - show all modules
   filter       - show parts of the DB file
   find         - search for modules with a regexp
   check        - consistency check of the DB file
@@ -2650,6 +2650,12 @@ This is a subcommand of command 'db' and command 'build'.
 
 For help on 'db list' enter 'help db list'
 For help on 'build list' enter 'help build list'
+""",
+        "show":"""
+This is a subcommand of command 'db' and command 'build'.
+
+For help on 'db show' enter 'help db show'
+For help on 'build show' enter 'help build show'
 """,
         "find":"""
 This is a subcommand of command 'db' and command 'build'.
@@ -2720,8 +2726,8 @@ sort version names intelligently and picking the last in the sort order.
 Optional parameter MODULES specifies the names of modules shown. If no modules
 are given the command shows the newest versions of all modules.
 """,
-        "showall": """
-showall [MODULES]
+        "db show": """
+show [MODULES]
 
 This command shows all versions of the given modules. 
 
@@ -2863,7 +2869,7 @@ list
 
 This command lists the names of all builds.
 """,
-        "show": """
+        "build show": """
 show BUILDTAG
 
 This command shows the data of a build. The buildtag must be given as an 

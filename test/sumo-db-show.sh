@@ -20,8 +20,9 @@ SUMO="$PYTHON $BINDIR/sumo -C"
 
 PWD_NICE=`pwd`
 
-echo -e "\n-> Test sumo db list" >&2
+echo -e "\n-> Test sumo db show" >&2
 
 DEPS=tmp-sumo-db-convert/DEPS.DB
 
-$SUMO db --db $DEPS list 
+$SUMO db --arch vxWorks-68040 --arch vxWorks-ppc603 --db $DEPS show ALARM 
+
