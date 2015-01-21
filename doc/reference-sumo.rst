@@ -672,6 +672,18 @@ Convert a :term:`scanfile` that was created by applying
 format. The result is printed to the console. It can be used with
 --config to put these in the configuration file of sumo.
 
+format
+::::::
+
+Just load and save the 
+:ref:`dependency database <reference-sumo-db-The-dependency-database>`. 
+This ensures that the file is formatted in the standard sumo format. This is
+useful when the file was edited and you want to ensure that key sort order and
+indentation are restored. If you specified a repository with --dbrepo, the
+command will commit the changes. If you want a log message different from "db
+format" use option --logmsg. 
+
+
 weight WEIGHT MODULES
 :::::::::::::::::::::
 
