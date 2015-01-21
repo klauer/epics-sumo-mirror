@@ -50,7 +50,7 @@ KNOWN_MAIN_COMMANDS=set(("help","lock","unlock","edit","makeconfig",
 
 KNOWN_DB_COMMANDS=set(("alias-add", "appconvert", "check", "clonemodule",
                        "cloneversion", "convert",
-                       "filter", "find",
+                       "filter", "find", "format",
                        "list", "merge", "dependency-add",
                        "dependency-delete", "replaceversion", "show",
                        "shownewest", "weight"))
@@ -178,20 +178,23 @@ def db_from_json_file(filename, keep_locked= False):
         sys.exit(errtxt("Error while loading dependency database", e))
     return db
 
-def db_from_repo(options, keep_locked= False):
+def db_from_repo(options, keep_locked= False, changes_check= True):
     """load a db, exits gracefully in case of an error."""
     # pylint: disable=R0913
     #                          Too many arguments
     mngr= repo_manager(options.db, options.dbrepo, options.dbrepomode,
                        options.verbose, options.dry_run)
     if mngr.local_changes():
-        if not sumolib.utils.ask_yes_no(
-                "Uncommitted changes found in dependency database file,\n"
-                "answer 'y' to record them or 'n' to abort",
-                options.yes):
-            sys.exit(0)
-        # an empty logmessage here means that the user is asked for one:
-        mngr.commit(options.logmsg)
+        if not changes_check:
+            print "Uncommitted changes found in dependency database file"
+        else:
+            if not sumolib.utils.ask_yes_no(
+                    "Uncommitted changes found in dependency database file,\n"
+                    "answer 'y' to record them or 'n' to abort",
+                    options.yes):
+                sys.exit(0)
+            # an empty logmessage here means that the user is asked for one:
+            mngr.commit(options.logmsg)
 
     try:
         mngr.prepare_read() # executes a "pull" command
@@ -1155,6 +1158,17 @@ def db_appconvert(arguments):
     struc= create_app_data(deps, repoinfo, groups)
     sumolib.JSON.dump(struc)
 
+def db_format(arguments, options):
+    """implement "db format."""
+    assert_mandatory_options(options, "db")
+    get_command_args(arguments)
+    (mngr, db)= db_from_repo(options, keep_locked= True, changes_check= False)
+    if options.dumpdb:
+        db.json_print()
+    else:
+        db_to_repo(options, mngr, db, "merge", arguments)
+        # ^^^ does also unlock the file
+
 def db_weight(arguments, options):
     """implement "db weight"."""
     args= get_command_args(arguments, ["WEIGHT"],
@@ -1222,7 +1236,7 @@ def db_check(arguments, options):
     """implement "db check"."""
     assert_mandatory_options(options, "db")
     get_command_args(arguments)
-    (_, db)= db_from_repo(options)
+    (_, db)= db_from_repo(options, keep_locked= False, changes_check= False)
     msg= db.check()
     print "\n".join(msg)
 
@@ -2124,6 +2138,10 @@ def process_db(options, commands):
         db_appconvert(commands[1:])
         return
 
+    if commands[0]=="format":
+        db_format(commands[1:], options)
+        return
+
     if commands[0]=="weight":
         db_weight(commands[1:], options)
         return
@@ -2607,6 +2625,7 @@ subcommands here:
 
   convert      - convert a scanfile created by sumo-scan to a DB file
   appconvert   - convert a scanfile to a MODULES file for an application
+  format       - reformat the dependency file
   weight       - set the weight factor for modules
   alias-add    - add an alias for a dependency in a module
   dependency-add - 
@@ -2681,6 +2700,15 @@ Convert a SCANFILE that was created by applying sumo-scan to an application to
 a list of aliases and modulespecs in JSON format. The result is printed to the
 console. It can be used with --config to put these in the configuration file of
 sumo.
+""",
+        "format": """
+format
+
+Just load and save the dependency database. This ensures that the file is
+formatted in the standard sumo format. This is useful when the file was edited
+and you want to ensure that key sort order and indentation are restored. If you
+specified a repository with --dbrepo, the command will commit the changes. If
+you want a log message different from "db format" use option --logmsg. 
 """,
         "weight": """
 weight WEIGHT MODULES
@@ -3099,7 +3127,7 @@ def main():
                       action="store_true",
                       help="Dump the db on the console, currently "
                            "only for these commands : %s." % \
-                           (" ".join(("weight","merge",
+                           (" ".join(("format","weight","merge",
                                       "clonemodule",
                                       "cloneversion", "replaceversion")))
                      )
