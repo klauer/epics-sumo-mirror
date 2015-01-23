@@ -17,7 +17,7 @@ if __name__ == "__main__":
 
 import sumolib.system
 
-__version__="2.3.1" #VERSION#
+__version__="2.4" #VERSION#
 
 use_lockfile= True
 
