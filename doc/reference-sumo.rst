@@ -702,16 +702,6 @@ list
 This command lists all :term:`modules` in the 
 :ref:`dependency database <reference-sumo-db-The-dependency-database>`.
 
-shownewest [MODULES]
-::::::::::::::::::::
-
-This command shows the newest versions of modules by applying some trying to
-sort version names intelligently and picking the last in the sort order.
-
-Optional parameter MODULES specifies the names of :term:`modules` shown. If no
-:term:`modules` are given the command shows the newest :term:`versions` of all
-:term:`modules`.
-
 show [MODULES]
 ::::::::::::::
 
