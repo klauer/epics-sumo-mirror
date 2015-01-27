@@ -5,10 +5,28 @@ Here are some examples of the application of *sumo*. These examples are for our
 EPICS environment here at the HZB but could be applied at other sites with some
 changes.
 
-Create a dependency database with sumo-scan
--------------------------------------------
+Migrating
+---------
 
-You first have to create a file sumo-scan.config with this content::
+This chapter shows how to *migrate* your existing installation of support
+modules to sumo. sumo-scan can help you to create a first version of the
+dependency database. Alternatively you can create the dependency database from
+scratch.
+
+Create the sumo directory
++++++++++++++++++++++++++
+
+We create a directory which will hold all sumo files and remember it in an environment variable::
+
+  cd <my sumo directory>
+  SUMODIR=`pwd`
+  mkdir scan database build
+
+Create a dependency database with sumo-scan
++++++++++++++++++++++++++++++++++++++++++++
+
+In our sumo directory we create a configuration file "sumo-scan.config" with
+this content::
 
   {
       "dir": [
@@ -54,49 +72,45 @@ You first have to create a file sumo-scan.config with this content::
       ]
   }
 
-Now you can create SCAN file like this::
+Now we run sumo-scan and create a *SCAN* file::
 
-  sumo-scan all > SCAN
+  sumo-scan all > scan/SCAN
 
-The scan file is converted to a dependency database and a scan database like
-this::
+We now have the results of the scan in a single file. This file is in 
+`JSON <http://www.json.org>`_ format, you may load this file with your
+text editor or even modify it.
 
-  sumo-db -P "r\"^/srv/csr/Epics\",r\"rcsadm@aragon.acc.bessy.de:/opt/Epics\"" --db DEPS.DB --scandb SCAN.DB convert SCAN
+The scan file is now converted to a dependency database and a scan database
+like this::
+
+  sumo db -U "r\"^/srv/csr/Epics\",r\"rcsadm@aragon.acc.bessy.de:/opt/Epics\"" --db database/DEPS.DB --scandb database/SCAN.DB convert scan/SCAN
 
 We have to set a weight factor for our BESSYRULES module, this ensures that
 this module always comes first in generated RELEASE files::
 
-  sumo-db --db DEPS.DB weight -- -1 BESSYRULES
+  sumo db --db database/DEPS.DB weight -- -1 BESSYRULES
 
-Set up a support directory
---------------------------
+Create the sumo configuration file
+++++++++++++++++++++++++++++++++++
 
-Place sumo files
-++++++++++++++++
+We create a sumo configuration file with this command::
 
-Change to your support directory. Copy the dependency database file, e.g.
-"DEPS.DB" there.
+  sumo makeconfig sumo.config --builddir $SUMODIR/build --db $SUMODIR/database/DEPS.DB --scandb $SUMODIR/database/SCAN.DB
 
-For convenience, we remember the support directory in an environment variable::
+Using sumo for the first time
+-----------------------------
 
-  SUMODIR=`pwd`
-
-Create a configuration file for sumo-db::
-
-  sumo-db --scandb $SUMODIR/SCAN.DB --db $SUMODIR/DEPS.DB makeconfig
-
-Create a configuration file for sumo-build::
-
-  sumo-build --scandb $SUMODIR/SCAN.DB --db $SUMODIR/DEPS.DB --builddir $SUMODIR --makeopts "-s" makeconfig
+If the sumo directory, the dependency database and the sumo configuration file
+are set up, we can now use sumo to build an EPICS base.
 
 Build the EPICS base
 ++++++++++++++++++++
 
 First we look what versions of the EPICS base we have::
 
-  sumo-db showall BASE
+  sumo db show BASE
 
-The command gives this result::
+In our example, the command gives this result::
 
   {
       "BASE": [
@@ -104,44 +118,66 @@ The command gives this result::
       ]
   }
 
-We decide to build version "R3-14-12-2-1" of the EPICS base. We give the
-new :term:`build` the :term:`buildtag` "BASE-3-14-12-2-1"::
+We decide to :term:`build` version "R3-14-12-2-1" of the EPICS base. We use
+buildtag stem "BASE" in order to make the name of the build indicate what it
+contains::
 
-  sumo-build --buildtag BASE-3-14-12-2-1 new BASE:R3-14-12-2-1
+  sumo build --buildtag-stem BASE new BASE:R3-14-12-2-1
 
-After a successful build we mark the :term:`build` with :term:`state` "stable"::
+We now see what builds are there::
 
-  sumo-build state BASE-3-14-12-2-1 stable
+  sumo build list
 
-Prepare an application for SUMO use
------------------------------------
+The displayed text is::
+
+  BASE-001
+
+The details of the build we see with this command::
+
+  sumo build show BASE-001
+
+which returns::
+
+  {
+      "BASE-001": {
+          "modules": {
+              "BASE": "R3-14-12-2-1"
+          },
+          "state": "testing"
+      }
+  }
+
+Convert an application to SUMO
+------------------------------
 
 In our example we assume that you have our application "MLS-Controls" checked
-out. We first have to scan the existing RELEASE file with sumo-scan. We have to
+out. We first change the directory::
+
+  cd <my MLS-Controls directory>
+
+Create configuration file and module list
++++++++++++++++++++++++++++++++++++++++++
+
+We first have to scan the existing RELEASE file with sumo-scan. We have to
 know the paths of our old EPICS base and the old support directory, these are
 given as option "-g" to the program. Option "-N" gets a list of variable names
 in the RELEASE file that should be ignored. The output of sumo-scan is directed
-to sumo-db which creates a `JSON <http://www.json.org>`_ file with
+to sumo which creates a `JSON <http://www.json.org>`_ file with
 :term:`modulespecs` and :term:`aliases`::
 
-  sumo-scan -d . all -g '/opt/csr/Epics/R3.14.12/support /opt/csr/Epics/R3.14.12' -N 'TOP EPICS_SUPPORT SUPPORT TEMPLATE_TOP EPICS_SITE_TOP EPICS_MODULES MSI' | sumo-db appconvert - > MODULES
+  sumo-scan -d . all -g '/opt/csr/Epics/R3.14.12/support /opt/csr/Epics/R3.14.12' -N 'TOP EPICS_SUPPORT SUPPORT TEMPLATE_TOP EPICS_SITE_TOP EPICS_MODULES MSI' | sumo db appconvert - -C > configure/MODULES
 
-Now we create a configuration file for sumo-db that contains the list of
+Now we create a configuration file for sumo db that contains the list of
 :term:`modulespecs` from file "MODULES"::
 
-  sumo-db --scandb $SUMODIR/SCAN.DB --db $SUMODIR/DEPS.DB -c MODULES makeconfig
+  sumo -C --scandb $SUMODIR/database/SCAN.DB --db $SUMODIR/database/DEPS.DB --builddir $SUMODIR/build --#preload configure/MODULES --buildtag-stem MLS makeconfig sumo.config
 
-Here we create a configuration file for sumo-build that contains the
-:term:`modulespecs` and :term:`aliases` from file "MODULES" ::
-
-  sumo-build --db $SUMODIR/DEPS.DB --builddir $SUMODIR -c MODULES makeconfig
-
-Create a build for an application
----------------------------------
+Build all support modules the application requires
+++++++++++++++++++++++++++++++++++++++++++++++++++
 
 Now we try to use modules from our support directory::
 
-  sumo-build use
+  sumo build use
 
 The program prints this message::
 
@@ -150,11 +186,9 @@ The program prints this message::
 The reason is that we don't yet have built the :term:`modules` the application
 needs.
 
-So we first have to create a new build. 
+So we first have to create a new build::
 
-We assume that the name of our :term:`build` should be "MLS-01"::
-
-  sumo-build --buildtag MLS-01 new
+  sumo build new
 
 This command shows the following error message::
 
@@ -162,62 +196,41 @@ This command shows the following error message::
   
 We use "try" to investigate the problem::
 
-  sumo-build --buildtag MLS-01 try 
+  sumo build try --detail 1
 
-We see at the start of the rather long report that this shows too, that the
-two modules are missing. We add them on the command line and use again "try"::
+We see what modules are missing an a suggestion on possible versions to use. We add on the command line the missing modules::
 
-  sumo-build --buildtag MLS-01 try MISC_DBC MISC_DEBUGMSG | less
+  sumo build try -A module MISC_DBC:R3-0 MISC_DEBUGMSG:R3-0
 
-At the start of the report we see::
+Sumo replies::
 
-  Not all modules have exactly specified versions. These modules need an 
-  exact version specification:
-      MISC_DBC             -> suggested version: R3-0
-      MISC_DEBUGMSG        -> suggested version: R3-0
-
-So we add "MISC_DBC:R3-0" and "MISC_DEBUGMSG:R3-0" to the list of modules in
-file $APPDIR/sumo-build.config, open the file in any text editor and add these
-lines at key "module"::
-
-  "MISC_DBC:R3-0",
-  "MISC_DEBUGMSG:R3-0",
-
-We check the result with command "try"::
-
-  sumo-build --buildtag MLS-01 try 
-
-At the end of the report we see::
-
-  Your module specifications are complete. You can use these with command
-  'new' to create a new build.
+  Your module specifications are complete. You can use these with command 'new'
+  to create a new build.
   
+We first add the two modules to the file configure/MODULES. You could use a text editor for this or you can use this sumo command line::
+
+  sumo -A module -m 'MISC_DBC:R3-0 MISC_DEBUGMSG:R3-0' makeconfig configure/MODULES alias module
+
 Now we can create the build::
 
-  sumo-build --buildtag MLS-01 new
+  sumo build new
 
-The list of :term:`modules` is taken from file $APPDIR/sumo-build.config. The
+The list of :term:`modules` is taken from file $APPDIR/configure/MODULES. The
 program creates a collection of all :term:`modules` needed, checks out the
 sources of all :term:`modules`, creates a new entry in the :term:`builddb`
 database, creates a makefile and calls make.
 
-After a successful build, we mark the :term:`build` with 
-:term:`state` "stable"::
+Use the support modules in the application
+++++++++++++++++++++++++++++++++++++++++++
 
-  sumo-build state MLS-01 stable
+After all needed support modules were built (see above) we create a new file
+configure/RELEASE with::
 
-Use a build in an application
------------------------------
+  sumo build use
 
-We assume that we are in our application directory.
-
-The sumo-build command "use" looks in the :term:`support directory` for 
+The sumo command "build use" looks in the :term:`support directory` for 
 a :term:`build` matching our :term:`module` requirements and creates
-a RELEASE that uses that :term:`build`::
-
-  sumo-build use 
-
-The program responds::
+a RELEASE that uses that :term:`build`. The program responds::
 
   using build MLS-01
   
