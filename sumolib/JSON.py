@@ -182,23 +182,34 @@ class Container(object):
         else:
             self.dict_= dict_
         self.lock= None
-        self.lock_filename= None
-    def lock_file(self, filename):
+        self._filename= None
+    def filename(self, new_name= None):
+        """return or set the internal filename."""
+        if new_name is None:
+            return self._filename
+        if new_name==self._filename:
+            return
+        # remove old locks that may exist:
+        self.unlock_file()
+        self._filename= new_name
+    def dirname(self):
+        """return the directory part of the internal filename."""
+        return os.path.dirname(self._filename)
+    def lock_file(self):
         """lock a file and store filename and lock in the object."""
-        if self.lock_filename==filename:
+        if not self._filename:
+            raise ValueError("cannot lock JSON object: filename is not set")
+        if self.lock:
             # already locked
             return
-        self.unlock_file()
         # may raise IOError exception if file is locked:
-        self.lock= sumolib.lock.MyLock(filename)
+        self.lock= sumolib.lock.MyLock(self._filename)
         self.lock.lock()
-        self.lock_filename= filename
     def unlock_file(self):
         """remove a filelock if there is one."""
-        if self.lock_filename is not None:
+        if self.lock:
             self.lock.unlock()
             self.lock= None
-            self.lock_filename= None
     def __del__(self):
         """object destructor."""
         self.unlock_file()
@@ -234,22 +245,20 @@ class Container(object):
         l= sumolib.lock.MyLock(filename)
         # may raise IOError exception if file is locked:
         l.lock()
-        # If the line in "try" raises an exception, the file lock
-        # is removed, then the exception is re-raised
 
-        # simplejson and json raise different kinds of exceptions
-        # in case of a syntax error within the JSON file.
         try:
+            # simplejson and json raise different kinds of exceptions
+            # in case of a syntax error within the JSON file.
             result= cls(loadfile(filename))
         except Exception, _:
             l.unlock()
             raise
 
-        if keep_locked:
-            result.lock= l
-            result.lock_filename= filename
-        else:
+        if not keep_locked:
             l.unlock()
+        else:
+            result.lock= l
+        result.filename(filename)
         result.selfcheck("(created from JSON file %s)" % filename)
         return result
     def json_string(self):
@@ -259,27 +268,37 @@ class Container(object):
         """print a JSON representation of the object."""
         print self.json_string()
     def json_save(self, filename, verbose, dry_run):
-        """save as a JSON file."""
-        if not filename:
-            raise ValueError("filename is empty")
+        """save as a JSON file.
+
+        If filename is empty, use the default filename.
+
+        Always remove a file lock if it existed before.
+        """
+        # pylint: disable=R0912
+        #                          Too many branches
         if filename=="-":
             raise ValueError("filename must not be \"-\"")
-        backup= "%s.bak" % filename
+        if filename:
+            if self._filename!=filename:
+                # remove a lock that may still exist:
+                self.unlock_file()
+            self._filename= filename
+        backup= "%s.bak" % self._filename
         try:
             if not dry_run:
-                self.lock_file(filename)
+                self.lock_file()
             if os.path.exists(backup):
                 if verbose:
                     print "remove %s" % backup
                 if not dry_run:
                     os.remove(backup)
-            if os.path.exists(filename):
+            if os.path.exists(self._filename):
                 if verbose:
-                    print "rename %s to %s" % (filename, backup)
+                    print "rename %s to %s" % (self._filename, backup)
                 if not dry_run:
-                    os.rename(filename, backup)
+                    os.rename(self._filename, backup)
             if not dry_run:
-                dump_file(filename, self.to_dict())
+                dump_file(self._filename, self.to_dict())
         finally:
             self.unlock_file()
 

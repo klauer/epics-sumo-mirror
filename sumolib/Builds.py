@@ -5,6 +5,7 @@
 #                          Invalid name for type variable
 
 import sys
+import os.path
 
 if __name__ == "__main__":
     # if this module is directly called like a script, we have to add the path
@@ -107,18 +108,29 @@ class DB(sumolib.JSON.Container):
     def __init__(self, dict_= None):
         """create the object."""
         super(DB, self).__init__(dict_)
+    def merge(self, other):
+        """merge with another builddb.
+
+        Returns the list of new added builds.
+        """
+        if not isinstance(other, DB):
+            raise AssertionError("error, <other> must be of type %s" % \
+                                 DB)
+        d= self.datadict()
+        od= other.datadict()
+        new_builds= set()
+        for b in other.iter_builds():
+            if self.has_build_tag(b):
+                warn("warning: buildtag '%s' found in both build databases, "
+                     "the later one will be ignored.")
+                continue
+            # note: this is *NOT* a deepcopy, just the reference is copied:
+            d[b]= od[b]
+            new_builds.add(b)
+        return new_builds
     def is_empty(self):
         """shows of the object is empty."""
         return not bool(self.datadict())
-    def add(self, other):
-        """add data from a dict."""
-        d= self.datadict()
-        for key in ["modules", "linked"]:
-            d[key].update(other[key])
-    def add_json_file(self, filename):
-        """add data from a JSON file."""
-        data= sumolib.JSON.loadfile(filename)
-        self.add(data)
     def delete(self, build_tag):
         """delete a build."""
         d= self.datadict()
@@ -302,9 +314,79 @@ class DB(sumolib.JSON.Container):
         for modulename in sorted(build_dict.keys()):
             versionname= build_dict[modulename]
             m= sumolib.ModuleSpec.Spec(modulename, versionname,
-                                     "eq", default_archs)
+                                       "eq", default_archs)
             lst.append(m.to_string())
         return lst
+
+class DB_overlay(DB):
+    """Implement a builddb with overlays.
+
+    Overlays are other build databases that are added to the local build
+    database but cannot be modified and whose build specifications are not
+    saved when the object is saved.
+    """
+    # pylint: disable=R0904
+    #                          Too many public methods
+    def __init__(self, dict_= None):
+        """create the object."""
+        super(DB_overlay, self).__init__(dict_)
+        self.overlay_keys= {}
+        self.overlay_files= []
+        self.overlay_mode= True
+    def overlaymode(self, new_mode= None):
+        """get or set the overlay mode.
+
+        overlay_mode True:
+            All JSON representations of the object do not contain builds that
+            were added with overlay().
+            Builds added with overlay() cannot be modified.
+        overlay_mode False:
+            All JSON representations of the object contain all the builds.
+            Builds added with overlay() can be modified.
+        """
+        if new_mode is None:
+            return self.overlay_mode
+        self.overlay_mode= new_mode
+    def overlay(self, filename):
+        """merge with another builddb from a file."""
+        other= DB.from_json_file(filename, keep_locked= False)
+        new_keys= self.merge(other)
+        self.overlay_files.append(filename)
+        idx= len(self.overlay_files)-1
+        for k in new_keys:
+            self.overlay_keys[k]= idx
+    def tag_is_overlayed(self, build_tag):
+        """return True if build_tag is from overlayed builddb."""
+        return self.overlay_keys.has_key(build_tag)
+    def filename_from_tag(self, build_tag):
+        """return the name of the builddb file from a tag."""
+        if not self.tag_is_overlayed(build_tag):
+            return self.filename() # from class JSON.Container
+        return self.overlay_files[self.overlay_keys[build_tag]]
+    def dirname_from_tag(self, build_tag):
+        """return the name of the builddb directory from a tag."""
+        return os.path.dirname(self.filename_from_tag(build_tag))
+    def delete(self, build_tag):
+        """delete a build."""
+        if self.overlay_mode and (self.tag_is_overlayed(build_tag)):
+            raise ValueError("error, build '%s' is read-only" % build_tag)
+        super(self.__class__, self).delete(build_tag)
+    def change_state(self, build_tag, new_state):
+        """sets the state to a new value."""
+        if self.overlay_mode and (self.tag_is_overlayed(build_tag)):
+            raise ValueError("error, build '%s' is read-only" % build_tag)
+        super(self.__class__, self).change_state(build_tag, new_state)
+    def to_dict(self):
+        """return the object as a dict.
+
+        By overriding this method, we change all JSON representations of the
+        object.
+        """
+        if not self.overlay_mode:
+            return super(self.__class__, self).to_dict()
+        return dict([(k,v) for (k,v) in \
+                           super(self.__class__, self).to_dict().items() \
+                           if not self.overlay_keys.has_key(k)])
 
 class BuildCache(sumolib.JSON.Container):
     """Detailed dependency information.

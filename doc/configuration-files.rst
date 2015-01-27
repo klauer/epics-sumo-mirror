@@ -268,6 +268,10 @@ builddir
   The build directory,
   for details see :ref:`sumo options <reference-sumo-Options>`.
 
+localbuilddir
+  The local build directory,
+  for details see :ref:`sumo options <reference-sumo-Options>`.
+
 verbose
   A boolean flag that controls the verbosity level,
   for details see :ref:`sumo options <reference-sumo-Options>`.
