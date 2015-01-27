@@ -994,6 +994,11 @@ Here is a short overview on command line options:
     Specify the support directory. If this option is not given take the current
     working directory as support directory. A default for this option can be
     put in a configuration file.
+``--localbuilddir BUILDDIR``
+    Specify a *local* support directory. Modules from the directory specifed
+    by --builddir are used but this directory is not modfied. All new builds
+    are created in the local build directory and only the build database file
+    there is modified.
 ``-o OUTPUTFILE, --output OUTPUTFILE``
     Define the output for commands 'useall' and 'use'. If this option is not
     given, 'useall' and 'use' write to 'configure/RELEASE'. If this option is

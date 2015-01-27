@@ -101,11 +101,29 @@ def module_dir(builddir, buildtag, modulename, versionname):
         return os.path.join(builddir, modulename,
                             "%s+%s" % (versionname, buildtag))
 
-def builddb_fn(options):
-    """return the path of the builddb file."""
-    if not options.builddir:
-        return
-    return os.path.join(options.builddir, BUILDDB)
+def get_builddir(path, path_local):
+    """return the build directory that is actually used for new builds."""
+    if not path_local:
+        return path
+    return path_local
+
+def builddb_f(path, path_local):
+    """return the filename(s) of the builddb file(s).
+
+    path_local, if given, is the name of the local build directory.
+
+    Return:
+    (<build db filename>, <overlay build db filename>)
+    """
+    if not path_local:
+        return (os.path.join(path, BUILDDB), None)
+    else:
+        return (os.path.join(path_local, BUILDDB),
+                os.path.join(path, BUILDDB))
+
+def builddb_localtag(tag):
+    """return a "local" marked buildtag."""
+    return "local-%s" % tag
 
 def ensure_dir(dir_, dry_run):
     """create a dir if it doesn't already exist.
@@ -223,19 +241,61 @@ def db_to_repo(options, mngr, db, command, arguments):
             msg= repo_msg(command, arguments)
         mngr.finish_write(msg)
 
-def builddb_from_json_file(filename, keep_locked= False):
-    """load a builddb, exits gracefully in case of an error."""
+def builddb_from_json_file(path, path_local, keep_locked= False,
+                           must_exist= True):
+    """load a builddb, exits gracefully in case of an error.
+
+    Note: this function only gets the path(s) where the build db file can be
+    found, not the filename itself.
+
+    If local_path is given, a *local* build db is created that is merged with
+    the build db from <path>.
+    """
+    # pylint: disable=R0912
+    #                          Too many branches
+    (file_, overlay_file)= builddb_f(path, path_local)
+
+    if not os.path.exists(file_):
+        if must_exist:
+            sys.exit("Error build database '%s' doesn't exist" % \
+                     file_)
+        # just create an empty object:
+        builddb= sumolib.Builds.DB_overlay()
+        # set default filename in the object (JSON.Container method):
+        builddb.filename(file_)
+    else:
+        try:
+            builddb= sumolib.Builds.DB_overlay.from_json_file(\
+                                    file_, keep_locked)
+        except ValueError, e:
+            if not catch_exceptions:
+                raise
+            sys.exit(errtxt("Error while loading build database",e))
+        except IOError, e:
+            if not catch_exceptions:
+                raise
+            sys.exit(errtxt("Error while loading build database",e))
+    if not overlay_file:
+        return builddb
     try:
-        builddb= sumolib.Builds.DB.from_json_file(filename, keep_locked)
+        builddb.overlay(overlay_file)
     except ValueError, e:
         if not catch_exceptions:
             raise
-        sys.exit(errtxt("Error while loading build database",e))
+        sys.exit(errtxt("Error while loading overlay build database",e))
     except IOError, e:
         if not catch_exceptions:
             raise
-        sys.exit(errtxt("Error while loading build database",e))
+        sys.exit(errtxt("Error while loading overlay build database",e))
     return builddb
+
+def assert_build_tag(builddb, buildtag):
+    """check if the tag exists in builddb.
+
+    does sys.exit on error.
+    """
+    if not builddb.has_build_tag(buildtag):
+        sys.exit("error: buildtag '%s' not found" % buildtag)
 
 def init_buildcache(scandb_name, builddb, db):
     """load a builddb, exits gracefully in case of an error."""
@@ -417,8 +477,7 @@ def builddb_match(dist_dict, db, builddb, modulename, versionname):
 # file generation
 # -----------------------------------------------
 
-def gen_RELEASE(builddir,
-                db, builddb, buildtag,
+def gen_RELEASE(db, builddb, buildtag,
                 dist_dict,
                 modulename, versionname,
                 module_directory,
@@ -464,7 +523,8 @@ def gen_RELEASE(builddir,
         buildtag_here= builddb.module_link(buildtag, dep_name)
         if buildtag_here is None:
             buildtag_here= buildtag
-        path= module_dir(builddir, buildtag_here, dep_name, dep_versionname)
+        b_dir= builddb.dirname_from_tag(buildtag_here)
+        path= module_dir(b_dir, buildtag_here, dep_name, dep_versionname)
         sumolib.utils.file_write(fh, "%s=%s\n" % (name_here,path),
                                  verbose, dry_run)
     for l in extra_lines:
@@ -472,7 +532,8 @@ def gen_RELEASE(builddir,
     if not dry_run:
         fh.close()
 
-def create_makefile(builddir, dist_dict, db, builddb, build_tag,
+def create_makefile(dist_dict, db, builddb,
+                    build_tag,
                     verbose, dry_run):
     """generate a makefile.
 
@@ -497,6 +558,7 @@ def create_makefile(builddir, dist_dict, db, builddb, build_tag,
             return True
         return False
     paths= {}
+    builddir= builddb.dirname()
     for modulename, versionname in builddb.iter_modules(build_tag):
         if not builddb.module_link(build_tag, modulename):
             if not has_makefile(module_dir(builddir, build_tag,
@@ -585,7 +647,7 @@ def delete_module(builddir, build_tag, modulename, versionname,
         # remove the parent directory if it is empty:
     rm_empty_dir(modulename, verbose, dry_run)
 
-def create_module(builddir, db, builddb, build_tag,
+def create_module(db, builddb, build_tag,
                   dist_dict,
                   modulename, versionname,
                   extra_defs,
@@ -607,14 +669,14 @@ def create_module(builddir, db, builddb, build_tag,
         sys.stderr.write("error: archs %s\nnot supportted by "
                          "module %s:%s\n" % \
                          (repr(archs), modulename, versionname))
-    basedir= module_dir(builddir, "", modulename, "")
+    basedir= module_dir(builddb.dirname(), "", modulename, "")
     ensure_dir(basedir, dry_run) # creates basedir if it doesn't exist
-    dirname= module_dir(builddir, build_tag, modulename, versionname)
+    dirname= module_dir(builddb.dirname(), build_tag, modulename, versionname)
     if os.path.exists(dirname):
         raise ValueError("directory %s already exists" % dirname)
 
     create_source(db, modulename, versionname, dirname, verbose, dry_run)
-    gen_RELEASE(builddir, db, builddb, build_tag,
+    gen_RELEASE(db, builddb, build_tag,
                 dist_dict,
                 modulename, versionname,
                 dirname,
@@ -626,14 +688,17 @@ def create_module(builddir, db, builddb, build_tag,
 # -----------------------------------------------
 
 _builddb= [None]
-def mspecs_from_build(builddb_name):
+def mspecs_from_build(options):
     """generate a function to return module specs from a build."""
     def mspecs(buildtag):
         """return module specs for a buildtag."""
         if _builddb[0] is None:
-            if builddb_name is None:
-                raise ValueError("--builddb is needed for modulespecs")
-            _builddb[0]= builddb_from_json_file(builddb_name, False)
+            if not options.builddir:
+                raise AssertionError("--builddir is needed for modulespecs")
+            _builddb[0]= builddb_from_json_file(options.builddir,
+                                                options.localbuilddir,
+                                                keep_locked= False,
+                                                must_exist= False)
         return _builddb[0].module_specs(buildtag)
     return mspecs
 
@@ -921,7 +986,7 @@ def set_weight(db, weight, modulespecs, trace):
 # further builddb functions
 # -----------------------------------------------
 
-def delete_modules(builddir, builddb, build_tag, verbose, dry_run):
+def delete_modules(builddb, build_tag, verbose, dry_run):
     """delete modules of a build.
     """
     dependends= builddb.linked_builds(build_tag)
@@ -932,10 +997,10 @@ def delete_modules(builddir, builddb, build_tag, verbose, dry_run):
     for modulename, versionname in builddb.iter_modules(build_tag):
         if builddb.module_link(build_tag, modulename):
             continue
-        delete_module(builddir, build_tag, modulename, versionname, True,
-                      verbose, dry_run)
+        delete_module(builddb.dirname(), build_tag, modulename, versionname,
+                      True, verbose, dry_run)
 
-    os.remove(makefilename(builddir, build_tag))
+    os.remove(makefilename(builddb.dirname(), build_tag))
 
     builddb.delete(build_tag)
 
@@ -967,7 +1032,7 @@ def cleanup_modules(builddir, build_tag, verbose, dry_run):
     if not dry_run:
         rmcleanup(build_tag, builddir)
 
-def create_modules(builddir, dist_dict, db, builddb, build_tag,
+def create_modules(dist_dict, db, builddb, builddir, build_tag,
                    extra_lines,
                    archs,
                    no_checkout,
@@ -1012,7 +1077,7 @@ def create_modules(builddir, dist_dict, db, builddb, build_tag,
     if no_checkout:
         return
     for module_dict in module_list:
-        create_module(builddir, db, builddb, build_tag,
+        create_module(db, builddb, build_tag,
                       dist_dict,
                       module_dict["modulename"],
                       module_dict["versionname"],
@@ -1020,31 +1085,32 @@ def create_modules(builddir, dist_dict, db, builddb, build_tag,
                       archs,
                       verbose, dry_run)
 
-def call_make(builddir,
-              builddb_name, buildtag,
-              make_options,
-              verbose, dry_run):
+def call_make(buildtag, options):
     """call "make", then mark the build "testing"."""
     # pylint: disable=R0913
     #                          Too many arguments
-    if make_options is None:
-        make_options=[]
-    cmd="make %s -C %s -f %s" % (" ".join(make_options),
-                                 builddir,makefilename(builddir, buildtag))
+    if options.makeopts is None:
+        options.makeopts=[]
+    cmd="make %s -C %s -f %s" % (" ".join(options.makeopts),
+                                 options.builddir,
+                                 makefilename(options.builddir, buildtag))
     try:
         # sys.stderr.write("CALLING MAKE: %s\n" % cmd)
-        sumolib.system.system(cmd, False, False, verbose, dry_run)
+        sumolib.system.system(cmd, False, False,
+                              options.verbose, options.dry_run)
     except IOError, e:
         if not catch_exceptions:
             raise
         sys.exit("Error: make failed, %s" % str(e))
 
-    builddb= builddb_from_json_file(builddb_name, keep_locked= not dry_run)
+    builddb= builddb_from_json_file(options.builddir,
+                                    options.localbuilddir,
+                                    keep_locked= not options.dry_run)
     builddb.change_state(buildtag, "testing")
-    builddb.json_save(builddb_name, verbose, dry_run)
+    builddb.json_save(None, options.verbose, options.dry_run)
     # ^^^ does also unlock the file
 
-def fullapprelease(builddir, build_tag, builddb, db, modules,
+def fullapprelease(build_tag, builddb, db, modules,
                    aliases, extra_lines):
     """create entries for an release file.
     """
@@ -1064,7 +1130,7 @@ def fullapprelease(builddir, build_tag, builddb, db, modules,
             tag= build_tag
         version= builddb.module_version(tag, modulename)
         directories[(modulename, version)]= \
-                   module_dir(builddir, tag, modulename, version)
+                   module_dir(builddb.dirname(), tag, modulename, version)
         mods.append((modulename, version))
 
     mods= db.sortby_weight(db.sortby_dependency(sorted(mods), True))
@@ -1077,7 +1143,7 @@ def fullapprelease(builddir, build_tag, builddb, db, modules,
         lines.append("%s\n" % l)
     return lines
 
-def apprelease(builddir, build_tag, modulespecs, builddb, db,
+def apprelease(build_tag, modulespecs, builddb, db,
                aliases, extra_lines):
     """create entries for an release file.
 
@@ -1124,7 +1190,7 @@ def apprelease(builddir, build_tag, modulespecs, builddb, db,
                      (modulespec.to_string(), build_tag))
         module_dict[modulename]= v
     get_dependencies(module_dict, db, builddb, build_tag)
-    return fullapprelease(builddir, build_tag, builddb, db,
+    return fullapprelease(build_tag, builddb, db,
                           module_dict.keys(), aliases, extra_lines)
 
 # -----------------------------------------------
@@ -1470,7 +1536,9 @@ def build_list(arguments, options):
     """implement "build_list"."""
     get_command_args(arguments)
     assert_mandatory_options(options, "builddir")
-    builddb= builddb_from_json_file(builddb_fn(options))
+    builddb= builddb_from_json_file(options.builddir,
+                                    options.localbuilddir,
+                                    keep_locked= False)
     for buildtag in builddb.iter_builds():
         print buildtag
 
@@ -1481,10 +1549,10 @@ def build_show(arguments, options):
     if options.buildtag:
         sys.exit("error: you cannot use --buildtag here")
 
-    builddb= builddb_from_json_file(builddb_fn(options))
-    if not builddb.has_build_tag(args["BUILDTAG"]):
-        sys.exit("error: BUILDTAG \"%s\" not found" % \
-                 args["BUILDTAG"])
+    builddb= builddb_from_json_file(options.builddir,
+                                    options.localbuilddir,
+                                    keep_locked= False)
+    assert_build_tag(builddb, args["BUILDTAG"])
     new_builddb= sumolib.Builds.DB()
     new_builddb.add_build(builddb, args["BUILDTAG"])
     new_builddb.json_print()
@@ -1503,20 +1571,25 @@ def build_state(arguments, options):
     if options.readonly:
         sys.exit("--readonly forbids changing the state of a build")
 
-    builddb= builddb_from_json_file(builddb_fn(options),\
-            keep_locked= not options.dry_run)
-    if not builddb.has_build_tag(buildtag):
-        # builddb __del__ method should remove lockfiles
-        sys.exit("error: buildtag \"%s\" not found" % \
-                 buildtag)
     if not new_state:
+        builddb= builddb_from_json_file(options.builddir,
+                                        options.localbuilddir,
+                                        keep_locked= False)
+        assert_build_tag(builddb, buildtag)
         print "%-20s : %s" % (buildtag,
                               builddb.state(buildtag))
     else:
+        builddb= builddb_from_json_file(options.builddir,
+                                        options.localbuilddir,
+                                        keep_locked= False)
+        assert_build_tag(builddb, buildtag)
+        # if assert_build_tag does sys.exit,
+        # builddb __del__ method should remove lockfiles
         if new_state!="disabled":
             builds=set((buildtag,))
         else:
-            builds= builddb.rec_linked_builds(buildtag)
+            builds=set([b for b in builddb.rec_linked_builds(buildtag)\
+                          if not builddb.tag_is_overlayed(b)])
             if builds:
                 print "The following builds depend on build %s:" % buildtag
                 print " ".join(sorted(builds))
@@ -1533,8 +1606,7 @@ def build_state(arguments, options):
             if not catch_exceptions:
                 raise
             sys.exit(str(e))
-        builddb.json_save(builddb_fn(options),
-                          options.verbose, options.dry_run)
+        builddb.json_save(None, options.verbose, options.dry_run)
         # ^^^ does also unlock the file
 
 def build_delete(arguments, options):
@@ -1544,19 +1616,18 @@ def build_delete(arguments, options):
     if options.readonly:
         sys.exit("--readonly forbids deleting a support")
 
-    builddb= builddb_from_json_file(builddb_fn(options))
-    if not builddb.has_build_tag(args["BUILDTAG"]):
-        sys.exit("error: BUILDTAG \"%s\" not found" % \
-                 args["BUILDTAG"])
+    builddb= builddb_from_json_file(options.builddir,
+                                    options.localbuilddir,
+                                    keep_locked= not options.dry_run)
+    assert_build_tag(builddb, args["BUILDTAG"])
     try:
-        delete_modules(options.builddir, builddb, args["BUILDTAG"],
+        delete_modules(builddb, args["BUILDTAG"],
                        options.verbose, options.dry_run)
     except ValueError, e:
         if not catch_exceptions:
             raise
         sys.exit(str(e))
-    builddb.json_save(builddb_fn(options),
-                      options.verbose, options.dry_run)
+    builddb.json_save(None, options.verbose, options.dry_run)
 
 def build_cleanup(arguments, options):
     """implement "build_cleanup"."""
@@ -1565,7 +1636,8 @@ def build_cleanup(arguments, options):
     if options.readonly:
         sys.exit("--readonly forbids cleaning up")
 
-    cleanup_modules(options.builddir, args["BUILDTAG"],
+    cleanup_modules(get_builddir(options.builddir, options.localbuilddir),
+                    args["BUILDTAG"],
                     options.verbose, options.dry_run)
 
 def build_try(arguments, options):
@@ -1598,7 +1670,7 @@ def build_try(arguments, options):
     try:
         modulespecs_obj= sumolib.ModuleSpec.Specs.from_strings(\
                              modulespecs,
-                             mspecs_from_build(builddb_fn(options)),
+                             mspecs_from_build(options),
                              options.arch)
     except ValueError, e:
         if not catch_exceptions:
@@ -1610,11 +1682,10 @@ def build_try(arguments, options):
         sys.exit(0)
 
     (_, db)= db_from_repo(options)
-    if not os.path.exists(builddb_fn(options)):
-        builddb= sumolib.Builds.DB()
-    else:
-        builddb= builddb_from_json_file(builddb_fn(options),
-                                        keep_locked= False)
+    builddb= builddb_from_json_file(options.builddir,
+                                    options.localbuilddir,
+                                    keep_locked= False,
+                                    must_exist= False)
 
     buildcache= init_buildcache(options.scandb,
                                 builddb, db)
@@ -1759,6 +1830,8 @@ def build_try(arguments, options):
         if not options.buildtag_stem:
             options.buildtag_stem= "AUTO"
         buildtag= builddb.generate_buildtag(options.buildtag_stem)
+        if options.localbuilddir:
+            buildtag= builddb_localtag(buildtag)
         print "Command 'new' would create build with tag '%s'\n" % \
               buildtag
 
@@ -1801,7 +1874,7 @@ def build_new(arguments, options):
     try:
         modulespecs_obj= sumolib.ModuleSpec.Specs.from_strings(\
                              modulespecs,
-                             mspecs_from_build(builddb_fn(options)),
+                             mspecs_from_build(options),
                              options.arch)
     except ValueError, e:
         if not catch_exceptions:
@@ -1825,16 +1898,19 @@ def build_new(arguments, options):
             raise
         sys.exit(str(e))
 
-    if not os.path.exists(builddb_fn(options)):
-        builddb= sumolib.Builds.DB()
-    else:
-        builddb= builddb_from_json_file(builddb_fn(options),
-                                        keep_locked= not options.dry_run)
+    builddb= builddb_from_json_file(options.builddir,
+                                    options.localbuilddir,
+                                    keep_locked= not options.dry_run,
+                                    must_exist= False)
+
     if buildtag is None:
         if not options.buildtag_stem:
             options.buildtag_stem= "AUTO"
         buildtag= builddb.generate_buildtag(options.buildtag_stem)
+        if options.localbuilddir:
+            buildtag= builddb_localtag(buildtag)
         sys.stderr.write("creating build with tag '%s'\n" % buildtag)
+
     if builddb.has_build_tag(buildtag):
         # builddb __del__ method should remove lockfiles
         sys.exit("error: buildtag \"%s\" already taken" % buildtag)
@@ -1842,13 +1918,16 @@ def build_new(arguments, options):
     builddb.new_build(buildtag, "unstable")
     # modifies builddb:
     try:
-        create_modules(options.builddir, dist_dict, db, builddb, buildtag,
+        create_modules(dist_dict, db, builddb,
+                       get_builddir(options.builddir, options.localbuilddir),
+                       buildtag,
                        options.extra, options.arch,
                        options.no_checkout,
                        options.verbose, options.dry_run)
         if not options.no_checkout:
-            create_makefile(options.builddir, dist_dict, db,
-                            builddb, buildtag,
+            create_makefile(dist_dict, db,
+                            builddb,
+                            buildtag,
                             options.verbose,
                             options.dry_run)
     except IOError, e:
@@ -1856,15 +1935,12 @@ def build_new(arguments, options):
         builddb.unlock_file()
         raise
 
-    builddb.json_save(builddb_fn(options), options.verbose, options.dry_run)
+    builddb.json_save(None, options.verbose, options.dry_run)
     # ^^^ does also unlock the file
-    rmcleanup(buildtag, options.builddir)
+    rmcleanup(buildtag, get_builddir(options.builddir, options.localbuilddir))
     if not options.no_make and not options.no_checkout:
         # call_make will set the build state to "testing" if it succeeds:
-        call_make(options.builddir,
-                  builddb_fn(options), buildtag,
-                  options.makeopts,
-                  options.verbose, options.dry_run)
+        call_make(buildtag, options)
 
 def build_find(arguments, options):
     """implement "build_find"."""
@@ -1886,7 +1962,7 @@ def build_find(arguments, options):
     try:
         modulespecs_obj= sumolib.ModuleSpec.Specs.from_strings(\
                              modulespecs,
-                             mspecs_from_build(builddb_fn(options)),
+                             mspecs_from_build(options),
                              options.arch)
     except ValueError, e:
         if not catch_exceptions:
@@ -1894,7 +1970,9 @@ def build_find(arguments, options):
         sys.exit(str(e))
 
     (_, db)= db_from_repo(options)
-    builddb= builddb_from_json_file(builddb_fn(options))
+    builddb= builddb_from_json_file(options.builddir,
+                                    options.localbuilddir,
+                                    keep_locked= False)
 
     if options.dump_modules:
         dump_modules(modulespecs_obj)
@@ -1918,10 +1996,11 @@ def build_useall(arguments, options):
         _assume_dir("configure", options.dry_run)
         output= os.path.join("configure","RELEASE")
 
-    builddb= builddb_from_json_file(builddb_fn(options))
+    builddb= builddb_from_json_file(options.builddir,
+                                    options.localbuilddir,
+                                    keep_locked= False)
     (_, db)= db_from_repo(options)
-    lines= fullapprelease(options.builddir,
-                          args["BUILDTAG"],
+    lines= fullapprelease(args["BUILDTAG"],
                           builddb,
                           db,
                           None,
@@ -1950,7 +2029,7 @@ def build_use(arguments, options):
     try:
         modulespecs_obj= sumolib.ModuleSpec.Specs.from_strings(\
                              modulespecs,
-                             mspecs_from_build(builddb_fn(options)),
+                             mspecs_from_build(options),
                              options.arch)
     except ValueError, e:
         if not catch_exceptions:
@@ -1967,14 +2046,15 @@ def build_use(arguments, options):
         output= os.path.join("configure","RELEASE")
 
     (_, db)= db_from_repo(options)
-    builddb= builddb_from_json_file(builddb_fn(options))
+    builddb= builddb_from_json_file(options.builddir,
+                                    options.localbuilddir,
+                                    keep_locked= False)
 
     if options.dump_modules:
         dump_modules(modulespecs_obj)
         sys.exit(0)
 
-    lines= apprelease(options.builddir,
-                      options.buildtag,
+    lines= apprelease(options.buildtag,
                       modulespecs_obj,
                       builddb,
                       db,
@@ -2207,9 +2287,11 @@ def process_build(options, commands):
     if options.nolock:
         sumolib.lock.use_lockfile= False
 
-    # make the module directory absolute:
+    # make the build directories absolute:
     if options.builddir:
         options.builddir= os.path.abspath(options.builddir)
+    if options.localbuilddir:
+        options.localbuilddir= os.path.abspath(options.localbuilddir)
 
     if not commands:
         sys.exit("command missing")
@@ -2296,7 +2378,7 @@ def process(options, commands):
                   "arch", "alias", "buildtag-stem",
                   "db", "dbrepo", "dbrepomode", "extra", "makeopts", "module",
                   "progress", "readonly", "scandb", "dir-patch", "url-patch",
-                  "builddir", "verbose"))
+                  "builddir", "localbuilddir", "verbose"))
 
     try:
         config.load(options.config)
@@ -2333,7 +2415,7 @@ def process(options, commands):
             try:
                 modulespecs_obj= sumolib.ModuleSpec.Specs.from_strings(\
                                      options.module,
-                                     mspecs_from_build(builddb_fn(options)),
+                                     mspecs_from_build(options),
                                      options.arch)
             except ValueError, e:
                 if not catch_exceptions:
@@ -3156,6 +3238,17 @@ def main():
                            "as support directory. "
                            "A default for this option can be put in a "
                            "configuration file.",
+                      metavar="BUILDDIR"
+                     )
+    parser.add_option("--localbuilddir",
+                      action="store",
+                      type="string",
+                      help="Specify a local support directory. Modules "
+                           "from the directory specifed by --builddir are "
+                           "used but this directory is not modfied. All "
+                           "new builds are created in the local build "
+                           "directory and only the build database file "
+                           "there is modified.",
                       metavar="BUILDDIR"
                      )
     parser.add_option("-o", "--output",
