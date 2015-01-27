@@ -423,7 +423,7 @@ def get_configuration(options):
         sys.exit("--dir is mandatory")
     for d in options.dir:
         if not os.path.exists(d):
-            sys.exit("error, directory \"%s\" doesn't exist" % options.dir)
+            sys.exit("error, directory \"%s\" doesn't exist" % d)
     exclude_matcher= sumolib.utils.RegexpMatcher(options.exclude_path)
     if options.ignore_name:
         ignore_names= set(options.ignore_name)
