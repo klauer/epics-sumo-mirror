@@ -4,10 +4,10 @@ Installing Sumo
 Parts of sumo
 -------------
 
-Sumo consists of some scripts, some python modules, some documentation and
-configuration files. 
+Sumo consists of scripts, python modules, documentation and configuration
+files. 
 
-The sumo distribution does not contain the configuration files since you have
+The distribution does not contain the configuration files since you have
 to adapt them to your development host. Examples of configuration files are
 shown further below.
 
@@ -24,13 +24,13 @@ complete list of all possibilities see
 Install examples
 ++++++++++++++++
 
-Here we show some possible ways on how to start the install script.
+Here we show some ways to run the install script.
 
 Install as root to default directories
 ::::::::::::::::::::::::::::::::::::::
 
-This method will install sumo to your systems default python library and binary
-directories.
+This method will install sumo on your systems default python library and
+binary directories.
 
 Advantages:
 
@@ -39,7 +39,7 @@ Advantages:
 
 Disadvantages:
 
-- You have to have root or administrator rights to install sumo.
+- You must have root or administrator permissions to install sumo.
 - Files of sumo are mixed with other files from your system in the same
   directories making it harder to uninstall sumo.
 
@@ -56,13 +56,13 @@ Advantages:
 
 - All sumo files are below a directory you specify, making it easy to uninstall
   sumo.
-- If you have write access to the directory, you don't need to have root or
-  administrator rights.
+- If you have write access that the directory, you don't need root or
+  administrator permissions.
 
 Disadvantages:
 
-- Each user on your machine who wants to use sumo has to have the proper
-  setting of the environment variables PATH and PYTHONPATH.
+- Each user on your machine who wants to use sumo must have the correct
+  settings of the environment variables PATH and PYTHONPATH.
 
 For installing sumo this way, enter::
 
@@ -70,7 +70,8 @@ For installing sumo this way, enter::
 
 where <DIR> is your install directory.
 
-In order to use sumo, you have to change the environment variables PATH and PYTHONPATH. Here is an example how you could do this::
+In order to use sumo, you have to change the environment variables PATH and
+PYTHONPATH. Here is an example how you could do this::
 
   export PATH=<DIR>/bin:$PATH
   export PYTHONPATH=<DIR>/lib/python<X.Y>/site-packages:$PYTHONPATH
@@ -92,19 +93,19 @@ In this case all files of sumo are installed in a directory in your home called
 Advantages:
 
 - All sumo files are below $HOME/sumo, making it easy to uninstall sumo.
-- You don't need to have root or administrator rights.
+- You don't need root or administrator permissions.
 
 Disadvantages:
 
 - Only you can use this install.
-- You have to have the proper setting of the environment variables PATH and
+- You must have the correct settings of the environment variables PATH and
   PYTHONPATH.
 
 For installing sumo this way, enter::
 
   python setup.py install --home $HOME/sumo
 
-You have to set your environment like this::
+You must set your environment like this::
 
   export PATH=$HOME/sumo/bin:$PATH
   export PYTHONPATH=$HOME/lib/python:$PYTHONPATH

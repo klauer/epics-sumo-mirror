@@ -4,21 +4,21 @@ Introduction
 The problem
 -----------
 
-When you develop an application for EPICS you usually need some of the EPICS
-support modules. 
+When you develop an EPICS application you usually need some EPICS support
+modules. 
 
-For a a small project you have to fetch the sources for all support modules your
+For a a small project you fetch the sources for support modules your
 application needs and build all of them together with your application.
 
 For development in a team however, you want to have support modules built
 and installed at a central directory so all developers can just use them in their
 application without the need to build them again for each application.
 
-Support modules are also developed and to use new features, you have to install
-new versions.  Soon you different versions of many modules. Some older
-applications may rely on older module versions while others may need newer
-ones.  This is further complicated by the fact that modules may be dependent on
-each other. 
+If new versions of your support modules with bug fixes or new features become
+available, you have to install these first in order to use them. The old
+versions however, must not be deleted since some applications may depend on
+them.  This is further complicated by the fact that support modules may be
+dependent on each other. 
 
 Here is an example, module "A" is dependent on module "B":
 
@@ -32,7 +32,7 @@ support/A/R1.4       1.4                2.4
 Now suppose that there is a new version "2.5" of "B". You want to build "A"
 against that version of "B" while the source code of "A" has not
 changed. You cannot rebuild in directory "support/A/R1.4" since module "A" may
-behave differently which could break existing applications. So you have to make
+behave differently which could break existing applications. So you have to create
 a new directory for a new sub version of "A" like shown here:
 
 ==================   ================   ==============================
@@ -57,22 +57,21 @@ These are the problems with this approach:
   you even have to commit these changes and give it a release tag (at least in
   darcs VCS).
 
-- Creating a new application: You probably know what modules your application
-  needs, but what versions should you use ? What set of module versions is
-  consistent with each other with respect to module dependencies ? Currently
-  you copy a RELEASE file of another application and try to modify it in a
-  trial and error fashion.
+- Creation of a new application: You probably know what modules your
+  application needs, but what versions should you use ? What set of module
+  versions is consistent with each other with respect to module dependencies ?
+  Currently you copy a RELEASE file of another application and try to modify it
+  in a trial and error fashion.
   
 The solution
 ------------
 
-The solution of these problems is to create RELEASE files with tools instead of
+A solution of these problems is to create RELEASE files with a tool instead of
 keeping them under version control. In your version control system you just
-have a *template* of a RELEASE file that gives hints on what modules you depend
-on.
+have a *template* of a RELEASE file that gives hints on what other modules your
+module depends on.
 
-Information on module versions and module dependencies is held in a dependency
-database. 
+Module versions and module dependencies are kept in a dependency database. 
 
 Sets of modules that are *complete* and *consistent* are created by a tool. The
 tool creates a makefile for each set that ensures that modules are compiled in
