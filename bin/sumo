@@ -365,6 +365,13 @@ def savecleanup(build_tag, dir_, struc):
     fn= cleanupfilename(build_tag, dir_)
     sumolib.JSON.dump_file(fn, struc)
 
+def listcleanup(dir_):
+    """list cleanup buildtags of existing cleanup files."""
+    files= glob.glob(os.path.join(dir_,"cleanup-*"))
+    if not files:
+        return
+    return [os.path.basename(s).replace("cleanup-","") for s in files]
+
 # -----------------------------------------------
 # error messages
 # -----------------------------------------------
@@ -1631,14 +1638,22 @@ def build_delete(arguments, options):
 
 def build_cleanup(arguments, options):
     """implement "build_cleanup"."""
-    args= get_command_args(arguments, ["BUILDTAG"])
+    args= get_command_args(arguments, optional_args=["BUILDTAG"])
     assert_mandatory_options(options, "builddir")
     if options.readonly:
         sys.exit("--readonly forbids cleaning up")
 
-    cleanup_modules(get_builddir(options.builddir, options.localbuilddir),
-                    args["BUILDTAG"],
-                    options.verbose, options.dry_run)
+    if args.has_key("BUILDTAG"):
+        cleanup_modules(get_builddir(options.builddir, options.localbuilddir),
+                        args["BUILDTAG"],
+                        options.verbose, options.dry_run)
+    else:
+        l= listcleanup(get_builddir(options.builddir, options.localbuilddir))
+        if not l:
+            sys.exit("There are no unfinished builds with a cleanup file")
+        print "Please provide the buildtag of the unfinished build,",
+        print "these are possible candidates:"
+        print " ".join(l)
 
 def build_try(arguments, options):
     """implement "build_try"."""
@@ -2105,12 +2120,18 @@ def get_command_args(lst, mandatory_args=None,
                      debug=False):
     """get a command.
 
+    mandatory_args:
+        A list of strings, each is a name of a mandatory argument. These
+        arguments are stored under their given name in the result dictionary.
+    optional_args:
+        A list of strings, each is a name of an optional argument. These
+        arguments are stored under their given name in the result dictionary.
     extra_mandatory:
-        If given, extra arguments are required and stored under the given name
-        as a list.
+        If given, extra arguments are required and all are stored under the
+        given name as a single list.
     extra_optional:
-        If given, extra arguments are allowed and stored under the given name
-        as a list.
+        If given, extra arguments are allowed but not required and stored under
+        the given name as a single list.
 
     Here are some examples:
 
@@ -2999,7 +3020,8 @@ cleanup BUILDTAG
 This command removes the remains of a failed build. If the command "new" is
 interrupted or stopped by an exception in the program, the build may be in an
 incomplete state. In this case you can use the "cleanup" command to remove the
-directories of the failed build. The buildtag must be given as an argument.
+directories of the failed build. If BUILDTAG is not given, the program lists
+all failed builds that require a cleanup.
 
 """
 }
