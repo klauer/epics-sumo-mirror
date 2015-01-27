@@ -16,20 +16,21 @@ A SUpport MOdule manager for EPICS
 The support module manager is a collection of python scripts to help with the
 development of EPICS applications and EPICS support modules.
 
-Some of the features are:
+Some of the program features are:
 
-- Keep track of module dependencies in a `JSON <http://www.json.org>`_
-  database.
+- All module dependencies are held in a `JSON <http://www.json.org>`_
+  dependency database.
 
-- Scan an existing EPICS support directory to create the dependency
-  database.
+- A scanner program can create a dependency database from an EPICS support
+  directory to help migration.
 
-- Create and build of consistent sets of modules.
+- The program builds of consistent sets of EPICS support modules.
 
-- Fetch module sources from a version control system.
+- The program fetches module sources from URLS with tar files or a version
+  control system (currently git, mercurial or darcs).
   
-- Create RELEASE files for applications in order to use a consistent
-  module set.
+- RELEASE files for applications are automatically created to use support
+  modules that are consistent with each other.
 
 See :doc:`introduction` for more information.
 

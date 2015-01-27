@@ -4,9 +4,9 @@ Configuration Files
 The philosphy
 -------------
 
-In sumo you can always specify all parameters for a command with command line
-options and arguments. Configuration files are files that have defaults for
-command line options. 
+In sumo all parameters for a command are given with command line options and
+arguments. Configuration files are files that have defaults for command line
+options. 
 
 All command line options start with a dash "``-``". Short command line options have
 the form "``-<char>``", long command line options have the form "``--<string>``".
@@ -17,17 +17,16 @@ Some command line options take no argument, some options require an argument.
 Some command line options may be given more than once with an argument, they
 are used to define lists of values.
 
-The configuration file defines a map that maps keys to values, where keys are
-the names of long command line options and values are booleans, strings or
-lists or strings. Not all command line options can be set in a configuration
-file, "sumo -h" shows you which can.
+The configuration file defines a map where keys are names of long command line
+options and values are booleans, strings or lists or strings. Not all command
+line options can be set in a configuration file, "sumo -h" shows you which can.
 
 File format
 -----------
 
-A configuration file is always in `JSON
-<http://www.json.org>`_ format. Each key is the long name of a command line
-option, each value is a boolean, a string or a list of strings.
+A configuration file is always in `JSON <http://www.json.org>`_ 
+format. Each key is the long name of a command line option, each value is a
+boolean, a string or a list of strings.
 
 Here is an example of such a file::
 
@@ -39,22 +38,25 @@ Here is an example of such a file::
       "builddir": "/opt/Epics/sumo/build"
   }
 
-Merging
--------
+Using more than one configuration file
+--------------------------------------
 
-Sumo can read several configuration files, in this case the data is *merged*.
+Sumo can read more than just one configuration file, in this case the data is
+*merged*.
 
-Merging means that keys not yet defined are simply added. For keys that already
-exist and whose values are strings, the latter one overwrites the first one.
-For keys that already exist and whose values are lists, the lists are simply
-concatenated.
+The files are read one by one and their keys and values are combined in the in
+the following way:
+
+Keys not yet defined are simply added. Keys that already exist and whose values
+are strings, the latter value one overwrites the first one.  For keys that
+already exist and whose values are lists, the lists are concatenated.
 
 Default paths
 -------------
 
 .. _configuration-files-paths:
 
-Sumo reads and merges configuration files from various places, which one
+Sumo reads and merges configuration files from various places, which ones
 depends on your environment variable settings and command line options. 
 
 First the program tries to read the file sumo.config from a list of default
@@ -62,12 +64,15 @@ paths. The list of default paths can be set by the environment variable
 SUMOCONFIG which must be a colon (on Unix systems) or semicolon (on Windows
 systems) separated list of paths. 
 
-If SUMOCONFIG is not set, these are the predefined default paths:
+If SUMOCONFIG *is not set*, these are the predefined default paths:
 
 - /etc
 - [python-libdir]/sumolib
 - $HOME
 - your current working directory
+
+Note the sumo reads *all* the configuration files it finds, not just the first
+one.
 
 If you use the "--no-default-config" command line option, the list of default
 paths is made empty.
@@ -75,16 +80,16 @@ paths is made empty.
 The config option
 -----------------
 
-After the configuration files from default paths were read the program reads
-the all configuration files specified by the "-c" or "--config" option.
+After configuration files from default paths were read the program continues
+with all configuration files specified by the "-c" or "--config" option.
 
-Loading other files
--------------------
+Load commands in configuration files
+------------------------------------
 
 .. _configuration-files-loading:
 
 In a configuration file you can specify names of other configuration files that
-can or must be loaded. These files are merged as described above.
+must or may be loaded. These files are merged as described above.
 
 There are 4 special keys in the configuration file that are used to specify
 other files:
