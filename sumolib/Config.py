@@ -192,7 +192,7 @@ class ConfigFile(object):
                 raise TypeError("error: %s from command line options "
                                 "is not a list" % name)
             new= a[:]
-            new.append(b)
+            new.extend(b)
             return new
 
         if merge_opts_set is None:
