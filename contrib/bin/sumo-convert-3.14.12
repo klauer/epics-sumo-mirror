@@ -59,7 +59,7 @@ fi
         
 # Create the configure/MODULES file with sumo-scan and sumo:
 
-sumo-scan -c $SUMO_SCAN_CONFIG -d . all | sumo db --no-default-config appconvert - > $MODULES
+sumo-scan -C -c $SUMO_SCAN_CONFIG -d . all | sumo -C db appconvert - > $MODULES
 
 # Patch some used supports that use different sets of the RULES support at the
 # same time. This is an inconsistency of our EPICS 3.14.12 installation here at
@@ -74,14 +74,14 @@ if grep -q BASE:R3-14-12-2-1 $MODULES; then
 fi
 
 if grep -q BESSYRULES:R2-5 $MODULES; then
-    sumo -c $MODULES --append "alias module" \
+    sumo -C -c $MODULES -A "alias module" \
             -m "BESSYRULES:R2-8" \
             makeconfig $MODULES alias module 
 fi
 
 if grep -q STREAM: $MODULES; then
     sed -i -e 's/STREAM:/STREAMDEVICE:/g' $MODULES
-    sumo -c $MODULES --append "alias module" \
+    sumo -C -c $MODULES -A "alias module" \
             -a "STREAMDEVICE:STREAM" \
             makeconfig $MODULES alias module 
 fi
@@ -90,7 +90,7 @@ cp configure/RELEASE configure/RELEASE.orig
 
 # Write the sumo configuration file:
 
-sumo --no-default-config --buildtag-stem "$stem"  makeconfig sumo.config
+sumo -C --buildtag-stem "$stem"  makeconfig sumo.config
 
 cat <<TEXT
 ---------------------------------------------------------------
