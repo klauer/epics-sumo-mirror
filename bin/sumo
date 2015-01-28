@@ -125,6 +125,14 @@ def builddb_localtag(tag):
     """return a "local" marked buildtag."""
     return "local-%s" % tag
 
+def builddb_generate_tag(builddb, buildtag_stem, has_localbuilddir):
+    """automatically generate a build tag."""
+    if not buildtag_stem:
+        buildtag_stem= "AUTO"
+    if has_localbuilddir:
+        buildtag_stem= builddb_localtag(buildtag_stem)
+    return builddb.generate_buildtag(buildtag_stem)
+
 def ensure_dir(dir_, dry_run):
     """create a dir if it doesn't already exist.
     """
@@ -1843,11 +1851,8 @@ def build_try(arguments, options):
         print
 
     if buildtag is None:
-        if not options.buildtag_stem:
-            options.buildtag_stem= "AUTO"
-        buildtag= builddb.generate_buildtag(options.buildtag_stem)
-        if options.localbuilddir:
-            buildtag= builddb_localtag(buildtag)
+        buildtag= builddb_generate_tag(builddb, options.buildtag_stem,
+                                       bool(options.localbuilddir))
         print "Command 'new' would create build with tag '%s'\n" % \
               buildtag
 
@@ -1920,11 +1925,8 @@ def build_new(arguments, options):
                                     must_exist= False)
 
     if buildtag is None:
-        if not options.buildtag_stem:
-            options.buildtag_stem= "AUTO"
-        buildtag= builddb.generate_buildtag(options.buildtag_stem)
-        if options.localbuilddir:
-            buildtag= builddb_localtag(buildtag)
+        buildtag= builddb_generate_tag(builddb, options.buildtag_stem,
+                                       bool(options.localbuilddir))
         sys.stderr.write("creating build with tag '%s'\n" % buildtag)
 
     if builddb.has_build_tag(buildtag):
