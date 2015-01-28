@@ -2405,7 +2405,7 @@ def process(options, commands):
                   "builddir", "localbuilddir", "verbose"))
 
     try:
-        config.load(options.config)
+        config.load(options.config, not options.disable_loading)
     except ValueError, e:
         if not catch_exceptions:
             raise
@@ -3121,6 +3121,13 @@ def main():
                       action="store_true",
                       help="If this option is given the program doesn't load "
                            "the default configuration.",
+                     )
+    parser.add_option("--disable-loading",
+                      action="store_true",
+                      help="If given, disable execution of load commands "
+                           "like '#preload' in configuration files. In "
+                           "this case these keys are treated like ordinary "
+                           "keys."
                      )
     parser.add_option("-A", "--append",
                       action="append",

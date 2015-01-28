@@ -110,7 +110,7 @@ class ConfigFile(object):
                 self._dict[key].extend(val)
             else:
                 self._dict[key]= val
-    def _load_file(self, filename, must_exist):
+    def _load_file(self, filename, must_exist, enable_loading):
         """load filename.
 
         Note that the special key "#include" means that another config file is
@@ -134,26 +134,38 @@ class ConfigFile(object):
         data= sumolib.JSON.loadfile(filename)
         # pylint: disable=E1103
         #                     Instance of 'bool' has no 'items' member
-        for f in _load_lst(data, ["#include", "#preload"]):
-            self._load_file(f, must_exist= True)
-        for f in _load_lst(data, ["#opt-preload"]):
-            self._load_file(f, must_exist= False)
+        if enable_loading:
+            for f in _load_lst(data, ["#include", "#preload"]):
+                self._load_file(f, must_exist= True,
+                                enable_loading= enable_loading)
+            for f in _load_lst(data, ["#opt-preload"]):
+                self._load_file(f, must_exist= False,
+                                enable_loading= enable_loading)
         self._merge(data)
-        for f in _load_lst(data, ["#postload"]):
-            self._load_file(f, must_exist= True)
-        for f in _load_lst(data, ["#opt-postload"]):
-            self._load_file(f, must_exist= False)
+        if enable_loading:
+            for f in _load_lst(data, ["#postload"]):
+                self._load_file(f, must_exist= True,
+                                enable_loading= enable_loading)
+            for f in _load_lst(data, ["#opt-postload"]):
+                self._load_file(f, must_exist= False,
+                                enable_loading= enable_loading)
     def real_paths(self):
         """return the list of files that should be loaded or were loaded."""
         return self._real_paths
-    def load(self, filenames):
-        """load from all files in filenames list."""
+    def load(self, filenames, enable_loading):
+        """load from all files in filenames list.
+
+        enable_loading - If True, commands like "#preload" are enabled,
+                         otherwise these keys are just treated like ordinary
+                         values.
+        """
         if filenames:
             for f in filenames:
                 if os.path.isfile(f):
                     self._paths.append(f)
         for filename in self._paths:
-            self._load_file(filename, must_exist= True)
+            self._load_file(filename, must_exist= True,
+                            enable_loading= enable_loading)
     def save(self, filename, keys):
         """dump in json format"""
         # do not include "None" values:
