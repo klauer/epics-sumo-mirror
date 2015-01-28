@@ -935,6 +935,10 @@ Here is a short overview on command line options:
     If this option is not given and --no-default-config is not given, the
     program tries to load the default configuration file sumo-scan.config from
     several standard locations (see documentation on configuration files).
+``--disable-loading``
+    If given, disable execution of load commands like '#preload' in
+    configuration files. In this case these keys are treated like ordinary
+    keys.
 ``-A``, ``--append OPTIONNAME``
     If an option with name OPTIONNAME is given here and it is a list option,
     the list from the command line is *appended* to the list from the

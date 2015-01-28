@@ -334,6 +334,10 @@ Here is a short overview on command line options:
     merged.
 ``-C, --no-default-config``
     If this option is given the program doesn't load the default configuration.
+``--disable-loading``
+    If given, disable execution of load commands like '#preload' in
+    configuration files. In this case these keys are treated like ordinary
+    keys.
 ``-A``, ``--append OPTIONNAME``
     If an option with name OPTIONNAME is given here and it is a list option,
     the list from the command line is *appended* to the list from the
