@@ -199,7 +199,7 @@ class ConfigFile(object):
             merge_opts_set= set()
         else:
             for opt in merge_opts_set:
-                if not hasattr(option_obj, opt):
+                if not hasattr(option_obj, opt.replace("-","_")):
                     raise ValueError(
                         "error: '%s' is not a known option" % opt)
         # copy from option_obj to self:
