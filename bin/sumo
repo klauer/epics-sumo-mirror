@@ -1098,9 +1098,10 @@ def call_make(buildtag, options):
     #                          Too many arguments
     if options.makeopts is None:
         options.makeopts=[]
+    builddir= get_builddir(options.builddir, options.localbuilddir)
     cmd="make %s -C %s -f %s" % (" ".join(options.makeopts),
-                                 options.builddir,
-                                 makefilename(options.builddir, buildtag))
+                                 builddir,
+                                 makefilename(builddir, buildtag))
     try:
         # sys.stderr.write("CALLING MAKE: %s\n" % cmd)
         sumolib.system.system(cmd, False, False,
