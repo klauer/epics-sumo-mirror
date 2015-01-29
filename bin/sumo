@@ -538,7 +538,11 @@ def gen_RELEASE(db, builddb, buildtag,
         buildtag_here= builddb.module_link(buildtag, dep_name)
         if buildtag_here is None:
             buildtag_here= buildtag
-        b_dir= builddb.dirname_from_tag(buildtag_here)
+        # We have to make a "realpath" here. The old sumo version before
+        # revision a5da15aeda71 worked this way. If we would not, some
+        # checkRelease.pl calls in some support modules will fail since the
+        # path and the canonical "realpath" don't seem to be the same.
+        b_dir= os.path.realpath(builddb.dirname_from_tag(buildtag_here))
         path= module_dir(b_dir, buildtag_here, dep_name, dep_versionname)
         sumolib.utils.file_write(fh, "%s=%s\n" % (name_here,path),
                                  verbose, dry_run)
