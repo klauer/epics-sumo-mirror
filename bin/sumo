@@ -85,6 +85,17 @@ def errtxt(msg, e):
 # directory utilities and filenames
 # -----------------------------------------------
 
+_realpath_cache= {}
+
+def cached_realpath(dir_):
+    """returns the realpath but caches the results.
+    """
+    p= _realpath_cache.get(dir_)
+    if p is None:
+        p= os.path.realpath(dir_)
+        _realpath_cache[dir_]= p
+    return p
+
 def makefilename(builddir, build_tag):
     """create a makefile name from a build_tag."""
     return os.path.join(builddir, "Makefile-%s" % build_tag)
@@ -542,7 +553,7 @@ def gen_RELEASE(db, builddb, buildtag,
         # revision a5da15aeda71 worked this way. If we would not, some
         # checkRelease.pl calls in some support modules will fail since the
         # path and the canonical "realpath" don't seem to be the same.
-        b_dir= os.path.realpath(builddb.dirname_from_tag(buildtag_here))
+        b_dir= cached_realpath(builddb.dirname_from_tag(buildtag_here))
         path= module_dir(b_dir, buildtag_here, dep_name, dep_versionname)
         sumolib.utils.file_write(fh, "%s=%s\n" % (name_here,path),
                                  verbose, dry_run)
@@ -1149,8 +1160,9 @@ def fullapprelease(build_tag, builddb, db, modules,
         if tag is None:
             tag= build_tag
         version= builddb.module_version(tag, modulename)
+        b_dir= cached_realpath(builddb.dirname_from_tag(tag))
         directories[(modulename, version)]= \
-                   module_dir(builddb.dirname(), tag, modulename, version)
+                    module_dir(b_dir, tag, modulename, version)
         mods.append((modulename, version))
 
     mods= db.sortby_weight(db.sortby_dependency(sorted(mods), True))
