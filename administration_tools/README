@@ -1,1 +1,26 @@
 Here are some scripts that I use to administer the project.
+
+Steps to create a new release
+-----------------------------
+
+Display the current version:
+
+  ./show-version.sh
+
+Now make up a new version number <VERSION>.
+
+Set up the new version:
+
+./new-version.sh <VERSION>
+./doc-rebuild.sh
+./dist-to-wwwcsr.sh
+./cleanup-distdirs.sh
+./mk-dist.sh
+
+Steps to push all patches to the central repository:
+
+hg qcommit -m backup
+hg qfinish -a
+hg tag <VERSION>
+hg push
+
