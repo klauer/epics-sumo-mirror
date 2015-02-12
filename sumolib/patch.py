@@ -8,7 +8,7 @@ import subprocess
 import sumolib.utils
 import sumolib.fileurl
 
-__version__="2.4.3" #VERSION#
+__version__="2.4.4" #VERSION#
 
 assert __version__==sumolib.utils.__version__
 assert __version__==sumolib.fileurl.__version__
