@@ -93,11 +93,11 @@ class DB(sumolib.JSON.Container):
                 for dictname, dictval in vdict2.items():
                     if dictname=="archs":
                         try:
-                            sumolib.utils.dict_update(
+                            sumolib.utils.dict_update(\
                                         vdict.setdefault(dictname,{}),
                                         dictval)
                         except ValueError, e:
-                            raise ValueError(
+                            raise ValueError(\
                               "module %s version %s archs: %s" % \
                               (modulename, versionname, str(e)))
                         continue
@@ -107,11 +107,11 @@ class DB(sumolib.JSON.Container):
                         continue
                     if dictname=="aliases":
                         try:
-                            sumolib.utils.dict_update(
+                            sumolib.utils.dict_update(\
                                         vdict.setdefault(dictname,{}),
                                         dictval)
                         except ValueError, e:
-                            raise ValueError(
+                            raise ValueError(\
                               "module %s version %s aliases: %s" % \
                               (modulename, versionname, str(e)))
                         continue
@@ -146,7 +146,7 @@ class DB(sumolib.JSON.Container):
         This does a deepcopy of the data.
         """
         m= self.datadict().setdefault(module_name,{})
-        m[versionname]= copy.deepcopy(
+        m[versionname]= copy.deepcopy(\
                             other.datadict()[module_name][versionname])
     def set_source_spec(self, module_name, versionname, sourcespec):
         """set sourcespec of a module, creates if it does not yet exist.
@@ -186,7 +186,7 @@ class DB(sumolib.JSON.Container):
         return ret
 
     def set_source_arch(self, module_name, versionname, archs,
-                              sourcespec):
+                        sourcespec):
         """add a module with source spec and archs."""
         if not isinstance(sourcespec, sumolib.repos.SourceSpec):
             raise TypeError("error: sourcespec '%s' is of wrong "
@@ -269,7 +269,7 @@ class DB(sumolib.JSON.Container):
         # pylint: disable=W0212
         #                          Access to a protected member of a
         #                          client class
-        return self.__class__.check_arch(
+        return self.__class__.check_arch(\
                    self.get_archs(modulename, versionname), archs)
     def add_alias(self, modulename, versionname,
                   alias_name, real_name):
@@ -279,7 +279,7 @@ class DB(sumolib.JSON.Container):
         if alias_dict.has_key(real_name):
             if alias_dict[real_name]==alias_name:
                 return
-            raise ValueError(
+            raise ValueError(\
                   "alias \"%s\" defined with two different names" % alias_name)
         alias_dict[real_name]= alias_name
     def get_alias(self, modulename, versionname,
@@ -541,7 +541,7 @@ class DB(sumolib.JSON.Container):
             # scan stable, testing and unstable versions:
             for version in self.iter_versions(modulename,
                                               None, must_exist= True):
-                if not sumolib.ModuleSpec.Spec.compare_versions(version,
+                if not sumolib.ModuleSpec.Spec.compare_versions(version,\
                                                     versionname, "eq"):
                     continue
                 d[version]= self.datadict()[modulename][version]
@@ -643,9 +643,9 @@ class DB(sumolib.JSON.Container):
                         if not sets_dict.has_key(dep_name):
                             modules_added.add(dep_name)
                             sets_dict[dep_name]= \
-                                      set(self.iter_versions(dep_name,
-                                                          archs=None,
-                                                          must_exist= True))
+                                      set(self.iter_versions(dep_name,\
+                                                         archs=None,\
+                                                         must_exist= True))
                             new_modlist.append(dep_name)
             modlist= new_modlist
         return modules_added
