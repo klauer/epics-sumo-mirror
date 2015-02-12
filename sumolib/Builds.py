@@ -37,7 +37,7 @@ class DB(sumolib.JSON.Container):
     """the buildtree database."""
     # pylint: disable=R0904
     #                          Too many public methods
-    states= set(("stable","testing","unstable","disabled"))
+    states= set(("stable","testing","unstable","incomplete","disabled"))
     @classmethod
     def check_state(cls, state, new_build):
         """checks if a state is allowed."""
@@ -148,6 +148,11 @@ class DB(sumolib.JSON.Container):
             raise ValueError("cannot create, build %s already exists" % \
                                build_tag)
         d[build_tag]= { "state": state }
+    def is_incomplete(self, build_tag):
+        """returns True if the build is marked incomplete.
+        """
+        d= self.datadict()
+        return d[build_tag]["state"] == "incomplete"
     def is_disabled(self, build_tag):
         """returns True if the build is marked disabled.
         """
@@ -425,6 +430,9 @@ class BuildCache(sumolib.JSON.Container):
             state= builddb.state(buildtag)
             # skip builds marked "disabled":
             if builddb.is_disabled(buildtag):
+                continue
+            # skip builds marked "incomplete":
+            if builddb.is_incomplete(buildtag):
                 continue
             # skip builds marked "unstable":
             if builddb.is_unstable(buildtag):
