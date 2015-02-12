@@ -900,16 +900,6 @@ If no other :term:`build` depends on the :term:`build` specified by the
 entry in the builddb is deleted. The :term:`buildtag` must be given as an
 argument.
 
-cleanup BUILDTAG
-::::::::::::::::
-
-This command removes the remains of a failed :term:`build`. If the command
-"new" is interrupted or stopped by an exception in the program, the
-:term:`build` may be in an incomplete :term:`state`. In this case you can use
-the "cleanup" command to remove the directories of the failed :term:`build`.
-If BUILDTAG is not given, the program lists all failed :term:`builds` that
-require a cleanup.
-
 Options
 -------
 

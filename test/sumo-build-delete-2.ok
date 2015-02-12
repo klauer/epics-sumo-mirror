@@ -1,0 +1,40 @@
+call sumo build new, let the command fail on purpose...
+IOError: [Errno 2] cmd "darcs get -t '^R3-14-12-2-1\s*$' -q /data/repo/mybase3-14-12-2-1 /tmp-sumo-build-delete-2/BASE/R3-14-12-2-1+001", rc 2
+
+directory tree (without darcs, maxdepth 2)
+.
+./ALARM
+./ALARM/R3-8-modified+001
+./ALARM/R3-8-modified+001/LICENSE
+./ALARM/R3-8-modified+001/configure
+./ALARM/R3-8-modified+001/Makefile
+./BASE
+./BUILDS.DB
+./DEPS.DB
+
+contents of BUILDS.DB:
+{
+    "001": {
+        "modules": {
+            "ALARM": "R3-8-modified",
+            "BASE": "R3-14-12-2-1",
+            "BSPDEP_TIMER": "R6-2",
+            "BSPDEP_VMETAS": "TAGLESS-2-1-modified",
+            "MCAN": "R2-6-3-gp",
+            "MISC_DBC": "PATH-3-0",
+            "MISC_DEBUGMSG": "R3-0",
+            "SOFT_DEVHWCLIENT": "TAR-3-0"
+        },
+        "state": "incomplete"
+    }
+}
+
+now do sumo build delete 001
+
+directory tree (without darcs, maxdepth 2)
+.
+./BUILDS.DB
+./DEPS.DB
+
+contents of BUILDS.DB now:
+{}

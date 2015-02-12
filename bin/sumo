@@ -55,7 +55,7 @@ KNOWN_DB_COMMANDS=set(("alias-add", "appconvert", "check", "clonemodule",
                        "dependency-delete", "replaceversion", "show",
                        "weight"))
 
-KNOWN_BUILD_COMMANDS=set(("cleanup", "delete", "find", "list",
+KNOWN_BUILD_COMMANDS=set(("delete", "find", "list",
                           "new",
                           "show", "state", "try", "use", "useall"))
 KNOWN_FILE_COMMANDS=set(("lock", "unlock", "edit"))
@@ -357,41 +357,6 @@ def alias(alias_dict, modulename):
     return n
 
 # -----------------------------------------------
-# cleanup file handling
-# -----------------------------------------------
-
-def cleanupfilename(build_tag, dir_):
-    """create the name of the cleanup file."""
-    return os.path.join(dir_,"cleanup-%s" % build_tag)
-
-def rmcleanup(build_tag, dir_):
-    """remove the cleanup file."""
-    fn= cleanupfilename(build_tag, dir_)
-    if os.path.exists(fn):
-        return os.remove(fn)
-
-def loadcleanup(build_tag, dir_, must_exist= False):
-    """load the cleanup file."""
-    fn= cleanupfilename(build_tag, dir_)
-    if os.path.exists(fn):
-        return sumolib.JSON.loadfile(fn)
-    if must_exist:
-        raise IOError("file '%s' not found" % fn)
-    return {"modules": [] }
-
-def savecleanup(build_tag, dir_, struc):
-    """save the cleanup file."""
-    fn= cleanupfilename(build_tag, dir_)
-    sumolib.JSON.dump_file(fn, struc)
-
-def listcleanup(dir_):
-    """list cleanup buildtags of existing cleanup files."""
-    files= glob.glob(os.path.join(dir_,"cleanup-*"))
-    if not files:
-        return
-    return [os.path.basename(s).replace("cleanup-","") for s in files]
-
-# -----------------------------------------------
 # error messages
 # -----------------------------------------------
 
@@ -599,11 +564,6 @@ def create_makefile(dist_dict, db, builddb,
                                                          modulename,
                                                          versionname)
     filename= makefilename(builddir, build_tag)
-    if not dry_run:
-        cleanup_struc= loadcleanup(build_tag, builddir)
-        cleanup_struc["makefile"]= filename
-        ensure_dir(builddir, dry_run)
-        savecleanup(build_tag, builddir, cleanup_struc)
     module_dirs= sorted(paths.values())
     stamps= [os.path.join(p,"stamp") for p in module_dirs]
     fh= sumolib.utils.file_w_open(filename, verbose, dry_run)
@@ -673,7 +633,8 @@ def delete_module(builddir, build_tag, modulename, versionname,
             shutil.rmtree(dirname)
         else:
             if must_exist:
-                raise IOError("error: '%s' doesn't exist" % dirname)
+                errmsg(("Warning, directory '%s' cannot be deleted, "
+                        "it does not exist") % dirname)
         # remove the parent directory if it is empty:
     rm_empty_dir(modulename, verbose, dry_run)
 
@@ -1024,43 +985,21 @@ def delete_modules(builddb, build_tag, verbose, dry_run):
         raise ValueError("Error, the following builds dependend on "
                          "build %s:\n%s" % \
                          (build_tag," ".join(sorted(dependends))))
+    must_exist= not builddb.is_incomplete(build_tag)
     for modulename, versionname in builddb.iter_modules(build_tag):
         if builddb.module_link(build_tag, modulename):
             continue
         delete_module(builddb.dirname(), build_tag, modulename, versionname,
-                      True, verbose, dry_run)
+                      must_exist, verbose, dry_run)
 
-    os.remove(makefilename(builddb.dirname(), build_tag))
-
+    makefile= makefilename(builddb.dirname(), build_tag)
+    if not os.path.exists(makefile):
+        if must_exist:
+            errmsg(("Warning, makefile '%s' cannot be deleted, "
+                    "it does not exist") % makefile)
+    else:
+        os.remove(makefilename(builddb.dirname(), build_tag))
     builddb.delete(build_tag)
-
-def cleanup_modules(builddir, build_tag, verbose, dry_run):
-    """cleanup remains of a failed build.
-
-    This can only happen if a "new" command was aborted due to an exception in
-    the script.
-    """
-    try:
-        cleanup_struc= loadcleanup(build_tag, builddir, must_exist= True)
-    except IOError, e:
-        if not catch_exceptions:
-            raise
-        sys.exit(str(e))
-
-    module_list= cleanup_struc["modules"]
-    for module_dict in module_list:
-        delete_module(builddir,
-                      build_tag,
-                      module_dict["modulename"],
-                      module_dict["versionname"],
-                      False,
-                      verbose, dry_run)
-    makefile= cleanup_struc.get("makefile")
-    if makefile:
-        if os.path.exists(makefile):
-            os.remove(makefile)
-    if not dry_run:
-        rmcleanup(build_tag, builddir)
 
 def create_modules(dist_dict, db, builddb, builddir, build_tag,
                    extra_lines,
@@ -1076,16 +1015,7 @@ def create_modules(dist_dict, db, builddb, builddir, build_tag,
     """
     # pylint: disable=R0913
     #                          Too many arguments
-    # save a list of possibly created directories in a cleanup-structure. In
-    # case the script exits with an exception, the created cleanup file can be
-    # used to clean up the support directory.
-    # Load the cleanup file in case other parts of the script have saved
-    # someting there:
-    cleanup_struc= loadcleanup(build_tag, builddir)
-    module_list  = cleanup_struc.setdefault("modules", [])
-
-    # add all modules specified by dist_dict to builddb under tag build_tag:
-    add_modules(dist_dict, db, builddb, build_tag)
+    module_list  = []
 
     if builddb.is_fully_linked(build_tag):
         # the new build would contain only links, this is maybe not wanted.
@@ -1103,7 +1033,6 @@ def create_modules(dist_dict, db, builddb, builddir, build_tag,
 
     if not dry_run and not no_checkout:
         ensure_dir(builddir, dry_run)
-        savecleanup(build_tag, builddir, cleanup_struc)
     if no_checkout:
         return
     for module_dict in module_list:
@@ -1653,6 +1582,7 @@ def build_delete(arguments, options):
                                     keep_locked= not options.dry_run)
     assert_build_tag(builddb, args["BUILDTAG"])
     try:
+        # modifies builddb and deletes directories:
         delete_modules(builddb, args["BUILDTAG"],
                        options.verbose, options.dry_run)
     except ValueError, e:
@@ -1660,25 +1590,6 @@ def build_delete(arguments, options):
             raise
         sys.exit(str(e))
     builddb.json_save(None, options.verbose, options.dry_run)
-
-def build_cleanup(arguments, options):
-    """implement "build_cleanup"."""
-    args= get_command_args(arguments, optional_args=["BUILDTAG"])
-    assert_mandatory_options(options, "builddir")
-    if options.readonly:
-        sys.exit("--readonly forbids cleaning up")
-
-    if args.has_key("BUILDTAG"):
-        cleanup_modules(get_builddir(options.builddir, options.localbuilddir),
-                        args["BUILDTAG"],
-                        options.verbose, options.dry_run)
-    else:
-        l= listcleanup(get_builddir(options.builddir, options.localbuilddir))
-        if not l:
-            sys.exit("There are no unfinished builds with a cleanup file")
-        print "Please provide the buildtag of the unfinished build,",
-        print "these are possible candidates:"
-        print " ".join(l)
 
 def build_try(arguments, options):
     """implement "build_try"."""
@@ -1949,29 +1860,34 @@ def build_new(arguments, options):
         # builddb __del__ method should remove lockfiles
         sys.exit("error: buildtag \"%s\" already taken" % buildtag)
     # create a new build in builddb, initial state is "unstable":
-    builddb.new_build(buildtag, "unstable")
-    # modifies builddb:
-    try:
-        create_modules(dist_dict, db, builddb,
-                       get_builddir(options.builddir, options.localbuilddir),
-                       buildtag,
-                       options.extra, options.arch,
-                       options.no_checkout,
-                       options.verbose, options.dry_run)
-        if not options.no_checkout:
-            create_makefile(dist_dict, db,
-                            builddb,
-                            buildtag,
-                            options.verbose,
-                            options.dry_run)
-    except IOError, e:
-        db.unlock_file()
-        builddb.unlock_file()
-        raise
-
+    builddb.new_build(buildtag, "incomplete")
+    # add all modules specified by dist_dict to builddb under tag build_tag:
+    add_modules(dist_dict, db, builddb, buildtag)
     builddb.json_save(None, options.verbose, options.dry_run)
     # ^^^ does also unlock the file
-    rmcleanup(buildtag, get_builddir(options.builddir, options.localbuilddir))
+
+    # the following function may raise IOError, if one of the checkout commands
+    # fails:
+    create_modules(dist_dict, db, builddb,
+                   get_builddir(options.builddir, options.localbuilddir),
+                   buildtag,
+                   options.extra, options.arch,
+                   options.no_checkout,
+                   options.verbose, options.dry_run)
+    builddb= builddb_from_json_file(options.builddir,
+                                    options.localbuilddir,
+                                    keep_locked= not options.dry_run,
+                                    must_exist= False)
+    builddb.change_state(buildtag, "unstable")
+    builddb.json_save(None, options.verbose, options.dry_run)
+    # ^^^ does also unlock the file
+    if not options.no_checkout:
+        create_makefile(dist_dict, db,
+                        builddb,
+                        buildtag,
+                        options.verbose,
+                        options.dry_run)
+
     if not options.no_make and not options.no_checkout:
         # call_make will set the build state to "testing" if it succeeds:
         call_make(buildtag, options)
@@ -2355,10 +2271,6 @@ def process_build(options, commands):
 
     if commands[0]=="delete":
         build_delete(commands[1:], options)
-        return
-
-    if commands[0]=="cleanup":
-        build_cleanup(commands[1:], options)
         return
 
     if commands[0]=="try":
@@ -2786,7 +2698,6 @@ known subcommands:
   show      - show details of a build
   state     - show or change the state of a build
   delete    - delete a build
-  cleanup   - clean up remains of build whose checkout command failed
 """,
         "list":"""
 This is a subcommand of command 'db' and command 'build'.
@@ -3033,16 +2944,6 @@ If no other build depends on the build specified by the buildtag, the
 directories of the build are removed and it's entry in the builddb is
 deleted. The buildtag must be given as an argument.
 """,
-        "cleanup": """
-cleanup BUILDTAG
-
-This command removes the remains of a failed build. If the command "new" is
-interrupted or stopped by an exception in the program, the build may be in an
-incomplete state. In this case you can use the "cleanup" command to remove the
-directories of the failed build. If BUILDTAG is not given, the program lists
-all failed builds that require a cleanup.
-
-"""
 }
 
 # pylint: enable=C0330

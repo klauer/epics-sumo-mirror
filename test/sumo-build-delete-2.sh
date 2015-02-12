@@ -21,7 +21,7 @@ SUMO="$PYTHON $BINDIR/sumo -C"
 PWD_NICE=`pwd`
 PWD_REAL=`pwd -P`
 
-echo -e "\n-> Test sumo build cleanup (for some seconds nothing will seem to happen)" >&2
+echo -e "\n-> Test sumo build delete after crash(some seconds nothing will seem to happen)" >&2
 
 DEPS=tmp-sumo-db-convert/DEPS.DB
 BUILDS="sumo-build-new-0-BUILD.tmp"
@@ -47,15 +47,17 @@ find . -maxdepth 3 | egrep -v '_darcs|\.tmp|\.bak|\.coverage'
 #echo -e "\ndirectory tree (without darcs)"
 #find . -name _darcs -prune -o -name '*' | grep -v '.coverage' | sort
 
-echo -e "\ncontents of cleanup file:"
-cat cleanup-001 
+echo -e "\ncontents of BUILDS.DB:"
+cat BUILDS.DB
 
-echo -e "\nnow do sumo build cleanup 001"
+echo -e "\nnow do sumo build delete 001"
 
-$SUMO --builddir . build cleanup 001
+$SUMO --builddir . build delete 001
 
 echo -e "\ndirectory tree (without darcs, maxdepth 2)"
 find . -maxdepth 3 | egrep -v '_darcs|\.tmp|\.bak|\.coverage'
 #echo -e "\ndirectory tree now (without darcs)"
 #find . -name _darcs -prune -o -name '*' | grep -v '.coverage' | sort
 
+echo -e "\ncontents of BUILDS.DB now:"
+cat BUILDS.DB
