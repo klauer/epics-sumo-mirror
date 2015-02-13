@@ -64,6 +64,9 @@ CONFIG_NAME="sumo.config"
 ENV_CONFIG="SUMOCONFIG"
 BUILDDB="BUILDS.DB"
 
+LOCK_TIMEOUT=4
+# timeout for file locking in seconds
+
 catch_exceptions= True
 
 # -----------------------------------------------
@@ -189,7 +192,7 @@ def repo_manager(filename, sourcespec_string, mode,
       hg <mercurial-url>
     """
     if not sourcespec_string:
-        return sumolib.repos.ManagedRepo(None,None,None,verbose,dry_run)
+        return sumolib.repos.ManagedRepo(None,None,None,None,verbose,dry_run)
     if not mode:
         mode= 'get'
     source_spec_obj= \
@@ -198,13 +201,13 @@ def repo_manager(filename, sourcespec_string, mode,
     (dir_,_)= os.path.split(filename)
     return sumolib.repos.ManagedRepo(source_spec_obj,
                                      mode,
-                                     dir_, verbose, dry_run)
+                                     dir_, LOCK_TIMEOUT, verbose, dry_run)
 
 def db_from_json_file(filename, keep_locked= False):
     """load a db, exits gracefully in case of an error."""
     try:
         db= sumolib.Dependencies.DB.from_json_file(filename,
-                                                   keep_locked)
+                                                   keep_locked, LOCK_TIMEOUT)
     except ValueError, e:
         if not catch_exceptions:
             raise
@@ -279,13 +282,13 @@ def builddb_from_json_file(path, path_local, keep_locked= False,
             sys.exit("Error build database '%s' doesn't exist" % \
                      file_)
         # just create an empty object:
-        builddb= sumolib.Builds.DB_overlay()
+        builddb= sumolib.Builds.DB_overlay(lock_timeout= LOCK_TIMEOUT)
         # set default filename in the object (JSON.Container method):
         builddb.filename(file_)
     else:
         try:
             builddb= sumolib.Builds.DB_overlay.from_json_file(\
-                                    file_, keep_locked)
+                                    file_, keep_locked, LOCK_TIMEOUT)
         except ValueError, e:
             if not catch_exceptions:
                 raise
@@ -319,11 +322,12 @@ def assert_build_tag(builddb, buildtag):
 def init_buildcache(scandb_name, builddb, db):
     """load a builddb, exits gracefully in case of an error."""
     if not scandb_name:
-        buildcache= sumolib.Builds.BuildCache()
+        buildcache= sumolib.Builds.BuildCache(lock_timeout= LOCK_TIMEOUT)
     else:
         try:
             buildcache= sumolib.Builds.BuildCache.from_json_file(scandb_name,
-                                                                 False)
+                                                                 False,
+                                                                 LOCK_TIMEOUT)
         except ValueError, e:
             sys.exit(errtxt("Error while loading build database",e))
             if not catch_exceptions:
@@ -813,7 +817,7 @@ def create_database(deps, repoinfo, groups, archs, dir_patches, url_patches):
             dir_patcher.add(eval(p))
     _path2namevname= {}
     _namevname2path= {}
-    db= sumolib.Dependencies.DB()
+    db= sumolib.Dependencies.DB(lock_timeout= LOCK_TIMEOUT)
     # we first create the map from modulenames to versiondata. In this loop we
     # populate the versiondata only with the source specification. We also
     # create two maps:
@@ -912,7 +916,7 @@ def create_database(deps, repoinfo, groups, archs, dir_patches, url_patches):
     #sumolib.JSON.dump(_path2namevname)
     #sys.exit(0)
 
-    buildcache= sumolib.Builds.BuildCache()
+    buildcache= sumolib.Builds.BuildCache(lock_timeout= LOCK_TIMEOUT)
 
     # here we populate the versiondata with the dependency specifications:
     for modulename in db.iter_modulenames():
@@ -1514,7 +1518,7 @@ def build_show(arguments, options):
                                     options.localbuilddir,
                                     keep_locked= False)
     assert_build_tag(builddb, args["BUILDTAG"])
-    new_builddb= sumolib.Builds.DB()
+    new_builddb= sumolib.Builds.DB(lock_timeout= LOCK_TIMEOUT)
     new_builddb.add_build(builddb, args["BUILDTAG"])
     new_builddb.json_print()
 

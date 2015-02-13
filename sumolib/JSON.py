@@ -175,7 +175,7 @@ class Container(object):
         # pylint: disable=R0201
         #                          Method could be a function
         return
-    def __init__(self, dict_= None):
+    def __init__(self, dict_= None, lock_timeout= None):
         """create the object."""
         if dict_ is None:
             self.dict_= {}
@@ -183,6 +183,7 @@ class Container(object):
             self.dict_= dict_
         self.lock= None
         self._filename= None
+        self._lock_timeout= lock_timeout
     def filename(self, new_name= None):
         """return or set the internal filename."""
         if new_name is None:
@@ -203,7 +204,7 @@ class Container(object):
             # already locked
             return
         # may raise IOError exception if file is locked:
-        self.lock= sumolib.lock.MyLock(self._filename)
+        self.lock= sumolib.lock.MyLock(self._filename, self._lock_timeout)
         self.lock.lock()
     def unlock_file(self):
         """remove a filelock if there is one."""
@@ -234,7 +235,8 @@ class Container(object):
         obj.selfcheck("(created from JSON string)")
         return obj
     @classmethod
-    def from_json_file(cls, filename, keep_locked= False):
+    def from_json_file(cls, filename, keep_locked= False,
+                       lock_timeout= None):
         """create an object from a json file."""
         if filename=="-":
             result= cls(loadfile(filename))
@@ -242,14 +244,14 @@ class Container(object):
             return result
         if not os.path.exists(filename):
             raise IOError("file \"%s\" not found" % filename)
-        l= sumolib.lock.MyLock(filename)
+        l= sumolib.lock.MyLock(filename, lock_timeout)
         # may raise IOError exception if file is locked:
         l.lock()
 
         try:
             # simplejson and json raise different kinds of exceptions
             # in case of a syntax error within the JSON file.
-            result= cls(loadfile(filename))
+            result= cls(loadfile(filename), lock_timeout)
         except Exception, _:
             l.unlock()
             raise

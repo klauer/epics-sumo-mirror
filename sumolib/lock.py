@@ -8,6 +8,7 @@ import sys
 import os
 import platform
 import errno
+import time
 
 if __name__ == "__main__":
     # if this module is directly called like a script, we have to add the path
@@ -46,6 +47,8 @@ class MyLock(object):
     """Implement a simple file locking mechanism."""
     # pylint: disable=R0903
     #                          Too few public methods
+    # pylint: disable=R0902
+    #                          Too many instance attributes
     def _mkfile(self):
         """create a file, only for windows."""
         if self.method=="link":
@@ -69,32 +72,53 @@ class MyLock(object):
         self.info="%s@%s:%s" % (current_user(),
                                 platform.node(),
                                 os.getpid())
-        try:
-            if self.method=="link":
-                os.symlink(self.info, self.lockname)
-            else:
-                os.mkdir(self.lockname)
-                open(os.path.join(self.lockname,self.info),'w').close()
-        except OSError, e:
-            # probably "File exists"
-            if e.errno==errno.EEXIST:
-                self.was_locked= True
+        tmo= self.timeout
+        while True:
+            try:
                 if self.method=="link":
-                    raise IOError("file '%s' is locked: %s" % \
-                                  (self.filename, os.readlink(self.lockname)))
+                    os.symlink(self.info, self.lockname)
                 else:
-                    txt= " ".join(os.listdir(self.lockname))
-                    raise IOError("file '%s' is locked: %s" % \
-                                  (self.filename, txt))
+                    os.mkdir(self.lockname)
+                    open(os.path.join(self.lockname,self.info),'w').close()
+            except OSError, e:
+                # probably "File exists"
+                if e.errno==errno.EEXIST:
+                    if tmo>0:
+                        tmo-= 1
+                        time.sleep(1)
+                        continue
+                    self.was_locked= True
+                    if self.method=="link":
+                        raise IOError("file '%s' is locked: %s" % \
+                                      (self.filename,
+                                       os.readlink(self.lockname)))
+                    else:
+                        txt= " ".join(os.listdir(self.lockname))
+                        raise IOError("file '%s' is locked: %s" % \
+                                      (self.filename, txt))
+                else:
+                    raise
+            break
         self.has_lock= True
-    def __init__(self, filename):
+    def __init__(self, filename, timeout= None):
         """create a portable lock.
 
+        If timeout is a number, wait up to this time (seconds) to aquire the
+        lock.
         """
         if not use_lockfile:
             self.disabled= True
         else:
             self.disabled= False
+        if timeout is None:
+            self.timeout= 0
+        else:
+            if not isinstance(timeout, int):
+                raise TypeError("timeout must be None or an int")
+            if timeout<0:
+                raise ValueError("timeout must be >=0")
+            self.timeout= timeout
+
         self.filename= filename
         self.lockname= "%s.lock" % self.filename
         self.has_lock= False
@@ -132,7 +156,7 @@ def edit_with_lock(filename, verbose, dry_run):
     ed_lst= [v for v in [os.environ.get(x) for x in envs] if v is not None]
     if not ed_lst:
         raise IOError("error: environment variable 'VISUAL' or "
-                         "'EDITOR' must be defined")
+                      "'EDITOR' must be defined")
     mylock= MyLock(filename).lock()
     try:
         found= False

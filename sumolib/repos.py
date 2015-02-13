@@ -6,6 +6,7 @@
 import os.path
 
 import sumolib.utils
+import sumolib.lock
 import sumolib.JSON
 import sumolib.patch
 import sumolib.path
@@ -17,6 +18,7 @@ import sumolib.git
 __version__="2.4.4" #VERSION#
 
 assert __version__==sumolib.utils.__version__
+assert __version__==sumolib.lock.__version__
 assert __version__==sumolib.JSON.__version__
 assert __version__==sumolib.patch.__version__
 assert __version__==sumolib.path.__version__
@@ -342,8 +344,11 @@ class ManagedRepo(object):
     Do pull before read,
     commit and push after write.
     """
+    # pylint: disable=R0902
+    #                          Too many instance attributes
     def __init__(self, sourcespec,
                  mode, directory,
+                 lock_timeout,
                  verbose, dry_run):
         """create the object.
 
@@ -373,21 +378,33 @@ class ManagedRepo(object):
 
         if mode not in ["get","pull","push"]:
             raise AssertionError("unknown mode: %s" % repr(mode))
+        self.lock_timeout= lock_timeout
         self.mode= mode
         self.directory= directory
         self.verbose= verbose
         self.dry_run= dry_run
+        self.lock= sumolib.lock.MyLock(self.directory, self.lock_timeout)
+        self.lock.lock()
         if not os.path.isdir(self.directory):
             # must check out
-            checkout(self.sourcespec, self.directory,
-                     self.verbose, self.dry_run)
+            try:
+                checkout(self.sourcespec, self.directory,
+                         self.verbose, self.dry_run)
+            except Exception, _:
+                self.lock.unlock()
+                raise
             if not os.path.isdir(self.directory):
+                self.lock.unlock()
                 raise AssertionError("checkout of %s to %s failed" % \
                                      (self.sourcespec,
                                       self.directory))
-        self.repo_obj= repo_from_dir(self.directory,
-                                     {"write check": True},
-                                     self.verbose, self.dry_run)
+        try:
+            self.repo_obj= repo_from_dir(self.directory,
+                                         {"write check": True},
+                                         self.verbose, self.dry_run)
+        finally:
+            self.lock.unlock()
+
         if self.repo_obj is None:
             # this can happen for example, when the repository data directory,
             # e.g. ".hg", is not writable.
@@ -406,7 +423,11 @@ class ManagedRepo(object):
         return self.repo_obj.local_changes
     def commit(self, message):
         """commit changes."""
-        self.repo_obj.commit(message)
+        self.lock.lock()
+        try:
+            self.repo_obj.commit(message)
+        finally:
+            self.lock.unlock()
     def prepare_read(self):
         """do checkout or pull."""
         if self.sourcespec is None:
@@ -414,7 +435,11 @@ class ManagedRepo(object):
         # pylint: disable=E1103
         #                          Instance of 'Repo' has no 'pull' member
         if self.mode!='get':
-            self.repo_obj.pull_merge()
+            self.lock.lock()
+            try:
+                self.repo_obj.pull_merge()
+            finally:
+                self.lock.unlock()
     def finish_write(self, message):
         """do commit and push."""
         if self.sourcespec is None:
@@ -423,9 +448,13 @@ class ManagedRepo(object):
             raise AssertionError("internal error, repo obj missing")
         # pylint: disable=E1103
         #                          Instance of 'Repo' has no '...' member
-        self.repo_obj.commit(message)
-        if self.mode=='push':
-            self.repo_obj.push()
+        self.lock.lock()
+        try:
+            self.repo_obj.commit(message)
+            if self.mode=='push':
+                self.repo_obj.push()
+        finally:
+            self.lock.unlock()
 
 def _test():
     """perform internal tests."""
