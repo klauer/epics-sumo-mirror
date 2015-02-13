@@ -630,6 +630,15 @@ file, with "--scandb" you specify the name of the scan database file. The scan
 database file contains information on what moduleversion can be used with what
 dependency version.
 
+convert-old OLDDB
+:::::::::::::::::
+
+Convert a :ref:`dependency database <reference-sumo-db-The-dependency-database>` 
+file OLDDB from old to new format. The old format had architecture data
+("arch") for each moduleversion. In the new format this data is removed.  Note
+that this command IGNORES option "--dbrepo", it directly operates on the file
+given with option "--db".
+
 appconvert SCANFILE
 :::::::::::::::::::
 

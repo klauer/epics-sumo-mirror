@@ -27,6 +27,28 @@ assert __version__==sumolib.utils.__version__
 # class definitions
 # -----------------------------------------------
 
+class OldDB(sumolib.JSON.Container):
+    """convert the old dependency database to the new format.
+
+    returns a BuildCache and a Dependency object.
+    """
+    def __init__(self, dict_= None, lock_timeout= None):
+        """create the object."""
+        super(OldDB, self).__init__(dict_, lock_timeout)
+    def convert(self):
+        """convert to a Dependencies and BuildCache object.
+        """
+        new= {}
+        for (modulename, moduledict) in self.datadict().items():
+            new_moduledict= new.setdefault(modulename, {})
+            for (versionname, versiondict) in moduledict.items():
+                new_versiondict= new_moduledict.setdefault(versionname, {})
+                for (propertyname, proptertydict) in versiondict.items():
+                    if propertyname=="archs":
+                        continue
+                    new_versiondict[propertyname]= proptertydict
+        return DB(new)
+
 class DB(sumolib.JSON.Container):
     """the dependency database."""
     # pylint: disable=R0904

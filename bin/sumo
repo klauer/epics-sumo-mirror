@@ -49,7 +49,7 @@ KNOWN_MAIN_COMMANDS=set(("help","lock","unlock","edit","makeconfig",
                          "showconfig", "db","build"))
 
 KNOWN_DB_COMMANDS=set(("alias-add", "appconvert", "check", "clonemodule",
-                       "cloneversion", "convert",
+                       "cloneversion", "convert", "convert-old",
                        "filter", "find", "format",
                        "list", "merge", "dependency-add",
                        "dependency-delete", "replaceversion", "show",
@@ -1168,6 +1168,27 @@ def db_convert(arguments, options):
     db_to_repo(options, mngr, db, "convert", arguments)
     buildcache.json_save(options.scandb,
                          options.verbose, options.dry_run)
+def db_convert_old(arguments, options):
+    """implement "db convert-old"."""
+    args= get_command_args(arguments, ["OLDDB"])
+    assert_mandatory_options(options, "db")
+    try:
+        olddb= sumolib.Dependencies.OldDB.from_json_file(args["OLDDB"],
+                                                         keep_locked= False)
+    except ValueError, e:
+        if not catch_exceptions:
+            raise
+        sys.exit(errtxt("Error while loading dependency database", e))
+    except IOError, e:
+        if not catch_exceptions:
+            raise
+        sys.exit(errtxt("Error while loading dependency database", e))
+    db= olddb.convert()
+    if options.dumpdb:
+        db.json_print()
+    else:
+        db_to_repo(options, None, db, "convert-old", arguments)
+        # ^^^ does also unlock the file
 
 def db_appconvert(arguments):
     """implement "db appconvert"."""
@@ -2154,6 +2175,10 @@ def process_db(options, commands):
         db_convert(commands[1:], options)
         return
 
+    if commands[0]=="convert-old":
+        db_convert_old(commands[1:], options)
+        return
+
     if commands[0]=="appconvert":
         db_appconvert(commands[1:])
         return
@@ -2640,6 +2665,7 @@ Query or modify the dependency database (DB) file. These are the known
 subcommands here:
 
   convert      - convert a scanfile created by sumo-scan to a DB file
+  convert-old  - convert DB file from old to new format
   appconvert   - convert a scanfile to a MODULES file for an application
   format       - reformat the dependency file
   weight       - set the weight factor for modules
@@ -2707,8 +2733,13 @@ name of the new created dependency database file, with "--scandb" you specify
 the name of the scan database file.  The scan database file contains
 information on what moduleversion can be used with what dependency version.
 """,
-        "appconvert": """
-appconvert SCANFILE 
+        "convert-old":"""
+convert OLDDB
+
+Convert a dependency database file OLDDB from old to new format. The old format
+had architecture data ("arch") for each moduleversion. In the new format this
+data is removed. Note that this command IGNORES option "--dbrepo", it directly
+operates on the file given with option "--db".
 
 Convert a SCANFILE that was created by applying sumo-scan to an application to
 a list of aliases and modulespecs in JSON format. The result is printed to the
