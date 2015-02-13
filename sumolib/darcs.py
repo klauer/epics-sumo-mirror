@@ -30,7 +30,7 @@ class Repo(object):
     def _default_repo(self):
         """return the default repo."""
         try:
-            (reply,_)= sumolib.system.system(
+            (reply,_)= sumolib.system.system(\
                                     "darcs show repo --repodir %s" % \
                                         self.directory,
                                     True, False,
@@ -55,9 +55,8 @@ class Repo(object):
         try:
             # catch_stdout= True : do not show stdout,
             # catch_stderr= True : do not show stderr:
-            (_,_)= sumolib.system.system(cmd,
-                                 True, True,
-                                 self.verbose, self.dry_run)
+            (_,_)= sumolib.system.system(cmd, True, True,
+                                         self.verbose, self.dry_run)
         except IOError, _:
             # probably no darcs repo found
             return
@@ -69,8 +68,8 @@ class Repo(object):
         object are ignored. The matcher parameter may be <None>.
         """
         cmd= "darcs whatsnew -s --repodir %s" % self.directory
-        (reply,_,rc)= sumolib.system.system_rc(cmd,
-                             True, False, self.verbose, self.dry_run)
+        (reply,_,rc)= sumolib.system.system_rc(cmd, True, False,
+                                               self.verbose, self.dry_run)
         # Note: a return code 1 is normal with darcs
         if rc not in (0,1):
             raise IOError(rc, "cmd \"%s\" failed" % cmd)
@@ -94,9 +93,8 @@ class Repo(object):
             raise AssertionError("cannot compute local patches without "
                                  "a reachable remote repository.")
         cmd= "darcs push --repodir %s --dry-run" % self.directory
-        (reply,_)= sumolib.system.system(cmd,
-                             True, False,
-                             self.verbose, self.dry_run)
+        (reply,_)= sumolib.system.system(cmd, True, False,
+                                         self.verbose, self.dry_run)
         last_line= reply.splitlines()[-1].strip()
         if last_line.startswith("No recorded local changes"):
             return False
@@ -110,9 +108,8 @@ class Repo(object):
         Returns the found tag or None if no tag on top was found.
         """
         cmd= "darcs changes -a --last 1 --repodir %s" % self.directory
-        (reply,_)= sumolib.system.system(cmd,
-                             True, False,
-                             self.verbose, self.dry_run)
+        (reply,_)= sumolib.system.system(cmd, True, False,
+                                         self.verbose, self.dry_run)
         last_line= reply.splitlines()[-1].strip()
         if last_line.startswith("tagged "):
             return last_line.replace("tagged ","")
@@ -248,23 +245,20 @@ class Repo(object):
         else:
             m_param="-m '%s'" % logmessage
         cmd="darcs record --repodir %s -a %s" % (self.directory, m_param)
-        (_,_)= sumolib.system.system(cmd,
-                                     True, False,
+        (_,_)= sumolib.system.system(cmd, True, False,
                                      self.verbose, self.dry_run)
         self.local_changes= False
     def push(self):
         """push all changes changes."""
         cmd="darcs push --repodir %s -a %s" % (self.directory,
                                                self.remote_url)
-        (_,_)= sumolib.system.system(cmd,
-                                     True, False,
+        (_,_)= sumolib.system.system(cmd, True, False,
                                      self.verbose, self.dry_run)
     def pull_merge(self):
         """pull changes and try to merge."""
         cmd="darcs pull --repodir %s -q -a %s" % (self.directory,
                                                   self.remote_url)
-        (stdout,_)= sumolib.system.system(cmd,
-                                          True, False,
+        (stdout,_)= sumolib.system.system(cmd, True, False,
                                           self.verbose, self.dry_run)
         print stdout
         for l in stdout.splitlines():
