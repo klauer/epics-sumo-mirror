@@ -22,7 +22,7 @@ PWD_NICE=`pwd`
 
 echo -e "\n-> Test sumo db show" >&2
 
-DEPS=tmp-sumo-db-convert/DEPS.DB
+DEPSDIR=tmp-sumo-db-convert
 
-$SUMO db --db $DEPS show ALARM 
+$SUMO db --dbdir $DEPSDIR show ALARM 
 

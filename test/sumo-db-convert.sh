@@ -42,7 +42,7 @@ rm -f $EXAMPLEDIR/DEPS.DB $EXAMPLEDIR/SCAN.DB
 
 set +o posix
 
-$SUMO db convert tmp-sumo-scan-all/SCAN -D "r\"^$PWD_REAL\",r\"$PWD_NICE\"" -U "r\"^$PWD_REAL\",r\"$PWD_NICE\"" --db $EXAMPLEDIR/DEPS.DB --scandb $EXAMPLEDIR/SCAN.DB 2> >(grep -v 'no dependency info' 1>&2) 
+$SUMO db convert tmp-sumo-scan-all/SCAN -D "r\"^$PWD_REAL\",r\"$PWD_NICE\"" -U "r\"^$PWD_REAL\",r\"$PWD_NICE\"" --dbdir $EXAMPLEDIR --scandb $EXAMPLEDIR/SCAN.DB 2> >(grep -v 'no dependency info' 1>&2) 
 
 # now, in order to be able to test the URL of tar files later, patch the
 # created file:

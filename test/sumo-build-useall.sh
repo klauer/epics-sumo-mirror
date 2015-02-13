@@ -27,8 +27,8 @@ TESTDIR=tmp-sumo-build-new-2
 cd $TESTDIR > /dev/null
 
 echo -e "\nsumo-build useall MYAPP-001:"
-$SUMO build --builddir . --db DEPS.DB useall MYAPP-001 -o - | sed -e "s#`pwd -P`##"
+$SUMO build --builddir . --dbdir . useall MYAPP-001 -o - | sed -e "s#`pwd -P`##"
 
 echo -e "\nsumo-build useall MYAPP-002:"
-$SUMO build --builddir . --db DEPS.DB useall MYAPP-002 -o - | sed -e "s#`pwd -P`##"
+$SUMO build --builddir . --dbdir . useall MYAPP-002 -o - | sed -e "s#`pwd -P`##"
 

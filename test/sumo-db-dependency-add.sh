@@ -18,15 +18,21 @@ BINDIR=`pwd`/../bin
 SUMO_SCAN="$PYTHON $BINDIR/sumo-scan -C"
 SUMO="$PYTHON $BINDIR/sumo -C"
 
+EXAMPLEDIR=tmp-$ME
+
 PWD_NICE=`pwd`
 PWD_REAL=`pwd -P`
 
 echo -e "\n-> Test sumo db replaceversion." >&2
 
-cp tmp-sumo-db-convert/DEPS.DB $ME-DEPS.tmp
+rm -rf $EXAMPLEDIR
+mkdir $EXAMPLEDIR
+cd $EXAMPLEDIR > /dev/null
 
-$SUMO db --db $ME-DEPS.tmp dependency-add ALARM:R3-8-modified CSM
+cp ../tmp-sumo-db-convert/DEPS.DB .
+
+$SUMO db --dbdir . dependency-add ALARM:R3-8-modified CSM
 echo "DB file:"
-cat $ME-DEPS.tmp | sed -e "s#$PWD_NICE##;s#$PWD_REAL##;s#\"[0-9a-f]\{12\}\"#\"ABCDABCDABCD\"#"
+cat DEPS.DB | sed -e "s#$PWD_NICE##;s#$PWD_REAL##;s#\"[0-9a-f]\{12\}\"#\"ABCDABCDABCD\"#"
 
 

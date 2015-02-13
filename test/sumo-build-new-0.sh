@@ -22,7 +22,7 @@ PWD_NICE=`pwd`
 
 echo -e "\n-> Test sumo build new --no-checkout." >&2
 
-DEPS=tmp-sumo-db-convert/DEPS.DB
+DEPSDIR=tmp-sumo-db-convert
 
 TESTDIR=tmp-$ME
 if [ ! -d $TESTDIR ]; then
@@ -30,9 +30,9 @@ if [ ! -d $TESTDIR ]; then
 fi
 rm -f $TESTDIR/BUILDS.DB
 
-$SUMO build --db $DEPS --builddir $TESTDIR new --no-checkout BASE:R3-14-12-2-1 MCAN:R2-6-1 ALARM:R3-7 BSPDEP_TIMER:R6-2 BSPDEP_VMETAS:R2-0 MISC_DBC:PATH-3-0  MISC_DEBUGMSG:R3-0 SOFT_DEVHWCLIENT:TAR-3-0 
-$SUMO build --db $DEPS --builddir $TESTDIR state AUTO-001 stable
-$SUMO build --db $DEPS --builddir $TESTDIR new --no-checkout BASE:R3-14-12-2-1 MCAN:R2-6-1 ALARM:R3-8-modified BSPDEP_TIMER:R6-2 BSPDEP_VMETAS:R2-0 MISC_DBC:PATH-3-0  MISC_DEBUGMSG:R3-0 SOFT_DEVHWCLIENT:TAR-3-0 
+$SUMO build --dbdir $DEPSDIR --builddir $TESTDIR new --no-checkout BASE:R3-14-12-2-1 MCAN:R2-6-1 ALARM:R3-7 BSPDEP_TIMER:R6-2 BSPDEP_VMETAS:R2-0 MISC_DBC:PATH-3-0  MISC_DEBUGMSG:R3-0 SOFT_DEVHWCLIENT:TAR-3-0 
+$SUMO build --dbdir $DEPSDIR --builddir $TESTDIR state AUTO-001 stable
+$SUMO build --dbdir $DEPSDIR --builddir $TESTDIR new --no-checkout BASE:R3-14-12-2-1 MCAN:R2-6-1 ALARM:R3-8-modified BSPDEP_TIMER:R6-2 BSPDEP_VMETAS:R2-0 MISC_DBC:PATH-3-0  MISC_DEBUGMSG:R3-0 SOFT_DEVHWCLIENT:TAR-3-0 
 
 echo "BUILD file:"
 cat $TESTDIR/BUILDS.DB

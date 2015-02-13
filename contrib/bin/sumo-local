@@ -40,7 +40,7 @@ mkdir database
 
 cp $SUMODIR/database/DEPS.DB database
 
-sumo --db $LOCAL_SUMODIR/database/DEPS.DB --builddir $LOCAL_SUMODIR/build --builddir $LOCAL_SUMODIR/build --makeopts "-s" makeconfig DEFAULT
+sumo --dbdir $LOCAL_SUMODIR/database --builddir $LOCAL_SUMODIR/build --builddir $LOCAL_SUMODIR/build --makeopts "-s" makeconfig DEFAULT
 
 cp -a $dir $module-TEST
 

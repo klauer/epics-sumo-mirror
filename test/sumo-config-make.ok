@@ -3,7 +3,7 @@ generated config file:
     "#preload": [
         "sumo-config-make-MODULES.tmp"
     ],
-    "db": "DEPS.DB",
+    "dbdir": ".",
     "dir-patch": [
         "r\"^/srv/csr/Epics\",r\"rcsadm@aragon.acc.bessy.de:/opt/Epics\""
     ],

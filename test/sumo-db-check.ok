@@ -1,6 +1,5 @@
-sumo db --db samples/DB check:
+sumo db --dbdir tmp-sumo-db-convert samples check:
 
-
-sumo db --db samples/BUILDS check:
+sumo db --dbdir tmp-sumo-db-check check:
 Error while loading dependency database
-dependency data is invalid (created from JSON file sumo-db-check-DEPS.tmp)
+dependency data is invalid (created from JSON file ./DEPS.DB)

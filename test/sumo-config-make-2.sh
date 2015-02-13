@@ -22,12 +22,12 @@ PWD_NICE=`pwd`
 
 echo -e "\n-> Test sumo config make (2)" >&2
 
-DEPS=tmp-sumo-db-convert/DEPS.DB
+DEPSDIR=tmp-sumo-db-convert
 CONFIG=$ME-CONFIG.tmp
 MODULES=$ME-MODULES.tmp
 
 # create config file:
-$SUMO --no-default-config --#preload $MODULES --alias MCAN:MULTICAN --alias ALARM:BSPDEP_ALARM --buildtag-stem MYAPP --db DEPS.DB --extra "extra line" --makeopts "-sj" --progress --readonly --scandb SCAN --builddir /supports --verbose config make $CONFIG
+$SUMO --no-default-config --#preload $MODULES --alias MCAN:MULTICAN --alias ALARM:BSPDEP_ALARM --buildtag-stem MYAPP --dbdir . --extra "extra line" --makeopts "-sj" --progress --readonly --scandb SCAN --builddir /supports --verbose config make $CONFIG
 
 echo "generated config file:"
 cat $CONFIG
@@ -40,5 +40,5 @@ cat $MODULES
 
 echo "read modulespecs from config and modules file:"
 # now check if they can be scanned:
-$SUMO build --no-default-config -c $CONFIG try --db $DEPS --dump-modules
+$SUMO build --no-default-config -c $CONFIG try --dbdir $DEPSDIR --dump-modules
 

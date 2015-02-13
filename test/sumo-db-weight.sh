@@ -18,13 +18,19 @@ BINDIR=`pwd`/../bin
 SUMO_SCAN="$PYTHON $BINDIR/sumo-scan -C"
 SUMO="$PYTHON $BINDIR/sumo -C"
 
+EXAMPLEDIR=tmp-$ME
+
 PWD_NICE=`pwd`
 PWD_REAL=`pwd -P`
 
 echo -e "\n-> Test sumo db weight" >&2
 
-cp tmp-sumo-db-convert/DEPS.DB $ME-DEPS.tmp
+rm -rf $EXAMPLEDIR
+mkdir $EXAMPLEDIR
+cd $EXAMPLEDIR > /dev/null
 
-$SUMO db --db $ME-DEPS.tmp -- weight -1 MCAN:R2-6-1 MISC_DBC
-$SUMO db --db $ME-DEPS.tmp weight 1 ALARM
-cat $ME-DEPS.tmp | sed -e "s#$PWD_NICE##;s#$PWD_REAL##;s#\"[0-9a-f]\{12\}\"#\"ABCDABCDABCD\"#"
+cp ../tmp-sumo-db-convert/DEPS.DB .
+
+$SUMO db --dbdir . -- weight -1 MCAN:R2-6-1 MISC_DBC
+$SUMO db --dbdir . weight 1 ALARM
+cat DEPS.DB | sed -e "s#$PWD_NICE##;s#$PWD_REAL##;s#\"[0-9a-f]\{12\}\"#\"ABCDABCDABCD\"#"

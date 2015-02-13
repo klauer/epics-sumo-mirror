@@ -50,7 +50,7 @@ mkdir $dir/database
 cp -a $dir_3_14_8/database/* $dir/database
 cp -a $dir_3_14_12/database/* $dir/database
 
-sumo db --db $dir/database/DEPS.DB merge $dir_3_14_8/database/DEPS.DB
+sumo db --dbdir $dir/database merge $dir_3_14_8/database/DEPS.DB
 
 rm -rf $dir_3_14_8
 rm -rf $dir_3_14_12

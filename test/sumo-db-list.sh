@@ -22,6 +22,6 @@ PWD_NICE=`pwd`
 
 echo -e "\n-> Test sumo db list" >&2
 
-DEPS=tmp-sumo-db-convert/DEPS.DB
+DEPSDIR=tmp-sumo-db-convert
 
-$SUMO db --db $DEPS list 
+$SUMO db --dbdir $DEPSDIR list 

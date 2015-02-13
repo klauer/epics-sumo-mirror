@@ -33,15 +33,14 @@ cd database > /dev/null
 echo "* scanning existing EPICS 3.14.8 support directory"
 sumo-scan-3.14.8
 ORIG_DB=`ls *-DEPS-*.DB`
-DB=DEPS.DB
 
 echo "* creating the Sumo dependency database"
-cp $ORIG_DB $DB
+cp $ORIG_DB DEPS.DB
 
 cd .. > /dev/null
 
 echo "* creating Sumo configuration files"
-sumo --db $SUMODIR/database/$DB --builddir $SUMODIR/build --builddir $SUMODIR/build --makeopts "-s" makeconfig
+sumo --dbdir $SUMODIR/database --builddir $SUMODIR/build --builddir $SUMODIR/build --makeopts "-s" makeconfig
 
 echo "* adding BASE 3.14.8.2.1 to the dependency database"
 sumo db cloneversion BASE R3-14-8-2-0 R3-14-8-2-1 darcs rcsadm@repo:/opt/Epics/R3.14.8/base/3-14-8-2-1 R3-14-8-2-1

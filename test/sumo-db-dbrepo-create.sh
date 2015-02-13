@@ -45,6 +45,6 @@ git add DEPS.DB
 git commit -a -q -m 'initial record'
 cd ..
 
-$SUMO db --db "local-darcs/DEPS.DB" --dbrepo 'darcs central' list 
-$SUMO db --db "local-hg/DEPS.DB" --dbrepo 'hg central' list 
-$SUMO db --db "local-git/DEPS.DB" --dbrepo 'git central' list 
+$SUMO db --dbdir local-darcs --dbrepo 'darcs central' list 
+$SUMO db --dbdir local-hg    --dbrepo 'hg central' list 
+$SUMO db --dbdir local-git   --dbrepo 'git central' list 

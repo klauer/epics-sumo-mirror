@@ -31,7 +31,7 @@ boolean, a string or a list of strings.
 Here is an example of such a file::
 
   {
-      "db": "/opt/Epics/sumo/database/DEPS.DB",
+      "dbdir": "/opt/Epics/sumo/database",
       "makeopts": [
           "-s"
       ],
@@ -220,8 +220,8 @@ buildtag-stem
   A string that specifies a buildtag stem,
   for details see :ref:`sumo options <reference-sumo-Options>`.
 
-db
-  The filename of the dependency database,
+dbdir
+  The directory where the dependency database file is found,
   for details see :ref:`sumo options <reference-sumo-Options>`.
 
 dbrepo
@@ -289,7 +289,7 @@ Here is an example of our global sumo configuration file here at HZB::
           "configure/MODULES.HOST",
           "configure/MODULES"
       ],
-      "db": "/opt/Epics/sumo/database/DEPS.DB",
+      "dbdir": "/opt/Epics/sumo/database",
       "dbrepo": "darcs rcsadm@repo.acc.bessy.de:/opt/repositories/controls/darcs/epics/support/sumo-deps-db",
       "dbrepomode": "push",
       "builddir": "/opt/Epics/sumo/build"
@@ -300,8 +300,9 @@ Explanation:
 builddir
   This defines the directory where the builds are created and the build
   database file ``BUILDS.DB`` resides.
-db
-  This defines the path and filename of the dependency database file ``DEPS.DB``.
+dbdir
+  The directory where the dependency database file "DEPS.DB" is found,
+  for details see :ref:`sumo options <reference-sumo-Options>`.
 dbrepo
   This defines that the directory of the dependency database file is a darcs
   repository. You could also use mercurial or git here. The long string after

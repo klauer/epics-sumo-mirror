@@ -65,6 +65,7 @@ KNOWN_FILE_COMMANDS=set(("lock", "unlock", "edit"))
 CONFIG_NAME="sumo.config"
 ENV_CONFIG="SUMOCONFIG"
 BUILDDB="BUILDS.DB"
+DB="DEPS.DB"
 
 LOCK_TIMEOUT=4
 # timeout for file locking in seconds
@@ -116,6 +117,10 @@ def module_dir(builddir, buildtag, modulename, versionname):
     else:
         return os.path.join(builddir, modulename,
                             "%s+%s" % (versionname, buildtag))
+
+def db_f(path):
+    """return the filename of the db file."""
+    return os.path.join(path, DB)
 
 def get_builddir(path, path_local):
     """return the build directory that is actually used for new builds."""
@@ -185,7 +190,7 @@ def repo_msg(prefix, args):
     """generate a standard commit message."""
     return "%s %s" % (prefix, " ".join(args))
 
-def repo_manager(filename, sourcespec_string, mode,
+def repo_manager(dbdir, sourcespec_string, mode,
                  verbose, dry_run):
     """create a ManagedRepo object.
 
@@ -200,10 +205,9 @@ def repo_manager(filename, sourcespec_string, mode,
     source_spec_obj= \
         sumolib.repos.SourceSpec.from_string_sourcespec(\
                                           sourcespec_string.split())
-    (dir_,_)= os.path.split(filename)
     return sumolib.repos.ManagedRepo(source_spec_obj,
                                      mode,
-                                     dir_, LOCK_TIMEOUT, verbose, dry_run)
+                                     dbdir, LOCK_TIMEOUT, verbose, dry_run)
 
 def db_from_json_file(filename, keep_locked= False):
     """load a db, exits gracefully in case of an error."""
@@ -224,7 +228,7 @@ def db_from_repo(options, keep_locked= False, changes_check= True):
     """load a db, exits gracefully in case of an error."""
     # pylint: disable=R0913
     #                          Too many arguments
-    mngr= repo_manager(options.db, options.dbrepo, options.dbrepomode,
+    mngr= repo_manager(options.dbdir, options.dbrepo, options.dbrepomode,
                        options.verbose, options.dry_run)
     if mngr.local_changes():
         if not changes_check:
@@ -244,7 +248,7 @@ def db_from_repo(options, keep_locked= False, changes_check= True):
         if not catch_exceptions:
             raise
         sys.exit(errtxt("Error while loading dependency database",e))
-    db= db_from_json_file(options.db, keep_locked)
+    db= db_from_json_file(db_f(options.dbdir), keep_locked)
     return (mngr, db)
 
 def db_to_repo(options, mngr, db, command, arguments):
@@ -252,7 +256,7 @@ def db_to_repo(options, mngr, db, command, arguments):
     # pylint: disable=R0913
     #                          Too many arguments
     try:
-        db.json_save(options.db, options.verbose, options.dry_run)
+        db.json_save(db_f(options.dbdir), options.verbose, options.dry_run)
     except IOError, e:
         # IOError may happen when the file cannot be locked
         if not catch_exceptions:
@@ -1151,9 +1155,9 @@ def apprelease(build_tag, modulespecs, builddb, db,
 def db_convert(arguments, options):
     """implement "db convert"."""
     args= get_command_args(arguments, ["SCANFILE"])
-    assert_mandatory_options(options, "db", "scandb")
-    if os.path.exists(options.db):
-        sys.exit("error, db file '%s' already exists" % options.db)
+    assert_mandatory_options(options, "dbdir", "scandb")
+    if os.path.exists(db_f(options.dbdir)):
+        sys.exit("error, db file '%s' already exists" % db_f(options.dbdir))
     if os.path.exists(options.scandb):
         sys.exit("error, scandb file '%s' already exists" % \
                  options.scandb)
@@ -1164,7 +1168,7 @@ def db_convert(arguments, options):
     (buildcache, db)= create_database(deps, repoinfo, groups,
                                       options.dir_patch,
                                       options.url_patch)
-    mngr= repo_manager(options.db, options.dbrepo, options.dbrepomode,
+    mngr= repo_manager(options.dbdir, options.dbrepo, options.dbrepomode,
                        options.verbose, options.dry_run)
     mngr.prepare_read() # does a "pull"
     db_to_repo(options, mngr, db, "convert", arguments)
@@ -1173,7 +1177,7 @@ def db_convert(arguments, options):
 def db_convert_old(arguments, options):
     """implement "db convert-old"."""
     args= get_command_args(arguments, ["OLDDB"])
-    assert_mandatory_options(options, "db")
+    assert_mandatory_options(options, "dbdir")
     try:
         olddb= sumolib.Dependencies.OldDB.from_json_file(args["OLDDB"],
                                                          keep_locked= False)
@@ -1204,7 +1208,7 @@ def db_appconvert(arguments):
 
 def db_format(arguments, options):
     """implement "db format."""
-    assert_mandatory_options(options, "db")
+    assert_mandatory_options(options, "dbdir")
     get_command_args(arguments)
     (mngr, db)= db_from_repo(options, keep_locked= True, changes_check= False)
     if options.dumpdb:
@@ -1217,7 +1221,7 @@ def db_weight(arguments, options):
     """implement "db weight"."""
     args= get_command_args(arguments, ["WEIGHT"],
                            extra_mandatory= "MODULES")
-    assert_mandatory_options(options, "db")
+    assert_mandatory_options(options, "dbdir")
     try:
         weight= int(args["WEIGHT"])
     except ValueError, _:
@@ -1249,7 +1253,7 @@ def db_filter(arguments, options):
     """implement "db filter"."""
     args= get_command_args(arguments,
                            extra_optional="MODULES")
-    assert_mandatory_options(options, "db")
+    assert_mandatory_options(options, "dbdir")
     modulespecs= []
     if options.module:
         modulespecs.extend(options.module)
@@ -1278,7 +1282,7 @@ def db_filter(arguments, options):
 
 def db_check(arguments, options):
     """implement "db check"."""
-    assert_mandatory_options(options, "db")
+    assert_mandatory_options(options, "dbdir")
     get_command_args(arguments)
     (_, db)= db_from_repo(options, keep_locked= False, changes_check= False)
     msg= db.check()
@@ -1287,7 +1291,7 @@ def db_check(arguments, options):
 def db_merge(arguments, options):
     """implement "db merge"."""
     args= get_command_args(arguments, ["DB"])
-    assert_mandatory_options(options, "db")
+    assert_mandatory_options(options, "dbdir")
     (mngr, db)= db_from_repo(options,
                              not options.dumpdb and (not options.dry_run))
     db2= db_from_json_file(args["DB"], keep_locked= False)
@@ -1302,7 +1306,7 @@ def db_alias_add(arguments, options):
     """implement "db alias_add"."""
     args= get_command_args(arguments,
                            ["MODULE","DEPENDENCY","ALIAS"])
-    assert_mandatory_options(options, "db")
+    assert_mandatory_options(options, "dbdir")
     module_spec= sumolib.ModuleSpec.Spec.from_string(args["MODULE"])
     try:
         module_spec.assert_exact()
@@ -1324,7 +1328,7 @@ def db_alias_add(arguments, options):
 def db_dependency_add(arguments, options):
     """implement "db dependency_add"."""
     args= get_command_args(arguments, ["MODULE","DEPENDENCY"])
-    assert_mandatory_options(options, "db")
+    assert_mandatory_options(options, "dbdir")
     module_spec= sumolib.ModuleSpec.Spec.from_string(args["MODULE"])
     try:
         module_spec.assert_exact()
@@ -1346,7 +1350,7 @@ def db_dependency_add(arguments, options):
 def db_dependency_delete(arguments, options):
     """implement "db dependency_delete"."""
     args= get_command_args(arguments, ["MODULE","DEPENDENCY"])
-    assert_mandatory_options(options, "db")
+    assert_mandatory_options(options, "dbdir")
     module_spec= sumolib.ModuleSpec.Spec.from_string(args["MODULE"])
     if module_spec.no_version_spec():
         sys.exit("module has no version")
@@ -1372,7 +1376,7 @@ def db_clone_replace_version(command, arguments, options):
     args= get_command_args(arguments,
                            ["MODULE","OLD-VERSION","NEW-VERSION"],
                            extra_optional="SOURCESPEC")
-    assert_mandatory_options(options, "db")
+    assert_mandatory_options(options, "dbdir")
     do_replace= (command=="replaceversion")
     modulename= args["MODULE"]
     sourcespec= args.get("SOURCESPEC")
@@ -1422,7 +1426,7 @@ def db_clonemodule(arguments, options):
     args= get_command_args(arguments,
                            ["OLD-MODULE","NEW-MODULE"],
                            extra_optional="VERSIONS")
-    assert_mandatory_options(options, "db")
+    assert_mandatory_options(options, "dbdir")
     (mngr, db)= db_from_repo(options,
                              not options.dumpdb and (not options.dry_run))
     db.clonemodule(args["OLD-MODULE"], args["NEW-MODULE"],
@@ -1436,7 +1440,7 @@ def db_clonemodule(arguments, options):
 def db_list(arguments, options):
     """implement "db list"."""
     get_command_args(arguments)
-    assert_mandatory_options(options, "db")
+    assert_mandatory_options(options, "dbdir")
     (_, db)= db_from_repo(options)
     result= sorted(db.iter_modulenames())
     sumolib.JSON.dump(result)
@@ -1445,7 +1449,7 @@ def db_show(arguments, options):
     """implement "db show."""
     args= get_command_args(arguments,
                            extra_optional="MODULES")
-    assert_mandatory_options(options, "db")
+    assert_mandatory_options(options, "dbdir")
     (_, db)= db_from_repo(options)
 
     modulespecs= []
@@ -1487,7 +1491,7 @@ def db_show(arguments, options):
 def db_find(arguments, options):
     """implement "db find"."""
     args= get_command_args(arguments, ["REGEXP"])
-    assert_mandatory_options(options, "db")
+    assert_mandatory_options(options, "dbdir")
     (_, db)= db_from_repo(options)
     if options.noignorecase:
         rx_flags= 0
@@ -1610,7 +1614,7 @@ def build_try(arguments, options):
     #                          Too many statements
     args= get_command_args(arguments,
                            extra_optional="MODULES")
-    assert_mandatory_options(options, "db", "builddir")
+    assert_mandatory_options(options, "dbdir", "builddir")
 
     buildtag= options.buildtag
 
@@ -1808,7 +1812,7 @@ def build_new(arguments, options):
     #                          Too many statements
     args= get_command_args(arguments,
                            extra_optional="MODULES")
-    assert_mandatory_options(options, "db", "builddir")
+    assert_mandatory_options(options, "dbdir", "builddir")
     if options.readonly:
         sys.exit("--readonly forbids creating a new build")
 
@@ -1945,7 +1949,7 @@ def build_find(arguments, options):
 def build_useall(arguments, options):
     """implement "build_useall"."""
     args= get_command_args(arguments, ["BUILDTAG"])
-    assert_mandatory_options(options, "db", "builddir")
+    assert_mandatory_options(options, "dbdir", "builddir")
     output= options.output
     if not output:
         _assume_dir("configure", options.dry_run)
@@ -1968,7 +1972,7 @@ def build_use(arguments, options):
     """implement "build_use"."""
     args= get_command_args(arguments,
                            extra_optional="MODULES")
-    assert_mandatory_options(options, "db", "builddir")
+    assert_mandatory_options(options, "dbdir", "builddir")
 
     modulespecs= []
     if options.module:
@@ -2375,9 +2379,9 @@ def process(options, commands):
                 ENV_CONFIG,
                 ( "#preload","#opt-preload","#postload","#opt-postload",
                   "alias", "buildtag-stem",
-                  "db", "dbrepo", "dbrepomode", "extra", "makeopts", "module",
-                  "progress", "readonly", "scandb", "dir-patch", "url-patch",
-                  "builddir", "localbuilddir", "verbose"))
+                  "dbdir", "dbrepo", "dbrepomode", "extra", "makeopts",
+                  "module", "progress", "readonly", "scandb", "dir-patch",
+                  "url-patch", "builddir", "localbuilddir", "verbose"))
 
     try:
         config.load(options.config, not options.disable_loading)
@@ -2442,8 +2446,9 @@ def process(options, commands):
             sys.exit("--readonly forbids editing a database file")
         args= get_command_args(commands[1:], ["FILE"])
         mngr= None
-        if args["FILE"]==options.db:
-            mngr= repo_manager(options.db, options.dbrepo, options.dbrepomode,
+        if args["FILE"]==db_f(options.dbdir):
+            mngr= repo_manager(options.dbdir, options.dbrepo,
+                               options.dbrepomode,
                                options.verbose, options.dry_run)
         try:
             sumolib.lock.edit_with_lock(args["FILE"],
@@ -2505,11 +2510,12 @@ followed by a subcommand. These are the known maincommands:
   db [subcommand]    - operation on the dependency database
   build [subcommand] - manage the build database and builds
 
-For all of the db subcommands you have to specify the dependency database with
-option --db or a configuration file.
+For all of the db subcommands you have to specify the dependency database
+directory with option --dbdir or a configuration file.
 
 For all of the build subcommands you have to specify the dependency database
-and the build database with --db and --builddb or a configuration file.
+directory and the build directory with --dbdir and --builddir or a
+configuration file.
 
 Use "help [maincommand] for further details.
 """,
@@ -2545,7 +2551,7 @@ command line option, each value is a boolean, a string or a list of strings.
 Here is an example of such a file:
 
   {
-      "db": "/opt/Epics/sumo/database/DEPS.DB",
+      "dbdir": "/opt/Epics/sumo/database",
       "makeopts": [
           "-s"
       ],
@@ -2770,10 +2776,11 @@ convert SCANFILE
 
 Convert SCANFILE created by "sumo-scan all" to a new dependency database. If
 SCANFILE is a dash "-" the program expects the scanfile on stdin.  Note that
-options "--db" and "--scandb" are mandatory here. With "--db" you specify the
-name of the new created dependency database file, with "--scandb" you specify
-the name of the scan database file.  The scan database file contains
-information on what moduleversion can be used with what dependency version.
+options "--dbdir" and "--scandb" are mandatory here. With "--dbdir" you specify
+the drectory where the new created dependency database file is stored, with
+"--scandb" you specify the name of the scan database file.  The scan database
+file contains information on what moduleversion can be used with what
+dependency version.
 """,
         "convert-old":"""
 convert OLDDB
@@ -2781,7 +2788,8 @@ convert OLDDB
 Convert a dependency database file OLDDB from old to new format. The old format
 had architecture data ("arch") for each moduleversion. In the new format this
 data is removed. Note that this command IGNORES option "--dbrepo", it directly
-operates on the file given with option "--db".
+operates on the dependency database file in the directory given with option
+"--dbdir".
 
 Convert a SCANFILE that was created by applying sumo-scan to an application to
 a list of aliases and modulespecs in JSON format. The result is printed to the
@@ -2857,12 +2865,14 @@ Show all modules whose names or sources match regexp.
         "check": """
 check 
 
-do some consistency checks on the db specifed by --db
+Do some consistency checks on the dependency database file in the directory
+specifed by --dbdir.
 """,
         "merge": """
 merge DB
 
-Merge the given db with the one specified by --db
+Merge the given dependency database file with the dependency database in the
+directory specifed by --dbdir.
 """,
         "cloneversion": """
 cloneversion MODULE OLD-VERSION NEW-VERSION [SOURCESPEC]
@@ -3147,13 +3157,14 @@ def main():
                            "exist the program continues without an error. ",
                       metavar="FILES"
                      )
-    parser.add_option("--db",
+    parser.add_option("--dbdir",
                       action="store",
                       type="string",
-                      help="Define the name of the DB file. "
-                           "A default for this option can be put in a "
-                           "configuration file.",
-                      metavar="DB"
+                      help="Define the directory where the dependency "
+                           "database file 'DEPS.DB' is found. A default "
+                           "for this option can be put in a configuration "
+                           "file.",
+                      metavar="DBDIR"
                      )
     parser.add_option("--dbrepomode",
                       action="store",
@@ -3178,14 +3189,13 @@ def main():
                       help="Define a REPOSITORY for the DB file. "
                            "REPOSITORY must consist of 'REPOTYPE URL', "
                            "REPOTYPE may be 'darcs', 'hg' or 'git'. Option "
-                           "--db must specify a file path whose directory "
-                           "part will contain the repository for the db "
-                           "file. Before reading the db file a 'pull' "
-                           "command will be executed.  When the file is "
-                           "changed, a 'commit' and a 'push' command will "
-                           "be executed. If the repository doesn't exist "
-                           "the program tries to check out a working copy "
-                           "from the given URL. "
+                           "--dbdir must specify a directory that will "
+                           "contain the repository for the db file. Before "
+                           "reading the db file a 'pull' command will be "
+                           "executed. When the file is changed, a 'commit' "
+                           "and a 'push' command will be executed. If the "
+                           "repository doesn't exist the program tries to "
+                           "check out a working copy from the given URL. "
                            "A default for this option can be put in a "
                            "configuration file.",
                       metavar="REPOSITORY"
