@@ -1,13 +1,23 @@
 generated config file:
 {
     "#preload": [
-        "sumo-db-makeconfig-MODULES.tmp"
+        "sumo-config-make-2-MODULES.tmp"
     ],
+    "alias": [
+        "ALARM:BSPDEP_ALARM",
+        "MCAN:MULTICAN"
+    ],
+    "builddir": "/supports",
+    "buildtag-stem": "MYAPP",
     "db": "DEPS.DB",
-    "dir-patch": [
-        "r\"^/srv/csr/Epics\",r\"rcsadm@aragon.acc.bessy.de:/opt/Epics\""
+    "extra": [
+        "extra line"
+    ],
+    "makeopts": [
+        "-sj"
     ],
     "progress": true,
+    "readonly": true,
     "scandb": "SCAN",
     "verbose": true
 }
@@ -15,7 +25,6 @@ generated modules file:
 {
     "module": [
         "ALARM:R3-7",
-        "BASE:R3-14-12-2-1",
         "BSPDEP_TIMER:R6-2",
         "BSPDEP_VMETAS:R2-0",
         "MCAN:R2-6-1",
@@ -26,7 +35,6 @@ generated modules file:
 }
 read modulespecs from config and modules file:
 ALARM:R3-7
-BASE:R3-14-12-2-1
 BSPDEP_TIMER:R6-2
 BSPDEP_VMETAS:R2-0
 MCAN:R2-6-1

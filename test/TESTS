@@ -18,8 +18,8 @@ sumo-db-cloneversion-dbrepo
 sumo-db-cloneversion-dbrepo-2
 sumo-db-dbrepo-pull
 sumo-db-dbrepo-conflict
-sumo-db-makeconfig
-sumo-build-makeconfig
+sumo-config-make
+sumo-config-make-2
 sumo-build-new-0
 sumo-build-modulespecs
 sumo-build-try

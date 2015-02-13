@@ -259,8 +259,20 @@ Commands
 
 This is a list of all commands:
 
-makeconfig FILENAME [OPTIONNAMES]
-+++++++++++++++++++++++++++++++++
+config list
++++++++++++
+
+List all configuration files that were loaded.
+
+config show [OPTIONNAMES]
++++++++++++++++++++++++++
+
+Show the configuration in JSON format.  OPTIONNAMES is an optional list of long
+option names. If OPTIONNAMES are specified, only options from this list are
+saved in the configuration file.
+
+config make FILENAME [OPTIONNAMES]
+++++++++++++++++++++++++++++++++++
 
 Create a new configuration file from the options read from configuration files
 and options from the command line. If FILENAME is '-' dump to the console.

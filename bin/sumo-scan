@@ -44,7 +44,9 @@ assert __version__==sumolib.makefile_scan.__version__
 assert __version__==sumolib.repos.__version__
 
 KNOWN_COMMANDS=set(("deps", "name2paths", "path2names",
-                    "groups", "repos", "all", "makeconfig", "showconfig"))
+                    "groups", "repos", "all", "config"))
+
+KNOWN_CONFIG_COMMANDS=set(("list", "show", "make"))
 
 IGNORE_NAMES= set(["TOP", "EPICS_SUPPORT",
                    "SUPPORT", "TEMPLATE_TOP"]) #, "EPICS_BASE"])
@@ -441,8 +443,30 @@ def get_configuration(options):
                              )
     return (deps, archs)
 
-# pylint: disable=R0912
-#                          Too many branches
+def process_config(config, commands):
+    """do all the work.
+    """
+    if not commands:
+        sys.exit("command missing")
+    if commands[0] not in KNOWN_CONFIG_COMMANDS:
+        sys.exit("unknown command: %s" % commands[0])
+
+    if commands[0]=="list":
+        print "These configuration files were loaded:\n"
+        print "\n".join(config.real_paths())
+        return
+
+    if commands[0]=="make" or commands[0]=="show":
+        if commands[0]=="make":
+            if len(commands)<=1:
+                sys.exit("filename for command \"makeconfig\" is missing")
+            filename= commands[1]
+            optionnames= commands[2:]
+        else:
+            filename= "-"
+            optionnames= commands[1:]
+        config.save(filename, optionnames)
+        return
 
 def process(options, commands):
     """do all the work.
@@ -495,14 +519,8 @@ def process(options, commands):
         if not c in KNOWN_COMMANDS:
             sys.exit("unknown command: %s" % c)
 
-    if commands[0]=="showconfig":
-        print "These configuration files were loaded:"
-        print "\n".join(config.real_paths())
-        return
-    if commands[0]=="makeconfig":
-        if len(commands)<=1:
-            sys.exit("filename for command \"makeconfig\" is missing")
-        config.save(commands[1], commands[2:])
+    if commands[0]=="config":
+        process_config(config, commands[1:])
         return
 
     # evaluate the --hint command line option:
@@ -615,15 +633,20 @@ where command is:
 
 The commands above can be combined!
 
-  makeconfig FILENAME [OPTIONNAMES]
+  config list
+          List all configuration files that were loaded.
+
+  config show [OPTIONNAMES]
+          Show the configuration in JSON format.  OPTIONNAMES is an optional
+          list of long option names. If OPTIONNAMES are specified, only options
+          from this list are saved in the configuration file.
+
+  config make FILENAME [OPTIONNAMES]
           Create a new configuration file from the options read from
           configuration files and options from the command line. If FILENAME is
-          '-' dump to the console. OPTIONNAMES is an optional list of long 
-          option names. If OPTIONNAMES are specified, only options from this 
+          '-' dump to the console.  OPTIONNAMES is an optional list of long
+          option names. If OPTIONNAMES are specified, only options from this
           list are saved in the configuration file.
-
-  showconfig {FILENAME}
-          Show all the configuration files that were loaded.
 """
 
 def main():

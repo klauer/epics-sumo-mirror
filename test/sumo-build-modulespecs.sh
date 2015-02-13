@@ -23,8 +23,8 @@ PWD_NICE=`pwd`
 echo -e "\n-> Test sumo build modulespecs" >&2
 
 DEPS=tmp-sumo-db-convert/DEPS.DB
-CONFIG=sumo-db-makeconfig-CONFIG.tmp
-MODULES=sumo-db-makeconfig-MODULES.tmp
+CONFIG=sumo-config-make-CONFIG.tmp
+MODULES=sumo-config-make-MODULES.tmp
 
 SUPPORTDIR=tmp-sumo-build-new-0
 
