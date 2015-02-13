@@ -45,8 +45,10 @@ assert __version__==sumolib.Dependencies.__version__
 assert __version__==sumolib.Builds.__version__
 assert __version__==sumolib.repos.__version__
 
-KNOWN_MAIN_COMMANDS=set(("help","lock","unlock","edit","makeconfig",
-                         "showconfig", "db","build"))
+KNOWN_MAIN_COMMANDS=set(("help","lock","unlock","edit",
+                         "config", "db","build"))
+
+KNOWN_CONFIG_COMMANDS=set(("list", "show", "make"))
 
 KNOWN_DB_COMMANDS=set(("alias-add", "appconvert", "check", "clonemodule",
                        "cloneversion", "convert", "convert-old",
@@ -2034,6 +2036,10 @@ def complete_command(commandlist):
         if len(commandlist)>1:
             return glob.glob(commandlist[1]+"*")
         return glob.glob("*")
+    if commandlist[0]=="config":
+        if len(commandlist)==1:
+            return list(KNOWN_CONFIG_COMMANDS)
+        return []
     if commandlist[0]=="db":
         if len(commandlist)==1:
             return list(KNOWN_DB_COMMANDS)
@@ -2152,6 +2158,41 @@ def get_command_args(lst, mandatory_args=None,
                 (ch, " ".join(rest)))
             return
     return result
+
+def process_config(config, options, commands):
+    """do all the work.
+    """
+    if not commands:
+        sys.exit("command missing")
+    if commands[0] not in KNOWN_CONFIG_COMMANDS:
+        sys.exit("unknown command: %s" % commands[0])
+
+    if commands[0]=="list":
+        print "These configuration files were loaded:\n"
+        print "\n".join(config.real_paths())
+        return
+
+    if commands[0]=="make" or commands[0]=="show":
+        if commands[0]=="make":
+            if len(commands)<=1:
+                sys.exit("filename for command \"makeconfig\" is missing")
+            filename= commands[1]
+            optionnames= commands[2:]
+        else:
+            filename= "-"
+            optionnames= commands[1:]
+        if options.module:
+            try:
+                modulespecs_obj= sumolib.ModuleSpec.Specs.from_strings(\
+                                     options.module,
+                                     mspecs_from_build(options))
+            except ValueError, e:
+                if not catch_exceptions:
+                    raise
+                sys.exit(str(e))
+            config.set("module", modulespecs_obj.to_stringlist())
+        config.save(filename, optionnames)
+        return
 
 def process_db(options, commands):
     """do all the work.
@@ -2362,25 +2403,8 @@ def process(options, commands):
         sys.exit("command missing")
     if commands[0] not in KNOWN_MAIN_COMMANDS:
         sys.exit("unknown maincommand '%s'" % commands[0])
-    if commands[0]=="showconfig":
-        print "These configuration files were loaded:"
-        print "\n".join(config.real_paths())
-        return
-    if commands[0]=="makeconfig":
-        if len(commands)<=1:
-            sys.exit("filename for command \"makeconfig\" is missing")
-        if options.module:
-            try:
-                modulespecs_obj= sumolib.ModuleSpec.Specs.from_strings(\
-                                     options.module,
-                                     mspecs_from_build(options))
-            except ValueError, e:
-                if not catch_exceptions:
-                    raise
-                sys.exit(str(e))
-            config.set("module", modulespecs_obj.to_stringlist())
-        config.save(commands[1], commands[2:])
-        return
+    if commands[0]=="config":
+        process_config(config, options, commands[1:])
 
     elif commands[0]=="lock":
         if options.readonly:
@@ -2452,8 +2476,6 @@ def _test():
     doctest.testmod()
     print "done!"
 
-help_maincommands= set(("makeconfig", "edit", "db", "build"))
-
 # pylint: disable=C0330
 #                          Wrong indentation
 
@@ -2476,8 +2498,7 @@ A maincommand provides a grouping for the various commands of sumo.
 While some maincommands can be used without a subcommand, others must be
 followed by a subcommand. These are the known maincommands:
 
-  makeconfig         - generate a configuration file
-  showconfig         - show which configuration files were loaded
+  config             - operations on configuration files
   edit               - lock, then edit a file
   lock               - just lock a file
   unlock             - unlock a file
@@ -2621,18 +2642,37 @@ url_patch      [list of strings]
 builddir       [string]
 verbose        [boolean]
 """,
-        "makeconfig":"""
-makeconfig FILENAME [OPTIONNAMES]
+        "config":"""
+config [subcommand]
+
+Show the configuration or create or modify a configuration file. These are
+known subcommands here:
+
+  list       - list loaded configuration files
+  show       - show configuration data
+  make       - create configuration file
+
+Use "help [subcommand] for further details.
+""",
+        "config list":"""
+list
+
+List all configuration files that were loaded.
+""",
+        "config show":"""
+show [OPTIONNAMES]
+
+Show the configuration in JSON format.  OPTIONNAMES is an optional list of long
+option names. If OPTIONNAMES are specified, only options from this list are
+saved in the configuration file.
+""",
+        "make":"""
+make FILENAME [OPTIONNAMES]
 
 Create a new configuration file from the options read from configuration files
 and options from the command line. If FILENAME is '-' dump to the console. 
 OPTIONNAMES is an optional list of long option names. If OPTIONNAMES are 
 specified, only options from this list are saved in the configuration file.
-""",
-        "showconfig":"""
-showconfig {FILENAME}
-
-Show all the configuration files that were loaded.
 """,
         "lock": """
 lock FILE
@@ -2705,14 +2745,16 @@ known subcommands:
   delete    - delete a build
 """,
         "list":"""
-This is a subcommand of command 'db' and command 'build'.
+This is a subcommand of commands 'config', 'db' and 'build'.
 
+For help on 'config list' enter 'help config list'
 For help on 'db list' enter 'help db list'
 For help on 'build list' enter 'help build list'
 """,
         "show":"""
-This is a subcommand of command 'db' and command 'build'.
+This is a subcommand of commands 'config', 'db' and 'build'.
 
+For help on 'config show' enter 'help config show'
 For help on 'db show' enter 'help db show'
 For help on 'build show' enter 'help build show'
 """,
@@ -2988,7 +3030,7 @@ def helptext(topics, listmode):
     if listmode:
         return
     # two words given
-    if lc_topics[0] not in help_maincommands:
+    if lc_topics[0] not in KNOWN_MAIN_COMMANDS:
         print "no known maincommand '%s'" % topics[0]
         return
     txt= help_topics.get(" ".join(lc_topics))

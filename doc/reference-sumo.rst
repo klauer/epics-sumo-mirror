@@ -559,13 +559,10 @@ You get a list of all known MAINCOMMANDS with::
 
   help maincommand
 
-makeconfig FILENAME [OPTIONNAMES]
-:::::::::::::::::::::::::::::::::
+config
+::::::
 
-Create a new configuration file from the options read from configuration files
-and options from the command line. If FILENAME is '-' dump to the console.
-OPTIONNAMES is an optional list of long option names. If OPTIONNAMES are
-specified, only options from this list are saved in the configuration file.
+This is the maincommand for all operations for configuration files.
 
 edit FILE
 :::::::::
@@ -613,6 +610,29 @@ database (:term:`BUILDDB`).
 
 For all of the build subcommands you have to specify the dependency database
 and the build directory with --db and --builddir or a configuration file.
+
+subcommands for maincommand "config"
+++++++++++++++++++++++++++++++++++++
+
+list
+::::
+
+List all configuration files that were loaded.
+
+show [OPTIONNAMES]
+::::::::::::::::::
+
+Show the configuration in JSON format.  OPTIONNAMES is an optional list of long
+option names. If OPTIONNAMES are specified, only options from this list are
+saved in the configuration file.
+
+make FILENAME [OPTIONNAMES]
+:::::::::::::::::::::::::::
+
+Create a new configuration file from the options read from configuration files
+and options from the command line. If FILENAME is '-' dump to the console.
+OPTIONNAMES is an optional list of long option names. If OPTIONNAMES are
+specified, only options from this list are saved in the configuration file.
 
 subcommands for maincommand "db"
 ++++++++++++++++++++++++++++++++

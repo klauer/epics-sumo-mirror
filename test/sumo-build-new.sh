@@ -32,7 +32,7 @@ if [ ! -d $TESTDIR ]; then
 
     cd $TESTDIR > /dev/null
 
-    $SUMO --db DEPS.DB --builddir . makeconfig sumo.config
+    $SUMO --db DEPS.DB --builddir . config make sumo.config
 
     $SUMO -c sumo.config build  --buildtag-stem BASE --no-make new BASE:R3-14-12-2-1 1>&2 
     $SUMO -c sumo.config build  state BASE-001 stable 1>&2 
