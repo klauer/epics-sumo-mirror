@@ -33,18 +33,6 @@ class DB(sumolib.JSON.Container):
     #                          Too many public methods
     # pylint: disable=R0913
     #                          Too many arguments
-    @staticmethod
-    def check_arch(arch_dict, arch_list):
-        """check if all arch_list elements are keys in arch_dict."""
-        if arch_list is None:
-            return True
-        # special architecture "ANY" means than any architecture is supported.
-        if arch_dict.get("ANY"):
-            return True
-        for a in arch_list:
-            if not arch_dict.get(a):
-                return False
-        return True
     def selfcheck(self, msg):
         """raise exception if obj doesn't look like a dependency database."""
         def _somevalue(d):
@@ -86,21 +74,10 @@ class DB(sumolib.JSON.Container):
         for modulename in other.iter_modulenames():
             m= self.datadict().setdefault(modulename,{})
             # iterate on stable, testing and unstable versions:
-            for versionname in other.iter_versions(modulename,
-                                                   None, False):
+            for versionname in other.iter_versions(modulename):
                 vdict = m.setdefault(versionname,{})
                 vdict2= other.datadict()[modulename][versionname]
                 for dictname, dictval in vdict2.items():
-                    if dictname=="archs":
-                        try:
-                            sumolib.utils.dict_update(\
-                                        vdict.setdefault(dictname,{}),
-                                        dictval)
-                        except ValueError, e:
-                            raise ValueError(\
-                              "module %s version %s archs: %s" % \
-                              (modulename, versionname, str(e)))
-                        continue
                     if dictname=="weight":
                         # take the weight from the new dict if present
                         vdict[dictname]= dictval
@@ -185,17 +162,13 @@ class DB(sumolib.JSON.Container):
         version["source"]= old_spec.to_dict()
         return ret
 
-    def set_source_arch(self, module_name, versionname, archs,
-                        sourcespec):
-        """add a module with source spec and archs."""
+    def set_source_(self, module_name, versionname, sourcespec):
+        """add a module with source spec."""
         if not isinstance(sourcespec, sumolib.repos.SourceSpec):
             raise TypeError("error: sourcespec '%s' is of wrong "
                             "type" % repr(sourcespec))
         version_dict= self.datadict().setdefault(module_name,{})
         version= version_dict.setdefault(versionname, {})
-        arch_dict= version.setdefault("archs", {})
-        for arch in archs:
-            arch_dict[arch]= True
         version["source"]= sourcespec.to_dict()
     def add_dependency(self, modulename, versionname,
                        dep_modulename):
@@ -228,12 +201,7 @@ class DB(sumolib.JSON.Container):
         """do a consistency check on the db."""
         msg= []
         for modulename in self.iter_modulenames():
-            for versionname in self.iter_versions(modulename,
-                                                  None, True):
-                archs= self.get_archs(modulename, versionname).keys()
-                if len(archs)==0:
-                    msg.append("%s:%s: no target architectures" % \
-                               (modulename, versionname))
+            for versionname in self.iter_versions(modulename):
                 for dep_modulename in self.iter_dependencies(modulename,
                                                              versionname):
                     try:
@@ -242,7 +210,7 @@ class DB(sumolib.JSON.Container):
                         msg.append("%s:%s: dependencies: %s" % \
                                 (modulename, versionname, str(e)))
         return msg
-    def search_modules(self, rx_object, archs):
+    def search_modules(self, rx_object):
         """search module names and source URLS for a regexp.
 
         Returns a list of tuples (modulename, versionname).
@@ -250,27 +218,14 @@ class DB(sumolib.JSON.Container):
         results= []
         for modulename in self.iter_modulenames():
             if rx_object.search(modulename):
-                for versionname in self.iter_versions(modulename,
-                                                      archs, False):
+                for versionname in self.iter_versions(modulename):
                     results.append((modulename, versionname))
                 continue
-            for versionname in self.iter_versions(modulename,
-                                                  archs, False):
+            for versionname in self.iter_versions(modulename):
                 repr_st= self.module_source_string(modulename, versionname)
                 if rx_object.search(repr_st):
                     results.append((modulename, versionname))
         return sorted(results)
-    def get_archs(self, modulename, versionname):
-        """get archs for modulename:versionname."""
-        m_dict= self.datadict()[modulename]
-        return m_dict[versionname]["archs"]
-    def check_archs(self, modulename, versionname, archs):
-        """return True if all archs are supported in the module."""
-        # pylint: disable=W0212
-        #                          Access to a protected member of a
-        #                          client class
-        return self.__class__.check_arch(\
-                   self.get_archs(modulename, versionname), archs)
     def add_alias(self, modulename, versionname,
                   alias_name, real_name):
         """add an alias for modulename:versionname."""
@@ -456,35 +411,15 @@ class DB(sumolib.JSON.Container):
     def iter_modulenames(self):
         """return an iterator on module names."""
         return self.datadict().iterkeys()
-    def iter_versions(self, modulename, archs, must_exist):
+    def iter_versions(self, modulename):
         """return an iterator on versionnames of a module.
 
-        archs:
-          This is the desired architecture. Only versions with that
-          architecture are listed. If the architecture doesn't exist on at
-          least one of the versions, a ValueError exception is raised.
-          If arch is None, take any architectures.
-
-        must_exist:
-          If True if no versions are found raise a ValueError exception,
-          otherwise just return.
         """
-        found= False
-        for versionname, versiondata in \
-                self.datadict()[modulename].iteritems():
-            if not self.__class__.check_arch(versiondata["archs"], archs):
-                continue
-            found= True
+        for versionname, _ in self.datadict()[modulename].iteritems():
             yield versionname
-        if must_exist and (not found):
-            raise ValueError("All possible versions of module %s are "
-                             "excluded because of the "
-                             "set of archs" % \
-                                     modulename)
-    def sorted_moduleversions(self, modulename, archs, must_exist):
+    def sorted_moduleversions(self, modulename):
         """return an iterator on sorted versionnames of a module."""
-        return sorted(self.iter_versions(modulename,
-                                         archs, must_exist),
+        return sorted(self.iter_versions(modulename),
                       key= sumolib.utils.rev2key,
                       reverse= True)
 
@@ -514,8 +449,7 @@ class DB(sumolib.JSON.Container):
         """
         old_moduledata= self.datadict()[old_modulename]
         if not versions:
-            versions= list(self.iter_versions(old_modulename,
-                                              archs= None, must_exist= True))
+            versions= list(self.iter_versions(old_modulename))
         if self.datadict().has_key(modulename):
             raise ValueError("error: module '%s' already exists" % \
                              modulename)
@@ -539,8 +473,7 @@ class DB(sumolib.JSON.Container):
         for modulename, versionname in list_:
             d= new.datadict().setdefault(modulename, {})
             # scan stable, testing and unstable versions:
-            for version in self.iter_versions(modulename,
-                                              None, must_exist= True):
+            for version in self.iter_versions(modulename):
                 if not sumolib.ModuleSpec.Spec.compare_versions(version,\
                                                     versionname, "eq"):
                     continue
@@ -555,7 +488,6 @@ class DB(sumolib.JSON.Container):
         different.
 
         If no versions are defined for a module, take all versions.
-        If no archs are defined, take all archs.
 
         When no moduleversions are found, rause a ValueError exception.
 
@@ -568,14 +500,10 @@ class DB(sumolib.JSON.Container):
         new= self.__class__()
         for modulespec in modulespecs:
             modulename= modulespec.modulename
-            archs= modulespec.archs
             d= new.datadict().setdefault(modulename, {})
             # scan stable, testing and unstable versions:
-            for version in self.iter_versions(modulename,
-                                              archs, must_exist= True):
+            for version in self.iter_versions(modulename):
                 if not modulespec.test(version):
-                    continue
-                if not self.check_archs(modulename, version, archs):
                     continue
                 d[version]= self.datadict()[modulename][version]
         return new
@@ -595,19 +523,15 @@ class DB(sumolib.JSON.Container):
         new= {}
         for modulespec in modulespecs:
             modulename= modulespec.modulename
-            archs= modulespec.archs
             s= new.setdefault(modulename, set())
             found= False
             try:
-                versions= list(self.iter_versions(modulename,
-                                                  archs, must_exist= True))
+                versions= list(self.iter_versions(modulename))
             except KeyError, _:
                 raise KeyError("error: module '%s' not found in "
                                "dependency database" % modulename)
             for version in versions:
                 if not modulespec.test(version):
-                    continue
-                if not self.check_archs(modulename, version, archs):
                     continue
                 found= True
                 s.add(version)
@@ -643,9 +567,7 @@ class DB(sumolib.JSON.Container):
                         if not sets_dict.has_key(dep_name):
                             modules_added.add(dep_name)
                             sets_dict[dep_name]= \
-                                      set(self.iter_versions(dep_name,\
-                                                         archs=None,\
-                                                         must_exist= True))
+                                      set(self.iter_versions(dep_name))
                             new_modlist.append(dep_name)
             modlist= new_modlist
         return modules_added
@@ -653,8 +575,7 @@ class DB(sumolib.JSON.Container):
         """remove dependencies that are not part of the database."""
         modules= set(self.iter_modulenames())
         for modulename in self.iter_modulenames():
-            for versionname in self.iter_versions(modulename,
-                                                  None, False):
+            for versionname in self.iter_versions(modulename):
                 if not self.dependencies_found(modulename, versionname):
                     continue
                 deletions= []

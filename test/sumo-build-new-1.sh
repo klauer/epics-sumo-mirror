@@ -33,7 +33,7 @@ if [ ! -d $TESTDIR ]; then
     cp $DEPS $TESTDIR/DEPS.DB
     cd $TESTDIR > /dev/null
 
-    $SUMO --arch vxWorks-68040 --arch vxWorks-ppc603 --db DEPS.DB --builddir . makeconfig sumo.config
+    $SUMO --db DEPS.DB --builddir . makeconfig sumo.config
 
     # add a new version of ALARM R3-8-patch that uses a patchfile:
     # this creates the output "added module":

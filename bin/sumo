@@ -646,7 +646,6 @@ def create_module(db, builddb, build_tag,
                   dist_dict,
                   modulename, versionname,
                   extra_defs,
-                  archs,
                   verbose, dry_run):
     """check out a module.
 
@@ -660,10 +659,6 @@ def create_module(db, builddb, build_tag,
     """
     # pylint: disable=R0913
     #                          Too many arguments
-    if not db.check_archs(modulename, versionname, archs):
-        sys.stderr.write("error: archs %s\nnot supportted by "
-                         "module %s:%s\n" % \
-                         (repr(archs), modulename, versionname))
     basedir= module_dir(builddb.dirname(), "", modulename, "")
     ensure_dir(basedir, dry_run) # creates basedir if it doesn't exist
     dirname= module_dir(builddb.dirname(), build_tag, modulename, versionname)
@@ -792,7 +787,7 @@ def create_app_data(deps, repoinfo, groups):
     return {"alias": aliases, "module": modulespecs}
 
 
-def create_database(deps, repoinfo, groups, archs, dir_patches, url_patches):
+def create_database(deps, repoinfo, groups, dir_patches, url_patches):
     """join the information of the three sources.
     """
     # pylint: disable=R0914
@@ -895,14 +890,7 @@ def create_database(deps, repoinfo, groups, archs, dir_patches, url_patches):
                     raise AssertionError("unsupported sourcetype: %s" % \
                                          src_sourcespec.sourcetype())
 
-                module_archs= archs.get(versionedmodule_path, [])
-                if not module_archs:
-                    #  module_archs list is empty:
-                    errmsg("no archs for path %s" % \
-                           versionedmodule_path)
-                db.set_source_arch(module_name, versionname,
-                                   module_archs,
-                                   src_sourcespec)
+                db.set_source_(module_name, versionname, src_sourcespec)
 
                 _path2namevname[versionedmodule_path]= \
                         (module_name,versionname)
@@ -921,8 +909,7 @@ def create_database(deps, repoinfo, groups, archs, dir_patches, url_patches):
     # here we populate the versiondata with the dependency specifications:
     for modulename in db.iter_modulenames():
         # loop on stable, testing and unstable versions:
-        for versionname in db.iter_versions(modulename,
-                                            None, False):
+        for versionname in db.iter_versions(modulename):
             versionedmodule_paths= _namevname2path[(modulename, versionname)]
 
             for versionedmodule_path in versionedmodule_paths:
@@ -966,8 +953,7 @@ def set_weight(db, weight, modulespecs, trace):
             sys.stderr.write("%s\n" % modulespec.to_string())
 
         # scan stable, testing and unstable versions:
-        for version in db.iter_versions(modulename,
-                                        None, must_exist= False):
+        for version in db.iter_versions(modulename):
             if trace:
                 sys.stderr.write("test %s:%s\n" % (modulename,version))
             if not modulespec.test(version):
@@ -1007,7 +993,6 @@ def delete_modules(builddb, build_tag, verbose, dry_run):
 
 def create_modules(dist_dict, db, builddb, builddir, build_tag,
                    extra_lines,
-                   archs,
                    no_checkout,
                    verbose, dry_run):
     """create all modules.
@@ -1045,7 +1030,6 @@ def create_modules(dist_dict, db, builddb, builddir, build_tag,
                       module_dict["modulename"],
                       module_dict["versionname"],
                       extra_lines,
-                      archs,
                       verbose, dry_run)
 
 def call_make(buildtag, options):
@@ -1128,7 +1112,7 @@ def apprelease(build_tag, modulespecs, builddb, db,
 
     if build_tag is None:
         # must look for a matching build:
-        new_builddb= builddb.filter_by_modulespecs(modulespecs, db)
+        new_builddb= builddb.filter_by_modulespecs(modulespecs)
         if new_builddb.is_empty():
             sys.exit("no build found that matches modulespecs")
         # take only builds that are "testing" or "stable":
@@ -1175,8 +1159,7 @@ def db_convert(arguments, options):
     deps= scandata["dependencies"]
     repoinfo= scandata["repos"]
     groups= scandata["groups"]
-    archs= scandata["archs"]
-    (buildcache, db)= create_database(deps, repoinfo, groups, archs,
+    (buildcache, db)= create_database(deps, repoinfo, groups,
                                       options.dir_patch,
                                       options.url_patch)
     mngr= repo_manager(options.db, options.dbrepo, options.dbrepomode,
@@ -1258,7 +1241,7 @@ def db_filter(arguments, options):
     (_, db)= db_from_repo(options)
     try:
         modulespecs_obj= sumolib.ModuleSpec.Specs.from_strings(modulespecs,\
-                                                        None, options.arch)
+                                                        None)
     except ValueError, e:
         if not catch_exceptions:
             raise
@@ -1457,7 +1440,7 @@ def db_show(arguments, options):
 
     try:
         modulespecs_obj= sumolib.ModuleSpec.Specs.from_strings(modulespecs,\
-                                                        None, options.arch)
+                                                        None)
     except ValueError, e:
         if not catch_exceptions:
             raise
@@ -1469,8 +1452,7 @@ def db_show(arguments, options):
     for modulespec in modulespecs_obj:
         modulename= modulespec.modulename
 
-        versions= db.sorted_moduleversions(modulename,
-                                           options.arch, False)
+        versions= db.sorted_moduleversions(modulename)
         if not versions: # no versions match criteria
             continue
         versions= [v for v in versions \
@@ -1489,7 +1471,7 @@ def db_find(arguments, options):
     else:
         rx_flags= re.IGNORECASE
     rx= re.compile(args["REGEXP"], rx_flags)
-    results= db.search_modules(rx, options.arch)
+    results= db.search_modules(rx)
     if options.brief:
         for (module,version) in results:
             print "%s:%s" % (module,version)
@@ -1625,8 +1607,7 @@ def build_try(arguments, options):
     try:
         modulespecs_obj= sumolib.ModuleSpec.Specs.from_strings(\
                              modulespecs,
-                             mspecs_from_build(options),
-                             options.arch)
+                             mspecs_from_build(options))
     except ValueError, e:
         if not catch_exceptions:
             raise
@@ -1826,8 +1807,7 @@ def build_new(arguments, options):
     try:
         modulespecs_obj= sumolib.ModuleSpec.Specs.from_strings(\
                              modulespecs,
-                             mspecs_from_build(options),
-                             options.arch)
+                             mspecs_from_build(options))
     except ValueError, e:
         if not catch_exceptions:
             raise
@@ -1875,7 +1855,7 @@ def build_new(arguments, options):
     create_modules(dist_dict, db, builddb,
                    get_builddir(options.builddir, options.localbuilddir),
                    buildtag,
-                   options.extra, options.arch,
+                   options.extra,
                    options.no_checkout,
                    options.verbose, options.dry_run)
     builddb= builddb_from_json_file(options.builddir,
@@ -1900,7 +1880,7 @@ def build_find(arguments, options):
     """implement "build_find"."""
     args= get_command_args(arguments,
                            extra_optional="MODULES")
-    assert_mandatory_options(options, "db", "builddir")
+    assert_mandatory_options(options, "builddir")
 
     modulespecs= []
     if options.module:
@@ -1916,14 +1896,12 @@ def build_find(arguments, options):
     try:
         modulespecs_obj= sumolib.ModuleSpec.Specs.from_strings(\
                              modulespecs,
-                             mspecs_from_build(options),
-                             options.arch)
+                             mspecs_from_build(options))
     except ValueError, e:
         if not catch_exceptions:
             raise
         sys.exit(str(e))
 
-    (_, db)= db_from_repo(options)
     builddb= builddb_from_json_file(options.builddir,
                                     options.localbuilddir,
                                     keep_locked= False)
@@ -1931,7 +1909,7 @@ def build_find(arguments, options):
     if options.dump_modules:
         dump_modules(modulespecs_obj)
         sys.exit(0)
-    new_builddb= builddb.filter_by_modulespecs(modulespecs_obj, db)
+    new_builddb= builddb.filter_by_modulespecs(modulespecs_obj)
     if new_builddb.is_empty():
         print "no matching buildtrees found"
     else:
@@ -1983,8 +1961,7 @@ def build_use(arguments, options):
     try:
         modulespecs_obj= sumolib.ModuleSpec.Specs.from_strings(\
                              modulespecs,
-                             mspecs_from_build(options),
-                             options.arch)
+                             mspecs_from_build(options))
     except ValueError, e:
         if not catch_exceptions:
             raise
@@ -2331,7 +2308,7 @@ def process(options, commands):
                 config_name,
                 ENV_CONFIG,
                 ( "#preload","#opt-preload","#postload","#opt-postload",
-                  "arch", "alias", "buildtag-stem",
+                  "alias", "buildtag-stem",
                   "db", "dbrepo", "dbrepomode", "extra", "makeopts", "module",
                   "progress", "readonly", "scandb", "dir-patch", "url-patch",
                   "builddir", "localbuilddir", "verbose"))
@@ -2371,8 +2348,7 @@ def process(options, commands):
             try:
                 modulespecs_obj= sumolib.ModuleSpec.Specs.from_strings(\
                                      options.module,
-                                     mspecs_from_build(options),
-                                     options.arch)
+                                     mspecs_from_build(options))
             except ValueError, e:
                 if not catch_exceptions:
                     raise
@@ -2604,7 +2580,6 @@ This is the list of keys that may be used in a configuration file, for the meani
 #opt-preload   [list of strings]
 #postload      [list of strings]
 #opt-postload  [list of strings]
-arch           [list of strings]
 alias          [list of strings]
 buildtag_stem  [string]
 db             [string]
@@ -3237,17 +3212,6 @@ def main():
                            "configuration file.",
                       metavar="ALIAS"
                      )
-    parser.add_option("--arch",
-                      action="append",
-                      help="Define the name of a TARGETARCHITECTURE. You "
-                           "can specify more than one target architecture."
-                           "You can specify more than one of these by "
-                           "repeating this option or by joining values in "
-                           "a single string separated by spaces. "
-                           "A default for this option can be put in a "
-                           "configuration file.",
-                      metavar="TARGETARCHITECTURE"
-                     )
     parser.add_option("-m", "--module",
                       action="append",
                       help="Define a modulespec. If you specify modules "
@@ -3394,7 +3358,6 @@ def main():
     # args: list of left-over args
 
     # join some of the list options:
-    options.arch       = sumolib.utils.opt_join(options.arch, do_sort= True)
     options.alias      = sumolib.utils.opt_join(options.alias, do_sort= True)
     options.module     = sumolib.utils.opt_join(options.module)
     options.makeopts   = sumolib.utils.opt_join(options.makeopts)

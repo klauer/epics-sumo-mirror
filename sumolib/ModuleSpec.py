@@ -26,7 +26,7 @@ assert __version__==sumolib.JSON.__version__
 
 class Spec(object):
     """a class representing a single module specification."""
-    def __init__(self, modulename, versionname, versionflag, archs):
+    def __init__(self, modulename, versionname, versionflag):
         """initialize the object.
 
         Here are some examples:
@@ -39,14 +39,12 @@ class Spec(object):
         self.modulename= modulename
         self.versionname= versionname
         self.versionflag= versionflag
-        self.archs= archs
     def __repr__(self):
         """return repr string."""
-        return "%s(%s,%s,%s,%s)" % (self.__class__.__name__,\
+        return "%s(%s,%s,%s)" % (self.__class__.__name__,\
                                  repr(self.modulename),\
                                  repr(self.versionname),\
-                                 repr(self.versionflag),\
-                                 repr(self.archs))
+                                 repr(self.versionflag))
     def no_version_spec(self):
         """returns True if there is no version spec."""
         return not self.versionname
@@ -66,28 +64,17 @@ class Spec(object):
                              "specification must be exact" % \
                              self.to_string())
     @classmethod
-    def from_string(cls, spec, default_archs= None):
+    def from_string(cls, spec):
         """create modulespec from a string.
 
         A module specification has one of these forms:
           modulename
           modulename:version
-          modulename::archs
-          modulename:version:archs
 
         version may be:
           versionname        : exactly this version
           +versionname       : this version or newer
           -versionname       : this version or older
-
-        archs may be:
-          archspec{:archspec}
-
-        archspec may be:
-          +arch              : add this to the list of archs
-          -arch              : remove this from the list of archs
-           arch              : set exactly these archs (only of first arch has
-                               this form)
 
         Here are some examples:
 
@@ -118,10 +105,6 @@ class Spec(object):
         modulename= None
         versionname= None
         versionflag= None
-        if default_archs is None:
-            archs= set()
-        else:
-            archs= set(default_archs)
         for l in spec.split(":"):
             if mode==0:
                 modulename= l
@@ -140,26 +123,11 @@ class Spec(object):
                         versionflag= "eq"
                 mode+= 1
                 continue
-            if mode==2:
-                if l[0]!="+" and l[0]!="-":
-                    # overwrite default set of archs
-                    archs= set([l])
-                    mode=3
-                    continue
-                mode=3
-            if mode==3:
-                if l[0]=="+":
-                    archs.add(l[1:])
-                elif l[0]=="-":
-                    archs.discard(l[1:])
-                else:
-                    archs.add(l)
-                continue
-        #print repr(modulename),repr(versionname),repr(versionflag),repr(archs)
+            raise ValueError("unexpected spec: %s" % spec)
+        #print repr(modulename),repr(versionname),repr(versionflag)
         return cls(modulename,
                    versionname,
-                   versionflag,
-                   archs if archs else None)
+                   versionflag)
     def to_string(self):
         """return a spec string.
 
@@ -188,10 +156,6 @@ class Spec(object):
             elif self.versionflag=="ge":
                 extra="+"
             elms.append("%s%s" % (extra, self.versionname))
-        if self.archs:
-            if not self.versionname:
-                elms.append("")
-            elms.extend(sorted(list(self.archs)))
         return ":".join(elms)
     @staticmethod
     def compare_versions(version1, version2, flag):
@@ -281,7 +245,7 @@ class Specs(object):
             return None
         return st[1:].split(":")
     @staticmethod
-    def _from_strings(module_dict, idx, specs, builddb_fn, default_archs):
+    def _from_strings(module_dict, idx, specs, builddb_fn):
         """internal function to scan specs.
 
         Note:
@@ -321,8 +285,7 @@ class Specs(object):
                     if json_specs:
                         idx= Specs._from_strings(module_dict, idx,
                                                  json_specs,
-                                                 builddb_fn,
-                                                 default_archs)
+                                                 builddb_fn)
                     continue
                 if special[0]=="build":
                     if len(special)<=1:
@@ -331,12 +294,11 @@ class Specs(object):
 
                     idx= Specs._from_strings(module_dict, idx,
                                              build_specs,
-                                             builddb_fn,
-                                             default_archs)
+                                             builddb_fn)
                     continue
 
                 raise ValueError("unexpected spec: %s" % s)
-            m= Spec.from_string(s, default_archs)
+            m= Spec.from_string(s)
             modulename= m.modulename
             if module_dict.has_key(modulename):
                 module_dict[modulename][1]= m
@@ -346,14 +308,13 @@ class Specs(object):
         return idx
 
     @classmethod
-    def from_strings(cls, specs, builddb_fn, default_archs= None):
+    def from_strings(cls, specs, builddb_fn):
         """scan a list of module specification strings.
 
         specs:  list of module specification strings
         builddb_fn: a function that for builddb_fn(buildtag) returns
                 builddb.module_specs(buildtag), only needed for
                 :build:buildtag.
-        default_archs: list of default archs, may be None
 
         returns a new Specs object.
 
@@ -367,10 +328,10 @@ class Specs(object):
         ...     for m in s:
         ...         print m
 
-        >>> p(Specs.from_strings(["A:R2","B:-R3","C:+R1:arch1"], None))
-        Spec('A','R2','eq',None)
-        Spec('B','R3','le',None)
-        Spec('C','R1','ge',set(['arch1']))
+        >>> p(Specs.from_strings(["A:R2","B:-R3","C:+R1"], None))
+        Spec('A','R2','eq')
+        Spec('B','R3','le')
+        Spec('C','R1','ge')
         >>> p(Specs.from_strings(["A:R2","B:-R3","A:R3"], None))
         Spec('A','R3','eq',None)
         Spec('B','R3','le',None)
@@ -381,8 +342,7 @@ class Specs(object):
         Spec('B','R3','le',None)
         """
         module_dict= {}
-        Specs._from_strings(module_dict, 0, specs, builddb_fn,
-                            default_archs)
+        Specs._from_strings(module_dict, 0, specs, builddb_fn)
 
         l= [modulespec for (_,modulespec) in sorted(module_dict.values()) \
                        if modulespec]

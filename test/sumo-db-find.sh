@@ -25,11 +25,11 @@ echo -e "\n-> Test sumo db find" >&2
 DEPS=tmp-sumo-db-convert/DEPS.DB
 
 echo -e "find mcan:"
-$SUMO db --arch vxWorks-68040 --arch vxWorks-ppc603 --db $DEPS find mcan | sed -e s#$PWD_NICE##
+$SUMO db --db $DEPS find mcan | sed -e s#$PWD_NICE##
 
 echo -e "\nfind mcan -b:"
-$SUMO db --arch vxWorks-68040 --arch vxWorks-ppc603 --db $DEPS find mcan -b | sed -e s#$PWD_NICE##
+$SUMO db --db $DEPS find mcan -b | sed -e s#$PWD_NICE##
 
 echo -e "\nfind '^A' -b:"
-$SUMO db --arch vxWorks-68040 --arch vxWorks-ppc603 --db $DEPS find '^A' -b | sed -e s#$PWD_NICE##
+$SUMO db --db $DEPS find '^A' -b | sed -e s#$PWD_NICE##
 

@@ -262,7 +262,7 @@ class DB(sumolib.JSON.Container):
                 all_.update(self.linked_builds(b))
         all_.remove(build_tag)
         return all_
-    def filter_by_modulespecs(self, modulespecs, db):
+    def filter_by_modulespecs(self, modulespecs):
         """return a new Builddb that satisfies the given list of specs.
 
         Note that this function treats versions like "R1-3" and "1-3" to be
@@ -281,9 +281,6 @@ class DB(sumolib.JSON.Container):
                     found= False
                     break
                 if not modulespec.test(v):
-                    found= False
-                    break
-                if not db.check_archs(modulename, v, modulespec.archs):
                     found= False
                     break
             if found:
@@ -308,7 +305,7 @@ class DB(sumolib.JSON.Container):
         """
         build_ = self.datadict()[build_tag]
         return build_["modules"]
-    def module_specs(self, build_tag, default_archs=None):
+    def module_specs(self, build_tag):
         """return the modules of a build in form module spec strings.
 
         This function returns a list of strings that ccan be parsed by
@@ -318,8 +315,7 @@ class DB(sumolib.JSON.Container):
         build_dict= self.modules(build_tag)
         for modulename in sorted(build_dict.keys()):
             versionname= build_dict[modulename]
-            m= sumolib.ModuleSpec.Spec(modulename, versionname,
-                                       "eq", default_archs)
+            m= sumolib.ModuleSpec.Spec(modulename, versionname, "eq")
             lst.append(m.to_string())
         return lst
 

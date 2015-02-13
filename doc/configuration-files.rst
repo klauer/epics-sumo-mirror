@@ -212,10 +212,6 @@ The following keys may be part of a configuration file for sumo:
   A list of optional files to *postload*, see 
   :ref:`Loading other files <configuration-files-loading>`.
 
-arch
-  A string that specifies the target architecture, 
-  for details see :ref:`sumo options <reference-sumo-Options>`.
-
 alias
   A list of module aliases in the form FROM:TO,
   for details see :ref:`sumo options <reference-sumo-Options>`.

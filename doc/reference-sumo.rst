@@ -45,12 +45,6 @@ dependencies. Here is an example how this file looks like::
             "aliases": {
                 "BASE": "EPICS_BASE"
             },
-            "archs": {
-                "RTEMS-mvme2100": true,
-                "RTEMS-mvme5500": true,
-                "vxWorks-68040": true,
-                "vxWorks-ppc603": true
-            },
             "dependencies": [
                 "BASE"
             ],
@@ -69,10 +63,6 @@ dependencies. Here is an example how this file looks like::
                 "MISC_DBC": "DBC",
                 "MISC_DEBUGMSG": "DEBUGMSG",
                 "SOFT_DEVHWCLIENT": "DEVHWCLIENT"
-            },
-            "archs": {
-                "vxWorks-68040": true,
-                "vxWorks-ppc603": true
             },
             "dependencies": [
                 "ALARM",
@@ -94,10 +84,6 @@ dependencies. Here is an example how this file looks like::
                 "MISC_DBC": "DBC",
                 "MISC_DEBUGMSG": "DEBUGMSG",
                 "SOFT_DEVHWCLIENT": "DEVHWCLIENT"
-            },
-            "archs": {
-                "vxWorks-68040": true,
-                "vxWorks-ppc603": true
             },
             "dependencies": [
                 "ALARM",
@@ -136,9 +122,6 @@ The *versiondata* map has this form::
       "aliases": {
           <aliasdata>
       },
-      "archs": {
-          <archdata>
-      },
       "dependencies": {
           <dependency data>
       },
@@ -161,22 +144,6 @@ taken. The *aliasdata* map has this form::
   {
       MODULENAME: MODULEALIAS,
       MODULENAME: MODULEALIAS,
-      ...
-  }
-
-archdata
-::::::::
-
-EPICS support modules may be :term:`architecture` independent or they may
-support one or more target architectures. Each target :term:`architecture` in
-EPICS has a unique name. The *archdata* map contains a key for each supported
-:term:`architecture`. If a module is :term:`architecture` independent, the
-*archdata* map contains the special key "ANY". This is the form of the
-*archdata* map::
-
-  {
-      ARCHNAME: true,
-      ARCHNAME: true,
       ...
   }
 
@@ -1008,11 +975,6 @@ Here is a short overview on command line options:
     these by repeating this option or by joining values in a single string
     separated by spaces. A default for this option can be put in a
     configuration file.
-``--arch ARCH``
-    Define the name of a targetarchitecture. You can specify more than one
-    target architecture.  You can specify more than one of these by repeating
-    this option or by joining values in a single string separated by spaces. A
-    default for this option can be put in a configuration file.
 ``-m MODULE, --module MODULE``
     Define a :term:`modulespec`. If you specify modules with this option you
     don't have to put :term:`modulespecs` after some of the commands. You can

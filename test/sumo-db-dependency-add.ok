@@ -7,13 +7,6 @@ DB file:
                 "BSPDEP_TIMER": "TIMER",
                 "MISC_DBC": "DBC"
             },
-            "archs": {
-                "RTEMS-mvme2100": true,
-                "RTEMS-mvme5500": true,
-                "linux-x86": true,
-                "vxWorks-68040": true,
-                "vxWorks-ppc603": true
-            },
             "dependencies": [
                 "BASE",
                 "BSPDEP_TIMER",
@@ -31,13 +24,6 @@ DB file:
                 "BASE": "EPICS_BASE",
                 "BSPDEP_TIMER": "TIMER",
                 "MISC_DBC": "DBC"
-            },
-            "archs": {
-                "RTEMS-mvme2100": true,
-                "RTEMS-mvme5500": true,
-                "linux-x86": true,
-                "vxWorks-68040": true,
-                "vxWorks-ppc603": true
             },
             "dependencies": [
                 "BASE",
@@ -58,9 +44,6 @@ DB file:
             "aliases": {
                 "BASE": "EPICS_BASE"
             },
-            "archs": {
-                "ANY": true
-            },
             "dependencies": [
                 "BASE"
             ],
@@ -73,13 +56,6 @@ DB file:
         "R3-0": {
             "aliases": {
                 "BASE": "EPICS_BASE"
-            },
-            "archs": {
-                "RTEMS-mvme2100": true,
-                "RTEMS-mvme5500": true,
-                "linux-x86": true,
-                "vxWorks-68040": true,
-                "vxWorks-ppc603": true
             },
             "dependencies": [
                 "BASE"
@@ -97,13 +73,6 @@ DB file:
             "aliases": {
                 "BASE": "EPICS_BASE"
             },
-            "archs": {
-                "RTEMS-mvme2100": true,
-                "RTEMS-mvme5500": true,
-                "linux-x86": true,
-                "vxWorks-68040": true,
-                "vxWorks-ppc603": true
-            },
             "dependencies": [
                 "BASE"
             ],
@@ -116,13 +85,6 @@ DB file:
     },
     "BASE": {
         "R3-14-12-2-1": {
-            "archs": {
-                "RTEMS-mvme2100": true,
-                "RTEMS-mvme5500": true,
-                "linux-x86": true,
-                "vxWorks-68040": true,
-                "vxWorks-ppc603": true
-            },
             "source": {
                 "darcs": {
                     "tag": "R3-14-12-2-1",
@@ -135,9 +97,6 @@ DB file:
         "R2-5": {
             "aliases": {
                 "BASE": "EPICS_BASE"
-            },
-            "archs": {
-                "ANY": true
             },
             "dependencies": [
                 "BASE"
@@ -155,13 +114,6 @@ DB file:
             "aliases": {
                 "BASE": "EPICS_BASE"
             },
-            "archs": {
-                "RTEMS-mvme2100": true,
-                "RTEMS-mvme5500": true,
-                "linux-x86": true,
-                "vxWorks-68040": true,
-                "vxWorks-ppc603": true
-            },
             "dependencies": [
                 "BASE"
             ],
@@ -177,12 +129,6 @@ DB file:
         "R6-2": {
             "aliases": {
                 "BASE": "EPICS_BASE"
-            },
-            "archs": {
-                "RTEMS-mvme2100": true,
-                "RTEMS-mvme5500": true,
-                "vxWorks-68040": true,
-                "vxWorks-ppc603": true
             },
             "dependencies": [
                 "BASE"
@@ -200,13 +146,6 @@ DB file:
             "aliases": {
                 "BASE": "EPICS_BASE"
             },
-            "archs": {
-                "RTEMS-mvme2100": true,
-                "RTEMS-mvme5500": true,
-                "linux-x86": true,
-                "vxWorks-68040": true,
-                "vxWorks-ppc603": true
-            },
             "dependencies": [
                 "BASE"
             ],
@@ -221,13 +160,6 @@ DB file:
             "aliases": {
                 "BASE": "EPICS_BASE"
             },
-            "archs": {
-                "RTEMS-mvme2100": true,
-                "RTEMS-mvme5500": true,
-                "linux-x86": true,
-                "vxWorks-68040": true,
-                "vxWorks-ppc603": true
-            },
             "dependencies": [
                 "BASE"
             ],
@@ -241,13 +173,6 @@ DB file:
         "TAGLESS-2-1-modified": {
             "aliases": {
                 "BASE": "EPICS_BASE"
-            },
-            "archs": {
-                "RTEMS-mvme2100": true,
-                "RTEMS-mvme5500": true,
-                "linux-x86": true,
-                "vxWorks-68040": true,
-                "vxWorks-ppc603": true
             },
             "dependencies": [
                 "BASE"
@@ -265,13 +190,6 @@ DB file:
             "aliases": {
                 "BASE": "EPICS_BASE"
             },
-            "archs": {
-                "RTEMS-mvme2100": true,
-                "RTEMS-mvme5500": true,
-                "linux-x86": true,
-                "vxWorks-68040": true,
-                "vxWorks-ppc603": true
-            },
             "dependencies": [
                 "BASE"
             ],
@@ -286,13 +204,6 @@ DB file:
         "R3-1-9-bessy3": {
             "aliases": {
                 "BASE": "EPICS_BASE"
-            },
-            "archs": {
-                "RTEMS-mvme2100": true,
-                "RTEMS-mvme5500": true,
-                "linux-x86": true,
-                "vxWorks-68040": true,
-                "vxWorks-ppc603": true
             },
             "dependencies": [
                 "BASE"
@@ -311,13 +222,6 @@ DB file:
                 "BASE": "EPICS_BASE",
                 "MISC_DEBUGMSG": "MISC"
             },
-            "archs": {
-                "RTEMS-mvme2100": true,
-                "RTEMS-mvme5500": true,
-                "linux-x86": true,
-                "vxWorks-68040": true,
-                "vxWorks-ppc603": true
-            },
             "dependencies": [
                 "BASE",
                 "MISC_DEBUGMSG"
@@ -333,13 +237,6 @@ DB file:
         "R1-6-1": {
             "aliases": {
                 "BASE": "EPICS_BASE"
-            },
-            "archs": {
-                "RTEMS-mvme2100": true,
-                "RTEMS-mvme5500": true,
-                "linux-x86": true,
-                "vxWorks-68040": true,
-                "vxWorks-ppc603": true
             },
             "dependencies": [
                 "BASE"
@@ -360,12 +257,6 @@ DB file:
                 "MISC_DBC": "DBC",
                 "MISC_DEBUGMSG": "DEBUGMSG",
                 "SOFT_DEVHWCLIENT": "DEVHWCLIENT"
-            },
-            "archs": {
-                "RTEMS-mvme2100": true,
-                "RTEMS-mvme5500": true,
-                "vxWorks-68040": true,
-                "vxWorks-ppc603": true
             },
             "dependencies": [
                 "ALARM",
@@ -390,12 +281,6 @@ DB file:
                 "MISC_DEBUGMSG": "DEBUGMSG",
                 "SOFT_DEVHWCLIENT": "DEVHWCLIENT"
             },
-            "archs": {
-                "RTEMS-mvme2100": true,
-                "RTEMS-mvme5500": true,
-                "vxWorks-68040": true,
-                "vxWorks-ppc603": true
-            },
             "dependencies": [
                 "ALARM",
                 "BASE",
@@ -417,9 +302,6 @@ DB file:
             "aliases": {
                 "BASE": "EPICS_BASE"
             },
-            "archs": {
-                "ANY": true
-            },
             "dependencies": [
                 "BASE"
             ],
@@ -432,9 +314,6 @@ DB file:
         "R3-0": {
             "aliases": {
                 "BASE": "EPICS_BASE"
-            },
-            "archs": {
-                "ANY": true
             },
             "dependencies": [
                 "BASE"
@@ -449,9 +328,6 @@ DB file:
         "R3-1": {
             "aliases": {
                 "BASE": "EPICS_BASE"
-            },
-            "archs": {
-                "ANY": true
             },
             "dependencies": [
                 "BASE"
@@ -469,13 +345,6 @@ DB file:
             "aliases": {
                 "BASE": "EPICS_BASE"
             },
-            "archs": {
-                "RTEMS-mvme2100": true,
-                "RTEMS-mvme5500": true,
-                "linux-x86": true,
-                "vxWorks-68040": true,
-                "vxWorks-ppc603": true
-            },
             "dependencies": [
                 "BASE"
             ],
@@ -491,13 +360,6 @@ DB file:
         "TAR-3-0": {
             "aliases": {
                 "BASE": "EPICS_BASE"
-            },
-            "archs": {
-                "RTEMS-mvme2100": true,
-                "RTEMS-mvme5500": true,
-                "linux-x86": true,
-                "vxWorks-68040": true,
-                "vxWorks-ppc603": true
             },
             "dependencies": [
                 "BASE"

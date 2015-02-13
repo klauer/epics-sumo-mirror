@@ -32,7 +32,7 @@ if [ ! -d $MYTESTDIR ]; then
     cd $MYTESTDIR > /dev/null
 
     # use an auto generated build tag:
-    $SUMO build --arch vxWorks-ppc603 --db ../$TESTDIR/DEPS.DB --localbuilddir . --builddir ../$TESTDIR -m ':build:MYAPP-001 ALARM:R3-7' --buildtag MYAPP-002 --no-make new 1>&2 
+    $SUMO build --db ../$TESTDIR/DEPS.DB --localbuilddir . --builddir ../$TESTDIR -m ':build:MYAPP-001 ALARM:R3-7' --buildtag MYAPP-002 --no-make new 1>&2 
 else
     echo -e "\t$MYTESTDIR already exists, effectively skipping this test..." 1>&2
     cd $MYTESTDIR > /dev/null
