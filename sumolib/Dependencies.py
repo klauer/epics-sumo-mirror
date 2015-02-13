@@ -71,9 +71,9 @@ class DB(sumolib.JSON.Container):
                 break
             return
         raise ValueError("error: dependency data is invalid %s" % msg)
-    def __init__(self, dict_= None):
+    def __init__(self, dict_= None, lock_timeout= None):
         """create the object."""
-        super(DB, self).__init__(dict_)
+        super(DB, self).__init__(dict_, lock_timeout)
     def merge(self, other):
         """merge another Dependencies object to self.
 
