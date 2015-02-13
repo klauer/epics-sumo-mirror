@@ -17,14 +17,19 @@ fi
 BINDIR=`pwd`/../bin
 SUMO_SCAN="$PYTHON $BINDIR/sumo-scan -C"
 SUMO="$PYTHON $BINDIR/sumo -C"
+DEPSDIR=tmp-sumo-db-convert
+
+EXAMPLEDIR=tmp-$ME
 
 PWD_NICE=`pwd`
 
 echo -e "\n-> Test sumo db check" >&2
 
-DEPS=tmp-sumo-db-convert/DEPS.DB
+rm -rf $EXAMPLEDIR
+mkdir $EXAMPLEDIR
+cd $EXAMPLEDIR > /dev/null
 
-cat > $ME-DEPS.tmp <<HEE
+cat > DEPS.DB <<HEE
 {
     "MYAPP-001": {
         "modules": {
@@ -49,11 +54,11 @@ cat > $ME-DEPS.tmp <<HEE
 }
 HEE
 
-echo -e "sumo db --db samples/DB check:"
+echo -e "sumo db --dbdir tmp-sumo-db-convert samples check:"
 
-$SUMO db --db $DEPS check
+$SUMO db --dbdir $DEPSDIR check
 
-echo -e "\nsumo db --db samples/BUILDS check:"
+echo -e "\nsumo db --dbdir $EXAMPLEDIR check:"
 
-$SUMO db --db $ME-DEPS.tmp check 2>&1 
+$SUMO db --dbdir . check 2>&1 
 true

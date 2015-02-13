@@ -28,5 +28,11 @@ NOW=`date -Iseconds`
 
 sumo-scan -c $SUMO_SCAN_CONFIG all > SUMO-SCAN-$NOW.SCAN
 
-sumo db -c $SUMO_DB_CONFIG convert SUMO-SCAN-$NOW.SCAN --db SUMO-SCAN-DEPS-$NOW.DB --scandb SUMO-SCAN-SCAN-$NOW.DB
+if [ -e DEPS.DB ]; then
+    echo "error, DEPS.DB already exists"
+    exit 1
+fi
 
+sumo db -c $SUMO_DB_CONFIG convert SUMO-SCAN-$NOW.SCAN --dbdir . --scandb SUMO-SCAN-SCAN-$NOW.DB
+
+mv DEPS.DB SUMO-SCAN-DEPS-$NOW.DB

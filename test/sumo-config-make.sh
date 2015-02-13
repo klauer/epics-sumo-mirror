@@ -22,12 +22,12 @@ PWD_NICE=`pwd`
 
 echo -e "\n-> Test sumo config make." >&2
 
-DEPS=tmp-sumo-db-convert/DEPS.DB
+DEPSDIR=tmp-sumo-db-convert
 CONFIG=$ME-CONFIG.tmp
 MODULES=$ME-MODULES.tmp
 
 # create config file:
-$SUMO --no-default-config --#preload $MODULES --db DEPS.DB --progress --scandb SCAN -D 'r"^/srv/csr/Epics",r"rcsadm@aragon.acc.bessy.de:/opt/Epics"' --verbose config make $CONFIG
+$SUMO --no-default-config --#preload $MODULES --dbdir . --progress --scandb SCAN -D 'r"^/srv/csr/Epics",r"rcsadm@aragon.acc.bessy.de:/opt/Epics"' --verbose config make $CONFIG
 
 echo "generated config file:"
 cat $CONFIG
@@ -40,5 +40,5 @@ cat $MODULES
 
 echo "read modulespecs from config and modules file:"
 # now check if they can be scanned:
-$SUMO db --no-default-config -c $CONFIG filter --db $DEPS --dump-modules
+$SUMO db --no-default-config -c $CONFIG filter --dbdir $DEPSDIR --dump-modules
 

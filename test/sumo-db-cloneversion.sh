@@ -18,12 +18,18 @@ BINDIR=`pwd`/../bin
 SUMO_SCAN="$PYTHON $BINDIR/sumo-scan -C"
 SUMO="$PYTHON $BINDIR/sumo -C"
 
+EXAMPLEDIR=tmp-$ME
+
 PWD_NICE=`pwd`
 
 echo -e "\n-> Test sumo db cloneversion with wrong sourcespec." >&2
 
-cp tmp-sumo-db-convert/DEPS.DB $ME-DEPS.tmp
+rm -rf $EXAMPLEDIR
+mkdir $EXAMPLEDIR
+cd $EXAMPLEDIR > /dev/null
+
+cp ../tmp-sumo-db-convert/DEPS.DB .
 
 # this command is inteded to fail with "invalid sourcespec":
-$SUMO db --db $ME-DEPS.tmp cloneversion ALARM R3-8-modified R3-4 '*' '*' R3-4 2>&1 | grep -v "'lockfile' not found"|| true
+$SUMO db --dbdir . cloneversion ALARM R3-8-modified R3-4 '*' '*' R3-4 2>&1 | grep -v "'lockfile' not found"|| true
 

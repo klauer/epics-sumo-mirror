@@ -599,8 +599,8 @@ db
 This is the maincommand for all operations that work with the 
 :term:`dependency database` (DB) file.
 
-For all of the db subcommands you have to specify the dependency database with
-option --db or a configuration file.
+For all of the db subcommands you have to specify the dependency database
+directory with option --dbdir or a configuration file.
 
 build
 :::::
@@ -609,7 +609,8 @@ This is the maincommand for all operations that work with builds and the build
 database (:term:`BUILDDB`).
 
 For all of the build subcommands you have to specify the dependency database
-and the build directory with --db and --builddir or a configuration file.
+directory and the build directory with --dbdir and --builddir or a
+configuration file.
 
 subcommands for maincommand "config"
 ++++++++++++++++++++++++++++++++++++
@@ -641,14 +642,14 @@ convert SCANFILE
 ::::::::::::::::
 
 Convert a :term:`scanfile` that was created by by 
-:doc:`"sumo-scan all"<reference-sumo-scan>` to a new dependency database.
-If SCANFILE is a dash "-", the program expects the scanfile on stdin.
-Note that options "--db" and "--scandb" are
-mandatory here. With "--db" you specify the name of the new created 
-:ref:`dependency database <reference-sumo-db-The-dependency-database>`
-file, with "--scandb" you specify the name of the scan database file. The scan
-database file contains information on what moduleversion can be used with what
-dependency version.
+:doc:`"sumo-scan all"<reference-sumo-scan>` to a new dependency database.  If
+SCANFILE is a dash "-", the program expects the scanfile on stdin.  Note that
+options "--dbdir" and "--scandb" are mandatory here. With "--dbdir" you specify
+the drectory where the new created 
+:ref:`dependency database <reference-sumo-db-The-dependency-database>` file is
+stored, with "--scandb" you specify the name of the scan database file. The
+scan database file contains information on what moduleversion can be used with
+what dependency version.
 
 convert-old OLDDB
 :::::::::::::::::
@@ -656,8 +657,8 @@ convert-old OLDDB
 Convert a :ref:`dependency database <reference-sumo-db-The-dependency-database>` 
 file OLDDB from old to new format. The old format had architecture data
 ("arch") for each moduleversion. In the new format this data is removed.  Note
-that this command IGNORES option "--dbrepo", it directly operates on the file
-given with option "--db".
+that this command IGNORES option "--dbrepo", it directly operates on the
+dependency database file in the directory given with option "--dbdir".
 
 appconvert SCANFILE
 :::::::::::::::::::
@@ -725,16 +726,14 @@ regexp.  Parameter REGEXP is a perl compatible :term:`regular expression`.
 check
 :::::
 
-This command does a consistency check of the dependency database (:term:`DB`
-file).
+Do some consistency checks on the :term:`dependency database` file in the
+directory specifed by --dbdir.
 
 merge DB
 ::::::::
 
-This command merges a :term:`dependency database` with another
-:term:`dependency database`. The database that is modified must follow the
-command as parameter DB. The database that is added must be specified with the
-"--db" option.
+Merge the given :term:`dependency database` file with the 
+:term:`dependency database` in the directory specifed by --dbdir.
 
 cloneversion MODULE OLD-VERSION NEW-VERSION [SOURCESPEC]
 ::::::::::::::::::::::::::::::::::::::::::::::::::::::::
@@ -959,13 +958,12 @@ Here is a short overview on command line options:
     put in a configuration file.
 ``--dbrepo REPOSITORY``
     Define a REPOSITORY for the db file. REPOSITORY must consist of 'REPOTYPE
-    URL', REPOTYPE may be 'darcs', 'hg' or 'git'. Option --db must specify a
-    file path whose directory part will contain the repository for the db file.
-    Before reading the db file a 'pull' command will be executed. When the file
-    is changed, a 'commit' and a 'push' command will be executed. If the
-    repository doesn't exist the program tries to check out a working copy from
-    the given URL. A default for this option can be put in a configuration
-    file.
+    URL', REPOTYPE may be 'darcs', 'hg' or 'git'. Option --dbdir must specify a
+    directory that will contain the repository for the db file.  Before reading
+    the db file a 'pull' command will be executed. When the file is changed, a
+    'commit' and a 'push' command will be executed. If the repository doesn't
+    exist the program tries to check out a working copy from the given URL. A
+    default for this option can be put in a configuration file.
 ``--scandb SCANDB``
     Specify the (optional) :term:`SCANDB` file. The scan database file contains
     information on what moduleversion can be used with what dependency version.

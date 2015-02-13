@@ -57,9 +57,9 @@ git -C delme-git push -q ../central-git
 # provoke a pull conflict by applying the changes that were done in the central
 # repo again. We do use --dbrepomode get in these calls to avoid that sumo does
 # a 'pull' before applying the changes:
-$SUMO db --db local-darcs/DEPS.DB --dbrepo "darcs central-darcs" --dbrepomode get -y cloneversion ALARM R3-7 R3-8-2 >/dev/null
-$SUMO db --db local-hg/DEPS.DB --dbrepo "darcs central-hg" --dbrepomode get -y cloneversion ALARM R3-7 R3-8-2 >/dev/null
-$SUMO db --db local-git/DEPS.DB --dbrepo "darcs central-git" --dbrepomode get -y cloneversion ALARM R3-7 R3-8-2 >/dev/null
+$SUMO db --dbdir local-darcs --dbrepo "darcs central-darcs" --dbrepomode get -y cloneversion ALARM R3-7 R3-8-2 >/dev/null
+$SUMO db --dbdir local-hg    --dbrepo "darcs central-hg" --dbrepomode get -y cloneversion ALARM R3-7 R3-8-2 >/dev/null
+$SUMO db --dbdir local-git   --dbrepo "darcs central-git" --dbrepomode get -y cloneversion ALARM R3-7 R3-8-2 >/dev/null
 
 # darcs pull --no-allow-conflicts $?!=0
 # hg pull
@@ -68,12 +68,12 @@ $SUMO db --db local-git/DEPS.DB --dbrepo "darcs central-git" --dbrepomode get -y
 
 echo "Conflict in darcs repo:"
 echo "-----------------------"
-$SUMO db -y --logmsg "local changes" --db local-darcs/DEPS.DB --dbrepo "darcs central-darcs" --dbrepomode pull show ALARM 2>&1 || true
+$SUMO db -y --logmsg "local changes" --dbdir local-darcs --dbrepo "darcs central-darcs" --dbrepomode pull show ALARM 2>&1 || true
 echo
 echo "Conflict in mercurial repo:"
 echo "---------------------------"
-$SUMO db -y --logmsg "local changes" --db local-hg/DEPS.DB --dbrepo "hg central-hg" --dbrepomode pull show ALARM 2>&1 | sed -e 's/\(not updating:\).*/\1/;/(merge or update/d'
+$SUMO db -y --logmsg "local changes" --dbdir local-hg --dbrepo "hg central-hg" --dbrepomode pull show ALARM 2>&1 | sed -e 's/\(not updating:\).*/\1/;/(merge or update/d'
 echo
 echo "Conflict in git repo:"
 echo "---------------------"
-$SUMO db -y --logmsg "local changes" --db local-git/DEPS.DB --dbrepo "git central-git" --dbrepomode pull show ALARM 2>&1 || true
+$SUMO db -y --logmsg "local changes" --dbdir local-git --dbrepo "git central-git" --dbrepomode pull show ALARM 2>&1 || true

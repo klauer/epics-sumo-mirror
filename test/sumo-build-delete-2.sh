@@ -40,7 +40,7 @@ cd $TESTDIR > /dev/null
 
 echo -e "call sumo build new, let the command fail on purpose..."
 
-$SUMO build  --db DEPS.DB --builddir . --buildtag 001 --no-make new BASE:R3-14-12-2-1 ALARM:R3-8-modified MCAN:R2-6-3-gp BSPDEP_TIMER:R6-2 BSPDEP_VMETAS:TAGLESS-2-1-modified MISC_DBC:PATH-3-0 MISC_DEBUGMSG:R3-0 SOFT_DEVHWCLIENT:TAR-3-0 2>&1 | tail -n 1 | sed -e "s#$PWD_REAL##;s#$PWD_NICE##"
+$SUMO build  --dbdir . --builddir . --buildtag 001 --no-make new BASE:R3-14-12-2-1 ALARM:R3-8-modified MCAN:R2-6-3-gp BSPDEP_TIMER:R6-2 BSPDEP_VMETAS:TAGLESS-2-1-modified MISC_DBC:PATH-3-0 MISC_DEBUGMSG:R3-0 SOFT_DEVHWCLIENT:TAR-3-0 2>&1 | tail -n 1 | sed -e "s#$PWD_REAL##;s#$PWD_NICE##"
 
 echo -e "\ndirectory tree (without darcs, maxdepth 2)"
 find . -maxdepth 3 | egrep -v '_darcs|\.tmp|\.bak|\.coverage'

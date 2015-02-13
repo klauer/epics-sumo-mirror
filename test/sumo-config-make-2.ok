@@ -9,7 +9,7 @@ generated config file:
     ],
     "builddir": "/supports",
     "buildtag-stem": "MYAPP",
-    "db": "DEPS.DB",
+    "dbdir": ".",
     "extra": [
         "extra line"
     ],

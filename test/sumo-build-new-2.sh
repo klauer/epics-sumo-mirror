@@ -42,7 +42,7 @@ if [ ! -d $MYTESTDIR ]; then
     rm -f *.bak
 
     # use an auto generated build tag:
-    $SUMO build --db DEPS.DB --builddir . -m ':build:MYAPP-001 ALARM:R3-7' --buildtag MYAPP-002 --no-make new 1>&2 
+    $SUMO build --dbdir . --builddir . -m ':build:MYAPP-001 ALARM:R3-7' --buildtag MYAPP-002 --no-make new 1>&2 
 else
     echo -e "\t$MYTESTDIR already exists, effectively skipping this test..." 1>&2
     cd $MYTESTDIR > /dev/null

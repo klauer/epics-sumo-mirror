@@ -32,9 +32,9 @@ darcs get -q ../$REPOSRC central-darcs
 hg clone -q ../$REPOSRC central-hg
 git clone --bare -q ../$REPOSRC central-git
 
-$SUMO db --db local-darcs/DEPS.DB --dbrepo "darcs central-darcs" --dbrepomode push -y cloneversion ALARM R3-7 R3-8-1
-$SUMO db --db local-hg/DEPS.DB --dbrepo "hg central-hg" --dbrepomode push -y cloneversion ALARM R3-7 R3-8-1
-$SUMO db --db local-git/DEPS.DB --dbrepo "git central-git" --dbrepomode push -y cloneversion ALARM R3-7 R3-8-1
+$SUMO db --dbdir local-darcs --dbrepo "darcs central-darcs" --dbrepomode push -y cloneversion ALARM R3-7 R3-8-1
+$SUMO db --dbdir local-hg    --dbrepo "hg central-hg" --dbrepomode push -y cloneversion ALARM R3-7 R3-8-1
+$SUMO db --dbdir local-git   --dbrepo "git central-git" --dbrepomode push -y cloneversion ALARM R3-7 R3-8-1
 
 DDATE="Mon Jan 01 01:01:01 2014 +0100"
 DUSR="Homer.Simpson@burns.com"

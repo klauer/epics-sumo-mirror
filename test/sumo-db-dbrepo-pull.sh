@@ -47,12 +47,12 @@ git -C delme-git push -q ../central-git
 
 echo "sumo db show ALARM without --dbrepo:"
 echo "------------------------------------"
-$SUMO db --db local-darcs/DEPS.DB show ALARM
-$SUMO db --db local-hg/DEPS.DB show ALARM
-$SUMO db --db local-git/DEPS.DB show ALARM
+$SUMO db --dbdir local-darcs show ALARM
+$SUMO db --dbdir local-hg show ALARM
+$SUMO db --dbdir local-git show ALARM
 echo
 echo "sumo db show ALARM with --dbrepo (fetch changes from central repo)"
 echo "------------------------------------------------------------------"
-$SUMO db --db local-darcs/DEPS.DB --dbrepo "darcs central-darcs" --dbrepomode pull show ALARM
-$SUMO db --db local-hg/DEPS.DB --dbrepo "hg central-hg" --dbrepomode pull show ALARM
-$SUMO db --db local-git/DEPS.DB --dbrepo "git central-git" --dbrepomode pull show ALARM
+$SUMO db --dbdir local-darcs --dbrepo "darcs central-darcs" --dbrepomode pull show ALARM
+$SUMO db --dbdir local-hg --dbrepo "hg central-hg" --dbrepomode pull show ALARM
+$SUMO db --dbdir local-git --dbrepo "git central-git" --dbrepomode pull show ALARM

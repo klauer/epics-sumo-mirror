@@ -22,14 +22,14 @@ PWD_NICE=`pwd`
 
 echo -e "\n-> Test sumo db find" >&2
 
-DEPS=tmp-sumo-db-convert/DEPS.DB
+DEPSDIR=tmp-sumo-db-convert
 
 echo -e "find mcan:"
-$SUMO db --db $DEPS find mcan | sed -e s#$PWD_NICE##
+$SUMO db --dbdir $DEPSDIR find mcan | sed -e s#$PWD_NICE##
 
 echo -e "\nfind mcan -b:"
-$SUMO db --db $DEPS find mcan -b | sed -e s#$PWD_NICE##
+$SUMO db --dbdir $DEPSDIR find mcan -b | sed -e s#$PWD_NICE##
 
 echo -e "\nfind '^A' -b:"
-$SUMO db --db $DEPS find '^A' -b | sed -e s#$PWD_NICE##
+$SUMO db --dbdir $DEPSDIR find '^A' -b | sed -e s#$PWD_NICE##
 
