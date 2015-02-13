@@ -26,10 +26,10 @@ class Repo(object):
     def _default_repo(self):
         """return the default repo."""
         try:
-            (reply,_)= sumolib.system.system("hg paths default -R %s" % \
-                                    self.directory,
-                                    True, False,
-                                    self.verbose, self.dry_run)
+            (reply,_)= sumolib.system.system(\
+                                  "hg paths default -R %s" % self.directory,
+                                  True, False,
+                                  self.verbose, self.dry_run)
         except IOError, _:
             # probably no repo found
             return
@@ -46,9 +46,8 @@ class Repo(object):
             default_repo= patcher.apply(default_repo)
         cmd= "hg -R %s incoming %s" % \
                  (self.directory, default_repo)
-        (_,_,rc)= sumolib.system.system_rc(cmd,
-                             True, True,
-                             self.verbose, self.dry_run)
+        (_,_,rc)= sumolib.system.system_rc(cmd, True, True,
+                                           self.verbose, self.dry_run)
         if rc not in (0,1):
             # contacting the remote repo failed
             return
@@ -60,8 +59,8 @@ class Repo(object):
         object are ignored. The matcher parameter may be <None>.
         """
         cmd= "hg status -a -m -r -d -R %s" % self.directory
-        (reply,_,rc)= sumolib.system.system_rc(cmd,
-                             True, False, self.verbose, self.dry_run)
+        (reply,_,rc)= sumolib.system.system_rc(cmd, True, False,
+                                               self.verbose, self.dry_run)
         # Note: a return code 1 is normal with mercurial
         if rc not in (0,1):
             raise IOError(rc, "cmd \"%s\" failed" % cmd)
@@ -84,16 +83,16 @@ class Repo(object):
             raise AssertionError("cannot compute local patches without "
                                  "a reachable remote repository.")
         cmd= "hg -R %s outgoing" % self.directory
-        (_,_,rc)= sumolib.system.system_rc(cmd,
-                             True, False, self.verbose, self.dry_run)
+        (_,_,rc)= sumolib.system.system_rc(cmd, True, False,
+                                           self.verbose, self.dry_run)
         if rc not in (0,1):
             raise IOError(rc, "cmd \"%s\" failed" % cmd)
         return rc==0
     def _current_revision(self):
         """returns the revision of the working copy.
         """
-        (reply,_)= sumolib.system.system("hg identify -i -R %s" % \
-                                self.directory,
+        (reply,_)= sumolib.system.system(\
+                                "hg identify -i -R %s" % self.directory,
                                 True, False,
                                 self.verbose, self.dry_run)
         # for uncomitted changes, the revision ends with a "+":
@@ -109,9 +108,8 @@ class Repo(object):
         ignore= set(("tip","qtip","qbase","qparent"))
         curr_rev= self.current_revision
         cmd= "hg tags -R %s" % self.directory
-        (reply,_)= sumolib.system.system(cmd,
-                             True, False,
-                             self.verbose, self.dry_run)
+        (reply,_)= sumolib.system.system(cmd, True, False,
+                                         self.verbose, self.dry_run)
         tags= []
         for line in reply.splitlines():
             line= line.strip()

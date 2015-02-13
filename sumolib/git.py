@@ -39,7 +39,7 @@ class Repo(object):
         repository and fails if the repository cannot be reached.
         """
         try:
-            (reply,_)= sumolib.system.system(
+            (reply,_)= sumolib.system.system(\
                              "git -C %s remote show origin" % self.directory,
                              True, False,
                              self.verbose, self.dry_run)
@@ -63,8 +63,8 @@ class Repo(object):
         object are ignored. The matcher parameter may be <None>.
         """
         cmd= "git -C %s status --porcelain" % self.directory
-        (reply,_)= sumolib.system.system(cmd,
-                             True, False, self.verbose, self.dry_run)
+        (reply,_)= sumolib.system.system(cmd, True, False,
+                                         self.verbose, self.dry_run)
         changes= False
         for line in reply.splitlines():
             line= line.rstrip()
@@ -109,7 +109,7 @@ class Repo(object):
         is on top this will return the hash key of the tag, not of the newest
         patch.
         """
-        (reply,_)= sumolib.system.system(
+        (reply,_)= sumolib.system.system(\
                 "git -C %s rev-parse --short HEAD" % self.directory,
                 True, False,
                 self.verbose, self.dry_run)
@@ -122,9 +122,8 @@ class Repo(object):
         """
         curr_rev= self.current_revision
         cmd= "git -C %s tag --points-at %s" % (self.directory, curr_rev)
-        (reply,_)= sumolib.system.system(cmd,
-                             True, False,
-                             self.verbose, self.dry_run)
+        (reply,_)= sumolib.system.system(cmd, True, False,
+                                         self.verbose, self.dry_run)
         tags= []
         for line in reply.splitlines():
             line= line.strip()
