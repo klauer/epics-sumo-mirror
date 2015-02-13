@@ -24,5 +24,5 @@ echo -e "\n-> Test sumo db show" >&2
 
 DEPS=tmp-sumo-db-convert/DEPS.DB
 
-$SUMO db --arch vxWorks-68040 --arch vxWorks-ppc603 --db $DEPS show ALARM 
+$SUMO db --db $DEPS show ALARM 
 

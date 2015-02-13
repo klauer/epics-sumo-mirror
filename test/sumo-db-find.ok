@@ -9,12 +9,6 @@ find mcan:
                 "MISC_DEBUGMSG": "DEBUGMSG",
                 "SOFT_DEVHWCLIENT": "DEVHWCLIENT"
             },
-            "archs": {
-                "RTEMS-mvme2100": true,
-                "RTEMS-mvme5500": true,
-                "vxWorks-68040": true,
-                "vxWorks-ppc603": true
-            },
             "dependencies": [
                 "ALARM",
                 "BASE",
@@ -37,12 +31,6 @@ find mcan:
                 "MISC_DBC": "DBC",
                 "MISC_DEBUGMSG": "DEBUGMSG",
                 "SOFT_DEVHWCLIENT": "DEVHWCLIENT"
-            },
-            "archs": {
-                "RTEMS-mvme2100": true,
-                "RTEMS-mvme5500": true,
-                "vxWorks-68040": true,
-                "vxWorks-ppc603": true
             },
             "dependencies": [
                 "ALARM",

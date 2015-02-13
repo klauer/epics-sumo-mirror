@@ -7,13 +7,6 @@ Added module:
                 "BSPDEP_TIMER": "TIMER",
                 "MISC_DBC": "DBC"
             },
-            "archs": {
-                "RTEMS-mvme2100": true,
-                "RTEMS-mvme5500": true,
-                "linux-x86": true,
-                "vxWorks-68040": true,
-                "vxWorks-ppc603": true
-            },
             "dependencies": [
                 "BASE",
                 "BSPDEP_TIMER",

@@ -93,13 +93,9 @@ schema                          meaning
 =============================   ======================================
 modulename                      modulename 
 modulename:versionspec          modulename and version
-modulename:versionspec:archs    modulename, version and architectures
-modulename::archs               modulename and architectures
 =============================   ======================================
 
 A :term:`versionspec` defines the :term:`version` the module should have.
-
-*archs* may be itself a list of architecture specifications or :term:`archs`.
 
 Here are some examples:
 
@@ -113,16 +109,6 @@ Here are some examples:
 | ALARM:-R3-9                             | modulename "ALARM", version "R3-9" or below |
 +-----------------------------------------+---------------------------------------------+
 | ALARM:+R3-9                             | modulename "ALARM", version "R3-9" or above |
-+-----------------------------------------+---------------------------------------------+
-| ALARM:R3-9:vxWorks-ppc603               | modulename "ALARM", version "R3-9",         |
-|                                         | architecture "vxworks-ppc603"               |
-+-----------------------------------------+---------------------------------------------+
-| ALARM::vxWorks-ppc603                   | modulename "ALARM", version not specified   |
-|                                         | architecture "vxworks-ppc603"               |
-+-----------------------------------------+---------------------------------------------+
-| ALARM:R3-9:vxWorks-mv162:vxWorks-ppc603 | modulename "ALARM", version "R3-9",         |
-|                                         | architectures "vxworks-mv162" and           |
-|                                         | "vxworks-ppc603"                            |
 +-----------------------------------------+---------------------------------------------+
 
 Commands

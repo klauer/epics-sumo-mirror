@@ -113,14 +113,6 @@ disabled
   The build should no longer be used, it has a defect or cannot be recreated
   due to changes in the dependency database.
 
-The concept of architectures
-----------------------------
-
-Modules can be built for several target architectures. Each module version in
-the dependency database has a list of supported target architectures. Modules
-that are independent of an architecture have the special architecture "ANY" in
-their list. 
-
 The implementation
 ------------------
 
