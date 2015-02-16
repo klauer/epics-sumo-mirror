@@ -2157,9 +2157,10 @@ def get_command_args(lst, mandatory_args=None,
         elif extra_optional:
             result[extra_optional]= rest
         else:
-            ch= "s" if len(rest)>1 else ""
-            ERR("error, extra argument%s follow: %s" % \
-                (ch, " ".join(rest)))
+            ch = "s" if len(rest)>1 else ""
+            ch2= ""  if len(rest)>1 else "s"
+            ERR("error, extra argument%s follow%s: %s" % \
+                (ch, ch2, " ".join(rest)))
             return
     return result
 
