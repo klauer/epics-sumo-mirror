@@ -140,6 +140,6 @@ setup(name='sumo',
       #package_dir= {'': 'sumo'},
       #package_data={'sumo': ['data/*']},
       data_files= data_files_list,
-      license= "HZB non commercial license, see file LICENSE",
+      license= "GPLv3",
       scripts=['bin/sumo','bin/sumo-scan'],
      )
