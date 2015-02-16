@@ -1512,7 +1512,7 @@ def build_list(arguments, options):
     assert_mandatory_options(options, "builddir")
     builddb= builddb_from_json_file(options.builddir,
                                     options.localbuilddir,
-                                    keep_locked= False)
+                                    keep_locked= False, must_exist= False)
     for buildtag in builddb.iter_builds():
         print buildtag
 
@@ -2006,7 +2006,8 @@ def build_use(arguments, options):
     (_, db)= db_from_repo(options)
     builddb= builddb_from_json_file(options.builddir,
                                     options.localbuilddir,
-                                    keep_locked= False)
+                                    keep_locked= False,
+                                    must_exist= False)
 
     if options.dump_modules:
         dump_modules(modulespecs_obj)
