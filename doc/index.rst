@@ -53,7 +53,7 @@ Contents:
 License
 =======
 
-This software of this project can be used unter the HZB :doc:`license`.
+This software of this project can be used unter the GPL v.3, see :doc:`license`.
 
 Download
 ========
