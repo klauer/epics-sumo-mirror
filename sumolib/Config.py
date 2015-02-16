@@ -159,6 +159,14 @@ class ConfigFile(object):
                          otherwise these keys are just treated like ordinary
                          values.
         """
+        def unify(l):
+            """remove double elements in a list."""
+            n= []
+            for e in l:
+                if e in n:
+                    continue
+                n.append(e)
+            return n
         if filenames:
             for f in filenames:
                 if os.path.isfile(f):
@@ -166,6 +174,15 @@ class ConfigFile(object):
         for filename in self._paths:
             self._load_file(filename, must_exist= True,
                             enable_loading= enable_loading)
+        # remove double filenames in #preload #postload etc:
+        for k in ("#include",
+                  "#preload", "#opt-preload",
+                  "#postload", "#opt-postload"):
+            l= self._dict.get(k)
+            if l is None:
+                continue
+            self._dict[k]= unify(l)
+
     def save(self, filename, keys):
         """dump in json format"""
         # do not include "None" values:
