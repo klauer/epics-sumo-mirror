@@ -33,7 +33,7 @@ import sumolib.system
 
 # pylint: disable=C0322,C0103
 
-__version__="2.4.4" #VERSION#
+__version__="2.5" #VERSION#
 
 assert __version__==sumolib.system.__version__
 
