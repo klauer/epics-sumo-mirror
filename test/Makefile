@@ -80,14 +80,14 @@ target_script_tests: $(script_tests_tst)
 
 target_shell_tests: data/epics/stamp $(shell_tests_tst)
 
-module_tests= $(basename $(shell grep -l doctest ../sumolib/*.py))
+module_tests= $(notdir $(basename $(shell grep -l doctest ../sumolib/*.py)))
 module_tests_tst= $(addsuffix .tst, $(module_tests))
 
-script_tests= $(basename $(shell ls ../bin))
+script_tests= $(sort $(notdir $(basename $(shell ls ../bin))))
 script_tests_tst= $(addsuffix .tst, $(script_tests))
 
 # static pattern rule to test python modules:
-$(module_tests_tst): %.tst: ../sumo/%.py
+$(module_tests_tst): %.tst: ../sumolib/%.py
 	$(PYTHON) $<
 
 # static pattern rule to test scripts:
