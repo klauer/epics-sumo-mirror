@@ -2197,7 +2197,8 @@ def process_config(config, options, commands):
                     raise
                 sys.exit(str(e))
             config.set("module", modulespecs_obj.to_stringlist())
-        config.save(filename, optionnames)
+        config.save(filename, optionnames,
+                    options.verbose, options.dry_run)
         return
 
 def process_db(options, commands):
