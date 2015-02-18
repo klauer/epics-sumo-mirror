@@ -350,7 +350,7 @@ class DB_overlay(DB):
         self.overlay_mode= new_mode
     def overlay(self, filename):
         """merge with another builddb from a file."""
-        other= DB.from_json_file(filename, keep_locked= False)
+        other= DB.from_json_file(filename, keep_lock= False)
         new_keys= self.merge(other)
         self.overlay_files.append(filename)
         idx= len(self.overlay_files)-1

@@ -36,6 +36,22 @@ def current_user():
         return getpass.getuser()
 
 # -----------------------------------------------
+# exceptions
+# -----------------------------------------------
+
+class LockedError(Exception):
+    """This is raised when we can't get a lock."""
+    pass
+
+class AccessError(Exception):
+    """No rights to create a lock.
+
+    This is raised when we can't create a lock due to access rights on the
+    directory
+    """
+    pass
+
+# -----------------------------------------------
 # file locking wrapper
 # -----------------------------------------------
 
@@ -56,8 +72,11 @@ class MyLock(object):
                                  "method 'link'")
     def lock(self):
         """do the file locking.
-        Raises "IOError(message)" if the file is already locked, may raise
-        OSError on other errors from the operating system.
+
+        raises:
+          LockedError : can't get lock
+          AccessError : no rights to create lock
+          OSError     : other operating system errors
 
         On linux, create a symbolic link, otherwise a directory. The symbolic
         link has some information on the user, host and process ID.
@@ -87,16 +106,20 @@ class MyLock(object):
                         tmo-= 1
                         time.sleep(1)
                         continue
-                    self.was_locked= True
                     if self.method=="link":
-                        raise IOError("file '%s' is locked: %s" % \
+                        raise LockedError("file '%s' is locked: %s" % \
                                       (self.filename,
                                        os.readlink(self.lockname)))
                     else:
                         txt= " ".join(os.listdir(self.lockname))
-                        raise IOError("file '%s' is locked: %s" % \
+                        raise LockedError("file '%s' is locked: %s" % \
                                       (self.filename, txt))
+                elif e.errno==errno.EACCES:
+                    # cannot write to directory
+                    raise AccessError(("no rights to create lock for "
+                                       "file '%s'") % self.filename)
                 else:
+                    # re-raise exception in all other cases
                     raise
             break
         self.has_lock= True
@@ -122,7 +145,6 @@ class MyLock(object):
         self.filename= filename
         self.lockname= "%s.lock" % self.filename
         self.has_lock= False
-        self.was_locked= False
         self.info= None
         if platform.system()=="Linux":
             self.method= "link"

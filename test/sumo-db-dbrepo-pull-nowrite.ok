@@ -1,0 +1,50 @@
+sumo db show ALARM without --dbrepo:
+------------------------------------
+{
+    "ALARM": [
+        "R3-8-modified",
+        "R3-7"
+    ]
+}
+
+{
+    "ALARM": [
+        "R3-8-modified",
+        "R3-7"
+    ]
+}
+
+{
+    "ALARM": [
+        "R3-8-modified",
+        "R3-7"
+    ]
+}
+
+
+sumo db show ALARM with --dbrepo (fetch changes from central repo)
+------------------------------------------------------------------
+warning: no write access to dependency database, forcing dbrepomode 'get'
+{
+    "ALARM": [
+        "R3-8-modified",
+        "R3-7"
+    ]
+}
+
+warning: no write access to dependency database, forcing dbrepomode 'get'
+{
+    "ALARM": [
+        "R3-8-modified",
+        "R3-7"
+    ]
+}
+
+warning: no write access to dependency database, forcing dbrepomode 'get'
+{
+    "ALARM": [
+        "R3-8-modified",
+        "R3-7"
+    ]
+}
+

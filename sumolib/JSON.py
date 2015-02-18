@@ -14,6 +14,7 @@ if __name__ == "__main__":
 
 import pprint
 import os.path
+import time
 import sumolib.lock
 
 __version__="2.5" #VERSION#
@@ -46,16 +47,39 @@ elif _pyver == (2,5):
 else:
     # older python versions are already detected further above
     raise AssertionError("this shouldn't happen")
+# -----------------------------------------------
+# exceptions
+# -----------------------------------------------
+
+class ParseError(Exception):
+    """This is raised when the JSON data is invalid."""
+    pass
+
+class InconsistentError(Exception):
+    """This is raised when we cannot get consistent JSON data."""
+    pass
+
+# -----------------------------------------------
+# JSON functions
+# -----------------------------------------------
 
 def dump_file(filename, var):
     """Dump a variable to a file in JSON format.
+
+    This function uses a technique to write the file atomically. It assumes
+    that we have a lock on the file so the temporary filename does not yet
+    exist.
     """
-    fh= open(filename, "w")
+    tmp_filename= "%s.tmp" % filename
+    fh= open(tmp_filename, "w")
     # modern python JSON modules add a trailing space at lines that end with a
     # comma. It seems that this is only fixed in python 3.4. So for now we
     # remove the spaces manually here, which is done by json_str().
     fh.write(json_str(var))
+    fh.flush()
+    os.fsync(fh.fileno())
     fh.close()
+    os.rename(tmp_filename, filename)
 
 # pylint: disable=C0303
 #                          Trailing whitespace
@@ -150,7 +174,7 @@ def loadfile(filename):
         else:
             msg= "<stdin>: %s" % str(e)
         # always re-raise as a value error regardless of _JSON_TYPE:
-        raise ValueError(msg)
+        raise ParseError(msg)
     except IOError, e:
         if filename != "-":
             msg= "%s: %s" % (filename, str(e))
@@ -203,9 +227,10 @@ class Container(object):
         if self.lock:
             # already locked
             return
-        # may raise IOError exception if file is locked:
-        self.lock= sumolib.lock.MyLock(self._filename, self._lock_timeout)
-        self.lock.lock()
+        lk= sumolib.lock.MyLock(self._filename, self._lock_timeout)
+        # may raise lock.LockedError, lock.AccessError or OSError:
+        lk.lock()
+        self.lock= lk
     def unlock_file(self):
         """remove a filelock if there is one."""
         if self.lock:
@@ -235,9 +260,16 @@ class Container(object):
         obj.selfcheck("(created from JSON string)")
         return obj
     @classmethod
-    def from_json_file(cls, filename, keep_locked= False,
+    def from_json_file(cls, filename,
+                       keep_lock,
                        lock_timeout= None):
-        """create an object from a json file."""
+        """create an object from a json file.
+
+        """
+        # pylint: disable=R0912
+        #                          Too many branches
+        if not isinstance(keep_lock, bool):
+            raise TypeError("wrong type of keep_lock")
         if filename=="-":
             result= cls(loadfile(filename))
             result.selfcheck("(created from JSON string on stdin)")
@@ -245,21 +277,62 @@ class Container(object):
         if not os.path.exists(filename):
             raise IOError("file \"%s\" not found" % filename)
         l= sumolib.lock.MyLock(filename, lock_timeout)
-        # may raise IOError exception if file is locked:
-        l.lock()
+        # may raise lock.LockedError, lock.AccessError or OSError:
 
         try:
-            # simplejson and json raise different kinds of exceptions
-            # in case of a syntax error within the JSON file.
-            result= cls(loadfile(filename), lock_timeout)
-        except Exception, _:
-            l.unlock()
-            raise
+            l.lock()
+        except sumolib.lock.AccessError, _:
+            if keep_lock:
+                # we cannot keep the lock since we cannot create it, this is an
+                # error:
+                raise
+            # we cannot create a lock but try to continue anyway:
+            l= None
 
-        if not keep_locked:
-            l.unlock()
+        if l is None:
+            # We cannot create a file lock but be we try to read consistently:
+            # it must be valid JSON and the file modification date must not
+            # change.
+            tmo= lock_timeout
+            while True:
+                t1= os.path.getmtime(filename)
+                try:
+                    data= loadfile(filename)
+                except ParseError, _:
+                    if tmo<=0:
+                        raise
+                    # if there is a timeout specified, try again:
+                    tmo-=1
+                    time.sleep(1)
+                    continue
+                t2= os.path.getmtime(filename)
+                if t2!=t1:
+                    # file modification time changed, we have to read again
+                    # unless the time is expired:
+                    if tmo<=0:
+                        raise InconsistentError("File %s: cannot lock "
+                                                "and cannot read "
+                                                "consistently" % filename)
+                    time.sleep(1)
+                    tmo-=1
+                    continue
+                break
         else:
-            result.lock= l
+            try:
+                # simplejson and json raise different kinds of exceptions
+                # in case of a syntax error within the JSON file.
+                data= loadfile(filename)
+            except Exception, _:
+                if l is not None:
+                    l.unlock()
+                raise
+
+        result= cls(data, lock_timeout)
+
+        if (not keep_lock) and (l is not None):
+            l.unlock()
+            l= None
+        result.lock= l
         result.filename(filename)
         result.selfcheck("(created from JSON file %s)" % filename)
         return result
