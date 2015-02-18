@@ -52,7 +52,6 @@ data/src/stamp:
 	@echo "unpacking sample sources..."
 	$(MAKE) -C $(@D)
 
-
 distclean: clean
 	@echo "cleanup epics directory..."
 	make -C data/epics clean
@@ -61,18 +60,23 @@ distclean: clean
 	@echo "cleanup src directory..."
 	make -C data/src clean
 
-clean: shallowclean
+clean: writable shallowclean
 	rm -rf tmp-*
 
 # do not remove tmp-010.. since it takes relatively long to create:
 
-almostclean: shallowclean
+almostclean: writable shallowclean
 	rm -rf `ls -d tmp-* | grep -v tmp-010`
 
 shallowclean:
 	rm -f *.out
 	rm -rf *.tmp
 	rm -rf *.bak
+
+writable:
+	if ls tmp-* > /dev/null 2>&1; then \
+	    chmod -R u+w tmp-* ;\
+	fi
 
 target_module_tests: $(module_tests_tst)
 

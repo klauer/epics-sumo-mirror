@@ -4,6 +4,7 @@
 # pylint: disable=C0103
 #                          Invalid name for type variable
 import os.path
+import sys
 
 import sumolib.utils
 import sumolib.lock
@@ -368,6 +369,8 @@ class ManagedRepo(object):
         """
         # pylint: disable=R0913
         #                          Too many arguments
+        # pylint: disable=R0912
+        #                          Too many branches
         self.sourcespec= sourcespec
         if sourcespec is None:
             return
@@ -383,37 +386,66 @@ class ManagedRepo(object):
         self.directory= directory
         self.verbose= verbose
         self.dry_run= dry_run
-        self.lock= sumolib.lock.MyLock(self.directory, self.lock_timeout)
-        self.lock.lock()
-        if not os.path.isdir(self.directory):
-            # must check out
+        # lockfile will be named "repo.lock":
+        lockname= os.path.join(self.directory, "repo")
+        self.lock= sumolib.lock.MyLock(lockname, self.lock_timeout)
+
+        if not os.path.exists(self.directory):
+            # must create
+            # first get a lock for the directory to create:
+            lk= sumolib.lock.MyLock(self.directory, self.lock_timeout)
             try:
-                checkout(self.sourcespec, self.directory,
-                         self.verbose, self.dry_run)
-            except Exception, _:
-                self.lock.unlock()
-                raise
-            if not os.path.isdir(self.directory):
-                self.lock.unlock()
-                raise AssertionError("checkout of %s to %s failed" % \
-                                     (self.sourcespec,
-                                      self.directory))
+                lk.lock()
+            except sumolib.lock.AccessError, _:
+                # we cannot write although we have to check out
+                raise OSError("Error, cannot write to directory %s" % \
+                              os.path.dirname(self.directory))
+            # sumolib.lock.LockedError is not caught here
+
+            # the directory may have been created in the meantime by another
+            # process:
+            if not os.path.exists(self.directory):
+                # must check out
+                try:
+                    checkout(self.sourcespec, self.directory,
+                             self.verbose, self.dry_run)
+                except Exception, _:
+                    lk.unlock()
+                    raise
+                if not os.path.exists(self.directory):
+                    lk.unlock()
+                    raise AssertionError("checkout of %s to %s failed" % \
+                                         (self.sourcespec,
+                                          self.directory))
+            lk.unlock()
+        if not os.path.isdir(self.directory):
+            raise AssertionError("error, '%s' is not a directory" % \
+                                 self.directory)
+
+        no_write_access= False
+        # get a repository lock:
+        try:
+            self.lock.lock()
+        except sumolib.lock.AccessError, _:
+            # we do not have write access on the repository:
+            no_write_access= True
+
+        if no_write_access:
+            # basically disable all action on the repository:
+            # Setting self.sourcespec to <None> basically disables the
+            # ManagedRepo object.
+            if self.mode!='get':
+                sys.stderr.write("warning: no write access to dependency "
+                                 "database, forcing dbrepomode 'get'\n")
+            self.sourcespec= None
+            return
+
         try:
             self.repo_obj= repo_from_dir(self.directory,
                                          {"write check": True},
                                          self.verbose, self.dry_run)
         finally:
             self.lock.unlock()
-
-        if self.repo_obj is None:
-            # this can happen for example, when the repository data directory,
-            # e.g. ".hg", is not writable.
-            # In this case we silently fail. This is in case the current user
-            # has read- but not write access to the direcory and/or
-            # repository.
-            # Setting self.sourcespec to <None> basically disables the
-            # ManagedRepo object.
-            self.sourcespec= None
 
     def local_changes(self):
         """return if there are local changes."""

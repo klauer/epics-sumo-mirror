@@ -1,0 +1,21 @@
+[
+    "ALARM",
+    "APPS_GENERICTEMPLATE",
+    "APPS_IOCWATCH",
+    "ASYN",
+    "BASE",
+    "BESSYRULES",
+    "BSPDEP_CPUBOARDINIT",
+    "BSPDEP_TIMER",
+    "BSPDEP_VMETAS",
+    "CSM",
+    "DEVIOCSTATS",
+    "EK",
+    "GENSUB",
+    "MCAN",
+    "MISC_DBC",
+    "MISC_DEBUGMSG",
+    "SEQ",
+    "SOFT_DEVHWCLIENT"
+]
+

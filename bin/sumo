@@ -1180,7 +1180,7 @@ def db_convert_old(arguments, options):
     assert_mandatory_options(options, "dbdir")
     try:
         olddb= sumolib.Dependencies.OldDB.from_json_file(args["OLDDB"],
-                                                         keep_locked= False)
+                                                         keep_lock= False)
     except ValueError, e:
         if not catch_exceptions:
             raise
@@ -2419,25 +2419,30 @@ def process(options, commands):
         l= sumolib.lock.MyLock(args["FILE"])
         try:
             l.lock()
-        except IOError, e:
+        except sumolib.lock.LockedError, e:
             if not catch_exceptions:
                 raise
-            if not l.was_locked:
+            sys.exit(str(e))
+        except sumolib.lock.AccessError, e:
+            if not catch_exceptions:
                 raise
-            else:
-                sys.exit(str(e))
+            sys.exit(str(e))
+        # other exceptions like OSError are not caught here
         return
     elif commands[0]=="unlock":
         if options.readonly:
             sys.exit("--readonly forbids editing a database file")
         args= get_command_args(commands[1:], ["FILE"])
         l= sumolib.lock.MyLock(args["FILE"])
+        lock_found= False
         try:
             l.lock()
-        except IOError, e:
-            if not l.was_locked:
-                raise
-        if not l.was_locked:
+        except sumolib.lock.LockedError, e:
+            lock_found= True
+        except sumolib.lock.AccessError, e:
+            # we cannot create a lock but it didn't exist anyway.
+            pass
+        if not lock_found:
             l.unlock()
             sys.exit("error, cannot unlock '%s' since file wasn't locked" % \
                      args["FILE"])

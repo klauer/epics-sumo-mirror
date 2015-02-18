@@ -11,12 +11,14 @@ sumo-db-clonemodule
 sumo-db-weight
 sumo-db-show
 sumo-db-list
+sumo-db-list-nowrite
 sumo-db-find
 sumo-db-check
 sumo-db-dbrepo-create
 sumo-db-cloneversion-dbrepo
 sumo-db-cloneversion-dbrepo-2
 sumo-db-dbrepo-pull
+sumo-db-dbrepo-pull-nowrite
 sumo-db-dbrepo-conflict
 sumo-config-make
 sumo-config-make-2
