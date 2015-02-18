@@ -282,12 +282,14 @@ class Repo(object):
         # use "-u" to update to head:
         cmd="hg pull -q -R %s -u --config ui.merge=internal:merge %s" % \
                 (self.directory, self.remote_url)
+        stderr= None
         try:
             (_,stderr)= sumolib.system.system(cmd,
                                               False, True,
                                               self.verbose, self.dry_run)
         finally:
-            sys.stderr.write(stderr)
+            if stderr is not None:
+                sys.stderr.write(stderr)
         must_merge= False
         for l in stderr.splitlines():
             if l.lower().startswith("warning: conflicts"):
