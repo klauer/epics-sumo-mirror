@@ -49,6 +49,12 @@ clean:
 	rm -f ALARM/R3-7+MYAPP-002/stamp
 	rm -f MCAN/R2-6-3-gp+MYAPP-002/stamp
 
+distclean:
+	-$(MAKE) -C ALARM/R3-7+MYAPP-002 distclean
+	-$(MAKE) -C MCAN/R2-6-3-gp+MYAPP-002 distclean
+	rm -f ALARM/R3-7+MYAPP-002/stamp
+	rm -f MCAN/R2-6-3-gp+MYAPP-002/stamp
+
 
 MCAN/R2-6-3-gp+MYAPP-002/stamp: ALARM/R3-7+MYAPP-002/stamp
 

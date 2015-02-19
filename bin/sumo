@@ -579,13 +579,17 @@ def create_makefile(dist_dict, db, builddb,
     fh= sumolib.utils.file_w_open(filename, verbose, dry_run)
     sumolib.utils.file_write(fh, "all: %s\n\n" % (" ".join(stamps)),
                              verbose, dry_run)
-    sumolib.utils.file_write(fh, "clean:\n", verbose, dry_run)
-    for d in module_dirs:
-        sumolib.utils.file_write(fh, "\t-$(MAKE) -C %s clean\n" % d,
-                                 verbose, dry_run)
-    for f in stamps:
-        sumolib.utils.file_write(fh, "\trm -f %s\n" % f, verbose, dry_run)
-    sumolib.utils.file_write(fh, "\n", verbose, dry_run)
+
+    for target in ("clean", "distclean"):
+        sumolib.utils.file_write(fh, "%s:\n" % target, verbose, dry_run)
+        for d in module_dirs:
+            sumolib.utils.file_write(fh, "\t-$(MAKE) -C %s %s\n" % \
+                                         (d, target),
+                                     verbose, dry_run)
+        for f in stamps:
+            sumolib.utils.file_write(fh, "\trm -f %s\n" % f, verbose, dry_run)
+        sumolib.utils.file_write(fh, "\n", verbose, dry_run)
+
     for spec, path in paths.items():
         (modulename, versionname)= spec
         own_stamp= os.path.join(path, "stamp")
