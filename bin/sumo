@@ -48,7 +48,7 @@ assert __version__==sumolib.repos.__version__
 KNOWN_MAIN_COMMANDS=set(("help","lock","unlock","edit",
                          "config", "db","build"))
 
-KNOWN_CONFIG_COMMANDS=set(("list", "show", "make"))
+KNOWN_CONFIG_COMMANDS=set(("list", "show", "make", "standalone", "local"))
 
 KNOWN_DB_COMMANDS=set(("alias-add", "appconvert", "check", "clonemodule",
                        "cloneversion", "convert", "convert-old",
@@ -1152,6 +1152,70 @@ def apprelease(build_tag, modulespecs, builddb, db,
 # command implementation
 # -----------------------------------------------
 
+def config_standalone(config, arguments, options):
+    """implement "config standalone"."""
+    args= get_command_args(arguments, ["SUMODIR"])
+    sumodir= os.path.abspath(args["SUMODIR"])
+    if os.path.exists(sumodir):
+        if not os.path.isdir(sumodir):
+            sys.exit("error: '%s' is a file" % sumodir)
+        if not sumolib.utils.ask_yes_no(\
+                "Directory '%s' already exists, use it ?" % args["SUMODIR"],
+                options.yes):
+            sys.exit(0)
+    ensure_dir(sumodir, options.dry_run)
+    if not config.get("dbrepo"):
+        sys.exit("error, dbrepo must be specified as command line option "
+                 "or by config file")
+    # set dbrepomode to "pull"
+    if config.get("dbrepomode")=="push":
+        # we don't want to use "push" here. Change to "pull" instead:
+        config.set("dbrepomode", "pull")
+    # create a dependency database file in subdir "database":
+    dbdir= os.path.join(sumodir, "database")
+    config.set("dbdir", dbdir)
+    # the following does a checkout of the dependency database:
+    _= repo_manager(dbdir,
+                    config.get("dbrepo"),
+                    config.get("dbrepomode"),
+                    config.get("verbose"), config.get("dry_run"))
+    builddir= os.path.join(sumodir, "build")
+    config.set("builddir", builddir)
+    ensure_dir(builddir, options.dry_run)
+    config.save(CONFIG_NAME, None, options.verbose, options.dry_run)
+
+def config_local(config, arguments, options):
+    """implement "config local"."""
+    args= get_command_args(arguments, ["SUMODIR"])
+    sumodir= os.path.abspath(args["SUMODIR"])
+    if os.path.exists(sumodir):
+        if not os.path.isdir(sumodir):
+            sys.exit("error: '%s' is a file" % sumodir)
+        if not sumolib.utils.ask_yes_no(\
+                "Directory '%s' already exists, use it ?" % args["SUMODIR"],
+                options.yes):
+            sys.exit(0)
+    ensure_dir(sumodir, options.dry_run)
+    if not config.get("dbrepo"):
+        sys.exit("error, dbrepo must be specified as command line option "
+                 "or by config file")
+    # set dbrepomode to "pull"
+    if config.get("dbrepomode")=="push":
+        # we don't want to use "push" here. Change to "pull" instead:
+        config.set("dbrepomode", "pull")
+    # create a dependency database file in subdir "database":
+    dbdir= os.path.join(sumodir, "database")
+    config.set("dbdir", dbdir)
+    # the following does a checkout of the dependency database:
+    _= repo_manager(dbdir,
+                    config.get("dbrepo"),
+                    config.get("dbrepomode"),
+                    config.get("verbose"), config.get("dry_run"))
+    builddir= os.path.join(sumodir, "build")
+    config.set("localbuilddir", builddir)
+    ensure_dir(builddir, options.dry_run)
+    config.save(CONFIG_NAME, None, options.verbose, options.dry_run)
+
 def db_convert(arguments, options):
     """implement "db convert"."""
     args= get_command_args(arguments, ["SCANFILE"])
@@ -1174,6 +1238,7 @@ def db_convert(arguments, options):
     db_to_repo(options, mngr, db, "convert", arguments)
     buildcache.json_save(options.scandb,
                          options.verbose, options.dry_run)
+
 def db_convert_old(arguments, options):
     """implement "db convert-old"."""
     args= get_command_args(arguments, ["OLDDB"])
@@ -2165,7 +2230,7 @@ def get_command_args(lst, mandatory_args=None,
             return
     return result
 
-def process_config(config, options, commands):
+def process_config(options, commands):
     """do all the work.
     """
     if not commands:
@@ -2174,11 +2239,15 @@ def process_config(config, options, commands):
         sys.exit("unknown command: %s" % commands[0])
 
     if commands[0]=="list":
+        (_, config)= load_config_files(options, disable_loading= None)
+        # ^^ disable_loading==None means: use options.disable_loading
         print "These configuration files were loaded:\n"
         print "\n".join(config.real_paths())
         return
 
     if commands[0]=="make" or commands[0]=="show":
+        (options, config)= load_config_files(options, disable_loading= None)
+        # ^^ disable_loading==None means: use options.disable_loading
         if commands[0]=="make":
             if len(commands)<=1:
                 sys.exit("filename for command \"makeconfig\" is missing")
@@ -2197,8 +2266,15 @@ def process_config(config, options, commands):
                     raise
                 sys.exit(str(e))
             config.set("module", modulespecs_obj.to_stringlist())
-        config.save(filename, optionnames,
-                    options.verbose, options.dry_run)
+        config.save(filename, optionnames, options.verbose, options.dry_run)
+        return
+    if commands[0]=="standalone":
+        (options, config)= load_config_files(options, disable_loading= True)
+        config_standalone(config, commands[1:], options)
+        return
+    if commands[0]=="local":
+        (options, config)= load_config_files(options, disable_loading= True)
+        config_local(config, commands[1:], options)
         return
 
 def process_db(options, commands):
@@ -2347,6 +2423,44 @@ def process_build(options, commands):
         build_use(commands[1:], options)
         return
 
+def load_config_files(options, disable_loading):
+    """Load config files, merge with options and return a Config object."""
+    config_name= None
+    if not options.no_default_config:
+        config_name= CONFIG_NAME
+    config= sumolib.Config.ConfigFile.from_optionlist(\
+                config_name,
+                ENV_CONFIG,
+                ( "#preload","#opt-preload","#postload","#opt-postload",
+                  "alias", "buildtag-stem",
+                  "dbdir", "dbrepo", "dbrepomode", "extra", "makeopts",
+                  "module", "progress", "readonly", "scandb", "dir-patch",
+                  "url-patch", "builddir", "localbuilddir", "verbose"))
+
+    if disable_loading is None:
+        disable_loading= options.disable_loading
+    try:
+        config.load(options.config, not disable_loading)
+    except ValueError, e:
+        if not catch_exceptions:
+            raise
+        sys.exit(errtxt("Error while loading config file",e))
+    except IOError, e:
+        if not catch_exceptions:
+            raise
+        sys.exit(errtxt("Error while loading config file",e))
+    try:
+        config.merge_options(options, options.append)
+    except ValueError, e:
+        if not catch_exceptions:
+            raise
+        sys.exit(str(e))
+    except TypeError, e:
+        if not catch_exceptions:
+            raise
+        sys.exit(str(e))
+    return (options, config)
+
 def process(options, commands):
     """do all the work.
     """
@@ -2374,46 +2488,19 @@ def process(options, commands):
         pr_list(complete_command(commands))
         return
 
-    config_name= None
-    if not options.no_default_config:
-        config_name= CONFIG_NAME
-    config= sumolib.Config.ConfigFile.from_optionlist(\
-                config_name,
-                ENV_CONFIG,
-                ( "#preload","#opt-preload","#postload","#opt-postload",
-                  "alias", "buildtag-stem",
-                  "dbdir", "dbrepo", "dbrepomode", "extra", "makeopts",
-                  "module", "progress", "readonly", "scandb", "dir-patch",
-                  "url-patch", "builddir", "localbuilddir", "verbose"))
-
-    try:
-        config.load(options.config, not options.disable_loading)
-    except ValueError, e:
-        if not catch_exceptions:
-            raise
-        sys.exit(errtxt("Error while loading config file",e))
-    except IOError, e:
-        if not catch_exceptions:
-            raise
-        sys.exit(errtxt("Error while loading config file",e))
-    try:
-        config.merge_options(options, options.append)
-    except ValueError, e:
-        if not catch_exceptions:
-            raise
-        sys.exit(str(e))
-    except TypeError, e:
-        if not catch_exceptions:
-            raise
-        sys.exit(str(e))
     if not commands:
         sys.exit("command missing")
     if commands[0] not in KNOWN_MAIN_COMMANDS:
         sys.exit("unknown maincommand '%s'" % commands[0])
     if commands[0]=="config":
-        process_config(config, options, commands[1:])
+        process_config(options, commands[1:])
+        return
 
-    elif commands[0]=="lock":
+    # load config files and merge with options (options object is changed):
+    (options, _)= load_config_files(options, None)
+    # ^^ disable_loading==None means: use options.disable_loading
+
+    if commands[0]=="lock":
         if options.readonly:
             sys.exit("--readonly forbids editing a database file")
         args= get_command_args(commands[1:], ["FILE"])
@@ -2665,6 +2752,8 @@ known subcommands here:
   list       - list loaded configuration files
   show       - show configuration data
   make       - create configuration file
+  standalone - create configuration for "standalone" builds
+  local      - create configuration for "local" builds
 
 Use "help [subcommand] for further details.
 """,
@@ -2687,6 +2776,35 @@ Create a new configuration file from the options read from configuration files
 and options from the command line. If FILENAME is '-' dump to the console. 
 OPTIONNAMES is an optional list of long option names. If OPTIONNAMES are 
 specified, only options from this list are saved in the configuration file.
+""",
+        "standalone":"""
+standalone DIRECTORY
+
+This command is used to create a new sumo directory with an independent build
+directory and an independent copy of the dependency database. 
+
+DIRECTORY is created if it does not yet exist. This command takes all settings
+and command line options but sets dbrepomode to "pull" and dbdir to
+DIRECTORY/database. It also sets builddir to DIRECTORY/build. Option dbrepo
+must be set, this is used to create a local copy of the dependency database in
+DIRECTORY/database. If there is a file "sumo.config" in the current working
+directory it is copied to "sumo.config.bak". A new file "sumo.config" is then
+created in the current working directory.
+""",
+        "local":"""
+local DIRECTORY
+
+This command is used to create a new sumo directory with a new build directory
+but using existing builds from your current build directory. It also creates an
+independent copy of the dependency database. 
+
+DIRECTORY is created if it does not yet exist. This command takes all settings
+and command line options but sets dbrepomode to "pull" and dbdir to
+DIRECTORY/database. It also sets localbuilddir to DIRECTORY/build. Option
+dbrepo must be set, this is used to create a local copy of the dependency
+database in DIRECTORY/database. If there is a file "sumo.config" in the current
+working directory it is copied to "sumo.config.bak". A new file "sumo.config"
+is then created in the current working directory.
 """,
         "lock": """
 lock FILE
