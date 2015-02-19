@@ -59,6 +59,7 @@ KNOWN_DB_COMMANDS=set(("alias-add", "appconvert", "check", "clonemodule",
 
 KNOWN_BUILD_COMMANDS=set(("delete", "find", "list",
                           "new",
+                          "remake",
                           "show", "state", "try", "use", "useall"))
 KNOWN_FILE_COMMANDS=set(("lock", "unlock", "edit"))
 
@@ -1042,24 +1043,32 @@ def create_modules(dist_dict, db, builddb, builddir, build_tag,
                       extra_lines,
                       verbose, dry_run)
 
-def call_make(buildtag, options):
-    """call "make", then mark the build "testing"."""
+def simple_call_make(builddir, makefile, target, makeopts, verbose, dry_run):
+    """simple make call."""
     # pylint: disable=R0913
     #                          Too many arguments
-    if options.makeopts is None:
-        options.makeopts=[]
-    builddir= get_builddir(options.builddir, options.localbuilddir)
-    cmd="make %s -C %s -f %s" % (" ".join(options.makeopts),
-                                 builddir,
-                                 makefilename(builddir, buildtag))
+    cmd="make %s -C %s -f %s %s" % (" ".join(makeopts),
+                                    builddir,
+                                    makefile, target)
     try:
         # sys.stderr.write("CALLING MAKE: %s\n" % cmd)
-        sumolib.system.system(cmd, False, False,
-                              options.verbose, options.dry_run)
+        sumolib.system.system(cmd, False, False, verbose, dry_run)
     except IOError, e:
         if not catch_exceptions:
             raise
         sys.exit("Error: make failed, %s" % str(e))
+
+
+def call_make(buildtag, options):
+    """call "make", then mark the build "testing"."""
+    # pylint: disable=R0913
+    #                          Too many arguments
+    builddir= get_builddir(options.builddir, options.localbuilddir)
+    simple_call_make(builddir,
+                     makefilename(builddir, buildtag),
+                     "all",
+                     options.makeopts if options.makeopts else [],
+                     options.verbose, options.dry_run)
 
     builddb= builddb_from_json_file(options.builddir,
                                     options.localbuilddir,
@@ -1873,6 +1882,37 @@ def build_try(arguments, options):
         print "command 'new' can not"
         print "be used with these."
 
+def build_remake(arguments, options):
+    """call make distclean and make on a build."""
+    args= get_command_args(arguments, ["BUILDTAG"])
+    assert_mandatory_options(options, "builddir")
+    if options.buildtag:
+        sys.exit("error: you cannot use --buildtag here")
+    builddb= builddb_from_json_file(options.builddir,
+                                    options.localbuilddir,
+                                    keep_locked= not options.dry_run)
+    buildtag= args["BUILDTAG"]
+    builddb.change_state(buildtag, "unstable")
+    builddb.json_save(None, options.verbose, options.dry_run)
+    # ^^^ does also unlock the file
+    builddir= get_builddir(options.builddir, options.localbuilddir)
+    simple_call_make(builddir,
+                     makefilename(builddir, buildtag),
+                     "distclean",
+                     options.makeopts if options.makeopts else [],
+                     options.verbose, options.dry_run)
+    simple_call_make(builddir,
+                     makefilename(builddir, buildtag),
+                     "all",
+                     options.makeopts if options.makeopts else [],
+                     options.verbose, options.dry_run)
+    builddb= builddb_from_json_file(options.builddir,
+                                    options.localbuilddir,
+                                    keep_locked= not options.dry_run)
+    builddb.change_state(buildtag, "testing")
+    builddb.json_save(None, options.verbose, options.dry_run)
+    # ^^^ does also unlock the file
+
 def build_new(arguments, options):
     """implement "build_new"."""
     # pylint: disable=R0912
@@ -2415,6 +2455,10 @@ def process_build(options, commands):
         build_new(commands[1:], options)
         return
 
+    if commands[0]=="remake":
+        build_remake(commands[1:], options)
+        return
+
     if commands[0]=="find":
         build_find(commands[1:], options)
         return
@@ -2872,6 +2916,7 @@ known subcommands:
 
   try       - check the module specification for completeness and consistency
   new       - create a new build
+  remake    - do "make distclean" and "make all" with a build
   find      - look for builds that match a module specification
   useall    - use all modules of a build in your application
   use       - use all modules or your module specification in your application
@@ -3076,6 +3121,15 @@ command "try" in order to create module specifications that can be used
 with command "new".  This command calls "make" and, after successful
 completion, sets the state of the build to "testing". If you want to
 skip this step, use option "--no-make". In order to provide arbitrary options
+to make use option "--makeopts". 
+""",
+        "remake": """
+remake BUILDTAG
+
+This command recreates a build by first calling "make distclean" and then "make
+all" with the build's makefile. If you develop a support module (see also
+"config standalone" and "config local") you want to recompile the build after
+changes in the sources. In order to provide arbitrary options
 to make use option "--makeopts". 
 """,
         "build find": """

@@ -34,6 +34,7 @@ sumo-build-new-2
 sumo-build-delete
 sumo-scan-all-2
 sumo-build-new-3
+sumo-build-remake
 sumo-build-find
 sumo-build-list
 sumo-build-show
