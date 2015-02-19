@@ -24,28 +24,24 @@ echo -e "\n-> Test sumo build new (use remote build dir)" >&2
 
 DEPS=tmp-sumo-db-convert/DEPS.DB
 
-TESTDIR=tmp-sumo-build-new
-MYTESTDIR=tmp-$ME
+OTHERDIR=tmp-sumo-build-new
+TESTDIR=tmp-$ME
 
-if [ ! -d $MYTESTDIR ]; then
-    mkdir $MYTESTDIR
-    cd $MYTESTDIR > /dev/null
+rm -rf $TESTDIR
+mkdir $TESTDIR
+cd $TESTDIR > /dev/null
 
-    # use an auto generated build tag:
-    $SUMO build --dbdir ../$TESTDIR --localbuilddir . --builddir ../$TESTDIR -m ':build:MYAPP-001 ALARM:R3-7' --buildtag MYAPP-002 --no-make new 1>&2 
-else
-    echo -e "\t$MYTESTDIR already exists, effectively skipping this test..." 1>&2
-    cd $MYTESTDIR > /dev/null
-fi
+# use an auto generated build tag:
+$SUMO build --dbdir ../$OTHERDIR --localbuilddir . --builddir ../$OTHERDIR -m ':build:MYAPP-001 ALARM:R3-7' --buildtag MYAPP-002 --no-make new 1>&2 
 
 echo -e "\ndirectory tree"
-echo "> ls $MYTESTDIR:"
+echo "> ls $TESTDIR:"
 ls  
 echo
-echo "> ls $MYTESTDIR/ALARM:"
+echo "> ls $TESTDIR/ALARM:"
 ls  ALARM
 echo
-echo "> ls $MYTESTDIR/MCAN:"
+echo "> ls $TESTDIR/MCAN:"
 ls  MCAN
 echo -e "\ncontent of BUILDS.DB:"
 cat BUILDS.DB 
