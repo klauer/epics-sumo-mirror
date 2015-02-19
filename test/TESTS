@@ -40,3 +40,5 @@ sumo-build-show
 sumo-build-useall
 sumo-build-use
 sumo-build-use-2
+sumo-config-standalone-new
+sumo-config-local-new

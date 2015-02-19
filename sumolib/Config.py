@@ -86,6 +86,9 @@ class ConfigFile(object):
                 str(self._dict)]
         return "\n".join(lines)
 
+    def get(self, optionname):
+        """get an option."""
+        return self._dict.get(optionname)
     def set(self, optionname, value):
         """set an option to an arbitrary value."""
         self._dict[optionname]= value

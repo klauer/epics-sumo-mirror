@@ -630,10 +630,40 @@ saved in the configuration file.
 make FILENAME [OPTIONNAMES]
 :::::::::::::::::::::::::::
 
+This command is used to create a new sumo directory with an independent build
+directory and an independent copy of the dependency database. 
+
 Create a new configuration file from the options read from configuration files
 and options from the command line. If FILENAME is '-' dump to the console.
 OPTIONNAMES is an optional list of long option names. If OPTIONNAMES are
 specified, only options from this list are saved in the configuration file.
+
+standalone DIRECTORY
+::::::::::::::::::::
+
+Create a new configuration for "standalone" builds. DIRECTORY is created if it
+does not yet exist. This command takes all settings and command line options
+but sets dbrepomode to "pull" and dbdir to DIRECTORY/database. It also sets
+builddir to DIRECTORY/build. Option dbrepo must be set, this is used to create
+a local copy of the dependency database in DIRECTORY/database. If there is a
+file "sumo.config" in the current working directory it is copied to
+"sumo.config.bak". A new file "sumo.config" is then created in the current
+working directory.
+
+local DIRECTORY
+:::::::::::::::
+
+This command is used to create a new sumo directory with a new build directory
+but using existing builds from your current build directory. It also creates an
+independent copy of the dependency database. 
+
+DIRECTORY is created if it does not yet exist. This command takes all settings
+and command line options but sets dbrepomode to "pull" and dbdir to
+DIRECTORY/database. It also sets localbuilddir to DIRECTORY/build. Option
+dbrepo must be set, this is used to create a local copy of the dependency
+database in DIRECTORY/database. If there is a file "sumo.config" in the current
+working directory it is copied to "sumo.config.bak". A new file "sumo.config"
+is then created in the current working directory.
 
 subcommands for maincommand "db"
 ++++++++++++++++++++++++++++++++
