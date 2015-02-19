@@ -865,6 +865,15 @@ completion, sets the state of the :term:`build` to "testing". If you want to
 skip this step, use option "--no-make". In order to provide arbitrary options
 to make use option "--makeopts". 
 
+remake BUILDTAG
+:::::::::::::::
+
+This command recreates a :term:`build` by first calling "make distclean" and
+then "make all" with the build's makefile. If you develop a support
+:term:`module` (see also "config standalone" and "config local") you want to
+recompile the :term:`build` after changes in the sources. In order to provide
+arbitrary options to make use option "--makeopts". 
+
 find MODULES
 ::::::::::::
 
