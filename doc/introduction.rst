@@ -1,8 +1,13 @@
 Introduction
 ============
 
-The following text provides a short introduction of the tool. You may also want
-to look at :doc:`Using sumo in your application <app-usage>` to get a first impression.
+The following text provides a short introduction of the tool.
+
+If you want to get an impression how you use sumo in an application look at
+:doc:`Using sumo in your application <app-usage>`.
+
+If you want to get an impression how to change and develop a device support with sumo look at
+:doc:`Develop support modules with sumo <dev-usage>`.
 
 The problem
 -----------
