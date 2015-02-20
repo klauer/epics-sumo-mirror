@@ -49,6 +49,7 @@ Contents:
    reference-sumo-scan
    reference-sumo
    app-usage
+   dev-usage
    examples
    glossary
 
