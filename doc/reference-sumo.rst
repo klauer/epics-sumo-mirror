@@ -774,7 +774,7 @@ just the name of the module since the version follows as a separate argument.
 If sourcespec is given, the command changes the source part according to this
 parameter. A sourcespec has the form "path PATH", "tar TARFILE [PATCHES]",
 "REPOTYPE URL" or "REPOTYPE URL TAG [PATCHES]". REPOTYPE may be "darcs", "hg"
-or "git". Both, URL or TAG may be "*", in this case the original URL or TAG
+or "git". Both, URL or TAG may be ".", in this case the original URL or TAG
 remain unchanged. PATCHES is a list of patchfiles or URLs of patchfiles. If
 sourcespec is not given, the command adds NEW-VERSION as new tag to the source
 specification. The command always asks for a confirmation of the action unless
@@ -789,7 +789,7 @@ follows as a separate argument. All the data of the :term:`module` is copied.
 If sourcespec is given, the command changes the source part according to this
 parameter. A sourcespec has the form "path PATH", "tar TARFILE", "REPOTYPE URL"
 or "REPOTYPE URL TAG".  REPOTYPE may be "darcs", "hg" or "git". Both, URL or
-TAG may be "*", in this case the original URL or TAG remains unchanged.
+TAG may be ".", in this case the original URL or TAG remains unchanged.
 
 clonemodule OLD-MODULE NEW-MODULE [VERSIONS]
 ::::::::::::::::::::::::::::::::::::::::::::
