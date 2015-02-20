@@ -295,7 +295,8 @@ class SourceSpec(sumolib.JSON.Container):
 
         if isinstance(other_pars, basestring):
             # this is only the case for type "path":
-            if other_pars=="*":
+            if other_pars=="*" or other_pars==".":
+                # no changes
                 return False
             self_d[self_type]= other_pars
             return True
@@ -303,21 +304,15 @@ class SourceSpec(sumolib.JSON.Container):
             # tar file or a repository type
             original= dict(self_pars)
             self_pars.clear()
-            changed= False
             for (k,v) in other_pars.items():
-                if original.get(k)==v:
-                    self_pars[k]= v
-                    continue
-                if v=="*":
+                if v=="*" or v==".":
                     v= original.get(k)
                     if v is None:
                         raise ValueError("cannot replace wildcard "
                                          "for key %s" % k)
-                    self_pars[k]= v
-                    continue
                 self_pars[k]= v
-                changed= True
-            return changed
+            # return whether there were changes:
+            return self_pars!=original
         else:
             raise AssertionError("unexpected type: %s" % repr(other_pars))
     def change_source_by_tag(self, tag):
