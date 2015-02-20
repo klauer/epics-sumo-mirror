@@ -1,24 +1,27 @@
 Introduction
 ============
 
+The following text provides a short introduction of the tool. You may also want
+to look at :doc:`Using sumo in your application <app-usage>` to get a first impression.
+
 The problem
 -----------
 
-When you develop an EPICS application you usually need some EPICS support
-modules. 
+When you develop EPICS applications you usually need some EPICS support
+modules to interface your hardware. 
 
 For a a small project you fetch the sources for support modules your
-application needs and build all of them together with your application.
+application needs and build them along with your application.
 
-For development in a team however, you want to have support modules built
-and installed at a central directory so all developers can just use them in their
-application without the need to build them again for each application.
+For development in a team however, you need to have support modules built and
+installed at a central directory so all developers can just use them instead of
+building them again and again.
 
 If new versions of your support modules with bug fixes or new features become
-available, you have to install these first in order to use them. The old
-versions however, must not be deleted since some applications may depend on
-them.  This is further complicated by the fact that support modules may be
-dependent on each other. 
+available, you have to build these in order to use them. The old versions
+however, must not be deleted since some applications may depend on them. This
+is further complicated by the fact that support modules may be dependent on
+each other. 
 
 Here is an example, module "A" is dependent on module "B":
 

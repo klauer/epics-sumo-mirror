@@ -10,27 +10,28 @@
 ==========================================================
 Welcome to SUMO documentation!
 ==========================================================
+
 A SUpport MOdule manager for EPICS
 ----------------------------------
 
-The support module manager is a collection of python scripts to help with the
-development of EPICS applications and EPICS support modules.
+The support module manager sumo is a program to build consistent sets of EPICS
+support modules and use them in EPICS applications.
 
-Some of the program features are:
+Some of the features are:
 
 - All module dependencies are held in a `JSON <http://www.json.org>`_
   dependency database.
 
-- A scanner program can create a dependency database from an EPICS support
-  directory to help migration.
+- In order to migrate your existing support module installation a scanner
+  program creates a dependency database from existing support directories.
 
-- The program builds of consistent sets of EPICS support modules.
+- The program builds consistent sets of EPICS support modules.
 
-- The program fetches module sources from URLS with tar files or a version
-  control system (currently git, mercurial or darcs).
+- The program fetches module source code from various sources, directories, tar
+  files or version control systems (currently git, mercurial or darcs).
   
-- RELEASE files for applications are automatically created to use support
-  modules that are consistent with each other.
+- If a set of support modules is to be used in an application a RELEASE is
+  generated with all the relevant paths.
 
 See :doc:`introduction` for more information.
 
@@ -47,6 +48,7 @@ Contents:
    configuration-files
    reference-sumo-scan
    reference-sumo
+   app-usage
    examples
    glossary
 
