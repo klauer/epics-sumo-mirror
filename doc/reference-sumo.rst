@@ -404,6 +404,8 @@ For each dependency of a module this structure contains the version of the
 dependency and a state. The state can be "stable" or "testing" or "scanned" but
 is always "scanned" if the file was generated with sumo-db.
 
+.. _reference-sumo-the-build-database:
+
 The build database
 ++++++++++++++++++
 
@@ -849,6 +851,8 @@ file which you can specify with option "--scandb" to this command.
 
 For a detailed example see :ref:`try example <example-sumo-build-try>`.
 
+.. _reference-sumo-new:
+
 new MODULES
 :::::::::::
 
@@ -892,6 +896,8 @@ must be followed by buildtag. The release file created includes *all*
 :term:`modules` of the :term:`build`. The buildtag may be given as argument or
 option. Output to another file or the console can be specified with option
 '-o'. 
+
+.. _reference-sumo-use:
 
 use MODULES
 :::::::::::
