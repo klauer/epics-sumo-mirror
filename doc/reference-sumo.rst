@@ -984,9 +984,9 @@ Here is a short overview on command line options:
 ``--#opt-postload FILES`` 
     This option does the same as --#postload but the file loading is optional.
     If they do not exist the program continues without an error.
-``--db DB``
-    Define the name of the DB file. A default for this option can be put in a
-    configuration file.
+``--dbdir DBDIR``
+    Define the directory where the dependency database file 'DEPS.DB' is found.
+    A default for this option can be put in a configuration file.
 ``--dbrepomode MODE``
     Specify how sumo should use the dependency database repository. There are
     three possible values: 'get', 'pull' and 'push'. With 'get' the foreign
