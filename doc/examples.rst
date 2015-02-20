@@ -83,19 +83,19 @@ text editor or even modify it.
 The scan file is now converted to a dependency database and a scan database
 like this::
 
-  sumo db -U "r\"^/srv/csr/Epics\",r\"rcsadm@aragon.acc.bessy.de:/opt/Epics\"" --db database/DEPS.DB --scandb database/SCAN.DB convert scan/SCAN
+  sumo db -U "r\"^/srv/csr/Epics\",r\"rcsadm@aragon.acc.bessy.de:/opt/Epics\"" --dbdir database --scandb database/SCAN.DB convert scan/SCAN
 
 We have to set a weight factor for our BESSYRULES module, this ensures that
 this module always comes first in generated RELEASE files::
 
-  sumo db --db database/DEPS.DB weight -- -1 BESSYRULES
+  sumo db --dbdir database weight -- -1 BESSYRULES
 
 Create the sumo configuration file
 ++++++++++++++++++++++++++++++++++
 
 We create a sumo configuration file with this command::
 
-  sumo makeconfig sumo.config --builddir $SUMODIR/build --db $SUMODIR/database/DEPS.DB --scandb $SUMODIR/database/SCAN.DB
+  sumo makeconfig sumo.config --builddir $SUMODIR/build --dbdir $SUMODIR/database --scandb $SUMODIR/database/SCAN.DB
 
 Using sumo for the first time
 -----------------------------
@@ -170,7 +170,7 @@ to sumo which creates a `JSON <http://www.json.org>`_ file with
 Now we create a configuration file for sumo db that contains the list of
 :term:`modulespecs` from file "MODULES"::
 
-  sumo -C --scandb $SUMODIR/database/SCAN.DB --db $SUMODIR/database/DEPS.DB --builddir $SUMODIR/build --#preload configure/MODULES --buildtag-stem MLS makeconfig sumo.config
+  sumo -C --scandb $SUMODIR/database/SCAN.DB --dbdir $SUMODIR/database --builddir $SUMODIR/build --#preload configure/MODULES --buildtag-stem MLS makeconfig sumo.config
 
 Build all support modules the application requires
 ++++++++++++++++++++++++++++++++++++++++++++++++++
