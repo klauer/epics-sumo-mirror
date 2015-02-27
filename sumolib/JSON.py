@@ -17,7 +17,7 @@ import os.path
 import time
 import sumolib.lock
 
-__version__="2.6" #VERSION#
+__version__="2.6.1" #VERSION#
 
 assert __version__==sumolib.lock.__version__
 
