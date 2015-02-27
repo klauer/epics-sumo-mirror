@@ -206,9 +206,13 @@ def repo_manager(dbdir, sourcespec_string, mode,
     source_spec_obj= \
         sumolib.repos.SourceSpec.from_string_sourcespec(\
                                           sourcespec_string.split())
-    return sumolib.repos.ManagedRepo(source_spec_obj,
-                                     mode,
-                                     dbdir, LOCK_TIMEOUT, verbose, dry_run)
+    mngr= sumolib.repos.ManagedRepo(source_spec_obj,
+                                    mode,
+                                    dbdir, LOCK_TIMEOUT, verbose, dry_run)
+    if mngr is None:
+        # couldn't create, probably no directory access
+        return sumolib.repos.ManagedRepo(None,None,None,None,verbose,dry_run)
+    return mngr
 
 def db_from_json_file(filename, keep_locked= False):
     """load a db, exits gracefully in case of an error."""
