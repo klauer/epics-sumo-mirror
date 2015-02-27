@@ -435,12 +435,19 @@ class ManagedRepo(object):
             self.sourcespec= None
             return
 
+        self.repo_obj= None
         try:
             self.repo_obj= repo_from_dir(self.directory,
                                          {"write check": True},
                                          self.verbose, self.dry_run)
         finally:
             self.lock.unlock()
+
+        if self.repo_obj is None:
+            # basically disable all action on the repository:
+            # Setting self.sourcespec to <None> basically disables the
+            # ManagedRepo object.
+            self.sourcespec= None
 
     def local_changes(self):
         """return if there are local changes."""
