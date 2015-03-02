@@ -8,44 +8,34 @@ if [ "$1" = "deps" ]; then
         exit
 fi
 
-if [ -z "$1" ]; then
-        PYTHON="python"
-else
-        PYTHON=$1
-fi
-
-BINDIR=`pwd`/../bin
-SUMO_SCAN="$PYTHON $BINDIR/sumo-scan -C"
-SUMO="$PYTHON $BINDIR/sumo -C"
-
-PWD_NICE=`pwd`
+source settings.sh
 
 echo -e "\n-> Test sumo build delete" >&2
 
 DEPS=tmp-sumo-db-convert/DEPS.DB
 
 TESTDIR=tmp-sumo-build-new-2
-MYTESTDIR=tmp-$ME
+EXAMPLEDIR=tmp-$ME
 
-if [ -e $MYTESTDIR ]; then
-    rm -rf $MYTESTDIR
+if [ -e $EXAMPLEDIR ]; then
+    rm -rf $EXAMPLEDIR
 fi
 
 echo -e "\tcopy $TESTDIR to $MYTESTDIR..." >&2
 
-cp -a $TESTDIR $MYTESTDIR
+cp -a $TESTDIR $EXAMPLEDIR
 
-cd $MYTESTDIR > /dev/null
+cd $EXAMPLEDIR > /dev/null
 
 for f in `find . -name RELEASE`; do
-    sed -i $f -e "s#$TESTDIR#$MYTESTDIR#g"
+    sed -i $f -e "s#$TESTDIR#$EXAMPLEDIR#g"
 done
 
 rm -f *.tmp
 rm -f *.bak
 
 echo -e "\ndirectory tree:"
-echo "> ls $MYTESTDIR:"
+echo "> ls $EXAMPLEDIR:"
 ls  
 echo -e "\nbuild directories:"
 find . -name '*+*'

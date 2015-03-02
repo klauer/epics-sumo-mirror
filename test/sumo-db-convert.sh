@@ -8,19 +8,9 @@ if [ "$1" = "deps" ]; then
         exit
 fi
 
+source settings.sh
+
 # This program uses the scan file hat was created for test sumo-scan-all.
-
-if [ -z "$1" ]; then
-        PYTHON="python"
-else
-        PYTHON=$1
-fi
-
-BINDIR=`pwd`/../bin
-SUMO_SCAN="$PYTHON $BINDIR/sumo-scan -C"
-SUMO="$PYTHON $BINDIR/sumo -C"
-
-EXAMPLEDIR=tmp-$ME
 
 echo -e "\n-> Test sumo db convert." >&2
 
@@ -28,11 +18,6 @@ if [ ! -d $EXAMPLEDIR ]; then
     echo -e "\n\tcreating directory $EXAMPLEDIR" >&2
     mkdir $EXAMPLEDIR
 fi
-
-# if PWD_NICE and PWD_REAL happen to be the same, option "-P" of sumo db is not
-# really tested here:
-PWD_NICE=`pwd`
-PWD_REAL=`pwd -P`
 
 # the following is a trick to remove the "no dependency info" messages
 # from standard error and leave standard out untouched:
