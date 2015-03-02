@@ -888,15 +888,6 @@ and some versions or a single version. The command prints a list of
 :term:`buildtags` of matching :term:`builds` on the console. If option --brief
 is given, the program just shows the buildtags. 
 
-useall BUILDTAG
-:::::::::::::::
-
-This command creates a configure/RELEASE file for an application. The command
-must be followed by buildtag. The release file created includes *all*
-:term:`modules` of the :term:`build`. The buildtag may be given as argument or
-option. Output to another file or the console can be specified with option
-'-o'. 
-
 .. _reference-sumo-use:
 
 use MODULES
@@ -1034,19 +1025,18 @@ Here is a short overview on command line options:
     are created in the local build directory and only the build database file
     there is modified.
 ``-o OUTPUTFILE, --output OUTPUTFILE``
-    Define the output for commands 'useall' and 'use'. If this option is not
-    given, 'useall' and 'use' write to 'configure/RELEASE'. If this option is
-    '-', the commands write to standard-out",
+    Define the output for command 'use'. If this option is not given, 'use'
+    writes to 'configure/RELEASE'. If this option is '-', the command writes to
+    standard-out",
 ``-x EXTRALINE, --extra EXTRALLINE``
     Specify an extra line that is added to the generated RELEASE file. A
     default for this option can be put in a configuration file.
 ``-a ALIAS, --alias ALIAS``
-    Define an alias for the commands 'use' and 'useall'. An alias must have the
-    form FROM:TO. The path of module named 'FROM' is put in the generated
-    RELEASE file as a variable named 'TO'. You can specify more than one of
-    these by repeating this option or by joining values in a single string
-    separated by spaces. A default for this option can be put in a
-    configuration file.
+    Define an alias for the command 'use'. An alias must have the form FROM:TO.
+    The path of module named 'FROM' is put in the generated RELEASE file as a
+    variable named 'TO'. You can specify more than one of these by repeating
+    this option or by joining values in a single string separated by spaces. A
+    default for this option can be put in a configuration file.
 ``-m MODULE, --module MODULE``
     Define a :term:`modulespec`. If you specify modules with this option you
     don't have to put :term:`modulespecs` after some of the commands. You can
