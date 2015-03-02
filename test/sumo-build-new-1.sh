@@ -21,6 +21,7 @@ SUMO="$PYTHON $BINDIR/sumo -C"
 REPODIR=`(cd data/repos > /dev/null && pwd)`
 
 PWD_NICE=`pwd`
+PWD_REAL=`pwd -P`
 
 echo -e "\n-> Test sumo build new with a module with patchfile" >&2
 
@@ -38,7 +39,7 @@ $SUMO --dbdir . --builddir . config make sumo.config
 
 # add a new version of ALARM R3-8-patch that uses a patchfile:
 # this creates the output "added module":
-$SUMO -y -c sumo.config db cloneversion ALARM R3-8-modified R3-8-patch darcs '*' '*' $REPODIR/support/alarm-3-8-p.patch
+$SUMO -y -c sumo.config db cloneversion ALARM R3-8-modified R3-8-patch darcs '*' '*' $REPODIR/support/alarm-3-8-p.patch | sed -e "s#$PWD_REAL##;s#$PWD_NICE##"
 
 $SUMO -c sumo.config build  --buildtag-stem BASE --no-make new BASE:R3-14-12-2-1 1>&2 
 $SUMO -c sumo.config build  state BASE-001 stable 1>&2 

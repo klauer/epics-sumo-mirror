@@ -22,6 +22,7 @@ REPOSRC="tmp-sumo-db-dbrepo-create/central"
 EXAMPLEDIR=tmp-$ME
 
 PWD_NICE=`pwd`
+PWD_REAL=`pwd -P`
 
 echo -e "\n-> Test sumo db cloneversion with --dbrepo (repo commit, mode 'get')" >&2
 
@@ -32,9 +33,9 @@ darcs get -q ../$REPOSRC central-darcs
 hg clone -q ../$REPOSRC central-hg
 git clone --bare -q ../$REPOSRC central-git
 
-$SUMO db --dbdir local-darcs --dbrepo "darcs central-darcs" -y cloneversion ALARM R3-7 R3-8-1
-$SUMO db --dbdir local-hg    --dbrepo "hg central-hg" -y cloneversion ALARM R3-7 R3-8-1
-$SUMO db --dbdir local-git   --dbrepo "git central-git" -y cloneversion ALARM R3-7 R3-8-1
+$SUMO db --dbdir local-darcs --dbrepo "darcs central-darcs" -y cloneversion ALARM R3-7 R3-8-1 | sed -e "s#$PWD_REAL##;s#$PWD_NICE##"
+$SUMO db --dbdir local-hg    --dbrepo "hg central-hg" -y cloneversion ALARM R3-7 R3-8-1 | sed -e "s#$PWD_REAL##;s#$PWD_NICE##"
+$SUMO db --dbdir local-git   --dbrepo "git central-git" -y cloneversion ALARM R3-7 R3-8-1 | sed -e "s#$PWD_REAL##;s#$PWD_NICE##"
 
 DDATE="Mon Jan 01 01:01:01 2014 +0100"
 DUSR="Homer.Simpson@burns.com"
