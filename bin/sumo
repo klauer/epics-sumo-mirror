@@ -592,7 +592,8 @@ def create_makefile(dist_dict, db, builddb,
             sumolib.utils.file_write(fh, "\trm -f %s\n" % f, verbose, dry_run)
         sumolib.utils.file_write(fh, "\n", verbose, dry_run)
 
-    for spec, path in paths.items():
+    for spec in sorted(paths.keys()):
+        path= paths[spec]
         (modulename, versionname)= spec
         own_stamp= os.path.join(path, "stamp")
         dep_stamps= []
