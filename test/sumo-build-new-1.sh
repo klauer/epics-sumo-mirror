@@ -8,30 +8,15 @@ if [ "$1" = "deps" ]; then
         exit
 fi
 
-if [ -z "$1" ]; then
-        PYTHON="python"
-else
-        PYTHON=$1
-fi
-
-BINDIR=`pwd`/../bin
-SUMO_SCAN="$PYTHON $BINDIR/sumo-scan -C"
-SUMO="$PYTHON $BINDIR/sumo -C"
-
-REPODIR=`(cd data/repos > /dev/null && pwd)`
-
-PWD_NICE=`pwd`
-PWD_REAL=`pwd -P`
+source settings.sh
 
 echo -e "\n-> Test sumo build new with a module with patchfile" >&2
 
 DEPS=tmp-sumo-db-convert/DEPS.DB
 
-TESTDIR=tmp-$ME
-
-rm -rf $TESTDIR
-mkdir $TESTDIR
-cd $TESTDIR > /dev/null
+rm -rf $EXAMPLEDIR
+mkdir $EXAMPLEDIR
+cd $EXAMPLEDIR > /dev/null
 
 cp ../$DEPS .
 

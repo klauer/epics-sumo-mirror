@@ -8,20 +8,9 @@ if [ "$1" = "deps" ]; then
         exit
 fi
 
-if [ -z "$1" ]; then
-        PYTHON="python"
-else
-        PYTHON=$1
-fi
+source settings.sh
 
-BINDIR=`pwd`/../bin
-SUMO_SCAN="$PYTHON $BINDIR/sumo-scan -C"
-SUMO="$PYTHON $BINDIR/sumo -C"
 DEPSDIR=tmp-sumo-db-convert
-
-EXAMPLEDIR=tmp-$ME
-
-PWD_NICE=`pwd`
 
 echo -e "\n-> Test sumo db check" >&2
 

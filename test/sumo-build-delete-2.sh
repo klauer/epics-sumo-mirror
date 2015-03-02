@@ -8,35 +8,22 @@ if [ "$1" = "deps" ]; then
         exit
 fi
 
-if [ -z "$1" ]; then
-        PYTHON="python"
-else
-        PYTHON=$1
-fi
-
-BINDIR=`pwd`/../bin
-SUMO_SCAN="$PYTHON $BINDIR/sumo-scan -C"
-SUMO="$PYTHON $BINDIR/sumo -C"
-
-PWD_NICE=`pwd`
-PWD_REAL=`pwd -P`
+source settings.sh
 
 echo -e "\n-> Test sumo build delete after crash(some seconds nothing will seem to happen)" >&2
 
 DEPS=tmp-sumo-db-convert/DEPS.DB
 BUILDS="sumo-build-new-0-BUILD.tmp"
 
-TESTDIR=tmp-$ME
-
-if [ -e $TESTDIR ]; then
-    rm -rf $TESTDIR
+if [ -e $EXAMPLEDIR ]; then
+    rm -rf $EXAMPLEDIR
 fi
 
-mkdir $TESTDIR
+mkdir $EXAMPLEDIR
 # create an error in DEPS.DB:
-cat $DEPS | sed -e 's#repos/base/#repo/mybase#' > $TESTDIR/DEPS.DB
+cat $DEPS | sed -e 's#repos/base/#repo/mybase#' > $EXAMPLEDIR/DEPS.DB
 
-cd $TESTDIR > /dev/null
+cd $EXAMPLEDIR > /dev/null
 
 echo -e "call sumo build new, let the command fail on purpose..."
 

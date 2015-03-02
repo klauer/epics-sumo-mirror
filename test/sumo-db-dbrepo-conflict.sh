@@ -8,21 +8,10 @@ if [ "$1" = "deps" ]; then
         exit
 fi
 
-if [ -z "$1" ]; then
-        PYTHON="python"
-else
-        PYTHON=$1
-fi
-
-BINDIR=`pwd`/../bin
-SUMO_SCAN="$PYTHON $BINDIR/sumo-scan -C"
-SUMO="$PYTHON $BINDIR/sumo -C"
+source settings.sh
 
 REPOSRC="tmp-sumo-db-dbrepo-create/central"
 CHG_REPO="tmp-sumo-db-cloneversion-dbrepo"
-EXAMPLEDIR=tmp-$ME
-
-PWD_NICE=`pwd`
 
 echo -e "\n-> Test sumo db --dbrepo with a pull-conflict." >&2
 

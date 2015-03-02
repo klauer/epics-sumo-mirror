@@ -8,31 +8,21 @@ if [ "$1" = "deps" ]; then
         exit
 fi
 
-if [ -z "$1" ]; then
-        PYTHON="python"
-else
-        PYTHON=$1
-fi
-
-BINDIR=`pwd`/../bin
-SUMO_SCAN="$PYTHON $BINDIR/sumo-scan -C"
-SUMO="$PYTHON $BINDIR/sumo -C"
-
-PWD_NICE=`pwd`
+source settings.sh
 
 echo -e "\n-> Test sumo build new --no-checkout." >&2
 
 DEPSDIR=tmp-sumo-db-convert
 
-TESTDIR=tmp-$ME
-if [ ! -d $TESTDIR ]; then
-    mkdir $TESTDIR
+EXAMPLEDIR=tmp-$ME
+if [ ! -d $EXAMPLEDIR ]; then
+    mkdir $EXAMPLEDIR
 fi
-rm -f $TESTDIR/BUILDS.DB
+rm -f $EXAMPLEDIR/BUILDS.DB
 
-$SUMO build --dbdir $DEPSDIR --builddir $TESTDIR new --no-checkout BASE:R3-14-12-2-1 MCAN:R2-6-1 ALARM:R3-7 BSPDEP_TIMER:R6-2 BSPDEP_VMETAS:R2-0 MISC_DBC:PATH-3-0  MISC_DEBUGMSG:R3-0 SOFT_DEVHWCLIENT:TAR-3-0 
-$SUMO build --dbdir $DEPSDIR --builddir $TESTDIR state AUTO-001 stable
-$SUMO build --dbdir $DEPSDIR --builddir $TESTDIR new --no-checkout BASE:R3-14-12-2-1 MCAN:R2-6-1 ALARM:R3-8-modified BSPDEP_TIMER:R6-2 BSPDEP_VMETAS:R2-0 MISC_DBC:PATH-3-0  MISC_DEBUGMSG:R3-0 SOFT_DEVHWCLIENT:TAR-3-0 
+$SUMO build --dbdir $DEPSDIR --builddir $EXAMPLEDIR new --no-checkout BASE:R3-14-12-2-1 MCAN:R2-6-1 ALARM:R3-7 BSPDEP_TIMER:R6-2 BSPDEP_VMETAS:R2-0 MISC_DBC:PATH-3-0  MISC_DEBUGMSG:R3-0 SOFT_DEVHWCLIENT:TAR-3-0 
+$SUMO build --dbdir $DEPSDIR --builddir $EXAMPLEDIR state AUTO-001 stable
+$SUMO build --dbdir $DEPSDIR --builddir $EXAMPLEDIR new --no-checkout BASE:R3-14-12-2-1 MCAN:R2-6-1 ALARM:R3-8-modified BSPDEP_TIMER:R6-2 BSPDEP_VMETAS:R2-0 MISC_DBC:PATH-3-0  MISC_DEBUGMSG:R3-0 SOFT_DEVHWCLIENT:TAR-3-0 
 
 echo "BUILD file:"
-cat $TESTDIR/BUILDS.DB
+cat $EXAMPLEDIR/BUILDS.DB
