@@ -60,7 +60,7 @@ KNOWN_DB_COMMANDS=set(("alias-add", "appconvert", "check", "clonemodule",
 KNOWN_BUILD_COMMANDS=set(("delete", "find", "list",
                           "new",
                           "remake",
-                          "show", "state", "try", "use", "useall"))
+                          "show", "state", "try", "use"))
 KNOWN_FILE_COMMANDS=set(("lock", "unlock", "edit"))
 
 CONFIG_NAME="sumo.config"
@@ -2063,28 +2063,6 @@ def build_find(arguments, options):
         else:
             new_builddb.json_print()
 
-def build_useall(arguments, options):
-    """implement "build_useall"."""
-    args= get_command_args(arguments, ["BUILDTAG"])
-    assert_mandatory_options(options, "dbdir", "builddir")
-    output= options.output
-    if not output:
-        _assume_dir("configure", options.dry_run)
-        output= os.path.join("configure","RELEASE")
-
-    builddb= builddb_from_json_file(options.builddir,
-                                    options.localbuilddir,
-                                    keep_locked= False)
-    (_, db)= db_from_repo(options)
-    lines= fullapprelease(args["BUILDTAG"],
-                          builddb,
-                          db,
-                          None,
-                          scan_aliases(options.alias),
-                          options.extra)
-    sumolib.utils.mk_text_file(output, lines,
-                               options.verbose, options.dry_run)
-
 def build_use(arguments, options):
     """implement "build_use"."""
     args= get_command_args(arguments,
@@ -2469,10 +2447,6 @@ def process_build(options, commands):
 
     if commands[0]=="find":
         build_find(commands[1:], options)
-        return
-
-    if commands[0]=="useall":
-        build_useall(commands[1:], options)
         return
 
     if commands[0]=="use":
@@ -2926,7 +2900,6 @@ known subcommands:
   new       - create a new build
   remake    - do "make distclean" and "make all" with a build
   find      - look for builds that match a module specification
-  useall    - use all modules of a build in your application
   use       - use all modules or your module specification in your application
   list      - list names of all builds
   show      - show details of a build
@@ -3149,15 +3122,6 @@ MODULE:{+-}VERSION that specifies just a module name, a module and some
 versions or a single version. The command prints a list of buildtags of
 matching builds on the console. If option --brief is given, the program just
 shows the buildtags. 
-
-""",
-        "useall": """
-useall BUILDTAG
-
-This command creates a configure/RELEASE file for an application. The command
-must be followed by buildtag. The release file created includes *all* modules
-of the build. The buildtag may be given as argument or option. Output to
-another file or the console can be specified with option '-o'. 
 
 """,
         "use": """
@@ -3476,11 +3440,11 @@ def main():
     parser.add_option("-a", "--alias",
                       action="append",
                       type="string",
-                      help="Define an alias for the commands 'use' and "
-                           "'useall'. An alias must have the form FROM:TO. "
-                           "The path of module named 'FROM' is put in the "
-                           "generated RELEASE file as a variable named "
-                           "'TO'. You can specify more than one of these by "
+                      help="Define an alias for the command 'use'. An "
+                           "alias must have the form FROM:TO. The path of "
+                           "module named 'FROM' is put in the generated "
+                           "RELEASE file as a variable named 'TO'. You "
+                           "can specify more than one of these by "
                            "repeating this option or by joining values in a "
                            "single string separated by spaces. "
                            "A default for this option can be put in a "
