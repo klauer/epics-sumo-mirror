@@ -15,7 +15,7 @@ Added module:
             ],
             "source": {
                 "darcs": {
-                    "url": "/home/pfeiffer/net/project/sumo/test/data/repos/support/alarm"
+                    "url": "/data/repos/support/alarm"
                 }
             }
         }

@@ -15,10 +15,10 @@ Added module:
             "source": {
                 "darcs": {
                     "patches": [
-                        "/home/pfeiffer/net/project/sumo/test/data/repos/support/alarm-3-8-p.patch"
+                        "/data/repos/support/alarm-3-8-p.patch"
                     ],
                     "tag": "R3-8-modified",
-                    "url": "/home/pfeiffer/net/project/sumo/test/data/epics/support/alarm/3-8"
+                    "url": "/data/epics/support/alarm/3-8"
                 }
             }
         }

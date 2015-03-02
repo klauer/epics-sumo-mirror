@@ -39,7 +39,7 @@ $SUMO --dbdir $PWD_NICE/$DBDIR --dbrepo "darcs $PWD_NICE/$DBDIR" --dbrepomode pu
 $SUMO -c sumo.config config local sumo
 
 # now change DEPS.DB
-$SUMO -c sumo.config -y db cloneversion ALARM R3-7 R3-9 darcs '*' 
+$SUMO -c sumo.config -y db cloneversion ALARM R3-7 R3-9 darcs '*' | sed -e "s#$PWD_REAL##;s#$PWD_NICE##"
 
 # now create a new build
 $SUMO -c sumo.config --no-make build new BASE:R3-14-12-2-1 ALARM:R3-9 BSPDEP_TIMER:R6-2 MISC_DBC:PATH-3-0

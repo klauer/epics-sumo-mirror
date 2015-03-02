@@ -16,7 +16,7 @@ Added module:
             "source": {
                 "darcs": {
                     "tag": "R3-8-1",
-                    "url": "/home/pfeiffer/net/project/sumo/test/data/repos/support/alarm"
+                    "url": "/data/repos/support/alarm"
                 }
             }
         }
@@ -40,7 +40,7 @@ Added module:
             "source": {
                 "darcs": {
                     "tag": "R3-8-1",
-                    "url": "/home/pfeiffer/net/project/sumo/test/data/repos/support/alarm"
+                    "url": "/data/repos/support/alarm"
                 }
             }
         }
@@ -64,7 +64,7 @@ Added module:
             "source": {
                 "darcs": {
                     "tag": "R3-8-1",
-                    "url": "/home/pfeiffer/net/project/sumo/test/data/repos/support/alarm"
+                    "url": "/data/repos/support/alarm"
                 }
             }
         }
