@@ -632,9 +632,15 @@ def create_source(db, modulename, versionname,
     #                          Too many arguments
     sourcespec= sumolib.repos.SourceSpec(db.module_source_dict(modulename,
                                                                versionname))
-    sumolib.repos.checkout(sourcespec,
-                           destdir,
-                           verbose, dry_run)
+    try:
+        sumolib.repos.checkout(sourcespec,
+                               destdir,
+                               verbose, dry_run)
+    except IOError, e:
+        if not catch_exceptions:
+            raise
+        sys.exit("Error, checkout failed, %s" % str(e))
+
 
 def delete_module(builddir, build_tag, modulename, versionname,
                   must_exist,
