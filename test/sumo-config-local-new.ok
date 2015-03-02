@@ -240,7 +240,7 @@ content of DEPS.DB
             ],
             "source": {
                 "hg": {
-                    "rev": "4a83612a942f",
+                    "rev": "ABCDABCDABCD",
                     "url": "/data/epics/support/bspDep/VMEtas/2-1-modified"
                 }
             }

@@ -51,7 +51,7 @@ echo -e "\nbuild directory tree (without darcs, maxdepth 2)"
 find sumo -maxdepth 3 | grep -v '_darcs\|\.hg\(\|ignore\)\|\.git\(\|ignore\)\|\.tmp\|\.bak\|\.coverage'
 
 echo -e "\ncontent of DEPS.DB"
-cat sumo/database/DEPS.DB | sed -e "s#$PWD_NICE##;s#$PWD_REAL##"
+cat sumo/database/DEPS.DB | sed -e "s#$PWD_NICE##;s#$PWD_REAL##;s#\"[0-9a-f]\{12\}\"#\"ABCDABCDABCD\"#"
 
 echo -e "\ncontent of BUILDS"
 cat sumo/build/BUILDS.DB | sed -e "s#$PWD_NICE##;s#$PWD_REAL##"
