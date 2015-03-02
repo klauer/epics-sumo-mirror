@@ -179,7 +179,8 @@ def edit_with_lock(filename, verbose, dry_run):
     if not ed_lst:
         raise IOError("error: environment variable 'VISUAL' or "
                       "'EDITOR' must be defined")
-    mylock= MyLock(filename).lock()
+    mylock= MyLock(filename)
+    mylock.lock()
     try:
         found= False
         errors= ["couldn't start editor(s):"]
