@@ -1,3 +1,4 @@
+list without arguments:
 [
     "ALARM",
     "APPS_GENERICTEMPLATE",
@@ -18,4 +19,82 @@
     "SEQ",
     "SOFT_DEVHWCLIENT"
 ]
+
+list with '.':
+{
+    "ALARM": [
+        "R3-8-modified",
+        "R3-7"
+    ],
+    "APPS_GENERICTEMPLATE": [
+        "PATH-3-0"
+    ],
+    "APPS_IOCWATCH": [
+        "R3-0"
+    ],
+    "ASYN": [
+        "TAR-4-17-2"
+    ],
+    "BASE": [
+        "R3-14-12-2-1"
+    ],
+    "BESSYRULES": [
+        "R2-5"
+    ],
+    "BSPDEP_CPUBOARDINIT": [
+        "R4-1"
+    ],
+    "BSPDEP_TIMER": [
+        "R6-2"
+    ],
+    "BSPDEP_VMETAS": [
+        "TAGLESS-2-1-modified",
+        "R2-1",
+        "R2-0"
+    ],
+    "CSM": [
+        "TAR-4-1"
+    ],
+    "DEVIOCSTATS": [
+        "R3-1-9-bessy3"
+    ],
+    "EK": [
+        "TAGLESS-2-2"
+    ],
+    "GENSUB": [
+        "R1-6-1"
+    ],
+    "MCAN": [
+        "R2-6-3-gp",
+        "R2-6-1"
+    ],
+    "MISC_DBC": [
+        "PATH-3-0"
+    ],
+    "MISC_DEBUGMSG": [
+        "R3-1",
+        "R3-0"
+    ],
+    "SEQ": [
+        "R2-1-10"
+    ],
+    "SOFT_DEVHWCLIENT": [
+        "TAR-3-0"
+    ]
+}
+
+list ALARM:
+{
+    "ALARM": [
+        "R3-8-modified",
+        "R3-7"
+    ]
+}
+
+list BSPDEP_TIMER:R6-2:
+{
+    "BSPDEP_TIMER": [
+        "R6-2"
+    ]
+}
 

@@ -725,26 +725,20 @@ Note that this command *does not* use the "--modules" command line option.
 
 Parameter WEIGHT must be an integer.
 
-list
-::::
+list [MODULES]
+::::::::::::::
 
-This command lists all :term:`modules` in the 
-:ref:`dependency database <reference-sumo-db-The-dependency-database>`.
+If called with no argument, list the names of all :term:`modules`. If called
+with '.', the wildcard symbol, list all :term:`versions` of all
+:term:`modules`. If called with argument MODULES, a list of :term:`modulespecs`
+MODULE:{+-}VERSION that specifies :term:`modules` and :term:`versions`, list
+all the matching :term:`versions` of all specified :term:`modules`.
 
 show [MODULES]
 ::::::::::::::
 
-This command shows all versions of the given modules. 
-
-Optional parameter MODULES specifies the names of :term:`modules` shown. If no
-:term:`modules` are given the command shows all :term:`versions` of all
-:term:`modules`.
-
-filter MODULES...
-:::::::::::::::::
-
 This command prints only the parts of the dependency database that contain the
-given modules. 
+given :term:`modules`. 
 
 Parameter MODULES is a list of :term:`modulespecs` MODULE:{+-}VERSION that
 specifies the :term:`modules` and :term:`versions` to operate on. 

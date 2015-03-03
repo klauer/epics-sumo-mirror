@@ -30,5 +30,5 @@ cat $MODULES
 
 echo "read modulespecs from config and modules file:"
 # now check if they can be scanned:
-$SUMO db --no-default-config -c $CONFIG filter --dbdir $DEPSDIR --dump-modules
+$SUMO db --no-default-config -c $CONFIG show --dbdir $DEPSDIR --dump-modules
 
