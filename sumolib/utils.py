@@ -7,6 +7,8 @@
 #                          Operator not preceded by a space
 # pylint: disable=C0103
 #                          Invalid name for type variable
+# pylint: disable=W0141
+#                          Used builtin function ...
 import sys
 import os
 import os.path

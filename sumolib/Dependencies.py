@@ -60,7 +60,7 @@ class DB(sumolib.JSON.Container):
         def _somevalue(d):
             """return kind of arbitrary value of a dict."""
             keys= d.keys()
-            key= keys[len(keys)/2]
+            key= keys[len(keys)//2]
             return d[key]
         while True:
             d= self.datadict()
