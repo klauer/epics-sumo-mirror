@@ -1,7 +1,107 @@
+show details of all ALARM modules:
 {
-    "ALARM": [
-        "R3-8-modified",
-        "R3-7"
-    ]
+    "ALARM": {
+        "R3-7": {
+            "aliases": {
+                "BASE": "EPICS_BASE",
+                "BSPDEP_TIMER": "TIMER",
+                "MISC_DBC": "DBC"
+            },
+            "dependencies": [
+                "BASE",
+                "BSPDEP_TIMER",
+                "MISC_DBC"
+            ],
+            "source": {
+                "darcs": {
+                    "tag": "R3-7",
+                    "url": "/data/repos/support/alarm"
+                }
+            }
+        },
+        "R3-8-modified": {
+            "aliases": {
+                "BASE": "EPICS_BASE",
+                "BSPDEP_TIMER": "TIMER",
+                "MISC_DBC": "DBC"
+            },
+            "dependencies": [
+                "BASE",
+                "BSPDEP_TIMER",
+                "MISC_DBC"
+            ],
+            "source": {
+                "darcs": {
+                    "tag": "R3-8-modified",
+                    "url": "/data/epics/support/alarm/3-8"
+                }
+            }
+        }
+    }
+}
+
+show details of MCAN:R2-6-1:
+{
+    "MCAN": {
+        "R2-6-1": {
+            "aliases": {
+                "BASE": "EPICS_BASE",
+                "BSPDEP_VMETAS": "VMETAS",
+                "MISC_DBC": "DBC",
+                "MISC_DEBUGMSG": "DEBUGMSG",
+                "SOFT_DEVHWCLIENT": "DEVHWCLIENT"
+            },
+            "dependencies": [
+                "ALARM",
+                "BASE",
+                "BSPDEP_VMETAS",
+                "MISC_DBC",
+                "MISC_DEBUGMSG",
+                "SOFT_DEVHWCLIENT"
+            ],
+            "source": {
+                "darcs": {
+                    "tag": "R2-6-1",
+                    "url": "/data/repos/support/mcan"
+                }
+            }
+        }
+    }
+}
+
+show details of BSPDEP_TIMER and BSPDEP_CPUBOARDINIT:
+{
+    "BSPDEP_CPUBOARDINIT": {
+        "R4-1": {
+            "aliases": {
+                "BASE": "EPICS_BASE"
+            },
+            "dependencies": [
+                "BASE"
+            ],
+            "source": {
+                "darcs": {
+                    "tag": "R4-1",
+                    "url": "/data/repos/support/bspDep/cpuBoardInit"
+                }
+            }
+        }
+    },
+    "BSPDEP_TIMER": {
+        "R6-2": {
+            "aliases": {
+                "BASE": "EPICS_BASE"
+            },
+            "dependencies": [
+                "BASE"
+            ],
+            "source": {
+                "darcs": {
+                    "tag": "R6-2",
+                    "url": "/data/epics/support/bspDep/timer/6-2"
+                }
+            }
+        }
+    }
 }
 

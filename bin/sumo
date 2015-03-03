@@ -52,7 +52,7 @@ KNOWN_CONFIG_COMMANDS=set(("list", "show", "make", "standalone", "local"))
 
 KNOWN_DB_COMMANDS=set(("alias-add", "appconvert", "check", "clonemodule",
                        "cloneversion", "convert", "convert-old",
-                       "filter", "find", "format",
+                       "find", "format",
                        "list", "merge", "dependency-add",
                        "dependency-delete", "replaceversion", "show",
                        "weight"))
@@ -1335,8 +1335,8 @@ def db_weight(arguments, options):
         db_to_repo(options, mngr, db, "weight", arguments)
         # ^^^ does also unlock the file
 
-def db_filter(arguments, options):
-    """implement "db filter"."""
+def db_show(arguments, options):
+    """implement "db show"."""
     args= get_command_args(arguments,
                            extra_optional="MODULES")
     assert_mandatory_options(options, "dbdir")
@@ -1525,53 +1525,44 @@ def db_clonemodule(arguments, options):
 
 def db_list(arguments, options):
     """implement "db list"."""
-    get_command_args(arguments)
-    assert_mandatory_options(options, "dbdir")
-    (_, db)= db_from_repo(options)
-    result= sorted(db.iter_modulenames())
-    sumolib.JSON.dump(result)
-
-def db_show(arguments, options):
-    """implement "db show."""
     args= get_command_args(arguments,
                            extra_optional="MODULES")
     assert_mandatory_options(options, "dbdir")
     (_, db)= db_from_repo(options)
+    # NOTE: option "--modules" is NOT used here
+    if not args.has_key("MODULES"):
+        # no modules given, list all module names:
+        result= sorted(db.iter_modulenames())
+        sumolib.JSON.dump(result)
+        return
 
-    modulespecs= []
-    if options.module:
-        modulespecs.extend(options.module)
-    if args.has_key("MODULES"):
-        if "module" in options.append:
-            modulespecs.extend(args["MODULES"])
-        else:
-            modulespecs= args["MODULES"]
-    if not modulespecs:
-        modulespecs= list(db.iter_modulenames())
-
+    modules= args["MODULES"]
     result= {}
 
-    try:
-        modulespecs_obj= sumolib.ModuleSpec.Specs.from_strings(modulespecs,\
-                                                        None)
-    except ValueError, e:
-        if not catch_exceptions:
-            raise
-        sys.exit(str(e))
-
-    if options.dump_modules:
-        dump_modules(modulespecs_obj)
-        sys.exit(0)
-    for modulespec in modulespecs_obj:
-        modulename= modulespec.modulename
-
-        versions= db.sorted_moduleversions(modulename)
-        if not versions: # no versions match criteria
-            continue
-        versions= [v for v in versions \
-                   if modulespec.test(v)]
-
-        result[modulename]= versions
+    if len(modules)==1 and modules[0]==".":
+        # wildcard, list ALL versions of ALL modules:
+        for modulename in db.iter_modulenames():
+            versions= db.sorted_moduleversions(modulename)
+            result[modulename]= versions
+    else:
+        # Modules are given, list only the given modules. The user may specify
+        # ranges of moduleversions like MODULE:+VERSION or MODULE:-VERSION.
+        try:
+            modulespecs_obj= \
+                    sumolib.ModuleSpec.Specs.from_strings(modules, None)
+        except ValueError, e:
+            if not catch_exceptions:
+                raise
+            sys.exit(str(e))
+        if options.dump_modules:
+            dump_modules(modulespecs_obj)
+            return
+        for modulespec in modulespecs_obj:
+            modulename= modulespec.modulename
+            # leave only versions that match modulespec:
+            versions= [v for v in db.sorted_moduleversions(modulename) \
+                       if modulespec.test(v)]
+            result[modulename]= versions
     sumolib.JSON.dump(result)
 
 def db_find(arguments, options):
@@ -2345,10 +2336,6 @@ def process_db(options, commands):
         db_weight(commands[1:], options)
         return
 
-    if commands[0]=="filter":
-        db_filter(commands[1:], options)
-        return
-
     if commands[0]=="check":
         db_check(commands[1:], options)
         return
@@ -2876,9 +2863,8 @@ subcommands here:
                  add a dependency to a module
   dependency-delete - 
                  delete a dependency of a module
-  list         - list modules
-  show         - show all modules
-  filter       - show parts of the DB file
+  list         - list modules or versions of modules
+  show         - show details of moduleversions
   find         - search for modules with a regexp
   check        - consistency check of the DB file
   merge        - merge two DB files
@@ -2992,20 +2978,15 @@ Add a dependency to a module. MODULE here is a modulespec of the form
 MODULE:VERSION that specifies a single version of a module.
 """,
         "db list": """
-list
+list [MODULES]
 
-list the names of all modules
+If called with no argument, list the names of all modules. If called with '.',
+the wildcard symbol, list all versions of all modules. If called with argument
+MODULES, a list of modulespecs MODULE:{+-}VERSION that specifies modules and
+versions, list all the matching versions of all specified modules.
 """,
         "db show": """
 show [MODULES]
-
-This command shows all versions of the given modules. 
-
-Optional parameter MODULES specifies the names of modules shown. If no modules
-are given the command shows all versions of all modules.
-""",
-        "filter": """
-filter MODULES...
 
 This command prints only the parts of the dependency database that contain the
 given modules. 
@@ -3421,11 +3402,10 @@ def main():
     parser.add_option("-o", "--output",
                       action="store",
                       type="string",
-                      help= "Define the output for commands 'useall' and "
-                            "'use'. If this option is not given, 'useall' "
-                            "and 'use' write to 'configure/RELEASE'. If "
-                            "this option is '-', the commands write to "
-                            "standard-out",
+                      help= "Define the output for command 'use'. If "
+                            "this option is not given, 'use' writes to "
+                            "'configure/RELEASE'. If this option is '-', "
+                            "the command writes to standard-out",
                       metavar="OUTPUTFILE",
                      )
     parser.add_option("-x", "--extra",

@@ -1,4 +1,4 @@
-sumo db show ALARM without --dbrepo:
+sumo db list ALARM without --dbrepo:
 ------------------------------------
 {
     "ALARM": [
@@ -22,7 +22,7 @@ sumo db show ALARM without --dbrepo:
 }
 
 
-sumo db show ALARM with --dbrepo (fetch changes from central repo)
+sumo db list ALARM with --dbrepo (fetch changes from central repo)
 ------------------------------------------------------------------
 warning: no write access to dependency database, forcing dbrepomode 'get'
 {
