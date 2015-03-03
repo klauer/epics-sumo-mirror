@@ -1822,7 +1822,7 @@ def build_try(arguments, options):
                      "for the module to avoid this error." % \
                      modulename)
 
-    if options.detail>0:
+    if options.detail: # this is not true for '0'
         wanted= set(modules_not_exact_spec)
         wanted.update(added_modules)
         if (options.detail==1) and wanted:

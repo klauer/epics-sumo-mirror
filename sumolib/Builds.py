@@ -57,7 +57,7 @@ class DB(sumolib.JSON.Container):
         def _somevalue(d):
             """return kind of arbitrary value of a dict."""
             keys= d.keys()
-            key= keys[len(keys)/2]
+            key= keys[len(keys)//2]
             return d[key]
         while True:
             d= self.datadict()
@@ -86,7 +86,7 @@ class DB(sumolib.JSON.Container):
         A new buildtag in the form "STEM-nnn" is generated.
         """
         # determine which number to append:
-        no= None
+        no= -1
         buildtag_stem= buildtag_stem + "-"
         for b in self.iter_builds():
             if b.startswith(buildtag_stem):
@@ -97,7 +97,7 @@ class DB(sumolib.JSON.Container):
                     continue
                 if n>no:
                     no= n
-        if no is None:
+        if no<=-1:
             no= 0
         no+= 1
         return "%s%03d" % (buildtag_stem, no)
