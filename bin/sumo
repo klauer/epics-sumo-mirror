@@ -2615,12 +2615,12 @@ A maincommand provides a grouping for the various commands of sumo.
 While some maincommands can be used without a subcommand, others must be
 followed by a subcommand. These are the known maincommands:
 
-  config             - operations on configuration files
-  edit               - lock, then edit a file
-  lock               - just lock a file
-  unlock             - unlock a file
-  db [subcommand]    - operation on the dependency database
-  build [subcommand] - manage the build database and builds
+  config [subcommand] - operations on configuration files
+  edit FILE           - lock, then edit a file
+  lock FILE           - just lock a file
+  unlock FILE         - unlock a file
+  db [subcommand]     - operation on the dependency database
+  build [subcommand]  - manage the build database and builds
 
 For all of the db subcommands you have to specify the dependency database
 directory with option --dbdir or a configuration file.
@@ -2775,27 +2775,27 @@ known subcommands here:
 Use "help [subcommand] for further details.
 """,
         "config list":"""
-list
+config list
 
 List all configuration files that were loaded.
 """,
         "config show":"""
-show [OPTIONNAMES]
+config show [OPTIONNAMES]
 
 Show the configuration in JSON format.  OPTIONNAMES is an optional list of long
 option names. If OPTIONNAMES are specified, only options from this list are
 saved in the configuration file.
 """,
-        "make":"""
-make FILENAME [OPTIONNAMES]
+        "config make":"""
+config make FILENAME [OPTIONNAMES]
 
 Create a new configuration file from the options read from configuration files
 and options from the command line. If FILENAME is '-' dump to the console. 
 OPTIONNAMES is an optional list of long option names. If OPTIONNAMES are 
 specified, only options from this list are saved in the configuration file.
 """,
-        "standalone":"""
-standalone DIRECTORY
+        "config standalone":"""
+config standalone DIRECTORY
 
 This command is used to create a new sumo directory with an independent build
 directory and an independent copy of the dependency database. 
@@ -2808,8 +2808,8 @@ DIRECTORY/database. If there is a file "sumo.config" in the current working
 directory it is copied to "sumo.config.bak". A new file "sumo.config" is then
 created in the current working directory.
 """,
-        "local":"""
-local DIRECTORY
+        "config local":"""
+config local DIRECTORY
 
 This command is used to create a new sumo directory with a new build directory
 but using existing builds from your current build directory. It also creates an
@@ -2892,29 +2892,8 @@ known subcommands:
   state     - show or change the state of a build
   delete    - delete a build
 """,
-        "list":"""
-This is a subcommand of commands 'config', 'db' and 'build'.
-
-For help on 'config list' enter 'help config list'
-For help on 'db list' enter 'help db list'
-For help on 'build list' enter 'help build list'
-""",
-        "show":"""
-This is a subcommand of commands 'config', 'db' and 'build'.
-
-For help on 'config show' enter 'help config show'
-For help on 'db show' enter 'help db show'
-For help on 'build show' enter 'help build show'
-""",
-        "find":"""
-This is a subcommand of command 'db' and command 'build'.
-
-For help on 'db find' enter 'help db find'
-For help on 'build find' enter 'help build find'
-""",
-
-        "convert":"""
-convert SCANFILE
+        "db convert":"""
+db convert SCANFILE
 
 Convert SCANFILE created by "sumo-scan all" to a new dependency database. If
 SCANFILE is a dash "-" the program expects the scanfile on stdin.  Note that
@@ -2924,8 +2903,8 @@ the drectory where the new created dependency database file is stored, with
 file contains information on what moduleversion can be used with what
 dependency version.
 """,
-        "convert-old":"""
-convert OLDDB
+        "db convert-old":"""
+db convert OLDDB
 
 Convert a dependency database file OLDDB from old to new format. The old format
 had architecture data ("arch") for each moduleversion. In the new format this
@@ -2938,8 +2917,8 @@ a list of aliases and modulespecs in JSON format. The result is printed to the
 console. It can be used with --config to put these in the configuration file of
 sumo.
 """,
-        "format": """
-format
+        "db format": """
+db format
 
 Just load and save the dependency database. This ensures that the file is
 formatted in the standard sumo format. This is useful when the file was edited
@@ -2947,8 +2926,8 @@ and you want to ensure that key sort order and indentation are restored. If you
 specified a repository with --dbrepo, the command will commit the changes. If
 you want a log message different from "db format" use option --logmsg. 
 """,
-        "weight": """
-weight WEIGHT MODULES
+        "db weight": """
+db weight WEIGHT MODULES
 
 Set the weight factor for module. A weight determines where a module is placed
 in the generated RELEASE file. Modules there are sorted first by weight, then
@@ -2959,26 +2938,26 @@ Note that this command *does not* use the "--modules" option.
 
 Parameter WEIGHT must be an integer.
 """,
-        "alias-add": """
-alias-add MODULE DEPENDENCY ALIAS
+        "db alias-add": """
+db alias-add MODULE DEPENDENCY ALIAS
 
 Define a new alias for a dependency of a module. MODULE here is a modulespec of
 the form MODULE:VERSION that specifies a single version of a module.
 """,
-        "dependency-delete": """
-dependency-delete MODULE DEPENDENCY
+        "db dependency-delete": """
+db dependency-delete MODULE DEPENDENCY
 
 Delete a dependency of a module. MODULE here is a modulespec of the form
 MODULE:VERSION that specifies a single version of a module.
 """,
-        "dependency-add": """
-dependency-add MODULE DEPENDENCY
+        "db dependency-add": """
+db dependency-add MODULE DEPENDENCY
 
 Add a dependency to a module. MODULE here is a modulespec of the form
 MODULE:VERSION that specifies a single version of a module.
 """,
         "db list": """
-list [MODULES]
+db list [MODULES]
 
 If called with no argument, list the names of all modules. If called with '.',
 the wildcard symbol, list all versions of all modules. If called with argument
@@ -2986,7 +2965,7 @@ MODULES, a list of modulespecs MODULE:{+-}VERSION that specifies modules and
 versions, list all the matching versions of all specified modules.
 """,
         "db show": """
-show [MODULES]
+db show [MODULES]
 
 This command prints only the parts of the dependency database that contain the
 given modules. 
@@ -2995,24 +2974,24 @@ Parameter MODULES is a list of modulespecs MODULE:{+-}VERSION that specifies
 the modules and versions to operate on. 
 """,
         "db find": """
-find REGEXP
+db find REGEXP
 
 Show all modules whose names or sources match regexp.
 """,
-        "check": """
-check 
+        "db check": """
+db check 
 
 Do some consistency checks on the dependency database file in the directory
 specifed by --dbdir.
 """,
-        "merge": """
-merge DB
+        "db merge": """
+db merge DB
 
 Merge the given dependency database file with the dependency database in the
 directory specifed by --dbdir.
 """,
-        "cloneversion": """
-cloneversion MODULE OLD-VERSION NEW-VERSION [SOURCESPEC]
+        "db cloneversion": """
+db cloneversion MODULE OLD-VERSION NEW-VERSION [SOURCESPEC]
 
 This command adds a new version of a module to the dependency database by
 copying the old version. MODULE here is just the name of the module since the
@@ -3026,8 +3005,8 @@ adds NEW-VERSION as new tag to the source specification. The command always
 asks for a confirmation of the action unless option "-y" is used.
 
 """,
-        "replaceversion": """
-replaceversion MODULE OLD-VERSION NEW-VERSION
+        "db replaceversion": """
+db replaceversion MODULE OLD-VERSION NEW-VERSION
 
 This command replaces a version of a module with a new
 version. MODULE here is just the name of the module since the version
@@ -3037,8 +3016,8 @@ parameter. A sourcespec has the form "path PATH", "tar TARFILE", "REPOTYPE URL"
 or "REPOTYPE URL TAG".  REPOTYPE may be "darcs", "hg" or "git". Both, URL or
 TAG may be ".", in this case the original URL or TAG remains unchanged.
 """,
-        "clonemodule": """
-clonemodule OLD-MODULE NEW-MODULE [VERSIONS]
+        "db clonemodule": """
+db clonemodule OLD-MODULE NEW-MODULE [VERSIONS]
 
 Copy all versions of the existing old module and add this with the name of thew
 new module to the dependency database.  OLD-MODULE and NEW-MODULE here are just
@@ -3046,8 +3025,8 @@ the module names since the versions may follow as a separate argument. If there
 are no versions specified, the command copies all existing versions. Note that
 this DOES NOT add the new module as dependency to any other modules.
 """,
-        "try": """
-try MODULES
+        "build try": """
+build try MODULES
 
 This command is intended to help you create module specifications for the "new"
 command. 
@@ -3069,8 +3048,8 @@ file which you can specify with option "--scandb" to this command.
 
 For a detailed example see the try example in the HTML documentation.
 """,
-        "new": """
-new MODULES
+        "build new": """
+build new MODULES
 
 This command creates a new build. Each module given in MODULES here is
 a modulespec of the form MODULE:VERSION that specifies a single version
@@ -3085,8 +3064,8 @@ completion, sets the state of the build to "testing". If you want to
 skip this step, use option "--no-make". In order to provide arbitrary options
 to make use option "--makeopts". 
 """,
-        "remake": """
-remake BUILDTAG
+        "build remake": """
+build remake BUILDTAG
 
 This command recreates a build by first calling "make distclean" and then "make
 all" with the build's makefile. If you develop a support module (see also
@@ -3095,7 +3074,7 @@ changes in the sources. In order to provide arbitrary options
 to make use option "--makeopts". 
 """,
         "build find": """
-find MODULESPECS
+build find MODULESPECS
 
 This command is used to find matching builds for a given list of modulespecs.
 Each module in MODULES here is a modulespec of the form MODULE or
@@ -3105,8 +3084,8 @@ matching builds on the console. If option --brief is given, the program just
 shows the buildtags. 
 
 """,
-        "use": """
-use MODULES
+        "build use": """
+build use MODULES
 
 This command creates a configure/RELEASE file for an application. Each module
 given in MODULES here is a modulespec of the form MODULE:VERSION that specifies
@@ -3118,26 +3097,26 @@ created includes only the modules that are specified. Output to another file or
 the console can be specified with option '-o'.
 """,
         "build list": """
-list    
+build list    
 
 This command lists the names of all builds.
 """,
         "build show": """
-show BUILDTAG
+build show BUILDTAG
 
 This command shows the data of a build. The buildtag must be given as an 
 argument.
 """,
-        "state": """
-state BUILDTAG [NEW-STATE]
+        "build state": """
+build state BUILDTAG [NEW-STATE]
 
 This command is used to show or change the state of a build. The buildtag
 must be given as an argument. If there is no new state given, it just shows
 the current state of the build. Otherwise the state of the build is changed
 to the given value. 
 """,
-        "delete": """
-delete BUILDTAG
+        "build delete": """
+build delete BUILDTAG
 
 If no other build depends on the build specified by the buildtag, the
 directories of the build are removed and it's entry in the builddb is
@@ -3155,7 +3134,8 @@ def helptext(topics, listmode):
     #                          Too many return statements
     if not topics:
         if listmode:
-            pr_list(help_topics.keys())
+            pr_list([k for k in help_topics.keys()\
+                       if not " " in k])
         else:
             print help_topics[""]
         return
@@ -3166,7 +3146,10 @@ def helptext(topics, listmode):
         return
     if len(lc_topics)==1:
         if listmode:
-            pr_list(help_topics.keys())
+            st= lc_topics[0]+" "
+            l=[k.replace(st,"") for k in help_topics.keys() \
+                                if k.startswith(st)]
+            pr_list(l)
             return
         txt= help_topics[lc_topics[0]]
         if txt is not None:
@@ -3181,10 +3164,6 @@ def helptext(topics, listmode):
         print "no known maincommand '%s'" % topics[0]
         return
     txt= help_topics.get(" ".join(lc_topics))
-    if txt is not None:
-        print txt
-        return
-    txt= help_topics.get(lc_topics[1])
     if txt is not None:
         print txt
         return

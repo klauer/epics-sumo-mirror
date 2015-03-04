@@ -617,20 +617,20 @@ configuration file.
 subcommands for maincommand "config"
 ++++++++++++++++++++++++++++++++++++
 
-list
-::::
+config list
+:::::::::::
 
 List all configuration files that were loaded.
 
-show [OPTIONNAMES]
-::::::::::::::::::
+config show [OPTIONNAMES]
+:::::::::::::::::::::::::
 
 Show the configuration in JSON format.  OPTIONNAMES is an optional list of long
 option names. If OPTIONNAMES are specified, only options from this list are
 saved in the configuration file.
 
-make FILENAME [OPTIONNAMES]
-:::::::::::::::::::::::::::
+config make FILENAME [OPTIONNAMES]
+::::::::::::::::::::::::::::::::::
 
 This command is used to create a new sumo directory with an independent build
 directory and an independent copy of the dependency database. 
@@ -640,8 +640,8 @@ and options from the command line. If FILENAME is '-' dump to the console.
 OPTIONNAMES is an optional list of long option names. If OPTIONNAMES are
 specified, only options from this list are saved in the configuration file.
 
-standalone DIRECTORY
-::::::::::::::::::::
+config standalone DIRECTORY
+:::::::::::::::::::::::::::
 
 Create a new configuration for "standalone" builds. DIRECTORY is created if it
 does not yet exist. This command takes all settings and command line options
@@ -652,8 +652,8 @@ file "sumo.config" in the current working directory it is copied to
 "sumo.config.bak". A new file "sumo.config" is then created in the current
 working directory.
 
-local DIRECTORY
-:::::::::::::::
+config local DIRECTORY
+::::::::::::::::::::::
 
 This command is used to create a new sumo directory with a new build directory
 but using existing builds from your current build directory. It also creates an
@@ -670,8 +670,8 @@ is then created in the current working directory.
 subcommands for maincommand "db"
 ++++++++++++++++++++++++++++++++
 
-convert SCANFILE
-::::::::::::::::
+db convert SCANFILE
+:::::::::::::::::::
 
 Convert a :term:`scanfile` that was created by by 
 :doc:`"sumo-scan all"<reference-sumo-scan>` to a new dependency database.  If
@@ -683,8 +683,8 @@ stored, with "--scandb" you specify the name of the scan database file. The
 scan database file contains information on what moduleversion can be used with
 what dependency version.
 
-convert-old OLDDB
-:::::::::::::::::
+db convert-old OLDDB
+::::::::::::::::::::
 
 Convert a :ref:`dependency database <reference-sumo-db-The-dependency-database>` 
 file OLDDB from old to new format. The old format had architecture data
@@ -692,8 +692,8 @@ file OLDDB from old to new format. The old format had architecture data
 that this command IGNORES option "--dbrepo", it directly operates on the
 dependency database file in the directory given with option "--dbdir".
 
-appconvert SCANFILE
-:::::::::::::::::::
+db appconvert SCANFILE
+::::::::::::::::::::::
 
 Convert a :term:`scanfile` that was created by applying 
 :doc:`"sumo-scan all"<reference-sumo-scan>` to an application to a list of 
@@ -701,8 +701,8 @@ Convert a :term:`scanfile` that was created by applying
 format. The result is printed to the console. It can be used with
 --config to put these in the configuration file of sumo.
 
-format
-::::::
+db format
+:::::::::
 
 Just load and save the 
 :ref:`dependency database <reference-sumo-db-The-dependency-database>`. 
@@ -713,8 +713,8 @@ command will commit the changes. If you want a log message different from "db
 format" use option --logmsg. 
 
 
-weight WEIGHT MODULES
-:::::::::::::::::::::
+db weight WEIGHT MODULES
+::::::::::::::::::::::::
 
 Set the weight factor for modules. A weight determines where a module is placed
 in the generated RELEASE file. Modules there are sorted first by weight, then
@@ -725,8 +725,8 @@ Note that this command *does not* use the "--modules" command line option.
 
 Parameter WEIGHT must be an integer.
 
-list [MODULES]
-::::::::::::::
+db list [MODULES]
+:::::::::::::::::
 
 If called with no argument, list the names of all :term:`modules`. If called
 with '.', the wildcard symbol, list all :term:`versions` of all
@@ -734,8 +734,8 @@ with '.', the wildcard symbol, list all :term:`versions` of all
 MODULE:{+-}VERSION that specifies :term:`modules` and :term:`versions`, list
 all the matching :term:`versions` of all specified :term:`modules`.
 
-show [MODULES]
-::::::::::::::
+db show [MODULES]
+:::::::::::::::::
 
 This command prints only the parts of the dependency database that contain the
 given :term:`modules`. 
@@ -743,26 +743,26 @@ given :term:`modules`.
 Parameter MODULES is a list of :term:`modulespecs` MODULE:{+-}VERSION that
 specifies the :term:`modules` and :term:`versions` to operate on. 
 
-find REGEXP
-:::::::::::
+db find REGEXP
+::::::::::::::
 
 This command shows all :term:`modules` whose names or :term:`sources` match a
 regexp.  Parameter REGEXP is a perl compatible :term:`regular expression`.  
 
-check
-:::::
+db check
+::::::::
 
 Do some consistency checks on the :term:`dependency database` file in the
 directory specifed by --dbdir.
 
-merge DB
-::::::::
+db merge DB
+:::::::::::
 
 Merge the given :term:`dependency database` file with the 
 :term:`dependency database` in the directory specifed by --dbdir.
 
-cloneversion MODULE OLD-VERSION NEW-VERSION [SOURCESPEC]
-::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+db cloneversion MODULE OLD-VERSION NEW-VERSION [SOURCESPEC]
+:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 This command adds a new :term:`version` of a :term:`module` to the
 :term:`dependency database` by copying the old :term:`version`. MODULE here is
@@ -776,8 +776,8 @@ sourcespec is not given, the command adds NEW-VERSION as new tag to the source
 specification. The command always asks for a confirmation of the action unless
 option "-y" is used.
 
-replaceversion MODULE OLD-VERSION NEW-VERSION
-:::::::::::::::::::::::::::::::::::::::::::::
+db replaceversion MODULE OLD-VERSION NEW-VERSION
+::::::::::::::::::::::::::::::::::::::::::::::::
 
 This command replaces a :term:`version` of a :term:`module` with a new
 :term:`version`. MODULE here is just the name of the module since the version
@@ -787,8 +787,8 @@ parameter. A sourcespec has the form "path PATH", "tar TARFILE", "REPOTYPE URL"
 or "REPOTYPE URL TAG".  REPOTYPE may be "darcs", "hg" or "git". Both, URL or
 TAG may be ".", in this case the original URL or TAG remains unchanged.
 
-clonemodule OLD-MODULE NEW-MODULE [VERSIONS]
-::::::::::::::::::::::::::::::::::::::::::::
+db clonemodule OLD-MODULE NEW-MODULE [VERSIONS]
+:::::::::::::::::::::::::::::::::::::::::::::::
 
 Copy all :term:`versions` of the existing old :term:`module` and add this with
 the name of thew new :term:`module` to the :term:`dependency` database.
@@ -797,22 +797,22 @@ follow as a separate argument. If there are no :term:`versions` specified, the
 command copies all existing :term:`versions`. Note that this DOES NOT add the
 new :term:`module` as :term:`dependency` to any other :term:`modules`.
 
-dependency-delete MODULE DEPENDENCY
-:::::::::::::::::::::::::::::::::::
+db dependency-delete MODULE DEPENDENCY
+::::::::::::::::::::::::::::::::::::::
 
 Delete a :term:`dependency` of a :term:`module`. MODULE here is a
 :term:`modulespec` of the form MODULE:VERSION that specifies a single version
 of a module.
 
-dependency-add MODULE DEPENDENCY
-::::::::::::::::::::::::::::::::
+db dependency-add MODULE DEPENDENCY
+:::::::::::::::::::::::::::::::::::
 
 Add a :term:`dependency` to a :term:`module`. MODULE here is a
 :term:`modulespec` of the form MODULE:VERSION that specifies a single version
 of a module.
 
-alias-add MODULE DEPENDENCY ALIAS
-:::::::::::::::::::::::::::::::::
+db alias-add MODULE DEPENDENCY ALIAS
+::::::::::::::::::::::::::::::::::::
 
 Define a new :term:`alias` for a :term:`dependency` of a :term:`module`. MODULE
 here is a :term:`modulespec` of the form MODULE:VERSION that specifies a single
@@ -821,8 +821,8 @@ version of a module.
 subcommands for maincommand "build"
 +++++++++++++++++++++++++++++++++++
 
-try MODULES
-:::::::::::
+build try MODULES
+:::::::::::::::::
 
 This command is intended to help you create :term:`module` specifications for
 the "new" command. 
@@ -847,8 +847,8 @@ For a detailed example see :ref:`try example <example-sumo-build-try>`.
 
 .. _reference-sumo-new:
 
-new MODULES
-:::::::::::
+build new MODULES
+:::::::::::::::::
 
 This command creates a new :term:`build`. Each module given in MODULES here is
 a :term:`modulespec` of the form MODULE:VERSION that specifies a single version
@@ -863,8 +863,8 @@ completion, sets the state of the :term:`build` to "testing". If you want to
 skip this step, use option "--no-make". In order to provide arbitrary options
 to make use option "--makeopts". 
 
-remake BUILDTAG
-:::::::::::::::
+build remake BUILDTAG
+:::::::::::::::::::::
 
 This command recreates a :term:`build` by first calling "make distclean" and
 then "make all" with the build's makefile. If you develop a support
@@ -872,8 +872,8 @@ then "make all" with the build's makefile. If you develop a support
 recompile the :term:`build` after changes in the sources. In order to provide
 arbitrary options to make use option "--makeopts". 
 
-find MODULES
-::::::::::::
+build find MODULES
+::::::::::::::::::
 
 This command is used to find matching :term:`builds` for a given list of
 :term:`modulespecs`. Each module in MODULES here is a :term:`modulespec` of the
@@ -884,8 +884,8 @@ is given, the program just shows the buildtags.
 
 .. _reference-sumo-use:
 
-use MODULES
-:::::::::::
+build use MODULES
+:::::::::::::::::
 
 This command creates a configure/RELEASE file for an application. Each module
 given in MODULES here is a :term:`modulespec` of the form MODULE:VERSION that
@@ -897,19 +897,19 @@ one with the alphabetically first buildtag. The RELEASE file created includes
 only the :term:`modules` that are specified. Output to another file or the
 console can be specified with option '-o'.
 
-list
-::::
+build list
+::::::::::
 
 This command lists the names of all builds.
 
-show BUILDTAG
-:::::::::::::
+build show BUILDTAG
+:::::::::::::::::::
 
 This command shows the data of a :term:`build`. The :term:`buildtag` must be
 given as an argument.
 
-state BUILDTAG [NEW-STATE]
-::::::::::::::::::::::::::
+build state BUILDTAG [NEW-STATE]
+::::::::::::::::::::::::::::::::
 
 This command is used to show or change the :term:`state` of a :term:`build`.
 The :term:`buildtag` must be given as an argument. If there is no new
@@ -917,8 +917,8 @@ The :term:`buildtag` must be given as an argument. If there is no new
 :term:`build`. Otherwise the :term:`state` of the :term:`build` is changed
 to the given value. 
 
-delete BUILDTAG
-:::::::::::::::
+build delete BUILDTAG
+:::::::::::::::::::::
 
 If no other :term:`build` depends on the :term:`build` specified by the
 :term:`buildtag`, the directories of the :term:`build` are removed and it's
