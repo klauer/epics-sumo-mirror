@@ -10,7 +10,7 @@ fi
 
 source settings.sh
 
-echo -e "\n-> Test sumo db cloneversion." >&2
+echo -e "\n-> Test sumo db clonemodule." >&2
 
 rm -rf $EXAMPLEDIR
 mkdir $EXAMPLEDIR

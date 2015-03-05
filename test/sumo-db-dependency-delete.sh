@@ -10,7 +10,7 @@ fi
 
 source settings.sh
 
-echo -e "\n-> Test sumo db replaceversion." >&2
+echo -e "\n-> Test sumo db dependency-delete." >&2
 
 rm -rf $EXAMPLEDIR
 mkdir $EXAMPLEDIR
