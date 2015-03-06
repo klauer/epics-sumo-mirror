@@ -1,4 +1,4 @@
-TOP=$(shell pwd)
+TOP:=$(shell pwd)
 
 # extend PYTHONPATH in order to find Sumo modules:
 export PYTHONPATH:=$(TOP)/..:$(PYTHONPATH)
@@ -18,13 +18,13 @@ PYTHON:=$(shell python -V 2>&1 | ( grep -q " 2\.[5678]" && echo python || ( pyth
 CREATE_TESTS=no
 
 # The list of tests and their order is taken from file "TESTS":
-shell_tests= $(shell cat TESTS | xargs)
+shell_tests:= $(shell cat TESTS | xargs)
 
 # *.sh are the shell scripts:
-shell_tests_sh= $(addsuffix .tst, $(shell_tests))
+shell_tests_sh:= $(addsuffix .tst, $(shell_tests))
 
 # *.tst are pseudo files:
-shell_tests_tst= $(addsuffix .tst, $(shell_tests))
+shell_tests_tst:= $(addsuffix .tst, $(shell_tests))
 
 all: target_module_tests target_script_tests target_shell_tests
 
@@ -78,16 +78,10 @@ writable:
 	    chmod -R u+w tmp-* ;\
 	fi
 
-target_module_tests: $(module_tests_tst)
-
-target_script_tests: $(script_tests_tst)
-
-target_shell_tests: data/epics/stamp $(shell_tests_tst)
-
-module_tests= $(notdir $(basename $(shell grep -l doctest ../sumolib/*.py)))
+module_tests:= $(notdir $(basename $(shell grep -l doctest ../sumolib/*.py)))
 module_tests_tst= $(addsuffix .tst, $(module_tests))
 
-script_tests= $(sort $(notdir $(basename $(shell ls ../bin))))
+script_tests:= $(sort $(notdir $(basename $(shell ls ../bin))))
 script_tests_tst= $(addsuffix .tst, $(script_tests))
 
 # static pattern rule to test python modules:
@@ -97,6 +91,14 @@ $(module_tests_tst): %.tst: ../sumolib/%.py
 # static pattern rule to test scripts:
 $(script_tests_tst): %.tst: ../bin/%
 	$(PYTHON) $< --test
+
+.PHONY : target_module_tests target_script_tests target_shell_tests
+
+target_module_tests: $(module_tests_tst)
+
+target_script_tests: $(script_tests_tst)
+
+target_shell_tests: data/epics/stamp $(shell_tests_tst)
 
 include deps
 
