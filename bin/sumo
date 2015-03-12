@@ -2917,6 +2917,14 @@ a list of aliases and modulespecs in JSON format. The result is printed to the
 console. It can be used with --config to put these in the configuration file of
 sumo.
 """,
+        "db appconvert":"""
+db appconvert SCANFILE
+
+Convert a scanfile that was created by applying "sumo-scan all" to an
+application to a list of aliases and modulespecs in JSON format. The result is
+printed to the console. It can be used with --config to put these in the
+configuration file of sumo.
+""",
         "db format": """
 db format
 
