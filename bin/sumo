@@ -2174,9 +2174,9 @@ def get_command_args(lst, mandatory_args=None,
     >>> p=pprint.pprint
     >>>
     >>> def test(*args, **kwargs):
-          kwargs["debug"]= True
+    ...   kwargs["debug"]= True
     ...   pprint.pprint(get_command_args(*args, **kwargs))
-    ...
+
     >>> test(["read","t.txt","verbose"],["cmd","file"],["mode"])
     {'cmd': 'read', 'file': 't.txt', 'mode': 'verbose'}
     >>> test(["read","t.txt"],["cmd","file"],["mode"])
