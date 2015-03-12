@@ -14,7 +14,7 @@ import os
 import os.path
 import re
 
-__version__="2.6.2" #VERSION#
+__version__="2.7" #VERSION#
 
 _pyver= (sys.version_info[0], sys.version_info[1])
 

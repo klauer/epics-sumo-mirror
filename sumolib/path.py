@@ -7,7 +7,7 @@
 import os.path
 import sumolib.system
 
-__version__="2.6.2" #VERSION#
+__version__="2.7" #VERSION#
 
 assert __version__==sumolib.system.__version__
 
