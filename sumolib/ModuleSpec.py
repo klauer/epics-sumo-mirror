@@ -31,10 +31,10 @@ class Spec(object):
 
         Here are some examples:
 
-        >>> Spec("ALARM","R3-2","eq",["A","B"])
-        Spec('ALARM','R3-2','eq',['A', 'B'])
-        >>> Spec("ALARM","R3-2","eq",None)
-        Spec('ALARM','R3-2','eq',None)
+        >>> Spec("ALARM","R3-2","eq")
+        Spec('ALARM','R3-2','eq')
+        >>> Spec("ALARM","R3-2","eq")
+        Spec('ALARM','R3-2','eq')
         """
         self.modulename= modulename
         self.versionname= versionname
@@ -79,25 +79,13 @@ class Spec(object):
         Here are some examples:
 
         >>> Spec.from_string("ALARM")
-        Spec('ALARM',None,None,None)
+        Spec('ALARM',None,None)
         >>> Spec.from_string("ALARM:R3-2")
-        Spec('ALARM','R3-2','eq',None)
+        Spec('ALARM','R3-2','eq')
         >>> Spec.from_string("ALARM:+R3-2")
-        Spec('ALARM','R3-2','ge',None)
+        Spec('ALARM','R3-2','ge')
         >>> Spec.from_string("ALARM:-R3-2")
-        Spec('ALARM','R3-2','le',None)
-
-        >>> Spec.from_string("ALARM:R3-2:vxworks-ppc603")
-        Spec('ALARM','R3-2','eq',set(['vxworks-ppc603']))
-        >>> Spec.from_string("ALARM:R3-2:vxworks-ppc603:vxworks-mv162")
-        Spec('ALARM','R3-2','eq',set(['vxworks-mv162', 'vxworks-ppc603']))
-
-        >>> Spec.from_string("ALARM:R3-2:A:+B",["C"])
-        Spec('ALARM','R3-2','eq',set(['A', 'B']))
-        >>> Spec.from_string("ALARM:R3-2:+A:+B",["C"])
-        Spec('ALARM','R3-2','eq',set(['A', 'C', 'B']))
-        >>> Spec.from_string("ALARM:R3-2:+A:B",["C"])
-        Spec('ALARM','R3-2','eq',set(['A', 'C', 'B']))
+        Spec('ALARM','R3-2','le')
         """
         # pylint: disable=R0912
         #                          Too many branches
@@ -133,20 +121,14 @@ class Spec(object):
 
         Here are some examples:
 
-        >>> Spec("ALARM","R3-2","eq",["vxworks-ppc603"]).to_string()
-        'ALARM:R3-2:vxworks-ppc603'
-        >>> Spec("ALARM","R3-2","eq",["A","B"]).to_string()
-        'ALARM:R3-2:A:B'
-        >>> Spec("ALARM","R3-2","eq",None).to_string()
+        >>> Spec("ALARM","R3-2","eq").to_string()
         'ALARM:R3-2'
-        >>> Spec("ALARM","R3-2","ge",None).to_string()
+        >>> Spec("ALARM","R3-2","ge").to_string()
         'ALARM:+R3-2'
-        >>> Spec("ALARM","R3-2","le",None).to_string()
+        >>> Spec("ALARM","R3-2","le").to_string()
         'ALARM:-R3-2'
-        >>> Spec("ALARM",None,None,None).to_string()
+        >>> Spec("ALARM",None,None).to_string()
         'ALARM'
-        >>> Spec("ALARM",None,None,["A","B"]).to_string()
-        'ALARM::A:B'
         """
         elms= [self.modulename]
         if self.versionname:
@@ -220,11 +202,11 @@ class Specs(object):
         ...     for m in s:
         ...         print m
 
-        >>> a=Spec('A','R2','eq',None)
-        >>> b=Spec('B','R2','eq',None)
+        >>> a=Spec('A','R2','eq')
+        >>> b=Spec('B','R2','eq')
         >>> p(Specs((a,b)))
-        Spec('A','R2','eq',None)
-        Spec('B','R2','eq',None)
+        Spec('A','R2','eq')
+        Spec('B','R2','eq')
         """
         self.specs= speclist
     def __repr__(self):
@@ -333,13 +315,13 @@ class Specs(object):
         Spec('B','R3','le')
         Spec('C','R1','ge')
         >>> p(Specs.from_strings(["A:R2","B:-R3","A:R3"], None))
-        Spec('A','R3','eq',None)
-        Spec('B','R3','le',None)
+        Spec('A','R3','eq')
+        Spec('B','R3','le')
         >>> p(Specs.from_strings(["A:R2","B:-R3",":rm:A"], None))
-        Spec('B','R3','le',None)
+        Spec('B','R3','le')
         >>> p(Specs.from_strings(["A:R2","B:-R3",":rm:A","A:R3"], None))
-        Spec('A','R3','eq',None)
-        Spec('B','R3','le',None)
+        Spec('A','R3','eq')
+        Spec('B','R3','le')
         """
         module_dict= {}
         Specs._from_strings(module_dict, 0, specs, builddb_fn)
