@@ -1148,7 +1148,7 @@ def apprelease(build_tag, modulespecs, builddb, db,
         if not tags:
             sys.exit("no build with state 'stable' or 'testing' found that "
                      "matches modulespecs")
-        build_tag= tags[0]
+        build_tag= sorted(tags)[0]
         sys.stderr.write("using build %s\n" % build_tag)
 
 
@@ -2056,6 +2056,8 @@ def build_find(arguments, options):
 
 def build_use(arguments, options):
     """implement "build_use"."""
+    # pylint: disable=R0912
+    #                          Too many branches
     args= get_command_args(arguments,
                            extra_optional="MODULES")
     assert_mandatory_options(options, "dbdir", "builddir")
@@ -2083,6 +2085,23 @@ def build_use(arguments, options):
     if options.dump_modules:
         dump_modules(modulespecs_obj)
         sys.exit(0)
+
+    if options.buildtag is None:
+        # unspecifed build_tag, all versions must be *exactly specified* and
+        # complete:
+        try:
+            dist_dict= modulespecs_obj.to_dist_dict()
+        except ValueError, e:
+            if not catch_exceptions:
+                raise
+            sys.exit(str(e))
+        (_, db)= db_from_repo(options)
+        try:
+            db.assert_complete_modulelist(dist_dict)
+        except ValueError, e:
+            if not catch_exceptions:
+                raise
+            sys.exit(str(e))
 
     output= options.output
     if not output:
