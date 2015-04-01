@@ -4,18 +4,15 @@ Backing up ./DEPS.DB(.~0~)
 We have conflicts in the following files:
 ./DEPS.DB
 
-Error while loading dependency database
-'darcs pull' failed
+Error while loading dependency database, 'darcs pull' failed
 
 Conflict in mercurial repo:
 ---------------------------
 not updating:
 warning: conflicts during merge.
 merging DEPS.DB incomplete! (edit conflicts, then use 'hg resolve --mark')
-Error while loading dependency database
-'hg merge' failed
+Error while loading dependency database, 'hg merge' failed
 
 Conflict in git repo:
 ---------------------
-Error while loading dependency database
-'git pull' failed
+Error while loading dependency database, 'git pull' failed

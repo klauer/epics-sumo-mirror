@@ -24,6 +24,18 @@ assert __version__==sumolib.JSON.__version__
 assert __version__==sumolib.utils.__version__
 
 # -----------------------------------------------
+# utilities
+# -----------------------------------------------
+
+def _uq(s):
+    """remove quotes from a string."""
+    if len(s)<2:
+        return s
+    if s[0]=="'" or s[0]=='"':
+        return s[1:-1]
+    return s
+
+# -----------------------------------------------
 # class definitions
 # -----------------------------------------------
 
@@ -80,7 +92,7 @@ class DB(sumolib.JSON.Container):
             if not src:
                 break
             return
-        raise ValueError("error: dependency data is invalid %s" % msg)
+        raise ValueError("Error, dependency data is invalid %s" % msg)
     def __init__(self, dict_= None, lock_timeout= None):
         """create the object."""
         super(DB, self).__init__(dict_, lock_timeout)
@@ -138,7 +150,8 @@ class DB(sumolib.JSON.Container):
                                  repr(vdict[dictname]),
                                  repr(vdict2[dictname])))
                         continue
-                    raise AssertionError("unexpected dictname %s" % dictname)
+                    raise AssertionError("Error, unexpected dictname '%s'" % \
+                                         dictname)
     def import_module(self, other, module_name, versionname):
         """copy the module data from another Dependencies object.
 
@@ -153,7 +166,7 @@ class DB(sumolib.JSON.Container):
         returns True if the spec was changed, False if it wasn't.
         """
         if not isinstance(sourcespec, sumolib.repos.SourceSpec):
-            raise TypeError("error: sourcespec '%s' is of wrong "
+            raise TypeError("Error, sourcespec '%s' is of wrong "
                             "type" % repr(sourcespec))
         version_dict= self.datadict().setdefault(module_name,{})
         version= version_dict.setdefault(versionname, {})
@@ -172,22 +185,22 @@ class DB(sumolib.JSON.Container):
         version= version_dict.setdefault(versionname, {})
         old_source= version.get("source")
         if old_source is None:
-            raise ValueError("error, %s:%s source specification is empty, "
+            raise ValueError("Error, %s:%s source specification is empty, "
                              "cannot simply change the tag." % \
                              (module_name, versionname))
         old_spec= sumolib.repos.SourceSpec(old_source)
         try:
             ret= old_spec.change_source_by_tag(tag)
         except ValueError, e:
-            raise ValueError("error, %s:%s %s" % \
-                             (module_name, versionname, str(e)))
+            raise ValueError("Error, '%s:%s' %s" % \
+                             (module_name, versionname, _uq(str(e))))
         version["source"]= old_spec.to_dict()
         return ret
 
     def set_source_(self, module_name, versionname, sourcespec):
         """add a module with source spec."""
         if not isinstance(sourcespec, sumolib.repos.SourceSpec):
-            raise TypeError("error: sourcespec '%s' is of wrong "
+            raise TypeError("Error, sourcespec '%s' is of wrong "
                             "type" % repr(sourcespec))
         version_dict= self.datadict().setdefault(module_name,{})
         version= version_dict.setdefault(versionname, {})
@@ -207,11 +220,11 @@ class DB(sumolib.JSON.Container):
         m_dict= self.datadict()[modulename]
         dep_list= m_dict[versionname].get("dependencies")
         if dep_list is None:
-            raise ValueError("error: %s:%s has no dependencies" % \
+            raise ValueError("Error, '%s:%s' has no dependencies" % \
                              (modulename, versionname))
         dep_set= set(dep_list)
         if not dep_modulename in dep_set:
-            raise ValueError("error: %s:%s doesn't depend on %s" % \
+            raise ValueError("Error, '%s:%s' doesn't depend on %s" % \
                              (modulename, versionname, dep_modulename))
         dep_set.discard(dep_modulename)
         if not dep_set:
@@ -271,7 +284,7 @@ class DB(sumolib.JSON.Container):
         if new_weight is None:
             return self.datadict()[modulename][versionname].get("weight", 0)
         if not isinstance(new_weight, int):
-            raise TypeError("error: %s is not an integer" % repr(new_weight))
+            raise TypeError("Error, %s is not an integer" % repr(new_weight))
         self.datadict()[modulename][versionname]["weight"]= new_weight
     def assert_module(self, modulename, versionname):
         """do nothing if the module is found, raise KeyError otherwise.
@@ -280,12 +293,12 @@ class DB(sumolib.JSON.Container):
         """
         d= self.datadict().get(modulename)
         if d is None:
-            raise KeyError("no data for module %s" % modulename)
+            raise KeyError("Error, no data for module '%s'" % modulename)
         if versionname is None:
             return
         v= d.get(versionname)
         if v is None:
-            raise KeyError("version %s not found for module %s" % \
+            raise KeyError("Error, version '%s' not found for module '%s'" % \
                     (versionname, modulename))
     def dependencies_found(self, modulename, versionname):
         """returns True if dependencies are found for modulename:versionname.
@@ -304,7 +317,7 @@ class DB(sumolib.JSON.Container):
         """return the source url or tar-file or path for a module."""
         (tp,val)= self.module_source_pair(modulename, versionname)
         if tp not in sumolib.repos.known_sources:
-            raise AssertionError("unexpected source tag %s at %s:%s" % \
+            raise AssertionError("unexpected source tag '%s' at '%s:%s'" % \
                     (tp, modulename, versionname))
         # due to variety of source specs, just return the "repr" string here:
         return repr(val)
@@ -312,11 +325,11 @@ class DB(sumolib.JSON.Container):
         """return an iterator on dependency modulenames of a module."""
         md= self.datadict().get(modulename)
         if md is None:
-            raise KeyError("error: module %s not found in dependency "
+            raise KeyError("Error, module '%s' not found in dependency "
                            "database" % modulename)
         d= md.get(versionname)
         if d is None:
-            raise KeyError("error: module %s:%s not found in dependency "
+            raise KeyError("Error, module '%s:%s' not found in dependency "
                            "database" % (modulename,versionname))
         d= self.datadict()[modulename][versionname]
         deps= d.get("dependencies")
@@ -345,7 +358,7 @@ class DB(sumolib.JSON.Container):
                 if not moduledict.has_key(dep):
                     missing.add(dep)
         if missing:
-            raise ValueError("error: set of modules is incomplete, these "
+            raise ValueError("Error, set of modules is incomplete, these "
                              "modules are missing: %s" % (" ".join(missing)))
     def sortby_weight(self, moduleversions, reverse= False):
         """sorts modules by weight.
@@ -455,11 +468,11 @@ class DB(sumolib.JSON.Container):
         #                          Too many branches
         moduledata= self.datadict().get(modulename)
         if moduledata is None:
-            raise ValueError("error, module with name '%s' not found "
+            raise ValueError("Error, module with name '%s' not found "
                              "in dependency database" % modulename)
 
         if moduledata.has_key(newversionname):
-            raise ValueError("error, module %s: version %s already exists" % \
+            raise ValueError("Error, module %s: version %s already exists" % \
                     (modulename, newversionname))
         d= copy.deepcopy(self.datadict()[modulename][versionname])
         moduledata[newversionname]= d
@@ -473,7 +486,7 @@ class DB(sumolib.JSON.Container):
         if not versions:
             versions= list(self.iter_versions(old_modulename))
         if self.datadict().has_key(modulename):
-            raise ValueError("error: module '%s' already exists" % \
+            raise ValueError("Error, module '%s' already exists" % \
                              modulename)
         m= self.datadict().setdefault(modulename,{})
         for version in versions:
@@ -550,7 +563,7 @@ class DB(sumolib.JSON.Container):
             try:
                 versions= list(self.iter_versions(modulename))
             except KeyError, _:
-                raise KeyError("error: module '%s' not found in "
+                raise KeyError("Error, module '%s' not found in "
                                "dependency database" % modulename)
             for version in versions:
                 if not modulespec.test(version):
@@ -558,7 +571,7 @@ class DB(sumolib.JSON.Container):
                 found= True
                 s.add(version)
             if not found:
-                raise ValueError("error: no data found in dependency "
+                raise ValueError("Error, no data found in dependency "
                                  "database for module specification '%s'" % \
                                  modulespec.to_string())
         return new

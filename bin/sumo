@@ -83,10 +83,21 @@ def script_shortname():
 
 rx_exept= re.compile(r'^(Error|error|Err|err)[:, ] *')
 
+def uq(s):
+    """remove quotes from a string."""
+    if len(s)<2:
+        return s
+    if s[0]=="'" or s[0]=='"':
+        return s[1:-1]
+    return s
+
 def errtxt(msg, e):
     """Create an error message from an exception."""
-    e_txt= rx_exept.sub("", str(e))
-    return "%s\n%s" % (msg, e_txt)
+    st= uq(str(e))
+    if not msg:
+        return st
+    e_txt= rx_exept.sub("", st)
+    return "%s %s" % (msg, e_txt)
 
 # -----------------------------------------------
 # directory utilities and filenames
@@ -208,21 +219,21 @@ def load_config_files(options, disable_loading):
     except ValueError, e:
         if not catch_exceptions:
             raise
-        sys.exit(errtxt("Error while loading config file",e))
+        sys.exit(errtxt("Error while loading config file,",e))
     except IOError, e:
         if not catch_exceptions:
             raise
-        sys.exit(errtxt("Error while loading config file",e))
+        sys.exit(errtxt("Error while loading config file,",e))
     try:
         config.merge_options(options, options.append)
     except ValueError, e:
         if not catch_exceptions:
             raise
-        sys.exit(str(e))
+        sys.exit(errtxt("",e))
     except TypeError, e:
         if not catch_exceptions:
             raise
-        sys.exit(str(e))
+        sys.exit(errtxt("",e))
     return (options, config)
 
 # -----------------------------------------------
@@ -261,11 +272,11 @@ def db_from_json_file(filename, keep_locked= False):
     except ValueError, e:
         if not catch_exceptions:
             raise
-        sys.exit(errtxt("Error while loading dependency database", e))
+        sys.exit(errtxt("Error while loading dependency database,", e))
     except IOError, e:
         if not catch_exceptions:
             raise
-        sys.exit(errtxt("Error while loading dependency database", e))
+        sys.exit(errtxt("Error while loading dependency database,", e))
     return db
 
 def db_from_repo(options, keep_locked= False, changes_check= True):
@@ -291,7 +302,7 @@ def db_from_repo(options, keep_locked= False, changes_check= True):
     except IOError, e:
         if not catch_exceptions:
             raise
-        sys.exit(errtxt("Error while loading dependency database",e))
+        sys.exit(errtxt("Error while loading dependency database,",e))
     db= db_from_json_file(db_f(options.dbdir), keep_locked)
     return (mngr, db)
 
@@ -342,11 +353,11 @@ def builddb_from_json_file(path, path_local, keep_locked= False,
         except ValueError, e:
             if not catch_exceptions:
                 raise
-            sys.exit(errtxt("Error while loading build database",e))
+            sys.exit(errtxt("Error while loading build database,",e))
         except IOError, e:
             if not catch_exceptions:
                 raise
-            sys.exit(errtxt("Error while loading build database",e))
+            sys.exit(errtxt("Error while loading build database,",e))
     if not overlay_file:
         return builddb
     try:
@@ -354,11 +365,11 @@ def builddb_from_json_file(path, path_local, keep_locked= False,
     except ValueError, e:
         if not catch_exceptions:
             raise
-        sys.exit(errtxt("Error while loading overlay build database",e))
+        sys.exit(errtxt("Error while loading overlay build database,",e))
     except IOError, e:
         if not catch_exceptions:
             raise
-        sys.exit(errtxt("Error while loading overlay build database",e))
+        sys.exit(errtxt("Error while loading overlay build database,",e))
     return builddb
 
 def assert_build_tag(builddb, buildtag):
@@ -379,13 +390,13 @@ def init_buildcache(scandb_name, builddb, db):
                                                                  False,
                                                                  LOCK_TIMEOUT)
         except ValueError, e:
-            sys.exit(errtxt("Error while loading build database",e))
+            sys.exit(errtxt("Error while loading build database,",e))
             if not catch_exceptions:
                 raise
         except IOError, e:
             if not catch_exceptions:
                 raise
-            sys.exit(errtxt("Error while loading build database",e))
+            sys.exit(errtxt("Error while loading build database,",e))
     buildcache.update_from_builddb(builddb, db)
     return buildcache
 
@@ -681,8 +692,7 @@ def create_source(db, modulename, versionname,
     except IOError, e:
         if not catch_exceptions:
             raise
-        sys.exit("Error, checkout failed, %s" % str(e))
-
+        sys.exit(errtxt("Error, checkout failed:", e))
 
 def delete_module(builddir, build_tag, modulename, versionname,
                   must_exist,
@@ -1242,7 +1252,7 @@ def subcmd_config_make_show(cmd, arguments, options):
         except ValueError, e:
             if not catch_exceptions:
                 raise
-            sys.exit(str(e))
+            sys.exit(errtxt("",e))
         config.set("module", modulespecs_obj.to_stringlist())
     config.save(filename, optionnames, options.verbose, options.dry_run)
 
@@ -1347,11 +1357,11 @@ def subcmd_db_convert_old(arguments, options):
     except ValueError, e:
         if not catch_exceptions:
             raise
-        sys.exit(errtxt("Error while loading dependency database", e))
+        sys.exit(errtxt("Error while loading dependency database,", e))
     except IOError, e:
         if not catch_exceptions:
             raise
-        sys.exit(errtxt("Error while loading dependency database", e))
+        sys.exit(errtxt("Error while loading dependency database,", e))
     db= olddb.convert()
     if options.dumpdb:
         db.json_print()
@@ -1400,7 +1410,7 @@ def subcmd_db_weight(arguments, options):
     except ValueError, e:
         if not catch_exceptions:
             raise
-        sys.exit(str(e))
+        sys.exit(errtxt("",e))
 
     if options.dump_modules:
         dump_modules(modulespecs_obj)
@@ -1435,7 +1445,7 @@ def subcmd_db_show(arguments, options):
     except ValueError, e:
         if not catch_exceptions:
             raise
-        sys.exit(str(e))
+        sys.exit(errtxt("",e))
 
     if options.dump_modules:
         dump_modules(modulespecs_obj)
@@ -1476,7 +1486,7 @@ def subcmd_db_alias_add(arguments, options):
     except ValueError, e:
         if not catch_exceptions:
             raise
-        sys.exit(str(e))
+        sys.exit(errtxt("",e))
     (mngr, db)= db_from_repo(options,
                              not options.dumpdb and (not options.dry_run))
     db.add_alias(module_spec.modulename,
@@ -1498,7 +1508,7 @@ def subcmd_db_dependency_add(arguments, options):
     except ValueError, e:
         if not catch_exceptions:
             raise
-        sys.exit(str(e))
+        sys.exit(errtxt("",e))
     (mngr, db)= db_from_repo(options,
                              not options.dumpdb and (not options.dry_run))
     db.add_dependency(module_spec.modulename,
@@ -1522,7 +1532,7 @@ def subcmd_db_dependency_delete(arguments, options):
     except ValueError, e:
         if not catch_exceptions:
             raise
-        sys.exit(str(e))
+        sys.exit(errtxt("",e))
     (mngr, db)= db_from_repo(options,
                              not options.dumpdb and (not options.dry_run))
     db.del_dependency(module_spec.modulename,
@@ -1553,7 +1563,7 @@ def subcmd_db_clone_replace_version(command, arguments, options):
     except ValueError, e:
         if not catch_exceptions:
             raise
-        sys.exit(str(e))
+        sys.exit(errtxt("",e))
 
     if not sourcespec:
         # guess tag from versionname
@@ -1566,7 +1576,7 @@ def subcmd_db_clone_replace_version(command, arguments, options):
         except ValueError, e:
             if not catch_exceptions:
                 raise
-            sys.exit(errtxt("Error",e))
+            sys.exit(errtxt("Error,",e))
         changed= db.set_source_spec(modulename, args["NEW-VERSION"],
                                     source_spec_obj)
     print "Added module:"
@@ -1630,7 +1640,7 @@ def subcmd_db_list(arguments, options):
         except ValueError, e:
             if not catch_exceptions:
                 raise
-            sys.exit(str(e))
+            sys.exit(errtxt("",e))
         if options.dump_modules:
             dump_modules(modulespecs_obj)
             return
@@ -1737,7 +1747,7 @@ def subcmd_build_state(arguments, options):
             # builddb __del__ method should remove lockfiles
             if not catch_exceptions:
                 raise
-            sys.exit(str(e))
+            sys.exit(errtxt("",e))
         builddb.json_save(None, options.verbose, options.dry_run)
         # ^^^ does also unlock the file
 
@@ -1759,7 +1769,7 @@ def subcmd_build_delete(arguments, options):
     except ValueError, e:
         if not catch_exceptions:
             raise
-        sys.exit(str(e))
+        sys.exit(errtxt("",e))
     builddb.json_save(None, options.verbose, options.dry_run)
 
 def subcmd_build_try(arguments, options):
@@ -1796,7 +1806,7 @@ def subcmd_build_try(arguments, options):
     except ValueError, e:
         if not catch_exceptions:
             raise
-        sys.exit(str(e))
+        sys.exit(errtxt("",e))
 
     if options.dump_modules:
         dump_modules(modulespecs_obj)
@@ -1817,7 +1827,7 @@ def subcmd_build_try(arguments, options):
     except ValueError, e:
         if not catch_exceptions:
             raise
-        sys.exit(str(e))
+        sys.exit(errtxt("",e))
 
     # gather a list of all modules that don't have an exact specification:
     modules_not_exact_spec= \
@@ -1833,11 +1843,11 @@ def subcmd_build_try(arguments, options):
     except ValueError, e:
         if not catch_exceptions:
             raise
-        sys.exit(str(e))
+        sys.exit(errtxt("",e))
     except KeyError, e:
         if not catch_exceptions:
             raise
-        sys.exit(str(e))
+        sys.exit(errtxt("",e))
 
     # add all missing dependencies and complete the sets_dict:
     added_modules= db.complete_sets_dict(sets_dict)
@@ -2027,7 +2037,7 @@ def subcmd_build_new(arguments, options):
     except ValueError, e:
         if not catch_exceptions:
             raise
-        sys.exit(str(e))
+        sys.exit(errtxt("",e))
 
     if options.dump_modules:
         dump_modules(modulespecs_obj)
@@ -2038,13 +2048,13 @@ def subcmd_build_new(arguments, options):
     except ValueError, e:
         if not catch_exceptions:
             raise
-        sys.exit(str(e))
+        sys.exit(errtxt("",e))
     try:
         db.assert_complete_modulelist(dist_dict)
     except ValueError, e:
         if not catch_exceptions:
             raise
-        sys.exit(str(e))
+        sys.exit(errtxt("",e))
 
     builddb= builddb_from_json_file(options.builddir,
                                     options.localbuilddir,
@@ -2116,7 +2126,7 @@ def subcmd_build_find(arguments, options):
     except ValueError, e:
         if not catch_exceptions:
             raise
-        sys.exit(str(e))
+        sys.exit(errtxt("",e))
 
     builddb= builddb_from_json_file(options.builddir,
                                     options.localbuilddir,
@@ -2161,7 +2171,7 @@ def subcmd_build_use(arguments, options):
     except ValueError, e:
         if not catch_exceptions:
             raise
-        sys.exit(str(e))
+        sys.exit(errtxt("",e))
 
     if options.dump_modules:
         dump_modules(modulespecs_obj)
@@ -2175,14 +2185,14 @@ def subcmd_build_use(arguments, options):
         except ValueError, e:
             if not catch_exceptions:
                 raise
-            sys.exit(str(e))
+            sys.exit(errtxt("",e))
         (_, db)= db_from_repo(options)
         try:
             db.assert_complete_modulelist(dist_dict)
         except ValueError, e:
             if not catch_exceptions:
                 raise
-            sys.exit(str(e))
+            sys.exit(errtxt("",e))
 
     output= options.output
     if not output:
@@ -2384,11 +2394,11 @@ def maincmd_lock(arguments, options):
     except sumolib.lock.LockedError, e:
         if not catch_exceptions:
             raise
-        sys.exit(str(e))
+        sys.exit(errtxt("",e))
     except sumolib.lock.AccessError, e:
         if not catch_exceptions:
             raise
-        sys.exit(str(e))
+        sys.exit(errtxt("",e))
     # other exceptions like OSError are not caught here
 
 def maincmd_unlock(arguments, options):
@@ -2427,7 +2437,7 @@ def maincmd_edit(arguments, options):
     except IOError, e:
         if not catch_exceptions:
             raise
-        sys.exit(str(e))
+        sys.exit(errtxt("",e))
     if mngr:
         mngr.finish_write("edit")
 
