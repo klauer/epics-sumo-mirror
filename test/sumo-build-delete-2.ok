@@ -1,5 +1,5 @@
 call sumo build new, let the command fail on purpose...
-Error, checkout failed, [Errno 2] cmd "darcs get -t '^R3-14-12-2-1\s*$' -q /data/repo/mybase3-14-12-2-1 /tmp-sumo-build-delete-2/BASE/R3-14-12-2-1+001", rc 2
+Error, checkout failed: [Errno 2] cmd "darcs get -t '^R3-14-12-2-1\s*$' -q /data/repo/mybase3-14-12-2-1 /tmp-sumo-build-delete-2/BASE/R3-14-12-2-1+001", rc 2
 
 directory tree (without darcs, maxdepth 2)
 .

@@ -11,4 +11,4 @@ BSPDEP_TIMER=/BSPDEP_TIMER/R6-2+MYAPP-001
 BASE=/BASE/R3-14-12-2-1+BASE-001
 
 sumo build use, incomplete without buildtag:
-error: set of modules is incomplete, these modules are missing: ALARM BSPDEP_VMETAS BASE MISC_DEBUGMSG MISC_DBC SOFT_DEVHWCLIENT
+Error, set of modules is incomplete, these modules are missing: ALARM BSPDEP_VMETAS BASE MISC_DEBUGMSG MISC_DBC SOFT_DEVHWCLIENT

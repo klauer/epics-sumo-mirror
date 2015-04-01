@@ -165,11 +165,11 @@ class SourceSpec(sumolib.JSON.Container):
         >>> SourceSpec.from_string_sourcespec(["path"])
         Traceback (most recent call last):
             ...
-        ValueError: invalid source spec: 'path'
+        ValueError: invalid source spec 'path'
         >>> SourceSpec.from_string_sourcespec(["path","a","b"])
         Traceback (most recent call last):
             ...
-        ValueError: invalid source spec: 'path a b'
+        ValueError: invalid source spec 'path a b'
         >>> SourceSpec.from_string_sourcespec(["darcs","abc"])
         SourceSpec({'darcs': {'url': 'abc'}})
         >>> SourceSpec.from_string_sourcespec(["darcs","abc","R1-2"])
@@ -177,23 +177,23 @@ class SourceSpec(sumolib.JSON.Container):
         >>> SourceSpec.from_string_sourcespec(["darcs"])
         Traceback (most recent call last):
             ...
-        ValueError: invalid source spec: 'darcs'
+        ValueError: invalid source spec 'darcs'
         >>> SourceSpec.from_string_sourcespec(["darcs","abc","R1-2","xy"])
         SourceSpec({'darcs': {'url': 'abc', 'tag': 'R1-2', 'patches': ['xy']}})
         >>> SourceSpec.from_string_sourcespec(["darcs","abc","R1-2","xy","z"])
         SourceSpec({'darcs': {'url': 'abc', 'tag': 'R1-2', 'patches': ['xy', 'z']}})
         """
         if elms[0] not in known_sources:
-            raise ValueError("unknown source type: '%s'" % elms[0])
+            raise ValueError("unknown source type '%s'" % elms[0])
         if len(elms)<2:
-            raise ValueError("invalid source spec: '%s'" % (" ".join(elms)))
+            raise ValueError("invalid source spec '%s'" % (" ".join(elms)))
         if elms[0]=="path":
             if len(elms)!=2:
-                raise ValueError("invalid source spec: '%s'" % (" ".join(elms)))
+                raise ValueError("invalid source spec '%s'" % (" ".join(elms)))
             return cls({elms[0]: elms[1]})
         if elms[0]=="tar":
             if len(elms)<2:
-                raise ValueError("invalid source spec: '%s'" % (" ".join(elms)))
+                raise ValueError("invalid source spec '%s'" % (" ".join(elms)))
             d= { "url": elms[1] }
             if len(elms)>2:
                 d["patches"]= elms[2:]
