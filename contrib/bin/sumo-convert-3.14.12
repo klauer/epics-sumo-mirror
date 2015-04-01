@@ -5,7 +5,7 @@ set -e
 SHARE=../share
 
 # Define some environment variables:
-source $SHARE/sumo.vars
+. $SHARE/sumo.vars
 
 SUMO_SCAN_CONFIG="$SHARE/sumo-scan-3.14.12.config"
 
@@ -76,21 +76,21 @@ fi
 if grep -q BESSYRULES:R2-5 $MODULES; then
     sumo -C -c $MODULES -A "alias module" \
             -m "BESSYRULES:R2-8" \
-            makeconfig $MODULES alias module 
+            config make $MODULES alias module 
 fi
 
 if grep -q STREAM: $MODULES; then
     sed -i -e 's/STREAM:/STREAMDEVICE:/g' $MODULES
     sumo -C -c $MODULES -A "alias module" \
             -a "STREAMDEVICE:STREAM" \
-            makeconfig $MODULES alias module 
+            config make $MODULES alias module 
 fi
 
 cp configure/RELEASE configure/RELEASE.orig
 
 # Write the sumo configuration file:
 
-sumo -C --buildtag-stem "$stem"  makeconfig sumo.config
+sumo -C --buildtag-stem "$stem"  config make sumo.config
 
 cat <<TEXT
 ---------------------------------------------------------------

@@ -5,7 +5,7 @@ set -e
 SHARE=../share
 
 # define some environment variables:
-source $SHARE/sumo.vars
+. $SHARE/sumo.vars
 # note: SUMODIR as it is defined in sumo.vars is ignored here
 
 if [ -z "$1" ]; then 
@@ -40,7 +40,7 @@ cp $ORIG_DB DEPS.DB
 cd .. > /dev/null
 
 echo "* creating Sumo configuration files"
-sumo --dbdir $SUMODIR/database --builddir $SUMODIR/build --builddir $SUMODIR/build --makeopts "-s" makeconfig
+sumo --dbdir $SUMODIR/database --builddir $SUMODIR/build --builddir $SUMODIR/build --makeopts "-s" config make
 
 echo "* adding BASE 3.14.8.2.1 to the dependency database"
 sumo db cloneversion BASE R3-14-8-2-0 R3-14-8-2-1 darcs rcsadm@repo:/opt/Epics/R3.14.8/base/3-14-8-2-1 R3-14-8-2-1

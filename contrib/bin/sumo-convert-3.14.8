@@ -5,7 +5,7 @@ set -e
 SHARE=../share
 
 # Define some environment variables:
-source $SHARE/sumo.vars
+. $SHARE/sumo.vars
 
 SUMO_SCAN_CONFIG="$SHARE/sumo-scan-3.14.8.config"
 
@@ -66,7 +66,7 @@ sumo-scan -C -c $SUMO_SCAN_CONFIG -d . all | sumo -C db appconvert - > $MODULES
 if grep -q BASE:R3-14-8-2-0 $MODULES; then
     sumo -C -c $MODULES -A "alias module" \
             -m BASE:R3-14-8-2-1 \
-            makeconfig $MODULES alias module 
+            config make $MODULES alias module 
 fi
 
 # Patch some used supports that use different sets of the RULES support at the
@@ -76,37 +76,37 @@ fi
 if grep -q APPS_GENERICTEMPLATE:R3-6 $MODULES; then
     sumo -C -c $MODULES -A "alias module" \
             -m "APPS_GENERICTEMPLATE:R3-6-RULES-1-1 RULES-1-1:R1-1" \
-            makeconfig $MODULES alias module 
+            config make $MODULES alias module 
 fi
 
 if grep -q APPS_IOCWATCH:R2-2 $MODULES; then
     sumo -C -c $MODULES -A "alias module" \
             -m "APPS_IOCWATCH:R2-2-RULES-1-1 RULES-1-1:R1-1" \
-            makeconfig $MODULES alias module 
+            config make $MODULES alias module 
 fi
 
 if grep -q APPS_MOTOR:TAGLESS-2-6-2-2 $MODULES; then
     sumo -C -c $MODULES -A "alias module" \
             -m "APPS_MOTOR:TAGLESS-2-6-2-2-RULES-1-5 RULES-1-5:R1-5" \
-            makeconfig $MODULES alias module 
+            config make $MODULES alias module 
 fi
 
 if grep -q APPS_SCOPESAVERESTORE:R1-1 $MODULES; then
     sumo -C -c $MODULES -A "alias module" \
             -m "APPS_SCOPESAVERESTORE:R1-1-RULES-1-4-1 RULES-1-4-1:R1-4-1" \
-            makeconfig $MODULES alias module 
+            config make $MODULES alias module 
 fi
 
 if grep -q APPS_VACUUM:TAGLESS-1-1-1 $MODULES; then
     sumo -C -c $MODULES -A "alias module" \
             -m "APPS_VACUUM:TAGLESS-1-1-1-RULES-1-15 RULES-1-15:R1-15" \
-            makeconfig $MODULES alias module 
+            config make $MODULES alias module 
 fi
 
 if grep -q HIGHLAND-V375:TAGLESS-1-2 $MODULES; then
     sumo -C -c $MODULES -A "alias module" \
             -m "HIGHLAND-V375:TAGLESS-1-2-RULES-1-9 RULES-1-9:R1-9" \
-            makeconfig $MODULES alias module 
+            config make $MODULES alias module 
 fi
 
 # STD:PATH-2-6-2 needs a special GENSUB support:
@@ -114,7 +114,7 @@ fi
 if grep -q STD:PATH-2-6-2 $MODULES; then
     sumo -C -c $MODULES -A "alias module" \
             -m "SYNAPPS_5-2-0-1_SUPPORT_GENSUB:PATH-1-6a" \
-            makeconfig $MODULES alias module 
+            config make $MODULES alias module 
 fi
 
 # We must use a special version of APPS_GENERICBOOT:
@@ -122,14 +122,14 @@ fi
 if grep -q APPS_GENERICBOOT:R0-9 $MODULES; then
     sumo -C -c $MODULES -A "alias module" \
             -m "APPS_GENERICBOOT:R0-9-EPICS-3-14-8" \
-            makeconfig $MODULES alias module 
+            config make $MODULES alias module 
 fi
 
 cp configure/RELEASE configure/RELEASE.orig
 
 # Write the sumo configuration file:
 
-sumo -C --buildtag-stem "$stem"  makeconfig sumo.config
+sumo -C --buildtag-stem "$stem"  config make sumo.config
 
 cat <<TEXT
 ---------------------------------------------------------------
