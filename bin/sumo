@@ -184,6 +184,48 @@ def _assume_dir(dir_, dry_run):
             sys.exit("Error, directory 'configure' not found")
 
 # -----------------------------------------------
+# load config files
+# -----------------------------------------------
+
+def load_config_files(options, disable_loading):
+    """Load config files, merge with options and return a Config object."""
+    config_name= None
+    if not options.no_default_config:
+        config_name= CONFIG_NAME
+    config= sumolib.Config.ConfigFile.from_optionlist(\
+                config_name,
+                ENV_CONFIG,
+                ( "#preload","#opt-preload","#postload","#opt-postload",
+                  "alias", "buildtag-stem",
+                  "dbdir", "dbrepo", "dbrepomode", "extra", "makeopts",
+                  "module", "progress", "readonly", "scandb", "dir-patch",
+                  "url-patch", "builddir", "localbuilddir", "verbose"))
+
+    if disable_loading is None:
+        disable_loading= options.disable_loading
+    try:
+        config.load(options.config, not disable_loading)
+    except ValueError, e:
+        if not catch_exceptions:
+            raise
+        sys.exit(errtxt("Error while loading config file",e))
+    except IOError, e:
+        if not catch_exceptions:
+            raise
+        sys.exit(errtxt("Error while loading config file",e))
+    try:
+        config.merge_options(options, options.append)
+    except ValueError, e:
+        if not catch_exceptions:
+            raise
+        sys.exit(str(e))
+    except TypeError, e:
+        if not catch_exceptions:
+            raise
+        sys.exit(str(e))
+    return (options, config)
+
+# -----------------------------------------------
 # load JSON files
 # -----------------------------------------------
 
@@ -1170,10 +1212,41 @@ def apprelease(build_tag, modulespecs, builddb, db,
                           module_dict.keys(), aliases, extra_lines)
 
 # -----------------------------------------------
-# command implementation
+# config subcommands
 # -----------------------------------------------
 
-def config_standalone(config, arguments, options):
+def subcmd_config_list(options):
+    """implement "config list"."""
+    (_, config)= load_config_files(options, disable_loading= None)
+    # ^^ disable_loading==None means: use options.disable_loading
+    print "These configuration files were loaded:\n"
+    print "\n".join(config.real_paths())
+
+def subcmd_config_make_show(cmd, arguments, options):
+    """implement "config make" or "config show"."""
+    (options, config)= load_config_files(options, disable_loading= None)
+    # ^^ disable_loading==None means: use options.disable_loading
+    if cmd=="make":
+        if len(arguments)<=0:
+            sys.exit("filename for command \"makeconfig\" is missing")
+        filename= arguments[0]
+        optionnames= arguments[1:]
+    else:
+        filename= "-"
+        optionnames= arguments
+    if options.module:
+        try:
+            modulespecs_obj= sumolib.ModuleSpec.Specs.from_strings(\
+                                 options.module,
+                                 mspecs_from_build(options))
+        except ValueError, e:
+            if not catch_exceptions:
+                raise
+            sys.exit(str(e))
+        config.set("module", modulespecs_obj.to_stringlist())
+    config.save(filename, optionnames, options.verbose, options.dry_run)
+
+def subcmd_config_standalone(config, arguments, options):
     """implement "config standalone"."""
     args= get_command_args(arguments, ["SUMODIR"])
     sumodir= os.path.abspath(args["SUMODIR"])
@@ -1205,7 +1278,7 @@ def config_standalone(config, arguments, options):
     ensure_dir(builddir, options.dry_run)
     config.save(CONFIG_NAME, None, options.verbose, options.dry_run)
 
-def config_local(config, arguments, options):
+def subcmd_config_local(config, arguments, options):
     """implement "config local"."""
     args= get_command_args(arguments, ["SUMODIR"])
     sumodir= os.path.abspath(args["SUMODIR"])
@@ -1237,7 +1310,11 @@ def config_local(config, arguments, options):
     ensure_dir(builddir, options.dry_run)
     config.save(CONFIG_NAME, None, options.verbose, options.dry_run)
 
-def db_convert(arguments, options):
+# -----------------------------------------------
+# db subcommands
+# -----------------------------------------------
+
+def subcmd_db_convert(arguments, options):
     """implement "db convert"."""
     args= get_command_args(arguments, ["SCANFILE"])
     assert_mandatory_options(options, "dbdir", "scandb")
@@ -1260,7 +1337,7 @@ def db_convert(arguments, options):
     buildcache.json_save(options.scandb,
                          options.verbose, options.dry_run)
 
-def db_convert_old(arguments, options):
+def subcmd_db_convert_old(arguments, options):
     """implement "db convert-old"."""
     args= get_command_args(arguments, ["OLDDB"])
     assert_mandatory_options(options, "dbdir")
@@ -1282,7 +1359,7 @@ def db_convert_old(arguments, options):
         db_to_repo(options, None, db, "convert-old", arguments)
         # ^^^ does also unlock the file
 
-def db_appconvert(arguments):
+def subcmd_db_appconvert(arguments):
     """implement "db appconvert"."""
     args= get_command_args(arguments, ["SCANFILE"])
     scandata= sumolib.JSON.loadfile(args["SCANFILE"])
@@ -1292,7 +1369,7 @@ def db_appconvert(arguments):
     struc= create_app_data(deps, repoinfo, groups)
     sumolib.JSON.dump(struc)
 
-def db_format(arguments, options):
+def subcmd_db_format(arguments, options):
     """implement "db format."""
     assert_mandatory_options(options, "dbdir")
     get_command_args(arguments)
@@ -1303,7 +1380,7 @@ def db_format(arguments, options):
         db_to_repo(options, mngr, db, "merge", arguments)
         # ^^^ does also unlock the file
 
-def db_weight(arguments, options):
+def subcmd_db_weight(arguments, options):
     """implement "db weight"."""
     args= get_command_args(arguments, ["WEIGHT"],
                            extra_mandatory= "MODULES")
@@ -1335,7 +1412,7 @@ def db_weight(arguments, options):
         db_to_repo(options, mngr, db, "weight", arguments)
         # ^^^ does also unlock the file
 
-def db_show(arguments, options):
+def subcmd_db_show(arguments, options):
     """implement "db show"."""
     args= get_command_args(arguments,
                            extra_optional="MODULES")
@@ -1366,7 +1443,7 @@ def db_show(arguments, options):
     db= db.partial_copy_by_modulespecs(modulespecs_obj)
     db.json_print()
 
-def db_check(arguments, options):
+def subcmd_db_check(arguments, options):
     """implement "db check"."""
     assert_mandatory_options(options, "dbdir")
     get_command_args(arguments)
@@ -1374,7 +1451,7 @@ def db_check(arguments, options):
     msg= db.check()
     print "\n".join(msg)
 
-def db_merge(arguments, options):
+def subcmd_db_merge(arguments, options):
     """implement "db merge"."""
     args= get_command_args(arguments, ["DB"])
     assert_mandatory_options(options, "dbdir")
@@ -1388,7 +1465,7 @@ def db_merge(arguments, options):
         db_to_repo(options, mngr, db, "merge", arguments)
         # ^^^ does also unlock the file
 
-def db_alias_add(arguments, options):
+def subcmd_db_alias_add(arguments, options):
     """implement "db alias_add"."""
     args= get_command_args(arguments,
                            ["MODULE","DEPENDENCY","ALIAS"])
@@ -1411,7 +1488,7 @@ def db_alias_add(arguments, options):
         db_to_repo(options, mngr, db, "alias-add", arguments)
         # ^^^ does also unlock the file
 
-def db_dependency_add(arguments, options):
+def subcmd_db_dependency_add(arguments, options):
     """implement "db dependency_add"."""
     args= get_command_args(arguments, ["MODULE","DEPENDENCY"])
     assert_mandatory_options(options, "dbdir")
@@ -1433,7 +1510,7 @@ def db_dependency_add(arguments, options):
         db_to_repo(options, mngr, db, "dependency-add", arguments)
         # ^^^ does also unlock the file
 
-def db_dependency_delete(arguments, options):
+def subcmd_db_dependency_delete(arguments, options):
     """implement "db dependency_delete"."""
     args= get_command_args(arguments, ["MODULE","DEPENDENCY"])
     assert_mandatory_options(options, "dbdir")
@@ -1457,7 +1534,7 @@ def db_dependency_delete(arguments, options):
         db_to_repo(options, mngr, db, "dependency-delete", arguments)
         # ^^^ does also unlock the file
 
-def db_clone_replace_version(command, arguments, options):
+def subcmd_db_clone_replace_version(command, arguments, options):
     """implement "db cloneversion/replaceversion"."""
     args= get_command_args(arguments,
                            ["MODULE","OLD-VERSION","NEW-VERSION"],
@@ -1507,7 +1584,7 @@ def db_clone_replace_version(command, arguments, options):
         db_to_repo(options, mngr, db, command, arguments)
         # ^^^ does also unlock the file
 
-def db_clonemodule(arguments, options):
+def subcmd_db_clonemodule(arguments, options):
     """implement "db clonemodule"."""
     args= get_command_args(arguments,
                            ["OLD-MODULE","NEW-MODULE"],
@@ -1523,8 +1600,8 @@ def db_clonemodule(arguments, options):
         db_to_repo(options, mngr, db, "clonemodule", arguments)
         # ^^^ does also unlock the file
 
-def db_list(arguments, options):
-    """implement "db list"."""
+def subcmd_db_list(arguments, options):
+    """implement "config list"."""
     args= get_command_args(arguments,
                            extra_optional="MODULES")
     assert_mandatory_options(options, "dbdir")
@@ -1565,7 +1642,7 @@ def db_list(arguments, options):
             result[modulename]= versions
     sumolib.JSON.dump(result)
 
-def db_find(arguments, options):
+def subcmd_db_find(arguments, options):
     """implement "db find"."""
     args= get_command_args(arguments, ["REGEXP"])
     assert_mandatory_options(options, "dbdir")
@@ -1583,8 +1660,12 @@ def db_find(arguments, options):
     newdb= db.partial_copy_by_list(results)
     newdb.json_print()
 
-def build_list(arguments, options):
-    """implement "build_list"."""
+# -----------------------------------------------
+# build subcommands
+# -----------------------------------------------
+
+def subcmd_build_list(arguments, options):
+    """implement "subcmd_build_list"."""
     get_command_args(arguments)
     assert_mandatory_options(options, "builddir")
     builddb= builddb_from_json_file(options.builddir,
@@ -1593,8 +1674,8 @@ def build_list(arguments, options):
     for buildtag in builddb.iter_builds():
         print buildtag
 
-def build_show(arguments, options):
-    """implement "build_show"."""
+def subcmd_build_show(arguments, options):
+    """implement "subcmd_build_show"."""
     args= get_command_args(arguments, ["BUILDTAG"])
     assert_mandatory_options(options, "builddir")
     if options.buildtag:
@@ -1608,8 +1689,8 @@ def build_show(arguments, options):
     new_builddb.add_build(builddb, args["BUILDTAG"])
     new_builddb.json_print()
 
-def build_state(arguments, options):
-    """implement "build_state"."""
+def subcmd_build_state(arguments, options):
+    """implement "subcmd_build_state"."""
     args= get_command_args(arguments, ["BUILDTAG"],
                            optional_args=["NEW-STATE"])
     if options.buildtag:
@@ -1660,8 +1741,8 @@ def build_state(arguments, options):
         builddb.json_save(None, options.verbose, options.dry_run)
         # ^^^ does also unlock the file
 
-def build_delete(arguments, options):
-    """implement "build_delete"."""
+def subcmd_build_delete(arguments, options):
+    """implement "subcmd_build_delete"."""
     args= get_command_args(arguments, ["BUILDTAG"])
     assert_mandatory_options(options, "builddir")
     if options.readonly:
@@ -1681,8 +1762,8 @@ def build_delete(arguments, options):
         sys.exit(str(e))
     builddb.json_save(None, options.verbose, options.dry_run)
 
-def build_try(arguments, options):
-    """implement "build_try"."""
+def subcmd_build_try(arguments, options):
+    """implement "subcmd_build_try"."""
     # pylint: disable=R0914
     #                          Too many local variables
     # pylint: disable=R0912
@@ -1881,7 +1962,7 @@ def build_try(arguments, options):
         print "command 'new' can not"
         print "be used with these."
 
-def build_remake(arguments, options):
+def subcmd_build_remake(arguments, options):
     """call make distclean and make on a build."""
     args= get_command_args(arguments, ["BUILDTAG"])
     assert_mandatory_options(options, "builddir")
@@ -1912,8 +1993,8 @@ def build_remake(arguments, options):
     builddb.json_save(None, options.verbose, options.dry_run)
     # ^^^ does also unlock the file
 
-def build_new(arguments, options):
-    """implement "build_new"."""
+def subcmd_build_new(arguments, options):
+    """implement "subcmd_build_new"."""
     # pylint: disable=R0912
     #                          Too many branches
     # pylint: disable=R0915
@@ -2011,8 +2092,8 @@ def build_new(arguments, options):
         # call_make will set the build state to "testing" if it succeeds:
         call_make(buildtag, options)
 
-def build_find(arguments, options):
-    """implement "build_find"."""
+def subcmd_build_find(arguments, options):
+    """implement "subcmd_build_find"."""
     args= get_command_args(arguments,
                            extra_optional="MODULES")
     assert_mandatory_options(options, "builddir")
@@ -2054,8 +2135,8 @@ def build_find(arguments, options):
         else:
             new_builddb.json_print()
 
-def build_use(arguments, options):
-    """implement "build_use"."""
+def subcmd_build_use(arguments, options):
+    """implement "subcmd_build_use"."""
     # pylint: disable=R0912
     #                          Too many branches
     args= get_command_args(arguments,
@@ -2270,56 +2351,88 @@ def get_command_args(lst, mandatory_args=None,
             return
     return result
 
-def process_config(options, commands):
-    """do all the work.
-    """
+def maincmd_config(options, commands):
+    """implement "config" maincommand."""
     if not commands:
         sys.exit("command missing")
     if commands[0] not in KNOWN_CONFIG_COMMANDS:
         sys.exit("unknown command: %s" % commands[0])
 
     if commands[0]=="list":
-        (_, config)= load_config_files(options, disable_loading= None)
-        # ^^ disable_loading==None means: use options.disable_loading
-        print "These configuration files were loaded:\n"
-        print "\n".join(config.real_paths())
+        subcmd_config_list(options)
         return
-
     if commands[0]=="make" or commands[0]=="show":
-        (options, config)= load_config_files(options, disable_loading= None)
-        # ^^ disable_loading==None means: use options.disable_loading
-        if commands[0]=="make":
-            if len(commands)<=1:
-                sys.exit("filename for command \"makeconfig\" is missing")
-            filename= commands[1]
-            optionnames= commands[2:]
-        else:
-            filename= "-"
-            optionnames= commands[1:]
-        if options.module:
-            try:
-                modulespecs_obj= sumolib.ModuleSpec.Specs.from_strings(\
-                                     options.module,
-                                     mspecs_from_build(options))
-            except ValueError, e:
-                if not catch_exceptions:
-                    raise
-                sys.exit(str(e))
-            config.set("module", modulespecs_obj.to_stringlist())
-        config.save(filename, optionnames, options.verbose, options.dry_run)
+        subcmd_config_make_show(commands[0], commands[1:], options)
         return
     if commands[0]=="standalone":
         (options, config)= load_config_files(options, disable_loading= True)
-        config_standalone(config, commands[1:], options)
+        subcmd_config_standalone(config, commands[1:], options)
         return
     if commands[0]=="local":
         (options, config)= load_config_files(options, disable_loading= True)
-        config_local(config, commands[1:], options)
+        subcmd_config_local(config, commands[1:], options)
         return
 
-def process_db(options, commands):
-    """do all the work.
-    """
+def maincmd_lock(arguments, options):
+    """implement "lock" maincommand."""
+    if options.readonly:
+        sys.exit("--readonly forbids editing a database file")
+    args= get_command_args(arguments, ["FILE"])
+    l= sumolib.lock.MyLock(args["FILE"])
+    try:
+        l.lock()
+    except sumolib.lock.LockedError, e:
+        if not catch_exceptions:
+            raise
+        sys.exit(str(e))
+    except sumolib.lock.AccessError, e:
+        if not catch_exceptions:
+            raise
+        sys.exit(str(e))
+    # other exceptions like OSError are not caught here
+
+def maincmd_unlock(arguments, options):
+    """implement "unlock" maincommand."""
+    if options.readonly:
+        sys.exit("--readonly forbids editing a database file")
+    args= get_command_args(arguments, ["FILE"])
+    l= sumolib.lock.MyLock(args["FILE"])
+    lock_found= False
+    try:
+        l.lock()
+    except sumolib.lock.LockedError, _:
+        lock_found= True
+    except sumolib.lock.AccessError, _:
+        # we cannot create a lock but it didn't exist anyway.
+        pass
+    if not lock_found:
+        l.unlock()
+        sys.exit("error, cannot unlock '%s' since file wasn't locked" % \
+                 args["FILE"])
+    l.unlock(force= True)
+
+def maincmd_edit(arguments, options):
+    """implement "edit" maincommand."""
+    if options.readonly:
+        sys.exit("--readonly forbids editing a database file")
+    args= get_command_args(arguments, ["FILE"])
+    mngr= None
+    if args["FILE"]==db_f(options.dbdir):
+        mngr= repo_manager(options.dbdir, options.dbrepo,
+                           options.dbrepomode,
+                           options.verbose, options.dry_run)
+    try:
+        sumolib.lock.edit_with_lock(args["FILE"],
+                                    options.verbose, options.dry_run)
+    except IOError, e:
+        if not catch_exceptions:
+            raise
+        sys.exit(str(e))
+    if mngr:
+        mngr.finish_write("edit")
+
+def maincmd_db(commands, options):
+    """implement db maincommand."""
     # pylint: disable=R0914
     #                          Too many local variables
     # pylint: disable=R0912
@@ -2336,68 +2449,67 @@ def process_db(options, commands):
         sys.exit("unknown command: %s" % commands[0])
 
     if commands[0]=="convert":
-        db_convert(commands[1:], options)
+        subcmd_db_convert(commands[1:], options)
         return
 
     if commands[0]=="convert-old":
-        db_convert_old(commands[1:], options)
+        subcmd_db_convert_old(commands[1:], options)
         return
 
     if commands[0]=="appconvert":
-        db_appconvert(commands[1:])
+        subcmd_db_appconvert(commands[1:])
         return
 
     if commands[0]=="format":
-        db_format(commands[1:], options)
+        subcmd_db_format(commands[1:], options)
         return
 
     if commands[0]=="weight":
-        db_weight(commands[1:], options)
+        subcmd_db_weight(commands[1:], options)
         return
 
     if commands[0]=="check":
-        db_check(commands[1:], options)
+        subcmd_db_check(commands[1:], options)
         return
 
     if commands[0]=="merge":
-        db_merge(commands[1:], options)
+        subcmd_db_merge(commands[1:], options)
         return
 
     if commands[0]=="alias-add":
-        db_alias_add(commands[1:], options)
+        subcmd_db_alias_add(commands[1:], options)
         return
 
     if commands[0]=="dependency-add":
-        db_dependency_add(commands[1:], options)
+        subcmd_db_dependency_add(commands[1:], options)
         return
 
     if commands[0]=="dependency-delete":
-        db_dependency_delete(commands[1:], options)
+        subcmd_db_dependency_delete(commands[1:], options)
         return
 
     if commands[0]=="cloneversion" or commands[0]=="replaceversion":
-        db_clone_replace_version(commands[0], commands[1:], options)
+        subcmd_db_clone_replace_version(commands[0], commands[1:], options)
         return
 
     if commands[0]=="clonemodule":
-        db_clonemodule(commands[1:], options)
+        subcmd_db_clonemodule(commands[1:], options)
         return
 
     if commands[0]=="list":
-        db_list(commands[1:], options)
+        subcmd_db_list(commands[1:], options)
         return
 
     if commands[0]=="show":
-        db_show(commands[1:], options)
+        subcmd_db_show(commands[1:], options)
         return
 
     if commands[0]=="find":
-        db_find(commands[1:], options)
+        subcmd_db_find(commands[1:], options)
         return
 
-def process_build(options, commands):
-    """do all the work.
-    """
+def maincmd_build(commands, options):
+    """implement build maincommand."""
     # pylint: disable=R0912
     #                          Too many branches
     # pylint: disable=R0911
@@ -2424,181 +2536,44 @@ def process_build(options, commands):
         options.extra= []
 
     if commands[0]=="list":
-        build_list(commands[1:], options)
+        subcmd_build_list(commands[1:], options)
         return
 
     if commands[0]=="show":
-        build_show(commands[1:], options)
+        subcmd_build_show(commands[1:], options)
         return
 
     if commands[0]=="state":
-        build_state(commands[1:], options)
+        subcmd_build_state(commands[1:], options)
         return
 
     if commands[0]=="delete":
-        build_delete(commands[1:], options)
+        subcmd_build_delete(commands[1:], options)
         return
 
     if commands[0]=="try":
-        build_try(commands[1:], options)
+        subcmd_build_try(commands[1:], options)
         return
 
     if commands[0]=="new":
-        build_new(commands[1:], options)
+        subcmd_build_new(commands[1:], options)
         return
 
     if commands[0]=="remake":
-        build_remake(commands[1:], options)
+        subcmd_build_remake(commands[1:], options)
         return
 
     if commands[0]=="find":
-        build_find(commands[1:], options)
+        subcmd_build_find(commands[1:], options)
         return
 
     if commands[0]=="use":
-        build_use(commands[1:], options)
+        subcmd_build_use(commands[1:], options)
         return
 
-def load_config_files(options, disable_loading):
-    """Load config files, merge with options and return a Config object."""
-    config_name= None
-    if not options.no_default_config:
-        config_name= CONFIG_NAME
-    config= sumolib.Config.ConfigFile.from_optionlist(\
-                config_name,
-                ENV_CONFIG,
-                ( "#preload","#opt-preload","#postload","#opt-postload",
-                  "alias", "buildtag-stem",
-                  "dbdir", "dbrepo", "dbrepomode", "extra", "makeopts",
-                  "module", "progress", "readonly", "scandb", "dir-patch",
-                  "url-patch", "builddir", "localbuilddir", "verbose"))
-
-    if disable_loading is None:
-        disable_loading= options.disable_loading
-    try:
-        config.load(options.config, not disable_loading)
-    except ValueError, e:
-        if not catch_exceptions:
-            raise
-        sys.exit(errtxt("Error while loading config file",e))
-    except IOError, e:
-        if not catch_exceptions:
-            raise
-        sys.exit(errtxt("Error while loading config file",e))
-    try:
-        config.merge_options(options, options.append)
-    except ValueError, e:
-        if not catch_exceptions:
-            raise
-        sys.exit(str(e))
-    except TypeError, e:
-        if not catch_exceptions:
-            raise
-        sys.exit(str(e))
-    return (options, config)
-
-def process(options, commands):
-    """do all the work.
-    """
-    # pylint: disable=R0912
-    #                          Too many branches
-    # pylint: disable=R0915
-    #                          Too many statements
-    # pylint: disable=R0911
-    #                          Too many return statements
-    global catch_exceptions
-    if options.exceptions:
-        catch_exceptions= False
-    if not commands:
-        if options.list:
-            pr_list(KNOWN_MAIN_COMMANDS)
-        else:
-            print "command missing\n"
-            print usage
-        return
-    if commands[0]=="help":
-        helptext(commands[1:], options.list)
-        return
-
-    if options.list:
-        pr_list(complete_command(commands))
-        return
-
-    if not commands:
-        sys.exit("command missing")
-    if commands[0] not in KNOWN_MAIN_COMMANDS:
-        sys.exit("unknown maincommand '%s'" % commands[0])
-    if commands[0]=="config":
-        process_config(options, commands[1:])
-        return
-
-    # load config files and merge with options (options object is changed):
-    (options, _)= load_config_files(options, None)
-    # ^^ disable_loading==None means: use options.disable_loading
-
-    if commands[0]=="lock":
-        if options.readonly:
-            sys.exit("--readonly forbids editing a database file")
-        args= get_command_args(commands[1:], ["FILE"])
-        l= sumolib.lock.MyLock(args["FILE"])
-        try:
-            l.lock()
-        except sumolib.lock.LockedError, e:
-            if not catch_exceptions:
-                raise
-            sys.exit(str(e))
-        except sumolib.lock.AccessError, e:
-            if not catch_exceptions:
-                raise
-            sys.exit(str(e))
-        # other exceptions like OSError are not caught here
-        return
-    elif commands[0]=="unlock":
-        if options.readonly:
-            sys.exit("--readonly forbids editing a database file")
-        args= get_command_args(commands[1:], ["FILE"])
-        l= sumolib.lock.MyLock(args["FILE"])
-        lock_found= False
-        try:
-            l.lock()
-        except sumolib.lock.LockedError, e:
-            lock_found= True
-        except sumolib.lock.AccessError, e:
-            # we cannot create a lock but it didn't exist anyway.
-            pass
-        if not lock_found:
-            l.unlock()
-            sys.exit("error, cannot unlock '%s' since file wasn't locked" % \
-                     args["FILE"])
-        l.unlock(force= True)
-        return
-    elif commands[0]=="edit":
-        if options.readonly:
-            sys.exit("--readonly forbids editing a database file")
-        args= get_command_args(commands[1:], ["FILE"])
-        mngr= None
-        if args["FILE"]==db_f(options.dbdir):
-            mngr= repo_manager(options.dbdir, options.dbrepo,
-                               options.dbrepomode,
-                               options.verbose, options.dry_run)
-        try:
-            sumolib.lock.edit_with_lock(args["FILE"],
-                                        options.verbose, options.dry_run)
-        except IOError, e:
-            if not catch_exceptions:
-                raise
-            sys.exit(str(e))
-        if mngr:
-            mngr.finish_write("edit")
-        return
-
-    elif commands[0]=="db":
-        process_db(options, commands[1:])
-    elif commands[0]=="build":
-        process_build(options, commands[1:])
-    else:
-        raise AssertionError("unexpected command: %s" % commands[0])
-    return
+# -----------------------------------------------
+# help text display
+# -----------------------------------------------
 
 def print_summary():
     """print a short summary of the scripts function."""
@@ -3154,8 +3129,8 @@ deleted. The buildtag must be given as an argument.
 # pylint: enable=C0330
 #                          Wrong indentation
 
-def helptext(topics, listmode):
-    """return helptext.
+def maincmd_help(topics, listmode):
+    """return maincmd_help.
     """
     # pylint: disable=R0911
     #                          Too many return statements
@@ -3196,6 +3171,70 @@ def helptext(topics, listmode):
         return
     print "no known subcommand '%s'" % topics[1]
     return
+
+# -----------------------------------------------
+# program's main command processing function
+# -----------------------------------------------
+
+def process(options, commands):
+    """do all the work.
+    """
+    # pylint: disable=R0912
+    #                          Too many branches
+    # pylint: disable=R0915
+    #                          Too many statements
+    # pylint: disable=R0911
+    #                          Too many return statements
+    global catch_exceptions
+    if options.exceptions:
+        catch_exceptions= False
+    if not commands:
+        if options.list:
+            pr_list(KNOWN_MAIN_COMMANDS)
+        else:
+            print "command missing\n"
+            print usage
+        return
+    if commands[0]=="help":
+        maincmd_help(commands[1:], options.list)
+        return
+
+    if options.list:
+        pr_list(complete_command(commands))
+        return
+
+    if not commands:
+        sys.exit("command missing")
+    if commands[0] not in KNOWN_MAIN_COMMANDS:
+        sys.exit("unknown maincommand '%s'" % commands[0])
+    if commands[0]=="config":
+        maincmd_config(options, commands[1:])
+        return
+
+    # load config files and merge with options (options object is changed):
+    (options, _)= load_config_files(options, None)
+    # ^^ disable_loading==None means: use options.disable_loading
+
+    if commands[0]=="lock":
+        maincmd_lock(commands[1:], options)
+        return
+    elif commands[0]=="unlock":
+        maincmd_unlock(commands[1:], options)
+        return
+    elif commands[0]=="edit":
+        maincmd_edit(commands[1:], options)
+        return
+    elif commands[0]=="db":
+        maincmd_db(commands[1:], options)
+    elif commands[0]=="build":
+        maincmd_build(commands[1:], options)
+    else:
+        raise AssertionError("unexpected command: %s" % commands[0])
+    return
+
+# -----------------------------------------------
+# program's main function
+# -----------------------------------------------
 
 me= script_shortname()
 usage = """usage: %s maincommand [subcommand] [options]
