@@ -5,7 +5,7 @@ set -e
 SHARE=../share
 
 # define some environment variables:
-source $SHARE/sumo.vars
+. $SHARE/sumo.vars
 
 MODULES=configure/MODULES
 
@@ -39,7 +39,7 @@ cd $module > /dev/null
 
 sumo-scan -c $SUMO_SCAN_CONFIG -d . all | sumo --no-default-config appconvert - > $MODULES
 
-sumo --dbdir $SUMODIR/database --builddir $SUMODIR/build --builddir $SUMODIR/build -c $MODULES makeconfig DEFAULT
+sumo --dbdir $SUMODIR/database --builddir $SUMODIR/build --builddir $SUMODIR/build -c $MODULES config make DEFAULT
 
 echo "creating configure/RELEASE"
 sumo build use 

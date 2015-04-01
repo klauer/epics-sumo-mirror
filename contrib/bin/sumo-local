@@ -5,7 +5,7 @@ set -e
 SHARE=../share
 
 # define some environment variables:
-source $SHARE/sumo.vars
+. $SHARE/sumo.vars
 
 LOCAL_SUMO_SUBDIR=sumo-local
 
@@ -40,13 +40,13 @@ mkdir database
 
 cp $SUMODIR/database/DEPS.DB database
 
-sumo --dbdir $LOCAL_SUMODIR/database --builddir $LOCAL_SUMODIR/build --builddir $LOCAL_SUMODIR/build --makeopts "-s" makeconfig DEFAULT
+sumo --dbdir $LOCAL_SUMODIR/database --builddir $LOCAL_SUMODIR/build --builddir $LOCAL_SUMODIR/build --makeopts "-s" config make DEFAULT
 
 cp -a $dir $module-TEST
 
 sumo db cloneversion $module $version TEST path $LOCAL_SUMODIR/$module-TEST
 
-sumo --builddir $SUMODIR/build makeconfig MODULES.tmp module -m ":build:$build" -m $module:TEST
+sumo --builddir $SUMODIR/build config make MODULES.tmp module -m ":build:$build" -m $module:TEST
 
 echo "you can re-create a build with:"
 echo 'sumo build new ":load:MODULES.tmp"'
