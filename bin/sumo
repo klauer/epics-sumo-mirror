@@ -1450,7 +1450,14 @@ def subcmd_db_show(arguments, options):
     if options.dump_modules:
         dump_modules(modulespecs_obj)
         sys.exit(0)
-    db= db.partial_copy_by_modulespecs(modulespecs_obj)
+    try:
+        db= db.partial_copy_by_modulespecs(modulespecs_obj)
+    except KeyError, e:
+        if not catch_exceptions:
+            raise
+        # note: str(e) generates a string with quotes
+        sys.exit(("Error, module %s not found in "
+                  "dependency database") % str(e))
     db.json_print()
 
 def subcmd_db_check(arguments, options):
@@ -1647,8 +1654,14 @@ def subcmd_db_list(arguments, options):
         for modulespec in modulespecs_obj:
             modulename= modulespec.modulename
             # leave only versions that match modulespec:
-            versions= [v for v in db.sorted_moduleversions(modulename) \
-                       if modulespec.test(v)]
+            try:
+                moduleversions= db.sorted_moduleversions(modulename)
+            except KeyError, _:
+                if not catch_exceptions:
+                    raise
+                sys.exit(("Error, module '%s' not found in "
+                          "dependency database") % modulename)
+            versions= [v for v in moduleversions if modulespec.test(v)]
             result[modulename]= versions
     sumolib.JSON.dump(result)
 
@@ -2052,6 +2065,10 @@ def subcmd_build_new(arguments, options):
     try:
         db.assert_complete_modulelist(dist_dict)
     except ValueError, e:
+        if not catch_exceptions:
+            raise
+        sys.exit(errtxt("",e))
+    except KeyError, e:
         if not catch_exceptions:
             raise
         sys.exit(errtxt("",e))
