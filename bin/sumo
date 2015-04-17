@@ -19,6 +19,7 @@ import re
 import errno
 import shutil
 import textwrap
+import pydoc
 
 import sumolib.system
 import sumolib.lock
@@ -75,6 +76,8 @@ KNOWN_CONFIG_OPTIONS=set(( "#preload", "#opt-preload", "#postload",
 
 KNOWN_REPO_MODES=set(( "get", "pull", "push"))
 
+KNOWN_PAGER_MODES=set(("off", "on", "always"))
+
 CONFIG_NAME="sumo.config"
 ENV_CONFIG="SUMOCONFIG"
 ENV_HELP="SUMOHELP"
@@ -85,11 +88,16 @@ LOCK_TIMEOUT=4
 # timeout for file locking in seconds
 
 catch_exceptions= True
+pager_mode= "on"
 
-helpoptions= os.environ.get(ENV_HELP,"")
-if "nocache" in helpoptions:
-    sumolib.cli.CACHING_ENABLED= False
-
+env_help= os.environ.get(ENV_HELP,"")
+if env_help:
+    helpoptions= [h_item.strip() for h_item in env_help.split(",")]
+    if "nocache" in helpoptions:
+        sumolib.cli.CACHING_ENABLED= False
+    for pm in KNOWN_PAGER_MODES:
+        if "pager:%s" % pm in helpoptions:
+            pager_mode= pm
 
 # -----------------------------------------------
 # utilities
@@ -2684,6 +2692,7 @@ Possible topics are:
 
   maincommand                : explain and list maincommands
   completion                 : how to install and use command completion
+  pager                      : how to configure the help pager
   configuration              : how and where configuration data is stored
   options                    : explain what an option is
   listoptions                : list all options
@@ -2742,6 +2751,9 @@ completion. If you don't want this set the environment variable "SUMOHELP" that
 it contains the string "nocache" like in:
 
   export SUMOHELP="nocache"
+
+If there are other help options defined in SUMOHELP, you should seperate them
+with commas ",".
 """,
         "completion-script":"""
 _sumo()
@@ -2802,6 +2814,29 @@ _sumo()
     COMPREPLY=( $( compgen -W "$( ${words[@]} )" ) );
 };
 complete -F _sumo sumo
+""",
+        "pager":"""
+pager
+
+The build in pager allows you to navigate in long help texts that sumo displays
+when you use command "help" or option "-h". There are three modes:
+
+pager:on
+  The pager is used only for long help texts (more than 24 lines).
+
+pager:always
+  The pager is always used, even for short help texts.
+
+Mode "pager:on" is the default.
+
+You define the pager mode by adding one of the three strings to the environment
+variable "SUMOHELP" like in:
+
+    export SUMOHELP="pager:off"
+
+If there are other help options defined in SUMOHELP, you should seperate them
+with commas ",".
+
 """,
         "configuration":"""
 
@@ -3623,12 +3658,21 @@ def print_option_help(option_list=None):
 
     If option is empty, show help for all options.
     """
+    lines= []
     if not option_list:
         for n in sorted(option_help_topics.keys()):
-            print option_help_topics[n],
-        return
-    for n in sorted(option_list):
-        print option_help_topics[n],
+            lines.extend(option_help_topics[n].splitlines())
+    else:
+        for n in sorted(option_list):
+            lines.extend(option_help_topics[n].splitlines())
+    lines.append("")
+    lineno= len(lines)
+    txt= "\n".join(lines)
+    if pager_mode=="on" or pager_mode=="always":
+        if lineno>24 or pager_mode=="always":
+            pydoc.pager(txt)
+    print txt
+
 
 me= script_shortname()
 usage_help = """usage: %s maincommand [subcommand] [options]
@@ -3695,9 +3739,12 @@ def maincmd_help(arguments, options):
     txt= help_topics.get(helpkey)
     if txt is None:
         print "no help found for '%s'" % helpkey
-    else:
-        print txt
-    return
+        return
+    if pager_mode=="on" or pager_mode=="always":
+        lineno= len(txt.splitlines())
+        if lineno>24 or pager_mode=="always":
+            pydoc.pager(txt)
+    print txt
 
 # -----------------------------------------------
 # program's main command processing function
