@@ -962,6 +962,34 @@ it contains the string "nocache" like in::
 
   export SUMOHELP="nocache"
 
+If there are other help options defined in SUMOHELP, you should seperate them
+with commas ",".
+
+The help pager
+--------------
+
+The build in pager allows you to navigate in long help texts that sumo displays
+when you use command "help" or option "-h". There are three modes:
+
+pager:off
+  The pager is off, all help is printed directly to the console.
+
+pager:on
+  The pager is used only for long help texts (more than 24 lines).
+
+pager:always
+  The pager is always used, even for short help texts.
+
+Mode "pager:on" is the default.
+
+You define the pager mode by adding one of the three strings to the environment
+variable "SUMOHELP" like in::
+
+    export SUMOHELP="pager:off"
+
+If there are other help options defined in SUMOHELP, you should seperate them
+with commas ",".
+
 Options
 -------
 
