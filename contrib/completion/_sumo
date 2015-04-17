@@ -1,19 +1,40 @@
 _sumo()
 {
-    # get the word currently being completed
-    local cur
-    cur=${COMP_WORDS[$COMP_CWORD]}
+    local cnt
+    local words
 
-    # create a command line to run
-    local cmd
-    # copy all words the user has entered
-    cmd=( ${COMP_WORDS[@]} )
+    if [ $(basename $SHELL) = "bash" ]; then
+        # The following function is only available in bash. It is needed in
+        # order to treat the ":" character within modulespecs like
+        # "MCAN:R2-3":
+        __reassemble_comp_words_by_ref : words cnt
+    else
+        # With zsh the ":" character doesn't need special treatment here:
+        words=( ${COMP_WORDS[@]} )
+        cnt=${#words[@]}
+    fi
 
-    # replace the current word with --list
-    cmd[${COMP_CWORD}]="--list"
+    if [[ $COMP_LINE == *[[:space:]] ]]; then
+      # When the last entered character was a space before <TAB> was pressed,
+      # this final space cannot be seen by sumo (the shell seems to filter it).
+      # In order to communicate this to sumo, we add a "." at the end of the
+      # arguments. The dot gets a special treatment in sumo's completion
+      # routines.
+      words+=(".")
+      # correct the cnt variable, although it is currently not used:
+      cnt=${#words[@]}
+    fi
 
-    # the resulting completions should be put into this array
-    COMPREPLY=( $( compgen -W "$( ${cmd[@]} )" -- $cur ) )
+    # Append option "--list" which tells sumo that we want command completion:
+    words+=(--list)
+
+    # Note that in sumo in module cli, environment variable SHELL is evaluated.
+    # If it is "zsh", the completion output of sumo for modulespecs like
+    # "MCAN:R2-3" is different.
+
+    ## the resulting completions should be put into this array
+    COMPREPLY=( $( compgen -W "$( ${words[@]} )" ) )
+
 }
 
 complete -F _sumo sumo

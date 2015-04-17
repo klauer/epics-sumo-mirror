@@ -245,6 +245,10 @@ module
   A list of module specifications,
   for details see :ref:`sumo options <reference-sumo-Options>`.
 
+no-cli-caching
+  A boolean for controling the command line completion cache,
+  for details see :ref:`sumo options <reference-sumo-Options>`.
+
 progress
   A boolean flag that controls the printing of progress markers,
   for details see :ref:`sumo options <reference-sumo-Options>`.
