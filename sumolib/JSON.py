@@ -18,7 +18,7 @@ import time
 import cPickle
 import sumolib.lock
 
-__version__="2.7" #VERSION#
+__version__="2.8" #VERSION#
 
 assert __version__==sumolib.lock.__version__
 
