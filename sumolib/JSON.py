@@ -15,6 +15,7 @@ if __name__ == "__main__":
 import pprint
 import os.path
 import time
+import cPickle
 import sumolib.lock
 
 __version__="2.7" #VERSION#
@@ -376,6 +377,18 @@ class Container(object):
                 dump_file(self._filename, self.to_dict())
         finally:
             self.unlock_file()
+    def pickle_save(self, filename):
+        """save using cPickle, don't use lockfiles or anything."""
+        fh= open(filename, "w")
+        cPickle.dump(self.to_dict(), fh)
+        fh.close()
+    @classmethod
+    def from_pickle_file(cls, filename):
+        """load from a cPickle file, don't use lockfiles or anything."""
+        fh= open(filename, "r")
+        data= cPickle.load(fh)
+        fh.close()
+        return cls(data)
 
 def _test():
     """perform internal tests."""

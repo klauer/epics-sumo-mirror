@@ -86,6 +86,9 @@ class ConfigFile(object):
                 str(self._dict)]
         return "\n".join(lines)
 
+    def optionlist(self):
+        """return all known options of the Config object."""
+        return sorted(self._dict.keys())
     def get(self, optionname):
         """get an option."""
         return self._dict.get(optionname)

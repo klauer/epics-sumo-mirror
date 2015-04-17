@@ -925,6 +925,43 @@ If no other :term:`build` depends on the :term:`build` specified by the
 entry in the builddb is deleted. The :term:`buildtag` must be given as an
 argument.
 
+Command completion
+------------------
+
+Command completion means that you can press <TAB> on any incomplete sumo
+command and you get a list of possibilities how to complete that command. By
+pressing <TAB> several times you can try each possible completion.
+
+Command completion is tested with the shells "bash" and "zsh". In order to
+activate this feature you have to configure your shell. There are two ways to
+do this:
+
+Activate command completion on the fly
+++++++++++++++++++++++++++++++++++++++
+
+Enter this command::
+  ``eval `sumo help completion-line```
+ 
+Activate command completion permanently
++++++++++++++++++++++++++++++++++++++++
+
+Enter this command::
+  ``sumo help completion-script > $HOME/_sumo``
+
+Then add the line::
+  ``source $HOME/_sumo``
+
+to your $HOME/.bashrc or $HOME/.zshrc
+
+Cache files
++++++++++++
+
+Sumo will create cache files in your home directory to speed up command
+completion. If you don't want this set the environment variable "SUMOHELP" that
+it contains the string "nocache" like in::
+
+  export SUMOHELP="nocache"
+
 Options
 -------
 
@@ -934,8 +971,10 @@ Here is a short overview on command line options:
 
 ``--version``
     show program's version number and exit
-``-h, --help``
-    show this help message and exit
+``-h [OPTIONS], --help [OPTIONS]``
+    If other OPTIONS are given, show help for these options. If OPTIONS is
+    'all', show help for all options. If OPTIONS is missing, show a short
+    generic help message for the program.
 ``--summary``
     Print a summary of the function of the program.
 ``--test``
@@ -1021,7 +1060,7 @@ Here is a short overview on command line options:
 ``-o OUTPUTFILE, --output OUTPUTFILE``
     Define the output for command 'use'. If this option is not given, 'use'
     writes to 'configure/RELEASE'. If this option is '-', the command writes to
-    standard-out",
+    standard-out.",
 ``-x EXTRALINE, --extra EXTRALLINE``
     Specify an extra line that is added to the generated RELEASE file. A
     default for this option can be put in a configuration file.
@@ -1094,5 +1133,7 @@ Here is a short overview on command line options:
 ``-v, --verbose``
     Show command calls. A default for this option can be put in a
     configuration file.
+``--version``
+    Show the program version and exit.
 ``-n, --dry-run``
     Just show what the program would do.
