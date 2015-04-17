@@ -6,7 +6,7 @@
 
 import subprocess
 
-__version__="2.7" #VERSION#
+__version__="2.8" #VERSION#
 
 # -----------------------------------------------
 # basic system utilities

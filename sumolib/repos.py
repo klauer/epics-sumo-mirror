@@ -16,7 +16,7 @@ import sumolib.darcs
 import sumolib.mercurial # "hg"
 import sumolib.git
 
-__version__="2.7" #VERSION#
+__version__="2.8" #VERSION#
 
 assert __version__==sumolib.utils.__version__
 assert __version__==sumolib.lock.__version__
