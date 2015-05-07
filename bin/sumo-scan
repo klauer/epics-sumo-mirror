@@ -49,7 +49,7 @@ KNOWN_COMMANDS=set(("deps", "name2paths", "path2names",
 KNOWN_CONFIG_COMMANDS=set(("list", "show", "make"))
 
 IGNORE_NAMES= set(["TOP", "EPICS_SUPPORT",
-                   "SUPPORT", "TEMPLATE_TOP"]) #, "EPICS_BASE"])
+                   "SUPPORT", "MSI", "TEMPLATE_TOP"])
 
 CONFIG_NAME="sumo-scan.config"
 ENV_CONFIG="SUMOSCANCONFIG"
@@ -282,6 +282,7 @@ def groups_from_deps(deps, basedirs):
             if name.startswith(basedir):
                 if name!=basedir:
                     name= name.replace(basedir,"")
+                    break
         if name[0]=="/":
             name= name[1:]
         name= name.replace("/","_")
@@ -294,10 +295,11 @@ def groups_from_deps(deps, basedirs):
         for deppath in dependencies.values():
             _add(groups, deppath)
     new= {}
-    basedirs= [os.path.realpath(d) for d in basedirs]
-    #sys.exit(repr(basedirs))
+    my_basedirs= [os.path.realpath(d) for d in basedirs]
+    my_basedirs.extend([os.path.split(d)[0] for d in my_basedirs])
+    # print "BD: %s" % repr(my_basedirs)
     for k, v in groups.items():
-        groupname= gen_name(k,basedirs)
+        groupname= gen_name(k,my_basedirs)
         groupdict= new.setdefault(groupname, {})
         pathlist = groupdict.setdefault(k, [])
         pathlist.extend(v)
@@ -514,7 +516,7 @@ def process(options, commands):
         sys.exit(str(e))
 
     if not commands:
-        sys.exit("command missing")
+        commands= ["all"]
     for c in commands:
         if not c in KNOWN_COMMANDS:
             sys.exit("unknown command: %s" % c)
@@ -534,19 +536,14 @@ def process(options, commands):
 
     deps= None
 
-    if "groups" in commands:
-        if not options.group_basedir:
-            sys.exit("error, option -g is mandatory here")
-
     options.dir            = sumolib.utils.opt_join(options.dir)
     options.exclude_path   = sumolib.utils.opt_join(options.exclude_path)
     options.group_basedir  = sumolib.utils.opt_join(options.group_basedir)
     options.ignore_changes = sumolib.utils.opt_join(options.ignore_changes)
     options.ignore_name    = sumolib.utils.opt_join(options.ignore_name)
 
-    # ^^^ A set of all options where lists from the command line are *appended*
-    # to lists from the config file. The default is that lists from the command
-    # line overwrite settings from the config file.
+    if not options.ignore_name:
+        options.ignore_name= IGNORE_NAMES
     if not options.append:
         options.append= set()
     else:
@@ -575,7 +572,11 @@ def process(options, commands):
     if "path2names" in commands:
         bag["path2names"]= path2name_from_deps(deps)
     if "groups" in commands:
-        bag["groups"]= groups_from_deps(deps, options.group_basedir)
+        if options.group_basedir:
+            basedirs= options.group_basedir + options.dir
+        else:
+            basedirs= options.dir
+        bag["groups"]= groups_from_deps(deps, basedirs)
     if "repos" in commands:
         repo_data= repo_info(deps,
                              options.progress,
@@ -630,6 +631,8 @@ where command is:
   all   : do commands "deps", "repos" and "groups"
   name2paths: return a map mapping names to paths
   path2names: return a map mapping paths to names
+
+If command is missing, assume "all" as command.
 
 The commands above can be combined!
 
@@ -768,14 +771,15 @@ def main():
                      )
     parser.add_option("-N", "--ignore-name",
                       action="append",
-                      help="Define macro names in the RELEASE files that "
-                           "should be ignored. You usually want to ignore "
-                           "the names 'TOP' or 'SUPPORT' in RELEASE files. "
-                           "You can specify more than one of these by "
-                           "repeating this option or by joining values in "
-                           "a single string separated by spaces. "
-                           "A default for this option can be put in a "
-                           "configuration file.",
+                      help= "Define names of variables in RELEASE files that "
+                            "should be ignored. You usually want to ignore "
+                            "the names like 'TOP' or 'SUPPORT'. You can "
+                            "specify more than one of these by repeating "
+                            "this option or by joining values in a single "
+                            "string separated by spaces. A default for this "
+                            "option can be put in a configuration file. If "
+                            "this option isn't provided, the program uses "
+                            "these defaults: " + (" ".join(IGNORE_NAMES)),
                       metavar="NAME"
                      )
     parser.add_option("-g", "--group-basedir",
@@ -790,7 +794,9 @@ def main():
                            "repeating this option or by joining values in "
                            "a single string separated by spaces. "
                            "A default for this option can be put in a "
-                           "configuration file.",
+                           "configuration file. Directories (option --dir) "
+                           "are always appended to the list of "
+                           "group-basedirs.",
                       metavar="DIR"
                      )
     parser.add_option("--exclude-path",
