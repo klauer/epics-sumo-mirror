@@ -53,7 +53,7 @@ Contents:
    reference-sumo
    app-usage
    dev-usage
-   examples
+   migration-examples
    glossary
 
 License

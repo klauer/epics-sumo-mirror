@@ -1,12 +1,14 @@
-Examples
-========
+Migration examples
+==================
 
-Here are some examples of the application of *sumo*. These examples are for our
-EPICS environment here at the HZB but could be applied at other sites with some
-changes.
+Here are some examples on how to start using sumo when you already have a large
+installation of support modules and applications.
 
-Migrating
----------
+The examples here are shown for our development environment here at the HZB but
+could be applied at other sites with some changes.
+
+Migrating the support directory
+-------------------------------
 
 This chapter shows how to *migrate* your existing installation of support
 modules to sumo. sumo-scan can help you to create a first version of the
@@ -97,8 +99,8 @@ We create a sumo configuration file with this command::
 
   sumo makeconfig sumo.config --builddir $SUMODIR/build --dbdir $SUMODIR/database --scandb $SUMODIR/database/SCAN.DB
 
-Using sumo for the first time
------------------------------
+Building EPICS base
+-------------------
 
 If the sumo directory, the dependency database and the sumo configuration file
 are set up, we can now use sumo to build an EPICS base.
@@ -147,8 +149,8 @@ which returns::
       }
   }
 
-Convert an application to SUMO
-------------------------------
+Migrating an application
+------------------------
 
 In our example we assume that you have our application "MLS-Controls" checked
 out. We first change the directory::
