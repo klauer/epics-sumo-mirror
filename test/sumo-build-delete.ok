@@ -88,7 +88,7 @@ contents of BUILDS file:
             "MISC_DEBUGMSG": "R3-0",
             "SOFT_DEVHWCLIENT": "TAR-3-0"
         },
-        "state": "unstable"
+        "state": "testing"
     }
 }
 

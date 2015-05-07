@@ -1216,7 +1216,8 @@ def fullapprelease(build_tag, builddb, db, modules,
         lines.append("%s\n" % l)
     return lines
 
-def apprelease(build_tag, modulespecs, builddb, db,
+def apprelease(build_tag, modulespec_complete, modulespecs,
+               builddb, db,
                aliases, extra_lines):
     """create entries for an release file.
 
@@ -1245,6 +1246,14 @@ def apprelease(build_tag, modulespecs, builddb, db,
         if not tags:
             sys.exit("no build with state 'stable' or 'testing' found that "
                      "matches modulespecs")
+        if len(tags)>1:
+            # more than one build match:
+            if not modulespec_complete:
+                tag_str= " ".join(sorted(tags))
+                sys.exit(("Your module specification is incomplete and "
+                          "more than one build matches your specification. "
+                          "Select one of the following builds and specify "
+                          "it with option '-t': \n%s") % tag_str)
         build_tag= sorted(tags)[0]
         sys.stderr.write("using build %s\n" % build_tag)
 
@@ -2382,9 +2391,10 @@ def subcmd_build_use(arguments, options):
         dump_modules(modulespecs_obj)
         sys.exit(0)
 
+    module_list_complete= None
+    # ^^^ <None> until we check if the module list is complete
     if options.buildtag is None:
-        # unspecifed build_tag, all versions must be *exactly specified* and
-        # complete:
+        # unspecifed build_tag, look if the module list is complete:
         try:
             dist_dict= modulespecs_obj.to_dist_dict()
         except ValueError, e:
@@ -2394,10 +2404,9 @@ def subcmd_build_use(arguments, options):
         (_, db)= db_from_repo(options)
         try:
             db.assert_complete_modulelist(dist_dict)
+            module_list_complete= True
         except ValueError, e:
-            if not catch_exceptions:
-                raise
-            sys.exit(errtxt("",e))
+            module_list_complete= False
         except KeyError, e:
             if not catch_exceptions:
                 raise
@@ -2419,6 +2428,7 @@ def subcmd_build_use(arguments, options):
         sys.exit(0)
 
     lines= apprelease(options.buildtag,
+                      module_list_complete,
                       modulespecs_obj,
                       builddb,
                       db,
