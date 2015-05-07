@@ -6,12 +6,12 @@ What the script does
 
 The script has two major purposes:
 
-- Manage the :term:`dependency database` or :term:`DB` file. 
+- Manage the :term:`dependency database` :term:`DEPS.DB`. 
   It is used to create this file from the output of 
   :doc:`sumo-scan <reference-sumo-scan>` and to query and 
   change that file.
 - Create and manage :term:`builds`. It also keeps note of 
-  all builds in the build database or :term:`BUILDDB`.
+  all builds in the build database :term:`BUILDS.DB`.
 
 The script takes one or mode commands and has a number of options. Single
 character options always start with a single dash "-", long options start with
@@ -28,14 +28,14 @@ repository specification.
 A complete and consistent set of modules that is compiled is called a
 :term:`build`.  All :term:`builds` are kept in a single directory, the
 :term:`support directory`. Information on :term:`builds` is kept in a 
-`JSON <http://www.json.org>`_ file, the build database or :term:`BUILDDB`.
+`JSON <http://www.json.org>`_ file, the build database :term:`BUILDS.DB`.
 
 .. _reference-sumo-db-The-dependency-database:
 
 The dependency database
 +++++++++++++++++++++++
 
-The dependency database or :term:`DB` file is a `JSON <http://www.json.org>`_ file
+The dependency database :term:`DEPS.DB` file is a `JSON <http://www.json.org>`_ file
 that contains information on versions of support modules and their
 dependencies. Here is an example how this file looks like::
 
@@ -153,7 +153,7 @@ dependencies
 This is a list of :term:`modules` this :term:`module` depends on. Note that we
 do not store the :term:`versions` of the :term:`modules` here. Information on
 which :term:`version` is compatible with another :term:`version` can be found
-in the build database or :term:`BUILDDB`.  This is the form of the
+in the build database :term:`BUILDS.DB`.  This is the form of the
 *dependencies* list::
 
   [
@@ -404,12 +404,12 @@ For each dependency of a module this structure contains the version of the
 dependency and a state. The state can be "stable" or "testing" or "scanned" but
 is always "scanned" if the file was generated with sumo-db.
 
-.. _reference-sumo-the-build-database:
+.. _reference-sumo-The-build-database:
 
 The build database
 ++++++++++++++++++
 
-The build database or :term:`BUILDDB` file is a `JSON <http://www.json.org>`_
+The build database :term:`BUILDS.DB` file is a `JSON <http://www.json.org>`_
 file that contains information of all :term:`builds` in the 
 :term:`support directory`.
 
@@ -572,7 +572,7 @@ edit FILE
 Start the editor specified by the environment variable "VISUAL" or "EDITOR"
 with that file. This command first aquires a file-lock on the file that is only
 released when the editor program is terminated. If you want to edit a
-:term:`DB` or :term:`BUILDDB` file directly, you should always do it with this
+:term:`DEPS.DB` :term:`BUILDS.DB` file directly, you should always do it with this
 with this command. The file locking prevents other users to use the file at the
 same time you modify it.
 
@@ -599,7 +599,7 @@ db
 ::
 
 This is the maincommand for all operations that work with the 
-:term:`dependency database` (DB) file.
+dependency database or :term:`DEPS.DB` file.
 
 For all of the db subcommands you have to specify the dependency database
 directory with option --dbdir or a configuration file.
@@ -608,7 +608,7 @@ build
 :::::
 
 This is the maincommand for all operations that work with builds and the build
-database (:term:`BUILDDB`).
+database (:term:`BUILDS.DB`).
 
 For all of the build subcommands you have to specify the dependency database
 directory and the build directory with --dbdir and --builddir or a

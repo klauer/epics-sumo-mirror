@@ -18,7 +18,7 @@ Some command line options may be given more than once with an argument, they
 are used to define lists of values.
 
 The configuration file defines a map where keys are names of long command line
-options and values are booleans, strings or lists or strings. Not all command
+options and values are booleans, strings or lists of strings. Not all command
 line options can be set in a configuration file, "sumo -h" shows you which can.
 
 File format
@@ -47,8 +47,8 @@ Sumo can read more than just one configuration file, in this case the data is
 The files are read one by one and their keys and values are combined in the in
 the following way:
 
-Keys not yet defined are simply added. Keys that already exist and whose values
-are strings, the latter value one overwrites the first one.  For keys that
+Keys not yet defined are simply added. For keys that already exist and whose values
+are not lists, the last value overwrites the first one.  For keys that
 already exist and whose values are lists, the lists are concatenated.
 
 Default paths
@@ -303,9 +303,9 @@ Explanation:
 
 builddir
   This defines the directory where the builds are created and the build
-  database file ``BUILDS.DB`` resides.
+  database file :term:`BUILDS.DB` resides.
 dbdir
-  The directory where the dependency database file "DEPS.DB" is found,
+  The directory where the dependency database file :term:`DEPS.DB` is found,
   for details see :ref:`sumo options <reference-sumo-Options>`.
 dbrepo
   This defines that the directory of the dependency database file is a darcs

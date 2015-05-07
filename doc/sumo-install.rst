@@ -76,7 +76,8 @@ PYTHONPATH. Here is an example how you could do this::
   export PATH=<DIR>/bin:$PATH
   export PYTHONPATH=<DIR>/lib/python<X.Y>/site-packages:$PYTHONPATH
 
-where <DIR> is your install directory and <X.Y> is your python version number. You can get your python version with this command::
+where <DIR> is your install directory and <X.Y> is your python version number.
+You get your python version with this command::
 
   python -c 'import sys;print "%s.%s"%sys.version_info[:2]'
 
@@ -97,8 +98,8 @@ Advantages:
 
 Disadvantages:
 
-- Only you can use this install.
-- You must have the correct settings of the environment variables PATH and
+- Only you can use this installation.
+- You need the correct settings of environment variables PATH and
   PYTHONPATH.
 
 For installing sumo this way, enter::

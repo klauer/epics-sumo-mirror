@@ -240,7 +240,7 @@ BUILDS.DB
 
 This is the content of the build database after we created BL-001 and BL-002.
 For more information see 
-:ref:`The build database <reference-sumo-the-build-database>`::
+:ref:`The build database <reference-sumo-The-build-database>`::
 
   {
       "BL-001": {

@@ -15,125 +15,171 @@ The problem
 When you develop EPICS applications you usually need some EPICS support
 modules to interface your hardware. 
 
-For a a small project you fetch the sources for support modules your
-application needs and build them along with your application.
+The following picture gives an impression of a simple example:
 
-For development in a team however, you need to have support modules built and
-installed at a central directory so all developers can just use them instead of
-building them again and again.
+.. image:: Modules.png
 
-If new versions of your support modules with bug fixes or new features become
-available, you have to build these in order to use them. The old versions
-however, must not be deleted since some applications may depend on them. This
-is further complicated by the fact that support modules may be dependent on
-each other. 
+You have the following dependencies here:
 
-Here is an example, module "A" is dependent on module "B":
+=====================   ===============
+module or application   depends on
+=====================   ===============
+application             BASE A B
+A:1.0                   BASE X
+B:2.4                   BASE
+X:3.4                   BASE
+=====================   ===============
 
-==================   ================   ==============================
-module A directory   module A version   built against module B version
-==================   ================   ==============================
-support/A/R1.3       1.3                2.4
-support/A/R1.4       1.4                2.4
-==================   ================   ==============================
+Note that your application depends indirectly on module X since this is 
+needed by module A. This is probably not shown in your applications module
+configuration in file "configure/RELEASE".
 
-Now suppose that there is a new version "2.5" of "B". You want to build "A"
-against that version of "B" while the source code of "A" has not
-changed. You cannot rebuild in directory "support/A/R1.4" since module "A" may
-behave differently which could break existing applications. So you have to create
-a new directory for a new sub version of "A" like shown here:
+New version of a direct dependency
+++++++++++++++++++++++++++++++++++
 
-==================   ================   ==============================
-module A directory   module A version   built against module B version
-==================   ================   ==============================
-support/A/R1.3       1.3                2.4
-support/A/R1.4       1.4                2.4
-support/A/R1.3-1     1.3                2.5
-support/A/R1.4-1     1.4                2.5
-==================   ================   ==============================
+If you get a newer version 1.1 of module A, which is directly used by your
+application, you have to rebuild A and then your application. The following
+picture shows in red color which modules have to be recompiled:
 
-For each module that like "A" uses "B" you have to create a new directory with a
-new version number and rebuild the module. 
+.. image:: Modules-A-changed.png
 
-These are the problems with this approach:
+This can be done relatively easy.
 
-- Changes in the support directory: If you want to install a new version of a
-  module you have to look at the RELEASE files of all other modules in order to
-  find which modules depend on this one.  All of these have to be rebuild in a
-  new directory. In all these cases you have to patch the RELEASE file with the
-  path of the new module version. If the RELEASE file is under version control
-  you even have to commit these changes and give it a release tag (at least in
-  darcs VCS).
+New version of an indirect dependency
++++++++++++++++++++++++++++++++++++++
 
-- Creation of a new application: You probably know what modules your
-  application needs, but what versions should you use ? What set of module
-  versions is consistent with each other with respect to module dependencies ?
-  Currently you copy a RELEASE file of another application and try to modify it
-  in a trial and error fashion.
-  
+If you get a newer version 3.5 of module X however, you have to rebuild X, A
+and then your application exactly in this order.The following
+picture shows in red color which modules have to be recompiled:
+
+.. image:: Modules-X-changed.png
+
+There are several problems here:
+
+- How do you find all modules that use module X ? There is no easy way to
+  find them all aside from a text search of file configure/RELEASE in all
+  other modules.
+- How do you handle the new compiled version of module A ? It has the same
+  sourcecode as before, except for the file configure/RELEASE. Since it uses a
+  different version of X it may behave differently. Do you give it a new
+  version number although it's source hasn't changed ?
+- How do you know in your application, which version of X it uses ? Since your
+  application doesn't use X directly, this module is not mentioned in file
+  configure/RELEASE there. 
+
+The overall picture
++++++++++++++++++++
+
+A further problem is that you probably have to keep many old versions of
+modules for other applications or even older versions of the same application
+that still run on some IOCs. Your overall picture of modules is more like
+the following picture (in reality it is much more complex):
+
+.. image:: Modules-all.png
+
+
 The solution
 ------------
 
-A solution of these problems is to create RELEASE files with a tool instead of
-keeping them under version control. In your version control system you just
-have a *template* of a RELEASE file that gives hints on what other modules your
-module depends on.
+Builds
+++++++
 
-Module versions and module dependencies are kept in a dependency database. 
+The problems above are solved by sumo. This tool creates :term:`builds`, which
+are guaranteed to be *consistent* and *complete* sets of compiled modules. This
+image illustrates the concept:
 
-Sets of modules that are *complete* and *consistent* are created by a tool. The
-tool creates a makefile for each set that ensures that modules are compiled in
-the right order. Every set, which is also called a :term:`build`, is identified
-by a unique name, a :term:`buildtag`. Information on builds is stored in a
-build database or :term:`BUILDDB`.
+.. image:: Modules-Sumo.png
 
-Modules reside in directories whose names contain the :term:`module`
-:term:`version` tag and the :term:`buildtag`. A :term:`module` of the same
-version may exist in different :term:`builds` with with different versions of
-dependency versions.
+You see that we have various versions of modules X, A and B. Each version of a
+module belongs to one or more :term:`builds`:
 
-Some versions of :term:`modules` may be part of more than one :term:`build` in
-order to reduce compile time and optimize disk space. The tool ensures that all
-:term:`builds` are still consistent and complete.
+==============================   ========================
+module                           builds
+==============================   ========================
+BASE:3.14.12.2                   Build 1, Build 2
+A:1.0 built with X:3.4           Build 1
+A:1.0 built with X:3.5           Build 2
+B:2.4                            Build 1, Build 2
+X:3.4                            Build 1
+X:3.5                            Build 2
+==============================   ========================
 
-Databases are always files in `JSON <http://www.json.org>`_ format.
+A special case is module A, we have version 1.0 of the module twice, one is
+compiled with X:3.4 and one is compiled with X:3.5. Both have source version
+1.0 but they are *not* identical due to different versions of module X.
 
-The concept of states
----------------------
+In the image, the areas of Build 1 and Build 2 overlap. This illustrates that
+compiled modules are re-used when possible. When Build 2 is created after Build
+1, module BASE for example, is not compiled again.
 
-In order to distinguish the maturity of :term:`builds` we distinguish the
-following :term:`build` :term:`states`:
+Database files and directories
+++++++++++++++++++++++++++++++
 
-stable
-  Stable means that the :term:`build` is used in production and is not known to
-  have major faults.
+Sumo uses two database files and a :term:`build` directory to organize the data and the
+builds. Here is an overview:
 
-testing
-  Testing means that the :term:`build` could be compiled without errors. If it
-  is used on an IOC for some time without major problems, the :term:`build`
-  :term:`state` should be set to "stable".
+.. image:: Sumo-overview.png
 
-unstable
-  Unstable means that the :term:`build` is just created. This is also the state
-  of a build if it's compilation fails.
+:term:`DEPS.DB` is a `JSON <http://www.json.org>`_ file which contains all
+known versions of modules, their source (usually a software repository) and
+their dependencies. 
 
-disabled
-  The build should no longer be used, it has a defect or cannot be recreated
-  due to changes in the dependency database.
+:term:`BUILDS.DB` is a `JSON <http://www.json.org>`_ file which contains the
+versions of modules of each :term:`build` and information where a module from
+one :term:`build` is reused in another :term:`build`.
+
+The :term:`build` directory contains in a hierarchical directory structure all compiled
+modules. At the first level, directories are named after module names. At the
+second level, directories are named after the version of a module and the name
+of it's :term:`build` separated by a '+' character.
+
+Creating a build
+++++++++++++++++
+
+A build is usually created with the command::
+
+  sumo build new
+
+Sumo examines the module specification of your application, usually the file
+``configure/MODULES``, and creates a build that contains all the needed modules
+with the specified version. The process is as follows:
+
+- Create a new entry in :term:`BUILDS.DB` with :term:`state` "unstable".
+- Create directories for all modules that have to be compiled and check out the
+  sources from the version control system.
+- Create the file ``configure/RELEASE`` in every module. Also ensure that
+  whenever possible, modules from existing builds are reused by corresponding
+  entries in file ``configure/RELEASE``.
+- Create a makefile in the "builds" directory that ensures that modules are
+  compiled in the correct order.
+- Run the makefile.
+- On success, mark the build in file :term:`BUILDS.DB` with :term:`state` "testing".
+
+Using a build
++++++++++++++
+
+You use a build in your application with the command::
+
+  sumo build use
+
+Sumo examines the module specification of your application, usually the file
+``configure/MODULES``, and searches :term:`BUILDS.DB` for a build that contains
+all needed modules with the specified version. If it succeeds, it creates a
+file ``configure/RELEASE`` with all the needed entries to use these modules.
+
+For more details on this see also :doc:`Using sumo in your application <app-usage>`.
 
 The implementation
 ------------------
 
-The functions described above are implemented with two programs. The
-dependency and build database files have `JSON <http://www.json.org>`_ format.
-
-Here are two programs:
-
-:doc:`sumo-scan <reference-sumo-scan>`
-  This is a python script that is used to scan an existing support module tree
-  for module versions and their repository sources. It generates a *scan* file
-  which can be converted to a *DB* file with `sumo <reference-sumo>`.
+The functions described above are implemented with two programs:
 
 :doc:`sumo <reference-sumo>`
-  This python script manages *DB* files that hold all module version and
-  dependency information and creates and manages builds.
+  This program implements all commands for using sumo.
+
+:doc:`sumo-scan <reference-sumo-scan>`
+  This program can help you to convert your existing EPICS support directory
+  tree to sumo. It scans all modules for versions and repository sources. It
+  generates a *scan* file which can be converted to a :term:`DEPS.DB` file with
+  `sumo <reference-sumo>`.
+

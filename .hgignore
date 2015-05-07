@@ -39,5 +39,9 @@
 # doc directories:
 ^doc/_build$
 
+# generated files in doc directory
+^doc/.*\.png
+^doc/.*\.dia~
+
 # distribution directory:
 ^dist/

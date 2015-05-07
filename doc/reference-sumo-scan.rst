@@ -5,11 +5,11 @@ What the script does
 --------------------
 
 This script scans an existing EPICS support module directory tree and collects
-all information necessary to generate a dependency database or :term:`DB` file.
+all information necessary to generate a dependency database :term:`DEPS.DB` file.
 The data is formatted in `JSON <http://www.json.org>`_ format and printed to
 the console. You can either save this output in a file or combine this script
 with :doc:`sumo db <reference-sumo>` in a pipe to directly create a
-:term:`DB` file.
+:term:`DEPS.DB` file.
 
 The script takes one or mode commands and has a number of options. Single
 character options always start with a single dash "-", long options start with
