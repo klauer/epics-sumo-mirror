@@ -168,7 +168,6 @@ def support_configure_data(support_trees,
         return False
 
     release_dict= {}
-    arch_dict= {}
     cnt_max= 50
     cnt= 0
     if progress:
@@ -204,7 +203,6 @@ def support_configure_data(support_trees,
                 slicer(dirnames, ["configure","lib","bin"])
                 versioned_path= os.path.realpath(dirpath)
                 release_dict[versioned_path]= {}
-                arch_dict[versioned_path]= set()
                 continue
             if modpath is None:
                 continue
@@ -221,34 +219,12 @@ def support_configure_data(support_trees,
                         release_dict[versioned_path]= data
                     purge(dirnames)
                     continue
-                elif last=="bin":
-                    if "ANY" in arch_dict[versioned_path]:
-                        arch_dict[versioned_path].discard("ANY")
-                    arch_dict[versioned_path].update(dirnames)
-                    purge(dirnames)
-                    continue
-                elif last=="lib":
-                    if "ANY" in arch_dict[versioned_path]:
-                        arch_dict[versioned_path].discard("ANY")
-                    arch_dict[versioned_path].update(dirnames)
-                    purge(dirnames)
-                    continue
     if progress:
         sys.stderr.write("\n")
-    for (k,v) in arch_dict.items():
-        for ign in ignore_archs:
-            if ign in v:
-                v.discard(ign)
-        if not v:
-            # set is empty:
-            v= set(["ANY"])
-        arch_dict[k]= sorted(list(v))
     #if trace:
     #    sys.stderr.write("release_dict:\n")
     #    sys.stderr.write(pprint.pformat(release_dict))
-    #    sys.stderr.write("arch_dict:\n")
-    #    sys.stderr.write(pprint.pformat(arch_dict))
-    return (release_dict, arch_dict)
+    return release_dict
 
 def name2path_from_deps(deps):
     """calculate name2path dict from dependency dict.
@@ -433,17 +409,15 @@ def get_configuration(options):
         ignore_names= set(options.ignore_name)
     else:
         ignore_names= set()
-    (deps, archs)= \
-       support_configure_data(options.dir,
-                              options.buildtag,
-                              ignore_names,
-                              exclude_matcher,
-                              options.trace,
-                              options.progress,
-                              options.verbose,
-                              options.dry_run
-                             )
-    return (deps, archs)
+    deps= support_configure_data(options.dir,
+                                 options.buildtag,
+                                 ignore_names,
+                                 exclude_matcher,
+                                 options.trace,
+                                 options.progress,
+                                 options.verbose,
+                                 options.dry_run)   
+    return deps
 
 def process_config(config, commands, options):
     """do all the work.
@@ -551,11 +525,11 @@ def process(options, commands):
         options.append= set(options.append)
 
     if options.dir:
-        (deps, archs)= get_configuration(options)
+        deps= get_configuration(options)
     elif options.info_file:
         # pylint: disable=W0633
         #                     Attempting to unpack a non-sequence
-        (deps, archs)= sumolib.JSON.loadfile(options.info_file)
+        deps= sumolib.JSON.loadfile(options.info_file)
     else:
         sys.exit("error: -d or -i required for command")
 
@@ -566,7 +540,6 @@ def process(options, commands):
 
     if "deps" in commands:
         bag["dependencies"]= deps
-        bag["archs"]= archs
     if "name2paths" in commands:
         bag["name2paths"]= name2path_from_deps(deps)
     if "path2names" in commands:
