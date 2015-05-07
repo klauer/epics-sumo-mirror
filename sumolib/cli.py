@@ -734,8 +734,8 @@ def process_opts(args, optionspecs, testmode= False):
                 return (None, None) # never reached
 
         if consumer:
-            if a[0]=="-" and \
-               len(a)>1 and \
+            if len(a)>1 and \
+               a[0]=="-" and \
                not options_off and \
                not consumer.arg_is_option:
                 # probably the next option value:
