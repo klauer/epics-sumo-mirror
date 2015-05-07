@@ -51,7 +51,7 @@ show_authors= True
 # built documents.
 #
 # The short X.Y version.
-version = "2.8" #VERSION#
+version = "2.8.1" #VERSION#
 
 # The full version, including alpha/beta/rc tags.
 release = version
