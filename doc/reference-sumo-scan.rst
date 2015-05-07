@@ -84,6 +84,8 @@ example of the created data structure::
       }
   }
 
+.. _reference-sumo-scan-Phase-II-Grouping:
+
 Phase II, Grouping
 ++++++++++++++++++
 
@@ -121,6 +123,8 @@ underscore "_" characters. Here is an example of the created datastructure in
           },
       }
   }
+
+.. _reference-sumo-scan-Phase-III-repository-scan:
 
 Phase III, repository scan
 ++++++++++++++++++++++++++
@@ -325,10 +329,10 @@ This command shows what module names were used for what module paths. You do not
 need this command in order to generate a dependency database. For details see
 `Optional Phase V, paths to names map`_.
 
+.. _reference-sumo-scan-Options:
+
 Options
 -------
-
-.. _reference-sumo-scan-Options:
 
 Here is a short overview on command line options:
 
