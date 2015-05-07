@@ -2347,8 +2347,8 @@ def subcmd_build_find(arguments, options):
 
 def subcmd_build_use(arguments, options):
     """implement "subcmd_build_use"."""
-    # pylint: disable=R0912
-    #                          Too many branches
+    # pylint: disable=too-many-branches
+    # pylint: disable=too-many-statements
     sumolib.cli.assert_options(True, options, "dbdir")
 
     argspec= sumolib.cli.CmdSpecs()
@@ -2395,6 +2395,10 @@ def subcmd_build_use(arguments, options):
         try:
             db.assert_complete_modulelist(dist_dict)
         except ValueError, e:
+            if not catch_exceptions:
+                raise
+            sys.exit(errtxt("",e))
+        except KeyError, e:
             if not catch_exceptions:
                 raise
             sys.exit(errtxt("",e))
