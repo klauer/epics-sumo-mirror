@@ -113,24 +113,25 @@ Here we define some of the terms used in the following text.
       may be one of the following strings:
   
       stable
-        Modules and dependencies that are known to work.
+        This set of modules is known to work.
   
       testing
-        Modules and their dependencies than can be built.
+        This set of modules was built successfully.
   
       unstable
-        Modules and their dependencies that are just being built.
+        This set of modules is not yet built successfully.
   
       disabled
-        The build should no longer be used, it has a defect or cannot be
-        recreated due to changes in the dependency database.
+        This set of modules should no longer be used by applications or newer
+        builds. It has a defect or cannot be recreated due to changes in the
+        dependency database.
   
   builds
       See :term:`build`.
 
   build
       A *build* is a set of modules where all modules are compiled.
-      Information on all build is kept in the build database (:term:`BUILDDB`).
+      Information on all build is kept in the build database (:term:`BUILDS.DB`).
       Each *build* has a unique :term:`buildtag`.
 
   buildtags
@@ -139,7 +140,7 @@ Here we define some of the terms used in the following text.
   buildtag
       A *buildtag* is a name that identifies each :term:`build`. Information
       for each :term:`build` can be found in the build database
-      (:term:`BUILDDB`) by looking up the *buildtag*.
+      (:term:`BUILDS.DB`) by looking up the *buildtag*.
 
   regular expression
       A regular expression is a way to specify a pattern in order to match
@@ -150,23 +151,22 @@ Here we define some of the terms used in the following text.
 
   scanfile
       This is the file created by :doc:`"sumo-scan all"<reference-sumo-scan>`.
-      This `JSON <http://www.json.org>`_ file can be converted to a :term:`DB`
+      This `JSON <http://www.json.org>`_ file can be converted to a :term:`DEPS.DB`
       file with by :doc:`"sumo db convert"<reference-sumo>`.
 
   dependency database
-      See :term:`DB`.
+      See :term:`DEPS.DB`.
 
   scan database
       See :term:`SCANDB`.
 
-  DB
-      The dependency database is also called :term:`DB`. For further details see
+  DEPS.DB
+      The dependency database. For further details see
       :ref:`reference-sumo-db-The-dependency-database`.
 
-  BUILDDB
-      The build database is also called :term:`BUILDDB`. It is a file in 
-      `JSON <http://www.json.org>`_ format which contains information on which
-      versions of which modules were built.
+  BUILDS.DB
+      The build database. For further details see
+      :ref:`reference-sumo-The-build-database`.
 
   SCANDB
       This scan database is also called :term:`SCANDB`. It is a file in `JSON

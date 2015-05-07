@@ -22,6 +22,9 @@ Some of the features are:
 - All module dependencies are held in a `JSON <http://www.json.org>`_
   dependency database.
 
+- The dependency database can be managed automatically with a version control
+  system in order to keep it in sync on a number of build hosts.
+
 - In order to migrate your existing support module installation a scanner
   program creates a dependency database from existing support directories.
 
