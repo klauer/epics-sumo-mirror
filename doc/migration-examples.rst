@@ -36,8 +36,8 @@ specifications a canonical form.
 For details see :ref:`sumo scan options <reference-sumo-scan-Options>`.
 
 We assume that our collection of support modules is in directory <supportdir>
-and that our various versions of EPICS base are in directory <epics-basedir>.
-We invoke sumo-scan with this command::
+and that our various versions of `EPICS <http://www.aps.anl.gov/epics>`_ base
+are in directory <epics-basedir>.  We invoke sumo-scan with this command::
 
   sumo-scan -d <supportdir> -d <epics-basedir> > $SUMODIR/scan/SCAN
 
@@ -112,10 +112,10 @@ Create configuration file and module list
 +++++++++++++++++++++++++++++++++++++++++
 
 We first have to scan the existing RELEASE file with sumo-scan. We have to know
-the paths of our old EPICS base and the old support directory, these are given
-as option "-g" to the program. The output of sumo-scan is directed to sumo
-which creates a `JSON <http://www.json.org>`_ file "configure/MODULES" with
-:term:`modulespecs` and :term:`aliases`::
+the paths of our old `EPICS <http://www.aps.anl.gov/epics>`_ base and the old
+support directory, these are given as option "-g" to the program. The output of
+sumo-scan is directed to sumo which creates a `JSON <http://www.json.org>`_
+file "configure/MODULES" with :term:`modulespecs` and :term:`aliases`::
 
   sumo-scan -d . -g <supportdir> -g <epics-basedir> | sumo db appconvert - -C > configure/MODULES
 

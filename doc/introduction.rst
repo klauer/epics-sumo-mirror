@@ -12,8 +12,9 @@ If you want to get an impression how to change and develop a device support with
 The problem
 -----------
 
-When you develop EPICS applications you usually need some EPICS support
-modules to interface your hardware. 
+When you develop `EPICS <http://www.aps.anl.gov/epics>`_ applications you
+usually need some `EPICS <http://www.aps.anl.gov/epics>`_ support modules to
+interface your hardware. 
 
 The following picture gives an impression of a simple example:
 
@@ -178,8 +179,9 @@ The functions described above are implemented with two programs:
   This program implements all commands for using sumo.
 
 :doc:`sumo-scan <reference-sumo-scan>`
-  This program can help you to convert your existing EPICS support directory
-  tree to sumo. It scans all modules for versions and repository sources. It
-  generates a *scan* file which can be converted to a :term:`DEPS.DB` file with
+  This program can help you to convert your existing 
+  `EPICS <http://www.aps.anl.gov/epics>`_ support directory tree to sumo. It
+  scans all modules for versions and repository sources. It generates a *scan*
+  file which can be converted to a :term:`DEPS.DB` file with
   `sumo <reference-sumo>`.
 

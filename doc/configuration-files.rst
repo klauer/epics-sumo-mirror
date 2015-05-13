@@ -320,14 +320,18 @@ dbrepomode
 #opt-preload
   This defines that sumo tries to load "``configure/MODULES.HOST``" and
   "``configure/MODULES``" first, if these files exist. In our application our
-  definition of used EPICS support modules is placed in these two files. If we
-  run "``sumo build use``" in the top directory of our application, sumo uses
-  module definitions from these two files.
+  definition of used `EPICS <http://www.aps.anl.gov/epics>`_ support modules is
+  placed in these two files. If we run "``sumo build use``" in the top
+  directory of our application, sumo uses module definitions from these two
+  files.
 
 Example of MODULES files
 ++++++++++++++++++++++++
 
-Module definitions are configuration files where only the keys "``alias``" and "``module``" are defined. These are specific for each EPICS application. Here are examples of MODULES.HOST and MODULES for our control system application:
+Module definitions are configuration files where only the keys "``alias``" and
+"``module``" are defined. These are specific for each 
+`EPICS <http://www.aps.anl.gov/epics>`_ application. Here are examples of
+MODULES.HOST and MODULES for our control system application:
 
 MODULES.HOST::
 
