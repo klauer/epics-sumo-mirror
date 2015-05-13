@@ -10,8 +10,10 @@ Here we define some of the terms used in the following text.
       See :term:`module`.
 
   module
-      A *module* is a software package, an EPICS support module or an EPICS
-      base. Each module has a :term:`modulename` and a :term:`versionname`. 
+      A *module* is a software package, an 
+      `EPICS <http://www.aps.anl.gov/epics>`_ support module or an 
+      `EPICS <http://www.aps.anl.gov/epics>`_ base. Each module has a
+      :term:`modulename` and a :term:`versionname`. 
       
       Usually modules that have the same :term:`modulename` share the same
       source tree but differ in their source :term:`versions`. 

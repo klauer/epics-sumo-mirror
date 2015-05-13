@@ -4,12 +4,13 @@ sumo-scan
 What the script does
 --------------------
 
-This script scans an existing EPICS support module directory tree and collects
-all information necessary to generate a dependency database :term:`DEPS.DB` file.
-The data is formatted in `JSON <http://www.json.org>`_ format and printed to
-the console. You can either save this output in a file or combine this script
-with :doc:`sumo db <reference-sumo>` in a pipe to directly create a
-:term:`DEPS.DB` file.
+This script scans an existing `EPICS <http://www.aps.anl.gov/epics>`_ support
+module directory tree and collects all information necessary to generate a
+dependency database :term:`DEPS.DB` file.  The data is formatted in 
+`JSON <http://www.json.org>`_ format and printed to the console. You can either
+save this output in a file or combine this script with 
+:doc:`sumo db <reference-sumo>` in a pipe to directly create a :term:`DEPS.DB`
+file.
 
 The script takes one or mode commands and has a number of options. Single
 character options always start with a single dash "-", long options start with
@@ -35,10 +36,10 @@ dependency database.
 Phase I, RELEASE file scanning
 ++++++++++++++++++++++++++++++
 
-Information on dependencies of EPICS modules is stored in files named "RELEASE"
-in directory "configure". For each module the module depends on, there is a
-variable with a path. This is a short example of what you could find in a
-RELEASE file::
+Information on dependencies of `EPICS <http://www.aps.anl.gov/epics>`_ modules
+is stored in files named "RELEASE" in directory "configure". For each module
+the module depends on, there is a variable with a path. This is a short example
+of what you could find in a RELEASE file::
 
   SUPPORT=/opt/Epics/R3.14.8/support
   MISC=$(SUPPORT)/misc/2-4
@@ -54,7 +55,7 @@ changes in variables that are caused by parsing the "RELEASE" file.
 
 From this set of variable names and values the script removes names which match
 a given list. For example, "TOP" usually refers to a directory that is not an
-EPICS support.
+`EPICS <http://www.aps.anl.gov/epics>`_ support.
 
 The remaining variable definitions are assumed to be module dependencies. 
 

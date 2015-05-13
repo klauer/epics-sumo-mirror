@@ -14,8 +14,9 @@ Welcome to SUMO documentation!
 A SUpport MOdule manager for EPICS
 ----------------------------------
 
-The support module manager sumo is a program to build consistent sets of EPICS
-support modules and use them in EPICS applications.
+The support module manager sumo is a program to build consistent sets of 
+`EPICS <http://www.aps.anl.gov/epics>`_ support modules and use them in 
+`EPICS <http://www.aps.anl.gov/epics>`_ applications.
 
 Some of the features are:
 
@@ -28,7 +29,8 @@ Some of the features are:
 - In order to migrate your existing support module installation a scanner
   program creates a dependency database from existing support directories.
 
-- The program builds consistent sets of EPICS support modules.
+- The program builds consistent sets of 
+  `EPICS <http://www.aps.anl.gov/epics>`_ support modules.
 
 - The program fetches module source code from various sources, directories, tar
   files or version control systems (currently git, mercurial or darcs).
