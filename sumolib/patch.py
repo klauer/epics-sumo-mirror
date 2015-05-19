@@ -13,12 +13,17 @@ __version__="2.8.2" #VERSION#
 assert __version__==sumolib.utils.__version__
 assert __version__==sumolib.fileurl.__version__
 
+def assert_patch():
+    """ensure that patch exists."""
+    sumolib.system.test_program("patch")
+
 def call_patch(patch_file, target_dir, verbose, dry_run):
     """call the patch utility.
 
     This function does:
       cd target_dir && patch -p1 < patch_file
     """
+    assert_patch()
     cmd= "patch -p1"
     if dry_run or verbose:
         print "> cd %s && %s < %s" % (target_dir, cmd, patch_file)

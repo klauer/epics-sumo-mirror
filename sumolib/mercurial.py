@@ -17,6 +17,9 @@ assert __version__==sumolib.system.__version__
 # Repo class
 # -----------------------------------------------
 
+def assert_hg():
+    """ensure that mercurial exists."""
+    sumolib.system.test_program("hg")
 
 class Repo(object):
     """represent a mercurial repository."""
@@ -25,6 +28,7 @@ class Repo(object):
     rx_tag=re.compile(r'^(.*)\s+([0-9]+):([a-z0-9]+)$')
     def _default_repo(self):
         """return the default repo."""
+        assert_hg()
         try:
             (reply,_)= sumolib.system.system(\
                                   "hg paths default -R %s" % self.directory,
@@ -44,6 +48,7 @@ class Repo(object):
             return
         if patcher is not None:
             default_repo= patcher.apply(default_repo)
+        assert_hg()
         cmd= "hg -R %s incoming %s" % \
                  (self.directory, default_repo)
         (_,_,rc)= sumolib.system.system_rc(cmd, True, True,
@@ -58,6 +63,7 @@ class Repo(object):
         Does basically "hg status". All lines that match the matcher
         object are ignored. The matcher parameter may be <None>.
         """
+        assert_hg()
         cmd= "hg status -a -m -r -d -R %s" % self.directory
         (reply,_,rc)= sumolib.system.system_rc(cmd, True, False,
                                                self.verbose, self.dry_run)
@@ -82,6 +88,7 @@ class Repo(object):
         if self.remote_url is None:
             raise AssertionError("cannot compute local patches without "
                                  "a reachable remote repository.")
+        assert_hg()
         cmd= "hg -R %s outgoing" % self.directory
         (_,_,rc)= sumolib.system.system_rc(cmd, True, False,
                                            self.verbose, self.dry_run)
@@ -91,6 +98,7 @@ class Repo(object):
     def _current_revision(self):
         """returns the revision of the working copy.
         """
+        assert_hg()
         (reply,_)= sumolib.system.system(\
                                 "hg identify -i -R %s" % self.directory,
                                 True, False,
@@ -107,6 +115,7 @@ class Repo(object):
         """
         ignore= set(("tip","qtip","qbase","qparent"))
         curr_rev= self.current_revision
+        assert_hg()
         cmd= "hg tags -R %s" % self.directory
         (reply,_)= sumolib.system.system(cmd, True, False,
                                          self.verbose, self.dry_run)
@@ -242,6 +251,7 @@ class Repo(object):
     def checkout(spec, destdir, verbose, dry_run):
         """spec must be a dictionary with "url" and "tag" (optional).
         """
+        assert_hg()
         cmd_l= ["hg", "clone"]
         url= spec.get("url")
         if url is None:
@@ -266,6 +276,7 @@ class Repo(object):
             m_param=""
         else:
             m_param="-m '%s'" % logmessage
+        assert_hg()
         cmd="hg -R %s commit %s" % (self.directory, m_param)
         (_,_)= sumolib.system.system(cmd,
                                      True, False,
@@ -273,6 +284,7 @@ class Repo(object):
         self.local_changes= False
     def push(self):
         """push all changes changes."""
+        assert_hg()
         cmd="hg push -R %s %s" % (self.directory, self.remote_url)
         (_,_)= sumolib.system.system(cmd,
                                      True, False,
@@ -280,6 +292,7 @@ class Repo(object):
     def pull_merge(self):
         """pull changes and try to merge."""
         # use "-u" to update to head:
+        assert_hg()
         cmd="hg pull -q -R %s -u --config ui.merge=internal:merge %s" % \
                 (self.directory, self.remote_url)
         stderr= None

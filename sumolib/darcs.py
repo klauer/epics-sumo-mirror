@@ -22,6 +22,10 @@ assert __version__==sumolib.system.__version__
 # on certain parts of the output of darcs.
 os.environ["DARCS_DONT_COLOR"]= "1"
 
+def assert_darcs():
+    """ensure that darcs exists."""
+    sumolib.system.test_program("darcs")
+
 class Repo(object):
     """represent a darcs repository."""
     # pylint: disable=R0902
@@ -29,6 +33,7 @@ class Repo(object):
     rx_darcs_repo= re.compile(r'^\s*Default Remote:\s*(.*)')
     def _default_repo(self):
         """return the default repo."""
+        assert_darcs()
         try:
             (reply,_)= sumolib.system.system(\
                                     "darcs show repo --repodir %s" % \
@@ -50,6 +55,7 @@ class Repo(object):
             return
         if patcher is not None:
             default_repo= patcher.apply(default_repo)
+        assert_darcs()
         cmd= "darcs pull '%s' --repodir %s --dry-run" % \
                  (default_repo, self.directory)
         try:
@@ -67,6 +73,7 @@ class Repo(object):
         Does basically "darcs whatsnew". All lines that match the matcher
         object are ignored. The matcher parameter may be <None>.
         """
+        assert_darcs()
         cmd= "darcs whatsnew -s --repodir %s" % self.directory
         (reply,_,rc)= sumolib.system.system_rc(cmd, True, False,
                                                self.verbose, self.dry_run)
@@ -92,6 +99,7 @@ class Repo(object):
         if self.remote_url is None:
             raise AssertionError("cannot compute local patches without "
                                  "a reachable remote repository.")
+        assert_darcs()
         cmd= "darcs push --repodir %s --dry-run" % self.directory
         (reply,_)= sumolib.system.system(cmd, True, False,
                                          self.verbose, self.dry_run)
@@ -107,6 +115,7 @@ class Repo(object):
 
         Returns the found tag or None if no tag on top was found.
         """
+        assert_darcs()
         cmd= "darcs changes -a --last 1 --repodir %s" % self.directory
         (reply,_)= sumolib.system.system(cmd, True, False,
                                          self.verbose, self.dry_run)
@@ -226,6 +235,7 @@ class Repo(object):
     def checkout(spec, destdir, verbose, dry_run):
         """spec must be a dictionary with "url" and "tag" (optional).
         """
+        assert_darcs()
         cmd_l= ["darcs", "get"]
         url= spec.get("url")
         if url is None:
@@ -244,18 +254,21 @@ class Repo(object):
             m_param=""
         else:
             m_param="-m '%s'" % logmessage
+        assert_darcs()
         cmd="darcs record --repodir %s -a %s" % (self.directory, m_param)
         (_,_)= sumolib.system.system(cmd, True, False,
                                      self.verbose, self.dry_run)
         self.local_changes= False
     def push(self):
         """push all changes changes."""
+        assert_darcs()
         cmd="darcs push --repodir %s -a %s" % (self.directory,
                                                self.remote_url)
         (_,_)= sumolib.system.system(cmd, True, False,
                                      self.verbose, self.dry_run)
     def pull_merge(self):
         """pull changes and try to merge."""
+        assert_darcs()
         cmd="darcs pull --repodir %s -q -a %s" % (self.directory,
                                                   self.remote_url)
         (stdout,_)= sumolib.system.system(cmd, True, False,
