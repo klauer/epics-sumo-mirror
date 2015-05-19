@@ -240,12 +240,14 @@ class OptionSpecs(object):
     def completion_options(self, attribute, word_option, new_option):
         """define the special completion options.
 
-        word_option: complete the last argument further
-        new_option : complete a new argument
-        attribute  : the name of the attribute in "Options" that is set
-                       when completion is requested.
-                       The flag will have the value "word" or "new" or
-                       <None>.
+        word_option:
+            complete the last argument further
+        new_option :
+            complete a new argument
+        attribute  :
+            the name of the attribute in "Options" that is set when completion
+            is requested. The flag will have the value "word" or "new" or
+            <None>.
         """
         self.complete_new_option = new_option
         self.complete_word_option= word_option

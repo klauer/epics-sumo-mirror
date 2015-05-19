@@ -89,6 +89,7 @@ def json_str(var):
     """convert a variable to JSON format.
 
     Here is an example:
+
     >>> var= {"key":[1,2,3], "key2":"val", "key3":{"A":1,"B":2}}
     >>> print json_str(var)
     {
@@ -123,6 +124,7 @@ def dump(var):
     """Dump a variable in JSON format.
 
     Here is an example:
+
     >>> var= {"key":[1,2,3], "key2":"val", "key3":{"A":1,"B":2}}
     >>> dump(var)
     {

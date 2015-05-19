@@ -547,10 +547,11 @@ class DB(sumolib.JSON.Container):
 
         modulespecs must be a sumolib.ModuleSpec.Specs object.
 
-        convert modulespecs to a sets dict:
-        { modulename1 : set(version1,version2),
-          modulename2 : set(version1,version2),
-        }
+        convert modulespecs to a sets dict::
+
+          { modulename1 : set(version1,version2),
+            modulename2 : set(version1,version2),
+          }
 
         """
         if not isinstance(modulespecs, sumolib.ModuleSpec.Specs):
@@ -580,10 +581,11 @@ class DB(sumolib.JSON.Container):
 
         A sets dict has this form:
 
-        convert modulespecs to a sets dict:
-        { modulename1 : set(version1,version2),
-          modulename2 : set(version1,version2),
-        }
+        convert modulespecs to a sets dict::
+
+          { modulename1 : set(version1,version2),
+            modulename2 : set(version1,version2),
+          }
 
         For each dependency that is missing, this program creates a new entry
         in the sets dict which contains all possible versions for the missing

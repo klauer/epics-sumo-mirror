@@ -393,15 +393,17 @@ class BuildCache(sumolib.JSON.Container):
     """Detailed dependency information.
 
     Taken from sumo-scan and from the build database.
+    Datastructure::
 
-    { "modulename": { "versionname": { "depmodule" :
-                                       {
-                                         "depvers1": state,
-                                         "depvers2": state
+      { "modulename": { "versionname": { "depmodule" :
+                                         {
+                                           "depvers1": state,
+                                           "depvers2": state
+                                         }
                                        }
-                                     }
-                    }
-    }
+                      }
+      }
+
     """
     def __init__(self, dict_= None, lock_timeout= None):
         """create the object."""
