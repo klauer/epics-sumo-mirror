@@ -140,7 +140,7 @@ def version(module_par_name, ver, result):
     return [v for v in vers if v.startswith(ver)]
 
 def moduleversion(module_, dummy):
-    """try to give a sensible completion list to a module_.
+    """try to give a sensible completion list to a module.
     """
     # pylint: disable=R0911
     #                          Too many return statements

@@ -363,8 +363,8 @@ def single_key_item(dict_):
     k= single_key(dict_)
     return (k, dict_[k])
 
-def dict_update(dict_, other, keylist= None):
-    """update dict_ with other but do not change existing values.
+def dict_update(mydict, other, keylist= None):
+    """update mydict with other but do not change existing values.
 
     If keylist is given, update only these keys.
     """
@@ -372,9 +372,9 @@ def dict_update(dict_, other, keylist= None):
         keylist= other.keys()
     for k in keylist:
         v= other[k]
-        old_v= dict_.get(k)
+        old_v= mydict.get(k)
         if old_v is None:
-            dict_[k]= v
+            mydict[k]= v
             continue
         if old_v==v:
             continue

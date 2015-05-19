@@ -293,10 +293,11 @@ class Specs(object):
     def from_strings(cls, specs, builddb_fn):
         """scan a list of module specification strings.
 
-        specs:  list of module specification strings
-        builddb_fn: a function that for builddb_fn(buildtag) returns
-                builddb.module_specs(buildtag), only needed for
-                :build:buildtag.
+        specs:
+            list of module specification strings
+        builddb_fn:
+            a function that for builddb_fn(buildtag) returns
+            builddb.module_specs(buildtag), only needed for :build:buildtag.
 
         returns a new Specs object.
 

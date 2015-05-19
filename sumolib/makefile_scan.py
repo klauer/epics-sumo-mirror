@@ -94,18 +94,26 @@ def scan(filenames, external_definitions= None, pre= None,
     are resolved meaning that all variables that are used in the values
     of definitions are replaces with their values.
 
-    parameters:
-      filenames  - a single filename (string) or a list of filenames
-                   (list of strings)
-      external_definitions -
-                   A dict with variable settings that are pre-defined.
-      pre        - None or a dict. For consecutive calls of this function
-                   providing an initially empty dictionary here speeds up calls
-                   by a factor of 2.
-      warnings   - print a warning when a line cannot be parsed
-      verbose    - if True, print command calls to the console
-      dry_run    - if True, only print command calls to the console, do
-                   not return anything.
+    filenames
+        a single filename (string) or a list of filenames (list of strings)
+
+    external_definitions
+        A dict with variable settings that are pre-defined.
+
+    pre
+        None or a dict. For consecutive calls of this function providing an
+        initially empty dictionary here speeds up calls by a factor of 2.
+
+    warnings
+        print a warning when a line cannot be parsed
+
+    verbose
+        if True, print command calls to the console
+
+    dry_run
+        if True, only print command calls to the console, do not return
+        anything.
+
     """
     # pylint: disable=R0913
     #                          Too many arguments
