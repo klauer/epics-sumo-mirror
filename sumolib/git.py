@@ -26,6 +26,10 @@ assert __version__==sumolib.utils.__version__
 # Repo class
 # -----------------------------------------------
 
+def assert_git():
+    """ensure that git exists."""
+    sumolib.system.test_program("git")
+
 class Repo(object):
     """represent a git repository."""
     # pylint: disable=R0902
@@ -38,6 +42,7 @@ class Repo(object):
         Note that "git remote show origin" tries to contact the remote
         repository and fails if the repository cannot be reached.
         """
+        assert_git()
         try:
             (reply,_)= sumolib.system.system(\
                              "git -C %s remote show origin" % self.directory,
@@ -62,6 +67,7 @@ class Repo(object):
         Does basically "git status". All lines that match the matcher
         object are ignored. The matcher parameter may be <None>.
         """
+        assert_git()
         cmd= "git -C %s status --porcelain" % self.directory
         (reply,_)= sumolib.system.system(cmd, True, False,
                                          self.verbose, self.dry_run)
@@ -87,6 +93,7 @@ class Repo(object):
         if self.remote_url is None:
             raise AssertionError("cannot compute local patches without "
                                  "a reachable remote repository.")
+        assert_git()
         cmd= "git -C %s log origin..HEAD" % self.directory
         (reply,_)= sumolib.system.system(cmd,
                                          True, False,
@@ -109,6 +116,7 @@ class Repo(object):
         is on top this will return the hash key of the tag, not of the newest
         patch.
         """
+        assert_git()
         (reply,_)= sumolib.system.system(\
                 "git -C %s rev-parse --short HEAD" % self.directory,
                 True, False,
@@ -121,6 +129,7 @@ class Repo(object):
         Returns the found tag or None if no tag on top was found.
         """
         curr_rev= self.current_revision
+        assert_git()
         cmd= "git -C %s tag --points-at %s" % (self.directory, curr_rev)
         (reply,_)= sumolib.system.system(cmd, True, False,
                                          self.verbose, self.dry_run)
@@ -254,6 +263,7 @@ class Repo(object):
         url= spec.get("url")
         if url is None:
             raise ValueError("spec '%s' has no url" % repr(spec))
+        assert_git()
         cmd= "git clone -q %s %s" % (url, destdir)
         tag= spec.get("tag")
         rev= spec.get("rev")
@@ -287,6 +297,7 @@ class Repo(object):
             m_param=""
         else:
             m_param="-m '%s'" % logmessage
+        assert_git()
         cmd="git -C %s commit -a -q %s" % (self.directory, m_param)
         (_,_)= sumolib.system.system(cmd,
                                      True, False,
@@ -294,12 +305,14 @@ class Repo(object):
         self.local_changes= False
     def push(self):
         """push all changes changes."""
+        assert_git()
         cmd="git -C %s push -q %s" % (self.directory, self.remote_url)
         (_,_)= sumolib.system.system(cmd,
                                      True, False,
                                      self.verbose, self.dry_run)
     def pull_merge(self):
         """pull changes and try to merge."""
+        assert_git()
         cmd="git -C %s fetch %s -q" % (self.directory, self.remote_url)
         (_,_)= sumolib.system.system(cmd,
                                      True, False,

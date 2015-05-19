@@ -65,6 +65,21 @@ def system(cmd, catch_stdout, catch_stderr, verbose, dry_run):
                           "cmd \"%s\", rc %d" % (cmd, rc))
     return (child_stdout, child_stderr)
 
+program_tests= set()
+
+def test_program(cmd):
+    """test if a program exists."""
+    if cmd in program_tests:
+        # already checked
+        return
+    try:
+        system(cmd+" --version", True, True, False, False)
+    except IOError, e:
+        if "not found" in str(e):
+            raise IOError("Error, %s: command not found" % cmd)
+        raise e
+    program_tests.add(cmd)
+
 def _test():
     """perform internal tests."""
     import doctest
