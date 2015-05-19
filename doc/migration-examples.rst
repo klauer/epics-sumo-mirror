@@ -1,5 +1,5 @@
-Migration examples
-==================
+Migrating supports and applications
+===================================
 
 Here are some examples on how to start using sumo when you already have a large
 installation of support modules and applications.

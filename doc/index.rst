@@ -84,7 +84,7 @@ License and copyright
 
 Copyright (c) 2015 by `Helmholtz-Zentrum Berlin <https://www.helmholtz-berlin.de>`_.
 
-This software of this project can be used under the GPL v.3, see :doc:`license`.
+This software of this project can be used under GPL v.3, see :doc:`license`.
 
 Download
 ========
