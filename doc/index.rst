@@ -12,7 +12,7 @@ Welcome to SUMO documentation!
 ==========================================================
 
 A SUpport MOdule manager for EPICS
-----------------------------------
+==================================
 
 The support module manager sumo is a program to build consistent sets of 
 `EPICS <http://www.aps.anl.gov/epics>`_ support modules and use them in 
@@ -42,7 +42,27 @@ See :doc:`introduction` for more information.
 
 :Author: Goetz Pfeiffer <Goetz.Pfeiffer@helmholtz-berlin.de>
 
-Contents:
+Documentation
+=============
+
+Reference documents
+-------------------
+
+- :doc:`reference-sumo`
+- :doc:`reference-sumo-scan`
+- :doc:`configuration-files`
+- :doc:`modulespecs`
+
+Use cases
+---------
+
+- :doc:`app-usage`
+- :doc:`example-sumo-build-try`
+- :doc:`dev-usage`
+- :doc:`migration-examples`
+
+Full list of documents
+----------------------
 
 .. toctree::
    :maxdepth: 1
@@ -55,22 +75,25 @@ Contents:
    reference-sumo
    app-usage
    dev-usage
+   example-sumo-build-try
    migration-examples
    glossary
 
-License
-=======
+License and copyright
+=====================
 
-This software of this project can be used unter the GPL v.3, see :doc:`license`.
+Copyright (c) 2015 by `Helmholtz-Zentrum Berlin <https://www.helmholtz-berlin.de>`_.
+
+This software of this project can be used under the GPL v.3, see :doc:`license`.
 
 Download
 ========
 
 You can download packages of the software here:
 
-* `latest version, tar.gz file <http://www-csr.bessy.de/control/sumo/sumo-dist/sumo.tar.gz>`_
-* `latest version, zip file <http://www-csr.bessy.de/control/sumo/sumo-dist/sumo.zip>`_
-* `older versions <http://www-csr.bessy.de/control/sumo/sumo-dist>`_
+* `latest version, tar.gz file <http://downloads.sourceforge.net/project/epics-sumo/sumo.tar.gz>`_
+* `latest version, zip file <http://downloads.sourceforge.net/project/epics-sumo/sumo.zip>`_
+* `older versions <https://sourceforge.net/projects/epics-sumo/files/?source=navbar>`_
 
 Install
 =======
@@ -81,14 +104,22 @@ installation.
 You find more details on how to install sumo at
 :doc:`sumo-install`.
 
+Sumo at sourceforge
+===================
+
+You find the sourceforge summary page for sumo at
+`EPICS-sumo <https://sourceforge.net/projects/epics-sumo>`_.
+
+
 The source
 ==========
 
-You can browse our `repository
-<http://www-csr.bessy.de/cgi-bin/hgweb.cgi/sumo>`_ or clone it
-with::
+In order to browse the mercurial repository click on
+`repository <https://sourceforge.net/p/epics-sumo/mercurial/ci/default/tree/>`_.
 
-  hg clone http://www-csr.bessy.de/cgi-bin/hgweb.cgi/sumo
+or clone it with this command::
+
+  hg clone ssh://goetzpf@hg.code.sf.net/p/epics-sumo/mercurial sumo
 
 Indices and tables
 ==================
