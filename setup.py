@@ -130,12 +130,12 @@ data_files_list= [(doc_install_dir, ["README", "LICENSE"])]
 # add all generated html documentation to data_files_list:
 data_files_list.extend(data_statements(html_install_dir, html_build_dir))
 
-setup(name='sumo',
+setup(name='EPICS-sumo',
       version= my_version,
       description='Python support tools for EPICS software development',
       author='Goetz Pfeiffer',
       author_email='Goetz.Pfeiffer@helmholtz-berlin.de',
-      url='http://www-csr.bessy.de/control/sumo',
+      url='http://epics-sumo.sourceforge.net',
       packages=['sumolib'],
       #package_dir= {'': 'sumo'},
       #package_data={'sumo': ['data/*']},

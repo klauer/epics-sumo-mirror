@@ -8,7 +8,7 @@
    :target: http://www.helmholtz-berlin.de
 
 ==========================================================
-Welcome to SUMO documentation!
+Welcome to EPICS-sumo documentation!
 ==========================================================
 
 A SUpport MOdule manager for EPICS
