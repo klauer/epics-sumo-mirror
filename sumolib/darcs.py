@@ -9,7 +9,7 @@ import os.path
 import sumolib.system
 import os
 
-__version__="2.8.3" #VERSION#
+__version__="2.8.4" #VERSION#
 
 assert __version__==sumolib.system.__version__
 
