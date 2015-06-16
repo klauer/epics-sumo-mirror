@@ -17,7 +17,7 @@ CONFIG=$ME-CONFIG.tmp
 MODULES=$ME-MODULES.tmp
 
 # create config file:
-$SUMO --no-default-config --#preload $MODULES --alias MCAN:MULTICAN --alias ALARM:BSPDEP_ALARM --buildtag-stem MYAPP --dbdir . --extra "extra line" --makeopts "-sj" --progress --readonly --scandb SCAN --builddir /supports --verbose config make $CONFIG
+$SUMO --no-default-config --#preload $MODULES --alias MCAN:MULTICAN --alias ALARM:BSPDEP_ALARM --buildtag-stem MYAPP --dbdir . --extra "extra line" --makeflags "-sj" --progress --readonly --scandb SCAN --builddir /supports --verbose config make $CONFIG
 
 echo "generated config file:"
 cat $CONFIG
