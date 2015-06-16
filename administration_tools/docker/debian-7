@@ -1,0 +1,9 @@
+FROM debian:7.8
+MAINTAINER Goetz Pfeiffer <goetz.pfeiffer@helmholtz-berlin.de>
+
+# first do a system update:
+RUN apt-get update
+
+# install python and stdeb:
+RUN apt-get install -y python python-stdeb
+

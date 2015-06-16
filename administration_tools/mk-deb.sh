@@ -18,10 +18,9 @@ else
     cd ..
 fi
 
-echo "creating rpm package..."
-
-python setup.py bdist_rpm
+echo "creating debian package..."
+python setup.py --command-packages=stdeb.command bdist_deb
 if [ $docker = "yes" ]; then
-    cp dist/*.rpm /root/dist 
-    chmod 644 /root/dist/*.rpm
+    cp deb_dist/*.deb /root/dist 
+    chmod 644 /root/dist/*.deb
 fi

@@ -24,3 +24,60 @@ hg qfinish -a
 hg tag <VERSION>
 hg push
 
+=============================
+
+Explanation of scripts:
+
+
+-----------------------------
+Patch the python interpreter in scripts to "python2.5", only needed on our
+development host aragon here at the hzb:
+
+patch-python-2.5.sh     : patch interpreter to "python2.5"
+unpatch-python-2.5.sh   : patch interpreter to "python"
+
+-----------------------------
+Sourceforge administration:
+
+sourceforge-push.sh             : push patches to mercurial repository at
+                                  sourceforge
+sourceforge-shell.sh            : open an interactive shell at sourceforge
+sourceforge-upload-distfiles.sh : upload files from "dist" directory to 
+                                  sourceforge
+sourceforge-upload-html.sh      : upload html documentation to sourceforge
+
+-----------------------------
+Version handling:
+
+check-version.sh    : check if version numbers are consistent
+show-version.sh     : show version numbers in all scripts and modules
+new-version.sh      : create a new version (see "Steps to create a new release"
+                      in this file)
+-----------------------------
+Documentation:
+
+doc-rebuild.sh      : rebuild the html documentation
+
+-----------------------------
+Create distribution files:
+
+mk-dist.sh          : create distribution (*.tar.gz) files
+cleanup-distdirs.sh : clean the distribution directory
+mk-rpm.sh           : create an rpm file (works only on a fedora system)
+mk-deb.sh           : create a debian file, should be used ion a debian system
+                      or a debian docker container.
+
+-----------------------------
+Docker support:
+
+docker          : the directory with the docker files
+docker-build.sh : build docker debian containers needed for mk-xxx.sh scripts
+docker-run.sh   : run a docker container
+mk-deb.sh       : create debian packages, should be run within the
+                  debian docker container
+
+-----------------------------
+2to3.sh                : experimental script to convert to python3
+
+-----------------------------
+redirect.html          : html redirection file for the old webserver
