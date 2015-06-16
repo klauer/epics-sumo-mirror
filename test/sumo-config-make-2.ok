@@ -14,7 +14,7 @@ generated config file:
     "extra": [
         "extra line"
     ],
-    "makeopts": [
+    "makeflags": [
         "-sj"
     ],
     "progress": true,

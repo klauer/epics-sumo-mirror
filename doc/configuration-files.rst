@@ -32,7 +32,7 @@ Here is an example of such a file::
 
   {
       "dbdir": "/opt/Epics/sumo/database",
-      "makeopts": [
+      "makeflags": [
           "-s"
       ],
       "builddir": "/opt/Epics/sumo/build"
@@ -237,7 +237,7 @@ extra
   files,
   for details see :ref:`sumo options <reference-sumo-Options>`.
 
-makeopts
+makeflags
   A list of strings that specify extra options for "make",
   for details see :ref:`sumo options <reference-sumo-Options>`.
 

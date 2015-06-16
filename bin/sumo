@@ -68,7 +68,7 @@ KNOWN_FILE_COMMANDS=set(("lock", "unlock", "edit"))
 
 KNOWN_CONFIG_OPTIONS=set(( "#preload", "#opt-preload", "#postload",
                            "#opt-postload", "alias", "buildtag-stem", "dbdir",
-                           "dbrepo", "dbrepomode", "extra", "makeopts",
+                           "dbrepo", "dbrepomode", "extra", "makeflags",
                            "module", "progress", "readonly", "scandb",
                            "dir-patch", "url-patch", "builddir",
                            "localbuilddir",
@@ -1148,11 +1148,11 @@ def create_modules(dist_dict, db, builddb, builddir, build_tag,
                       extra_lines,
                       verbose, dry_run)
 
-def simple_call_make(builddir, makefile, target, makeopts, verbose, dry_run):
+def simple_call_make(builddir, makefile, target, makeflags, verbose, dry_run):
     """simple make call."""
     # pylint: disable=R0913
     #                          Too many arguments
-    cmd="make %s -C %s -f %s %s" % (" ".join(makeopts),
+    cmd="make %s -C %s -f %s %s" % (" ".join(makeflags),
                                     builddir,
                                     makefile, target)
     try:
@@ -1172,7 +1172,7 @@ def call_make(buildtag, options):
     simple_call_make(builddir,
                      makefilename(builddir, buildtag),
                      "all",
-                     options.makeopts if options.makeopts else [],
+                     options.makeflags if options.makeflags else [],
                      options.verbose, options.dry_run)
 
     builddb= builddb_from_json_file(options.builddir,
@@ -2182,12 +2182,12 @@ def subcmd_build_remake(arguments, options):
     simple_call_make(builddir,
                      makefilename(builddir, buildtag),
                      "distclean",
-                     options.makeopts if options.makeopts else [],
+                     options.makeflags if options.makeflags else [],
                      options.verbose, options.dry_run)
     simple_call_make(builddir,
                      makefilename(builddir, buildtag),
                      "all",
-                     options.makeopts if options.makeopts else [],
+                     options.makeflags if options.makeflags else [],
                      options.verbose, options.dry_run)
     builddb= builddb_from_json_file(options.builddir,
                                     options.localbuilddir,
@@ -2885,7 +2885,7 @@ Here is an example of such a file:
 
   {
       "dbdir": "/opt/Epics/sumo/database",
-      "makeopts": [
+      "makeflags": [
           "-s"
       ],
       "builddir": "/opt/Epics/sumo/build"
@@ -2973,7 +2973,7 @@ db             [string]
 dbrepo         [string]
 dbrepomode     [string]
 extra          [list of strings]
-makeopts       [list of strings]
+makeflags      [list of strings]
 module         [list of strings]
 progress       [boolean]
 readonly       [boolean]
@@ -3327,7 +3327,7 @@ command "try" in order to create module specifications that can be used
 with command "new".  This command calls "make" and, after successful
 completion, sets the state of the build to "testing". If you want to
 skip this step, use option "--no-make". In order to provide arbitrary options
-to make use option "--makeopts". 
+to make use option "--makeflags". 
 """,
         "build remake": """
 build remake BUILDTAG
@@ -3336,7 +3336,7 @@ This command recreates a build by first calling "make distclean" and then "make
 all" with the build's makefile. If you develop a support module (see also
 "config standalone" and "config local") you want to recompile the build after
 changes in the sources. In order to provide arbitrary options
-to make use option "--makeopts". 
+to make use option "--makeflags". 
 """,
         "build find": """
 build find MODULESPECS
@@ -3601,8 +3601,8 @@ option_help_topics= {
 --no-make
     With this option, "new" does not call "make".
 """,
-        "makeopts":"""
---makeopts MAKEOPTS
+        "makeflags":"""
+--makeflags MAKEFLAGS
     Specify extra option strings for "make"You can specify more than one of
     these by repeating this option or by joining values in a single string
     separated by spaces.  A default for this option can be put in a
@@ -3877,7 +3877,7 @@ def main():
     specs.add("--no-checkout")
     specs.add("--no-make")
     # with arg_is_option we allow the option argument to start with a "-":
-    specs.add("--makeopts", arg_name= "MAKEOPTS", array= True,
+    specs.add("--makeflags", arg_name= "MAKEFLAGS", array= True,
               arg_is_option= True)
     specs.add("--readonly")
     specs.add("--nolock")
@@ -3937,7 +3937,7 @@ def main():
     # join some of the list options:
     options.alias      = sumolib.utils.opt_join(options.alias, do_sort= True)
     options.module     = sumolib.utils.opt_join(options.module)
-    options.makeopts   = sumolib.utils.opt_join(options.makeopts)
+    options.makeflags   = sumolib.utils.opt_join(options.makeflags)
 
     # ^^^ A set of all options where lists from the command line are *appended*
     # to lists from the config file. The default is that lists from the command

@@ -861,7 +861,7 @@ command "try" in order to create :term:`module` specifications that can be used
 with command "new".  This command calls "make" and, after successful
 completion, sets the state of the :term:`build` to "testing". If you want to
 skip this step, use option "--no-make". In order to provide arbitrary options
-to make use option "--makeopts". 
+to make use option "--makeflags". 
 
 build remake BUILDTAG
 :::::::::::::::::::::
@@ -870,7 +870,7 @@ This command recreates a :term:`build` by first calling "make distclean" and
 then "make all" with the build's makefile. If you develop a support
 :term:`module` (see also "config standalone" and "config local") you want to
 recompile the :term:`build` after changes in the sources. In order to provide
-arbitrary options to make use option "--makeopts". 
+arbitrary options to make use option "--makeflags". 
 
 build find MODULES
 ::::::::::::::::::
@@ -1131,7 +1131,7 @@ Here is a short overview on command line options:
     option is only here for test purposes.
 ``--no-make``
     With this option, "new" does not call "make".j
-``--makeopts MAKEOPTIONS``
+``--makeflags MAKEFLAGS``
     Specify extra option strings for make You can specify more than one of
     these by repeating this option or by joining values in a single string
     separated by spaces. A default for this option can be put in a
