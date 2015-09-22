@@ -93,7 +93,7 @@ You can download packages of the software here:
 
 * `latest version, tar.gz file <http://downloads.sourceforge.net/project/epics-sumo/sumo.tar.gz>`_
 * `latest version, zip file <http://downloads.sourceforge.net/project/epics-sumo/sumo.zip>`_
-* `older versions <https://sourceforge.net/projects/epics-sumo/files/?source=navbar>`_
+* `older versions, debian and rpm packages <https://sourceforge.net/projects/epics-sumo/files/?source=navbar>`_
 
 Install
 =======
