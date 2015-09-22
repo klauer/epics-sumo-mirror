@@ -11,20 +11,81 @@ The distribution does not contain the configuration files since you have
 to adapt them to your development host. Examples of configuration files are
 shown further below.
 
-The install script
-------------------
+Packages
+--------
 
-The sumo distribution contains the install script "setup.py". You always
-install sumo by invoking this script with some command line options. 
+Sumo is available as a debian or rpm package, as a tar.gz and zip file. How
+sumo has to be installed depends on the package format.
+
+Install from a debian package
++++++++++++++++++++++++++++++
+
+There are packages for debian 7 (wheezy) and debian 8 (jessie). In order to see
+what debian version you use enter::
+
+  lsb_release -r
+
+Simply download the debian package from 
+
+* `debian 7 packages <https://sourceforge.net/projects/epics-sumo/files/debian-7>`_
+* `debian 8 packages <https://sourceforge.net/projects/epics-sumo/files/debian-8>`_
+
+and install with::
+
+  dpkg -i <PACKAGENAME>
+
+The packages may or may not work for other debian versions, but this was not
+tested. As a last resort you may always install from source 
+(see `Install from source (tar.gz or zip file)`_).
+
+Note that you have to *configure* sumo after installing it, see 
+`The sumo configuration file`_.
+
+Install from a rpm package
+++++++++++++++++++++++++++
+
+There are packages for fedora 21 and fedora 22. In order to see
+what fedora version you use enter::
+
+  lsb_release -r
+
+Simply download the rpm package from 
+
+* `fedora 21 packages <https://sourceforge.net/projects/epics-sumo/files/fedora-21>`_
+* `fedora 22 packages <https://sourceforge.net/projects/epics-sumo/files/fedora-22>`_
+
+and install with::
+
+  rpm -ivh  <PACKAGENAME>
+
+The packages may or may not work for other fedora versions, redhat or
+scientific linux but this was not tested. As a last resort you may always
+install from source (see `Install from source (tar.gz or zip file)`_).
+
+Note that you have to *configure* sumo after installing it, see 
+`The sumo configuration file`_.
+
+Install from source (tar.gz or zip file)
+++++++++++++++++++++++++++++++++++++++++
+
+In this case download the package from 
+
+ `sumo download page <https://sourceforge.net/projects/epics-sumo/files/?source=navbar>`_
+
+unpack the tar.gz file with::
+
+  tar -xzf <PACKAGENAME>
+
+or unpack the zip file with::
+
+  unzip <PACKAGENAME>
+
+The sumo distribution contains the install script "setup.py". If you install
+sumo from source you always invoke this script with some command line options. 
 
 The following chapters are just *examples* how you could install sumo. For a
 complete list of all possibilities see 
 `Installing Python Modules <https://docs.python.org/2/install/index.html#install-index>`_.
-
-Install examples
-++++++++++++++++
-
-Here we show some ways to run the install script.
 
 Install as root to default directories
 ::::::::::::::::::::::::::::::::::::::

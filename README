@@ -9,33 +9,12 @@ Author:
 
 Documentation:
     Documentation is in the directory "doc". You can read it by entering
-    "file://<path-to-sumo>/doc/index.html" as URL in your browser.
-
-    The sources are written ReStructuredText format. docutils
-    (http://docutils.sourceforge.net/) is used to generate html
-    documentation from this format. In the source distribution, generated
-    html documentation is already included.
+    "file://<path-to-sumo>/doc/_build/index.html" as URL in your browser
+    or you read the rst source, start with doc/index.rst.
 
 Installation:
 
 You may install sumo from source:
 
-    The program uses the standard python distutils. See also
-    http://docs.python.org/install/index.html for comprehensive
-    documentation on this. If you have root permissions, you may install
-    the program with this command:
+    See doc/sumo-install.rst for details.
 
-    python setup.py install
-
-    If you want to install the program in a separate directory for testing,
-    you may execute these commands:
-    mkdir $HOME/test
-    python setup.py install --home=~/test
-    export PYTHONPATH=~/test/lib/python:$PYTHONPATH
-    export PATH=~/test/bin:$PATH
-
-Creation of a distribution tar.gz file:
-
-    Go to administration_tools and enter:
-      ./mk-dist.sh
-    The created tar and zip files can then be found in directory "dist".

@@ -89,20 +89,23 @@ This software of this project can be used under GPL v.3, see :doc:`license`.
 Download
 ========
 
-You can download packages of the software here:
+Sumo is available as a debian or rpm package, as tar.gz or zip file:
 
+* `sumo download page <https://sourceforge.net/projects/epics-sumo/files/?source=navbar>`_
+* `debian 7 packages <https://sourceforge.net/projects/epics-sumo/files/debian-7>`_
+* `debian 8 packages <https://sourceforge.net/projects/epics-sumo/files/debian-8>`_
+* `fedora 21 packages <https://sourceforge.net/projects/epics-sumo/files/fedora-21>`_
+* `fedora 22 packages <https://sourceforge.net/projects/epics-sumo/files/fedora-22>`_
 * `latest version, tar.gz file <http://downloads.sourceforge.net/project/epics-sumo/sumo.tar.gz>`_
 * `latest version, zip file <http://downloads.sourceforge.net/project/epics-sumo/sumo.zip>`_
-* `older versions, debian and rpm packages <https://sourceforge.net/projects/epics-sumo/files/?source=navbar>`_
 
 Install
 =======
 
-Sumo uses `Python Distutils <https://docs.python.org/2/distutils>`_ for
-installation. 
+You install sumo either as a debian or rpm package with your package manager or
+from source.
 
-You find more details on how to install sumo at
-:doc:`sumo-install`.
+For details on how to install sumo see :doc:`sumo-install`.
 
 Sumo at sourceforge
 ===================
