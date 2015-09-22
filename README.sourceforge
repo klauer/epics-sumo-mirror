@@ -1,0 +1,24 @@
+About:
+    sumo, the SUpport MOdule manager, is a set of tools to support software
+    development for the EPICS framework. It manages build dependencies and
+    consistent builds of the EPICS base and EPICS support modules.
+
+Author:
+    Goetz Pfeiffer <Goetz.Pfeiffer@helmholtz-berlin.de>
+
+Documentation:
+    Sumo is documented here:
+    http://epics-sumo.sourceforge.net/
+
+Installation:
+    See:
+    http://epics-sumo.sourceforge.net/sumo-install.html
+
+Files in the download area:
+    * EPICS-sumo-...zip    : sumo source as a zip file
+    * EPICS-sumo-...tar.gz : sumo source as a tar.gz file
+    * debian-7             : directory with debian-7 packages
+    * debian-8             : directory with debian-8 packages
+    * fedora-21            : directory with fedora-21 packages
+    * fedora-22            : directory with fedora-22 packages
+
