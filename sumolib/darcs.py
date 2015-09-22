@@ -61,8 +61,10 @@ class Repo(object):
         try:
             # catch_stdout= True : do not show stdout,
             # catch_stderr= True : do not show stderr:
-            (_,_)= sumolib.system.system(cmd, True, True,
-                                         self.verbose, self.dry_run)
+            # note: the following code doesn't show an error message on *any*
+            # error that occurs with the command:
+            sumolib.system.system(cmd, True, True,
+                                  self.verbose, self.dry_run)
         except IOError, _:
             # probably no darcs repo found
             return
@@ -256,16 +258,16 @@ class Repo(object):
             m_param="-m '%s'" % logmessage
         assert_darcs()
         cmd="darcs record --repodir %s -a %s" % (self.directory, m_param)
-        (_,_)= sumolib.system.system(cmd, True, False,
-                                     self.verbose, self.dry_run)
+        sumolib.system.system(cmd, True, False,
+                              self.verbose, self.dry_run)
         self.local_changes= False
     def push(self):
         """push all changes changes."""
         assert_darcs()
         cmd="darcs push --repodir %s -a %s" % (self.directory,
                                                self.remote_url)
-        (_,_)= sumolib.system.system(cmd, True, False,
-                                     self.verbose, self.dry_run)
+        sumolib.system.system(cmd, True, False,
+                              self.verbose, self.dry_run)
     def pull_merge(self):
         """pull changes and try to merge."""
         assert_darcs()
