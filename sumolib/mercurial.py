@@ -51,6 +51,8 @@ class Repo(object):
         assert_hg()
         cmd= "hg -R %s incoming %s" % \
                  (self.directory, default_repo)
+        # note: the following code doesn't show an error message on *any*
+        # error that occurs with the command:
         (_,_,rc)= sumolib.system.system_rc(cmd, True, True,
                                            self.verbose, self.dry_run)
         if rc not in (0,1):
@@ -278,17 +280,17 @@ class Repo(object):
             m_param="-m '%s'" % logmessage
         assert_hg()
         cmd="hg -R %s commit %s" % (self.directory, m_param)
-        (_,_)= sumolib.system.system(cmd,
-                                     True, False,
-                                     self.verbose, self.dry_run)
+        sumolib.system.system(cmd,
+                              True, False,
+                              self.verbose, self.dry_run)
         self.local_changes= False
     def push(self):
         """push all changes changes."""
         assert_hg()
         cmd="hg push -R %s %s" % (self.directory, self.remote_url)
-        (_,_)= sumolib.system.system(cmd,
-                                     True, False,
-                                     self.verbose, self.dry_run)
+        sumolib.system.system(cmd,
+                              True, False,
+                              self.verbose, self.dry_run)
     def pull_merge(self):
         """pull changes and try to merge."""
         # use "-u" to update to head:
@@ -296,13 +298,12 @@ class Repo(object):
         cmd="hg pull -q -R %s -u --config ui.merge=internal:merge %s" % \
                 (self.directory, self.remote_url)
         stderr= None
-        try:
-            (_,stderr)= sumolib.system.system(cmd,
-                                              False, True,
-                                              self.verbose, self.dry_run)
-        finally:
-            if stderr is not None:
-                sys.stderr.write(stderr)
+        # system_rc cannot throw an exception:
+        (_,stderr,rc)= sumolib.system.system_rc(cmd,
+                                                False, True,
+                                                self.verbose, self.dry_run)
+        if stderr is not None:
+            sys.stderr.write(stderr)
         must_merge= False
         for l in stderr.splitlines():
             if l.lower().startswith("warning: conflicts"):

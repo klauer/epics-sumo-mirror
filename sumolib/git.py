@@ -299,24 +299,24 @@ class Repo(object):
             m_param="-m '%s'" % logmessage
         assert_git()
         cmd="git -C %s commit -a -q %s" % (self.directory, m_param)
-        (_,_)= sumolib.system.system(cmd,
-                                     True, False,
-                                     self.verbose, self.dry_run)
+        sumolib.system.system(cmd,
+                              True, False,
+                              self.verbose, self.dry_run)
         self.local_changes= False
     def push(self):
         """push all changes changes."""
         assert_git()
         cmd="git -C %s push -q %s" % (self.directory, self.remote_url)
-        (_,_)= sumolib.system.system(cmd,
-                                     True, False,
-                                     self.verbose, self.dry_run)
+        sumolib.system.system(cmd,
+                              True, False,
+                              self.verbose, self.dry_run)
     def pull_merge(self):
         """pull changes and try to merge."""
         assert_git()
         cmd="git -C %s fetch %s -q" % (self.directory, self.remote_url)
-        (_,_)= sumolib.system.system(cmd,
-                                     True, False,
-                                     self.verbose, self.dry_run)
+        sumolib.system.system(cmd,
+                              True, False,
+                              self.verbose, self.dry_run)
 
         cmd="git -C %s merge FETCH_HEAD -q" % self.directory
 
