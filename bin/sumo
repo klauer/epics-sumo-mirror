@@ -322,7 +322,15 @@ def db_from_repo(options, keep_locked= False, changes_check= True,
                     options.yes):
                 sys.exit(0)
             # an empty logmessage here means that the user is asked for one:
-            mngr.commit(options.logmsg)
+            try:
+                mngr.commit(options.logmsg)
+            except IOError, e:
+                # IOError may happen for example with a merge conflict in
+                # subversion
+                if not catch_exceptions:
+                    raise
+                sys.exit(errtxt(\
+                         "Error while committing dependency database",e))
 
     try:
         mngr.prepare_read() # executes a "pull" command
@@ -357,7 +365,13 @@ def db_to_repo(options, mngr, db, command, arguments):
             msg= options.logmsg
         else:
             msg= repo_msg(command, arguments)
+    try:
         mngr.finish_write(msg)
+    except IOError, e:
+        # IOError may happen for example with a merge conflict in subversion
+        if not catch_exceptions:
+            raise
+        sys.exit(errtxt("Error while saving dependency database",e))
 
 def builddb_from_json_file(path, path_local, keep_locked= False,
                            must_exist= True):
@@ -3466,12 +3480,35 @@ option_help_topics= {
         "dbrepomode":"""
 --dbrepomode=MODE
     Specify how sumo should use the dependency database repository. There are
-    three possible values: 'get', 'pull' and 'push'. With 'get' the foreign
-    repository is cloned if the local repository does not yet exist.  With
-    'pull' sumo does a pull and merge before each read operation on the
-    database. With 'push' it additionally does a push after each modification
-    of the database. The default is 'get'. A default for this option can be put
-    in a configuration file.
+    three possible values: 'get', 'pull' and 'push'. Mode 'get' is the default.
+    The meaning depends on the used version control system (VCS), if it is
+    distributed (git,mercurial,darcs) or centralized (subversion). There are
+    three possible operations on the dependency database:
+
+      * init : create the dependency database if it doesn't exist
+      * read : read the dependency database
+      * write: write (change) the dependency database
+
+    Here is what happens during these operations depending on the mode:
+
+    mode   operation  action
+    ------------------------------------------------
+    get    init       create the repository if it doesn't exist
+           read       none
+           write      distr. VCS: commit changes
+                      centr. VCS: none
+
+    pull   init       create the repository if it doesn't exist
+           read       distr. VCS: pull
+                      centr. VCS: update 
+           write      distr. VCS: commit changes
+                      centr. VCS: none
+
+    push   init       create the repository if it doesn't exist
+           read       distr. VCS: pull
+                      centr. VCS: update 
+           write      distr. VCS: pull, commit changes, push
+                      centr. VCS: update, commit changes
 """,
         "dbrepo":"""
 --dbrepo=REPOSITORY

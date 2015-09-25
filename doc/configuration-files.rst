@@ -309,10 +309,10 @@ dbdir
   for details see :ref:`sumo options <reference-sumo-Options>`.
 dbrepo
   This defines that the directory of the dependency database file is a darcs
-  repository. You could also use mercurial or git here. The long string after
-  "``darcs``" is an *URL* that defines the location of the remote darcs
-  repository. We use the same value of "dbrepo" on other build hosts in order
-  to keep the dependency databases files on all build hosts identical.
+  repository. You could also use mercurial, git or subversion here. The long
+  string after "``darcs``" is an *URL* that defines the location of the remote
+  darcs repository. We use the same value of "dbrepo" on other build hosts in
+  order to keep the dependency databases files on all build hosts identical.
 dbrepomode
   Mode "``push``" means that before each read operation on the dependency
   database, sumo performs a "pull" and "merge" command and for all write

@@ -123,6 +123,32 @@ function MK_GIT_GENERIC {
     make -C $2 1>&2
 }
 
+function MK_SVN {
+    # $1: path
+    # $2: subdir
+    # $3: tag
+    MK_SVN_GENERIC $1 "$1/$2" $3
+}
+
+function MK_SVN_GENERIC {
+    # $1: source path 
+    # $2: destination path
+    # $3: tag
+    echo -e "\t\tprepare $2..." >&2
+    if [ ! -d `dirname $2` ]; then 
+        mkdir -p `dirname $2`
+    fi
+    if [ -z "$3" ]; then
+            url="file://$REPODIR/$1/trunk"
+    else
+            url="file://$REPODIR/$1/tags/$3"
+    fi
+    echo svn checkout $url $2 >&2
+    svn checkout $url $2 >&2
+    # create fake binary directories:
+    make -C $2 1>&2
+}
+
 function MK_TAR {
     # $1: tarfile
     # $2: destination-dir
@@ -173,9 +199,9 @@ MK_HG            support/bspDep/VMEtas 2-1 R2-1
 MK_HG_TAGLESS    support/bspDep/VMEtas 2-1-modified R2-1
 MK_TAR           support/csm/csm-4-1.tar.gz support
 MK_DARCS         support/devIocStats 3-1-9-bessy3
-MK_DARCS_TAGLESS support/ek 2-2
+MK_SVN           support/ek 2-2 R2-2
 MK_DARCS         support/genSub 1-6-1
-MK_DARCS         support/mcan 2-6-1
+MK_DARCS_TAGLESS support/mcan 2-6-1
 MK_DARCS         support/mcan 2-6-3-gp
 MK_PATH          support/misc/dbc 3-0
 MK_GIT           support/misc/debugmsg 3-0 R3-0

@@ -181,11 +181,16 @@ class Repo(object):
                  "local patches: %s" % repr(self.local_patches),
                  "tag on top: %s" % repr(self.tag_on_top) ]
         return "\n".join(lines)
-    def name(self):
+    @staticmethod
+    def name():
         """return the repo type name."""
         # pylint: disable=R0201
         #                          Method could be a function
         return "darcs"
+    @staticmethod
+    def distributed_repo():
+        """True for distributed version controls systems, False otherwise."""
+        return True
     def get_tag_on_top(self):
         """return the "tag on top" property."""
         return self.tag_on_top

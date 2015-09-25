@@ -33,7 +33,8 @@ Some of the features are:
   `EPICS <http://www.aps.anl.gov/epics>`_ support modules.
 
 - The program fetches module source code from various sources, directories, tar
-  files or version control systems (currently git, mercurial or darcs).
+  files or version control systems (currently git, mercurial, darcs and
+  subversion).
   
 - If a set of support modules is to be used in an application a RELEASE is
   generated with all the relevant paths.

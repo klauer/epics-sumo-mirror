@@ -1,29 +1,6 @@
 find mcan:
 {
     "MCAN": {
-        "R2-6-1": {
-            "aliases": {
-                "BASE": "EPICS_BASE",
-                "BSPDEP_VMETAS": "VMETAS",
-                "MISC_DBC": "DBC",
-                "MISC_DEBUGMSG": "DEBUGMSG",
-                "SOFT_DEVHWCLIENT": "DEVHWCLIENT"
-            },
-            "dependencies": [
-                "ALARM",
-                "BASE",
-                "BSPDEP_VMETAS",
-                "MISC_DBC",
-                "MISC_DEBUGMSG",
-                "SOFT_DEVHWCLIENT"
-            ],
-            "source": {
-                "darcs": {
-                    "tag": "R2-6-1",
-                    "url": "/data/repos/support/mcan"
-                }
-            }
-        },
         "R2-6-3-gp": {
             "aliases": {
                 "BASE": "EPICS_BASE",
@@ -46,14 +23,36 @@ find mcan:
                     "url": "/data/repos/support/mcan"
                 }
             }
+        },
+        "TAGLESS-2-6-1": {
+            "aliases": {
+                "BASE": "EPICS_BASE",
+                "BSPDEP_VMETAS": "VMETAS",
+                "MISC_DBC": "DBC",
+                "MISC_DEBUGMSG": "DEBUGMSG",
+                "SOFT_DEVHWCLIENT": "DEVHWCLIENT"
+            },
+            "dependencies": [
+                "ALARM",
+                "BASE",
+                "BSPDEP_VMETAS",
+                "MISC_DBC",
+                "MISC_DEBUGMSG",
+                "SOFT_DEVHWCLIENT"
+            ],
+            "source": {
+                "darcs": {
+                    "url": "/data/epics/support/mcan/2-6-1"
+                }
+            }
         }
     }
 }
 
 
 find mcan -b:
-MCAN:R2-6-1
 MCAN:R2-6-3-gp
+MCAN:TAGLESS-2-6-1
 
 find '^A' -b:
 ALARM:R3-7

@@ -70,6 +70,30 @@ Added module:
     }
 }
 
+Added module:
+{
+    "ALARM": {
+        "R3-8-1": {
+            "aliases": {
+                "BASE": "EPICS_BASE",
+                "BSPDEP_TIMER": "TIMER",
+                "MISC_DBC": "DBC"
+            },
+            "dependencies": [
+                "BASE",
+                "BSPDEP_TIMER",
+                "MISC_DBC"
+            ],
+            "source": {
+                "darcs": {
+                    "tag": "R3-8-1",
+                    "url": "/data/repos/support/alarm"
+                }
+            }
+        }
+    }
+}
+
 
 ===========================================
 Test of darcs:
@@ -137,3 +161,20 @@ Author: Homer.Simpson@burns.com
 Date:   Mon Jan 01 01:01:01 2014 +0100
 
     initial record
+
+===========================================
+Test of subversion:
+
+Logs of local repository:
+-------------------------------------------
+------------------------------------------------------------------------
+r1  | Homer.Simpson@burns.com | Mon Jan 01 01:01:01 2014 +0100 | 1 line
+
+initial commit
+------------------------------------------------------------------------
+
+Logs of central repository:
+--> With subversion the central repository has ALWAYS
+    the same set of patches as the working copy and 
+    aside from this we cannot simply show all logs of
+    the repository without a working copy.

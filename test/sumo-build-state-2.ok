@@ -7,7 +7,7 @@ BUILDS before:
             "BASE": "R3-14-12-2-1",
             "BSPDEP_TIMER": "R6-2",
             "BSPDEP_VMETAS": "R2-0",
-            "MCAN": "R2-6-1",
+            "MCAN": "TAGLESS-2-6-1",
             "MISC_DBC": "PATH-3-0",
             "MISC_DEBUGMSG": "R3-0",
             "SOFT_DEVHWCLIENT": "TAR-3-0"
@@ -28,7 +28,7 @@ BUILDS before:
             "BASE": "R3-14-12-2-1",
             "BSPDEP_TIMER": "R6-2",
             "BSPDEP_VMETAS": "R2-0",
-            "MCAN": "R2-6-1",
+            "MCAN": "TAGLESS-2-6-1",
             "MISC_DBC": "PATH-3-0",
             "MISC_DEBUGMSG": "R3-0",
             "SOFT_DEVHWCLIENT": "TAR-3-0"
@@ -47,7 +47,7 @@ BUILDS now:
             "BASE": "R3-14-12-2-1",
             "BSPDEP_TIMER": "R6-2",
             "BSPDEP_VMETAS": "R2-0",
-            "MCAN": "R2-6-1",
+            "MCAN": "TAGLESS-2-6-1",
             "MISC_DBC": "PATH-3-0",
             "MISC_DEBUGMSG": "R3-0",
             "SOFT_DEVHWCLIENT": "TAR-3-0"
@@ -68,7 +68,7 @@ BUILDS now:
             "BASE": "R3-14-12-2-1",
             "BSPDEP_TIMER": "R6-2",
             "BSPDEP_VMETAS": "R2-0",
-            "MCAN": "R2-6-1",
+            "MCAN": "TAGLESS-2-6-1",
             "MISC_DBC": "PATH-3-0",
             "MISC_DEBUGMSG": "R3-0",
             "SOFT_DEVHWCLIENT": "TAR-3-0"
@@ -89,7 +89,7 @@ BUILDS now:
             "BASE": "R3-14-12-2-1",
             "BSPDEP_TIMER": "R6-2",
             "BSPDEP_VMETAS": "R2-0",
-            "MCAN": "R2-6-1",
+            "MCAN": "TAGLESS-2-6-1",
             "MISC_DBC": "PATH-3-0",
             "MISC_DEBUGMSG": "R3-0",
             "SOFT_DEVHWCLIENT": "TAR-3-0"
@@ -110,7 +110,7 @@ BUILDS now:
             "BASE": "R3-14-12-2-1",
             "BSPDEP_TIMER": "R6-2",
             "BSPDEP_VMETAS": "R2-0",
-            "MCAN": "R2-6-1",
+            "MCAN": "TAGLESS-2-6-1",
             "MISC_DBC": "PATH-3-0",
             "MISC_DEBUGMSG": "R3-0",
             "SOFT_DEVHWCLIENT": "TAR-3-0"

@@ -28,7 +28,7 @@ Possible versions for unspecified/missing modules:
 BASE                R3-14-12-2-1
 BSPDEP_TIMER        R6-2
 BSPDEP_VMETAS       R2-0 R2-1 TAGLESS-2-1-modified
-MCAN                R2-6-1 R2-6-3-gp
+MCAN                R2-6-3-gp TAGLESS-2-6-1
 MISC_DBC            PATH-3-0
 MISC_DEBUGMSG       R3-0 R3-1
 SOFT_DEVHWCLIENT    TAR-3-0
@@ -66,8 +66,8 @@ Details on unspecified/missing modules:
                 "BSPDEP_VMETAS:R2-0": "state: stable",
                 "BSPDEP_VMETAS:R2-1": "state: not tested",
                 "BSPDEP_VMETAS:TAGLESS-2-1-modified": "state: not tested",
-                "MCAN:R2-6-1": "state: stable",
                 "MCAN:R2-6-3-gp": "state: not tested",
+                "MCAN:TAGLESS-2-6-1": "state: stable",
                 "MISC_DBC:PATH-3-0": "state: stable",
                 "MISC_DEBUGMSG:R3-0": "state: stable",
                 "MISC_DEBUGMSG:R3-1": "state: not tested",
@@ -87,31 +87,31 @@ Details on unspecified/missing modules:
         "R2-0": {
             "built": true,
             "dependents": {
-                "MCAN:R2-6-1": "state: stable",
-                "MCAN:R2-6-3-gp": "state: not tested"
+                "MCAN:R2-6-3-gp": "state: not tested",
+                "MCAN:TAGLESS-2-6-1": "state: stable"
             }
         },
         "R2-1": {
             "built": false,
             "dependents": {
-                "MCAN:R2-6-1": "state: not tested",
-                "MCAN:R2-6-3-gp": "state: not tested"
+                "MCAN:R2-6-3-gp": "state: not tested",
+                "MCAN:TAGLESS-2-6-1": "state: not tested"
             }
         },
         "TAGLESS-2-1-modified": {
             "built": false,
             "dependents": {
-                "MCAN:R2-6-1": "state: not tested",
-                "MCAN:R2-6-3-gp": "state: not tested"
+                "MCAN:R2-6-3-gp": "state: not tested",
+                "MCAN:TAGLESS-2-6-1": "state: not tested"
             }
         }
     },
     "MCAN": {
-        "R2-6-1": {
-            "built": true
-        },
         "R2-6-3-gp": {
             "built": false
+        },
+        "TAGLESS-2-6-1": {
+            "built": true
         }
     },
     "MISC_DBC": {
@@ -119,8 +119,8 @@ Details on unspecified/missing modules:
             "built": true,
             "dependents": {
                 "ALARM:R3-8-modified": "state: not tested",
-                "MCAN:R2-6-1": "state: stable",
-                "MCAN:R2-6-3-gp": "state: not tested"
+                "MCAN:R2-6-3-gp": "state: not tested",
+                "MCAN:TAGLESS-2-6-1": "state: stable"
             }
         }
     },
@@ -128,15 +128,15 @@ Details on unspecified/missing modules:
         "R3-0": {
             "built": true,
             "dependents": {
-                "MCAN:R2-6-1": "state: stable",
-                "MCAN:R2-6-3-gp": "state: not tested"
+                "MCAN:R2-6-3-gp": "state: not tested",
+                "MCAN:TAGLESS-2-6-1": "state: stable"
             }
         },
         "R3-1": {
             "built": false,
             "dependents": {
-                "MCAN:R2-6-1": "state: not tested",
-                "MCAN:R2-6-3-gp": "state: not tested"
+                "MCAN:R2-6-3-gp": "state: not tested",
+                "MCAN:TAGLESS-2-6-1": "state: not tested"
             }
         }
     },
@@ -144,8 +144,8 @@ Details on unspecified/missing modules:
         "TAR-3-0": {
             "built": true,
             "dependents": {
-                "MCAN:R2-6-1": "state: stable",
-                "MCAN:R2-6-3-gp": "state: not tested"
+                "MCAN:R2-6-3-gp": "state: not tested",
+                "MCAN:TAGLESS-2-6-1": "state: stable"
             }
         }
     }
@@ -179,8 +179,8 @@ Details on all modules:
         "R3-8-modified": {
             "built": false,
             "dependents": {
-                "MCAN:R2-6-1": "state: not tested",
-                "MCAN:R2-6-3-gp": "state: not tested"
+                "MCAN:R2-6-3-gp": "state: not tested",
+                "MCAN:TAGLESS-2-6-1": "state: not tested"
             }
         }
     },
@@ -193,8 +193,8 @@ Details on all modules:
                 "BSPDEP_VMETAS:R2-0": "state: stable",
                 "BSPDEP_VMETAS:R2-1": "state: not tested",
                 "BSPDEP_VMETAS:TAGLESS-2-1-modified": "state: not tested",
-                "MCAN:R2-6-1": "state: stable",
                 "MCAN:R2-6-3-gp": "state: not tested",
+                "MCAN:TAGLESS-2-6-1": "state: stable",
                 "MISC_DBC:PATH-3-0": "state: stable",
                 "MISC_DEBUGMSG:R3-0": "state: stable",
                 "MISC_DEBUGMSG:R3-1": "state: not tested",
@@ -214,31 +214,31 @@ Details on all modules:
         "R2-0": {
             "built": true,
             "dependents": {
-                "MCAN:R2-6-1": "state: stable",
-                "MCAN:R2-6-3-gp": "state: not tested"
+                "MCAN:R2-6-3-gp": "state: not tested",
+                "MCAN:TAGLESS-2-6-1": "state: stable"
             }
         },
         "R2-1": {
             "built": false,
             "dependents": {
-                "MCAN:R2-6-1": "state: not tested",
-                "MCAN:R2-6-3-gp": "state: not tested"
+                "MCAN:R2-6-3-gp": "state: not tested",
+                "MCAN:TAGLESS-2-6-1": "state: not tested"
             }
         },
         "TAGLESS-2-1-modified": {
             "built": false,
             "dependents": {
-                "MCAN:R2-6-1": "state: not tested",
-                "MCAN:R2-6-3-gp": "state: not tested"
+                "MCAN:R2-6-3-gp": "state: not tested",
+                "MCAN:TAGLESS-2-6-1": "state: not tested"
             }
         }
     },
     "MCAN": {
-        "R2-6-1": {
-            "built": true
-        },
         "R2-6-3-gp": {
             "built": false
+        },
+        "TAGLESS-2-6-1": {
+            "built": true
         }
     },
     "MISC_DBC": {
@@ -246,8 +246,8 @@ Details on all modules:
             "built": true,
             "dependents": {
                 "ALARM:R3-8-modified": "state: not tested",
-                "MCAN:R2-6-1": "state: stable",
-                "MCAN:R2-6-3-gp": "state: not tested"
+                "MCAN:R2-6-3-gp": "state: not tested",
+                "MCAN:TAGLESS-2-6-1": "state: stable"
             }
         }
     },
@@ -255,15 +255,15 @@ Details on all modules:
         "R3-0": {
             "built": true,
             "dependents": {
-                "MCAN:R2-6-1": "state: stable",
-                "MCAN:R2-6-3-gp": "state: not tested"
+                "MCAN:R2-6-3-gp": "state: not tested",
+                "MCAN:TAGLESS-2-6-1": "state: stable"
             }
         },
         "R3-1": {
             "built": false,
             "dependents": {
-                "MCAN:R2-6-1": "state: not tested",
-                "MCAN:R2-6-3-gp": "state: not tested"
+                "MCAN:R2-6-3-gp": "state: not tested",
+                "MCAN:TAGLESS-2-6-1": "state: not tested"
             }
         }
     },
@@ -271,8 +271,8 @@ Details on all modules:
         "TAR-3-0": {
             "built": true,
             "dependents": {
-                "MCAN:R2-6-1": "state: stable",
-                "MCAN:R2-6-3-gp": "state: not tested"
+                "MCAN:R2-6-3-gp": "state: not tested",
+                "MCAN:TAGLESS-2-6-1": "state: stable"
             }
         }
     }
@@ -324,7 +324,7 @@ Possible versions for unspecified/missing modules:
 BASE                R3-14-12-2-1
 BSPDEP_TIMER        R6-2
 BSPDEP_VMETAS       R2-0 R2-1 TAGLESS-2-1-modified
-MCAN                R2-6-1 R2-6-3-gp
+MCAN                R2-6-3-gp TAGLESS-2-6-1
 MISC_DBC            PATH-3-0
 MISC_DEBUGMSG       R3-0 R3-1
 SOFT_DEVHWCLIENT    TAR-3-0
@@ -360,8 +360,8 @@ Details on unspecified/missing modules:
                 "BSPDEP_VMETAS:R2-0": "state: stable",
                 "BSPDEP_VMETAS:R2-1": "state: not tested",
                 "BSPDEP_VMETAS:TAGLESS-2-1-modified": "state: not tested",
-                "MCAN:R2-6-1": "state: stable",
                 "MCAN:R2-6-3-gp": "state: not tested",
+                "MCAN:TAGLESS-2-6-1": "state: stable",
                 "MISC_DBC:PATH-3-0": "state: stable",
                 "MISC_DEBUGMSG:R3-0": "state: stable",
                 "MISC_DEBUGMSG:R3-1": "state: not tested",
@@ -381,31 +381,31 @@ Details on unspecified/missing modules:
         "R2-0": {
             "built": true,
             "dependents": {
-                "MCAN:R2-6-1": "state: stable",
-                "MCAN:R2-6-3-gp": "state: not tested"
+                "MCAN:R2-6-3-gp": "state: not tested",
+                "MCAN:TAGLESS-2-6-1": "state: stable"
             }
         },
         "R2-1": {
             "built": false,
             "dependents": {
-                "MCAN:R2-6-1": "state: not tested",
-                "MCAN:R2-6-3-gp": "state: not tested"
+                "MCAN:R2-6-3-gp": "state: not tested",
+                "MCAN:TAGLESS-2-6-1": "state: not tested"
             }
         },
         "TAGLESS-2-1-modified": {
             "built": false,
             "dependents": {
-                "MCAN:R2-6-1": "state: not tested",
-                "MCAN:R2-6-3-gp": "state: not tested"
+                "MCAN:R2-6-3-gp": "state: not tested",
+                "MCAN:TAGLESS-2-6-1": "state: not tested"
             }
         }
     },
     "MCAN": {
-        "R2-6-1": {
-            "built": true
-        },
         "R2-6-3-gp": {
             "built": false
+        },
+        "TAGLESS-2-6-1": {
+            "built": true
         }
     },
     "MISC_DBC": {
@@ -413,8 +413,8 @@ Details on unspecified/missing modules:
             "built": true,
             "dependents": {
                 "ALARM:R3-8-modified": "state: not tested",
-                "MCAN:R2-6-1": "state: stable",
-                "MCAN:R2-6-3-gp": "state: not tested"
+                "MCAN:R2-6-3-gp": "state: not tested",
+                "MCAN:TAGLESS-2-6-1": "state: stable"
             }
         }
     },
@@ -422,15 +422,15 @@ Details on unspecified/missing modules:
         "R3-0": {
             "built": true,
             "dependents": {
-                "MCAN:R2-6-1": "state: stable",
-                "MCAN:R2-6-3-gp": "state: not tested"
+                "MCAN:R2-6-3-gp": "state: not tested",
+                "MCAN:TAGLESS-2-6-1": "state: stable"
             }
         },
         "R3-1": {
             "built": false,
             "dependents": {
-                "MCAN:R2-6-1": "state: not tested",
-                "MCAN:R2-6-3-gp": "state: not tested"
+                "MCAN:R2-6-3-gp": "state: not tested",
+                "MCAN:TAGLESS-2-6-1": "state: not tested"
             }
         }
     },
@@ -438,8 +438,8 @@ Details on unspecified/missing modules:
         "TAR-3-0": {
             "built": true,
             "dependents": {
-                "MCAN:R2-6-1": "state: stable",
-                "MCAN:R2-6-3-gp": "state: not tested"
+                "MCAN:R2-6-3-gp": "state: not tested",
+                "MCAN:TAGLESS-2-6-1": "state: stable"
             }
         }
     }
@@ -471,8 +471,8 @@ Details on all modules:
         "R3-8-modified": {
             "built": false,
             "dependents": {
-                "MCAN:R2-6-1": "state: not tested",
-                "MCAN:R2-6-3-gp": "state: not tested"
+                "MCAN:R2-6-3-gp": "state: not tested",
+                "MCAN:TAGLESS-2-6-1": "state: not tested"
             }
         }
     },
@@ -485,8 +485,8 @@ Details on all modules:
                 "BSPDEP_VMETAS:R2-0": "state: stable",
                 "BSPDEP_VMETAS:R2-1": "state: not tested",
                 "BSPDEP_VMETAS:TAGLESS-2-1-modified": "state: not tested",
-                "MCAN:R2-6-1": "state: stable",
                 "MCAN:R2-6-3-gp": "state: not tested",
+                "MCAN:TAGLESS-2-6-1": "state: stable",
                 "MISC_DBC:PATH-3-0": "state: stable",
                 "MISC_DEBUGMSG:R3-0": "state: stable",
                 "MISC_DEBUGMSG:R3-1": "state: not tested",
@@ -506,31 +506,31 @@ Details on all modules:
         "R2-0": {
             "built": true,
             "dependents": {
-                "MCAN:R2-6-1": "state: stable",
-                "MCAN:R2-6-3-gp": "state: not tested"
+                "MCAN:R2-6-3-gp": "state: not tested",
+                "MCAN:TAGLESS-2-6-1": "state: stable"
             }
         },
         "R2-1": {
             "built": false,
             "dependents": {
-                "MCAN:R2-6-1": "state: not tested",
-                "MCAN:R2-6-3-gp": "state: not tested"
+                "MCAN:R2-6-3-gp": "state: not tested",
+                "MCAN:TAGLESS-2-6-1": "state: not tested"
             }
         },
         "TAGLESS-2-1-modified": {
             "built": false,
             "dependents": {
-                "MCAN:R2-6-1": "state: not tested",
-                "MCAN:R2-6-3-gp": "state: not tested"
+                "MCAN:R2-6-3-gp": "state: not tested",
+                "MCAN:TAGLESS-2-6-1": "state: not tested"
             }
         }
     },
     "MCAN": {
-        "R2-6-1": {
-            "built": true
-        },
         "R2-6-3-gp": {
             "built": false
+        },
+        "TAGLESS-2-6-1": {
+            "built": true
         }
     },
     "MISC_DBC": {
@@ -538,8 +538,8 @@ Details on all modules:
             "built": true,
             "dependents": {
                 "ALARM:R3-8-modified": "state: not tested",
-                "MCAN:R2-6-1": "state: stable",
-                "MCAN:R2-6-3-gp": "state: not tested"
+                "MCAN:R2-6-3-gp": "state: not tested",
+                "MCAN:TAGLESS-2-6-1": "state: stable"
             }
         }
     },
@@ -547,15 +547,15 @@ Details on all modules:
         "R3-0": {
             "built": true,
             "dependents": {
-                "MCAN:R2-6-1": "state: stable",
-                "MCAN:R2-6-3-gp": "state: not tested"
+                "MCAN:R2-6-3-gp": "state: not tested",
+                "MCAN:TAGLESS-2-6-1": "state: stable"
             }
         },
         "R3-1": {
             "built": false,
             "dependents": {
-                "MCAN:R2-6-1": "state: not tested",
-                "MCAN:R2-6-3-gp": "state: not tested"
+                "MCAN:R2-6-3-gp": "state: not tested",
+                "MCAN:TAGLESS-2-6-1": "state: not tested"
             }
         }
     },
@@ -563,8 +563,8 @@ Details on all modules:
         "TAR-3-0": {
             "built": true,
             "dependents": {
-                "MCAN:R2-6-1": "state: stable",
-                "MCAN:R2-6-3-gp": "state: not tested"
+                "MCAN:R2-6-3-gp": "state: not tested",
+                "MCAN:TAGLESS-2-6-1": "state: stable"
             }
         }
     }
@@ -623,7 +623,7 @@ Details on all modules:
         "R3-8-modified": {
             "built": false,
             "dependents": {
-                "MCAN:R2-6-1": "state: not tested"
+                "MCAN:TAGLESS-2-6-1": "state: not tested"
             }
         }
     },
@@ -634,7 +634,7 @@ Details on all modules:
                 "ALARM:R3-8-modified": "state: not tested",
                 "BSPDEP_TIMER:R6-2": "state: stable",
                 "BSPDEP_VMETAS:TAGLESS-2-1-modified": "state: not tested",
-                "MCAN:R2-6-1": "state: stable",
+                "MCAN:TAGLESS-2-6-1": "state: stable",
                 "MISC_DBC:PATH-3-0": "state: stable",
                 "MISC_DEBUGMSG:R3-0": "state: stable",
                 "SOFT_DEVHWCLIENT:TAR-3-0": "state: stable"
@@ -653,12 +653,12 @@ Details on all modules:
         "TAGLESS-2-1-modified": {
             "built": false,
             "dependents": {
-                "MCAN:R2-6-1": "state: not tested"
+                "MCAN:TAGLESS-2-6-1": "state: not tested"
             }
         }
     },
     "MCAN": {
-        "R2-6-1": {
+        "TAGLESS-2-6-1": {
             "built": true
         }
     },
@@ -667,7 +667,7 @@ Details on all modules:
             "built": true,
             "dependents": {
                 "ALARM:R3-8-modified": "state: not tested",
-                "MCAN:R2-6-1": "state: stable"
+                "MCAN:TAGLESS-2-6-1": "state: stable"
             }
         }
     },
@@ -675,7 +675,7 @@ Details on all modules:
         "R3-0": {
             "built": true,
             "dependents": {
-                "MCAN:R2-6-1": "state: stable"
+                "MCAN:TAGLESS-2-6-1": "state: stable"
             }
         }
     },
@@ -683,7 +683,7 @@ Details on all modules:
         "TAR-3-0": {
             "built": true,
             "dependents": {
-                "MCAN:R2-6-1": "state: stable"
+                "MCAN:TAGLESS-2-6-1": "state: stable"
             }
         }
     }

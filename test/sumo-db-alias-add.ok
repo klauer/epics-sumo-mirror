@@ -216,7 +216,7 @@ DB file:
         }
     },
     "EK": {
-        "TAGLESS-2-2": {
+        "R2-2": {
             "aliases": {
                 "BASE": "EPICS_BASE",
                 "MISC_DEBUGMSG": "MISC"
@@ -226,8 +226,9 @@ DB file:
                 "MISC_DEBUGMSG"
             ],
             "source": {
-                "darcs": {
-                    "url": "/data/epics/support/ek/2-2"
+                "svn": {
+                    "tag": "R2-2",
+                    "url": "file:///data/repos/support/ek"
                 }
             }
         }
@@ -249,30 +250,6 @@ DB file:
         }
     },
     "MCAN": {
-        "R2-6-1": {
-            "aliases": {
-                "ALARM": "MYALARM",
-                "BASE": "EPICS_BASE",
-                "BSPDEP_VMETAS": "VMETAS",
-                "MISC_DBC": "DBC",
-                "MISC_DEBUGMSG": "DEBUGMSG",
-                "SOFT_DEVHWCLIENT": "DEVHWCLIENT"
-            },
-            "dependencies": [
-                "ALARM",
-                "BASE",
-                "BSPDEP_VMETAS",
-                "MISC_DBC",
-                "MISC_DEBUGMSG",
-                "SOFT_DEVHWCLIENT"
-            ],
-            "source": {
-                "darcs": {
-                    "tag": "R2-6-1",
-                    "url": "/data/repos/support/mcan"
-                }
-            }
-        },
         "R2-6-3-gp": {
             "aliases": {
                 "BASE": "EPICS_BASE",
@@ -293,6 +270,29 @@ DB file:
                 "darcs": {
                     "tag": "R2-6-3-gp",
                     "url": "/data/repos/support/mcan"
+                }
+            }
+        },
+        "TAGLESS-2-6-1": {
+            "aliases": {
+                "ALARM": "MYALARM",
+                "BASE": "EPICS_BASE",
+                "BSPDEP_VMETAS": "VMETAS",
+                "MISC_DBC": "DBC",
+                "MISC_DEBUGMSG": "DEBUGMSG",
+                "SOFT_DEVHWCLIENT": "DEVHWCLIENT"
+            },
+            "dependencies": [
+                "ALARM",
+                "BASE",
+                "BSPDEP_VMETAS",
+                "MISC_DBC",
+                "MISC_DEBUGMSG",
+                "SOFT_DEVHWCLIENT"
+            ],
+            "source": {
+                "darcs": {
+                    "url": "/data/epics/support/mcan/2-6-1"
                 }
             }
         }

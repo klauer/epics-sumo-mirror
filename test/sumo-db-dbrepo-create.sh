@@ -31,8 +31,15 @@ hg commit -m 'initial record'
 git init -q
 git add DEPS.DB
 git commit -a -q -m 'initial record'
-cd ..
+
+cd .. >/dev/null && mkdir central-svn && svnadmin create --fs-type fsfs central-svn
+mkdir tmp-svn && cd tmp-svn >/dev/null
+mkdir trunk branches tags
+cp ../central/DEPS.DB trunk
+svn import -q file://$PWD_NICE/$EXAMPLEDIR/central-svn -m "initial commit"
+cd .. >/dev/null && rm -rf tmp-svn
 
 $SUMO db --dbdir local-darcs --dbrepo 'darcs central' list 
 $SUMO db --dbdir local-hg    --dbrepo 'hg central' list 
 $SUMO db --dbdir local-git   --dbrepo 'git central' list 
+$SUMO db --dbdir local-svn   --dbrepo "svn file://$PWD_NICE/$EXAMPLEDIR/central-svn/trunk" list 

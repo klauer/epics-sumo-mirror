@@ -13,8 +13,9 @@ import sumolib.patch
 import sumolib.path
 import sumolib.tar
 import sumolib.darcs
-import sumolib.mercurial # "hg"
+import sumolib.mercurial  # "hg"
 import sumolib.git
+import sumolib.subversion # "svn"
 
 __version__="2.8.4" #VERSION#
 
@@ -27,8 +28,9 @@ assert __version__==sumolib.tar.__version__
 assert __version__==sumolib.darcs.__version__
 assert __version__==sumolib.mercurial.__version__
 assert __version__==sumolib.git.__version__
+assert __version__==sumolib.subversion.__version__
 
-known_repos=set(("darcs","hg","git"))
+known_repos=set(("darcs","hg","git","svn"))
 known_no_repos= set(("path","tar"))
 known_sources= set(known_no_repos).union(known_repos)
 
@@ -67,6 +69,9 @@ def repo_from_dir(directory, hints, verbose, dry_run):
     if obj is not None:
         return obj
     obj= sumolib.git.Repo.scan_dir(directory, hints, verbose, dry_run)
+    if obj is not None:
+        return obj
+    obj= sumolib.subversion.Repo.scan_dir(directory, hints, verbose, dry_run)
     if obj is not None:
         return obj
     return
@@ -123,6 +128,8 @@ def checkout(sourcespec, destdir, verbose, dry_run):
         sumolib.mercurial.Repo.checkout(spec, destdir, verbose, dry_run)
     elif repotype == "git":
         sumolib.git.Repo.checkout(spec, destdir, verbose, dry_run)
+    elif repotype == "svn":
+        sumolib.subversion.Repo.checkout(spec, destdir, verbose, dry_run)
     elif repotype== "tar":
         sumolib.tar.Repo.checkout(spec, destdir, verbose, dry_run)
     elif repotype== "path":
@@ -352,10 +359,25 @@ class ManagedRepo(object):
 
         spec must be a dictionary with "url" and "tag" (optional).
 
+        Note: distributed VCS: are darcs,mercurial,git
+              centralized VCS: subversion
+
         mode must be "get", "pull" or "push".
-          get: only create the repo if it doesn't yet exist, nothing else
-          pull: pull and merge before every read
-          push: like pull but push after every write
+          get:
+               initial: create the repo if it doesn't yet exist,
+               reading: do not pull or update repo
+               writing: dist.VCS: no pull, commit, no push
+                        cent.VCS: no update, no commit
+          pull:
+               initial: create the repo if it doesn't yet exist,
+               reading: pull or update repo
+               writing: dist.VCS: pull, commit, no push
+                        cent.VCS: update, no commit
+          push:
+               initial: create the repo if it doesn't yet exist,
+               reading: pull or update repo
+               writing: dist.VCS: pull, commit, push
+                        cent.VCS: update, commit
 
         If sourcespec is None, create an empty object that basically
         does nothing.
@@ -431,7 +453,8 @@ class ManagedRepo(object):
             # ManagedRepo object.
             if self.mode!='get':
                 sys.stderr.write("warning: no write access to dependency "
-                                 "database, forcing dbrepomode 'get'\n")
+                                 "database repository, disabling "
+                                 "repository operations\n")
             self.sourcespec= None
             return
 
@@ -469,9 +492,13 @@ class ManagedRepo(object):
         # pylint: disable=E1103
         #                          Instance of 'Repo' has no 'pull' member
         if self.mode!='get':
+            # mode 'pull' or 'push'
             self.lock.lock()
             try:
-                self.repo_obj.pull_merge()
+                if self.repo_obj.distributed_repo():
+                    self.repo_obj.pull_merge()
+                else:
+                    self.repo_obj.update()
             finally:
                 self.lock.unlock()
     def finish_write(self, message):
@@ -484,9 +511,13 @@ class ManagedRepo(object):
         #                          Instance of 'Repo' has no '...' member
         self.lock.lock()
         try:
-            self.repo_obj.commit(message)
-            if self.mode=='push':
-                self.repo_obj.push()
+            if self.repo_obj.distributed_repo():
+                self.repo_obj.commit(message)
+                if self.mode=='push':
+                    self.repo_obj.push()
+            else:
+                if self.mode=='push':
+                    self.repo_obj.commit(message)
         finally:
             self.lock.unlock()
 
