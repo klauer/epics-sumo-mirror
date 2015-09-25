@@ -10,6 +10,7 @@ sumo build show MYAPP-001
             "BSPDEP_TIMER": "R6-2",
             "BSPDEP_VMETAS": "TAGLESS-2-1-modified",
             "CSM": "TAR-4-1",
+            "EK": "R2-2",
             "MCAN": "R2-6-3-gp",
             "MISC_DBC": "PATH-3-0",
             "MISC_DEBUGMSG": "R3-0",
@@ -28,6 +29,7 @@ sumo-build show MYAPP-002
             "BSPDEP_TIMER": "MYAPP-001",
             "BSPDEP_VMETAS": "MYAPP-001",
             "CSM": "MYAPP-001",
+            "EK": "MYAPP-001",
             "MISC_DBC": "MYAPP-001",
             "MISC_DEBUGMSG": "MYAPP-001",
             "SOFT_DEVHWCLIENT": "MYAPP-001"
@@ -38,6 +40,7 @@ sumo-build show MYAPP-002
             "BSPDEP_TIMER": "R6-2",
             "BSPDEP_VMETAS": "TAGLESS-2-1-modified",
             "CSM": "TAR-4-1",
+            "EK": "R2-2",
             "MCAN": "R2-6-3-gp",
             "MISC_DBC": "PATH-3-0",
             "MISC_DEBUGMSG": "R3-0",

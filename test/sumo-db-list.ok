@@ -59,14 +59,14 @@ list with '.':
         "R3-1-9-bessy3"
     ],
     "EK": [
-        "TAGLESS-2-2"
+        "R2-2"
     ],
     "GENSUB": [
         "R1-6-1"
     ],
     "MCAN": [
         "R2-6-3-gp",
-        "R2-6-1"
+        "TAGLESS-2-6-1"
     ],
     "MISC_DBC": [
         "PATH-3-0"

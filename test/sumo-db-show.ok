@@ -40,10 +40,10 @@ show details of all ALARM modules:
     }
 }
 
-show details of MCAN:R2-6-1:
+show details of MCAN:TAGLESS-2-6-1:
 {
     "MCAN": {
-        "R2-6-1": {
+        "TAGLESS-2-6-1": {
             "aliases": {
                 "BASE": "EPICS_BASE",
                 "BSPDEP_VMETAS": "VMETAS",
@@ -61,8 +61,7 @@ show details of MCAN:R2-6-1:
             ],
             "source": {
                 "darcs": {
-                    "tag": "R2-6-1",
-                    "url": "/data/repos/support/mcan"
+                    "url": "/data/epics/support/mcan/2-6-1"
                 }
             }
         }

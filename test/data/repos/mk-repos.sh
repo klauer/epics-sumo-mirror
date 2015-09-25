@@ -106,6 +106,42 @@ function MK_GIT
     cd $old > /dev/null
   }
 
+# create subversion repositories
+function MK_SVN
+  { 
+    old=`pwd`
+    sourcepath="$1"
+    destpath="$2"
+    tag="$3"
+    if [ ! -d $destpath ]; then
+        mkdir -p $destpath
+    fi
+    svnadmin create --fs-type fsfs $destpath
+    r_destpath=`(cd $destpath>/dev/null && pwd -P)`
+    url="file://$r_destpath"
+    cd $destpath/.. > /dev/null
+    mkdir SVNTEMP && cd SVNTEMP > /dev/null
+    mkdir trunk branches tags 
+    cp -a $sourcepath/* trunk && cd trunk > /dev/null
+    # cp $SRCDIR/svnignore .svnignore
+    if [ -n "$EPICSBASE" ]; then
+        sed -i configure/RELEASE -e "s#^\(EPICS_BASE\) *=.*#\1=$EPICSBASE#"
+        sed -i configure/RELEASE -e "s#^\(SUPPORT\) *=.*#\1=$SUPPORTDIR#"
+        sed -i configure/RELEASE -e "s#^\(EPICS_SUPPORT\) *=.*#\1=$SUPPORTDIR#"
+    fi
+    cd .. > /dev/null
+    svn import . $url -m "dummy svn commit"
+    # make the cwd a SVN working copy:
+    svn checkout --force $url .
+    # set ignore properties
+    source $SRCDIR/svnignore
+    # create a tag:
+    echo "svn copy $url/trunk $url/tags/$tag"
+    svn copy $url/trunk $url/tags/$tag -m "my tag"
+    cd ..  > /dev/null && rm -rf SVNTEMP
+    cd $old > /dev/null
+  }
+
 # create just a directory
 function MK_TAR
   { 
@@ -193,7 +229,7 @@ MK_HG    $SRCDIR/support/bspDep/VMEtas/2-0        support/bspDep/VMEtas    R2-0
 MK_HG    $SRCDIR/support/bspDep/VMEtas/2-1        support/bspDep/VMEtas    R2-1
 MK_TAR   $SRCDIR/support/csm/4-1 csm-4-1          support/csm
 MK_DARCS $SRCDIR/support/devIocStats/3-1-9-bessy3 support/devIocStats      R3-1-9-bessy3
-MK_DARCS $SRCDIR/support/ek/2-2                   support/ek               R2-2
+MK_SVN   $SRCDIR/support/ek/2-2                   support/ek               R2-2
 MK_DARCS $SRCDIR/support/genSub/1-6-1             support/genSub           R1-6-1
 MK_DARCS $SRCDIR/support/mcan/2-6-1               support/mcan             R2-6-1
 MK_DARCS $SRCDIR/support/mcan/2-6-3-gp            support/mcan             R2-6-3-gp

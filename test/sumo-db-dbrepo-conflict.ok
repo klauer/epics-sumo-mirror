@@ -16,3 +16,9 @@ Error while loading dependency database, 'hg merge' failed
 Conflict in git repo:
 ---------------------
 Error while loading dependency database, 'git pull' failed
+
+Conflict in subversion repo:
+---------------------
+svn: Commit failed (details follow):
+svn: Aborting commit: '/tmp-sumo-db-dbrepo-conflict/local-svn/DEPS.DB' remains in conflict
+Error while committing dependency database 'svn commit' failed

@@ -21,10 +21,17 @@ sumo db list ALARM without --dbrepo:
     ]
 }
 
+{
+    "ALARM": [
+        "R3-8-modified",
+        "R3-7"
+    ]
+}
+
 
 sumo db list ALARM with --dbrepo (fetch changes from central repo)
 ------------------------------------------------------------------
-warning: no write access to dependency database, forcing dbrepomode 'get'
+warning: no write access to dependency database repository, disabling repository operations
 {
     "ALARM": [
         "R3-8-modified",
@@ -32,7 +39,7 @@ warning: no write access to dependency database, forcing dbrepomode 'get'
     ]
 }
 
-warning: no write access to dependency database, forcing dbrepomode 'get'
+warning: no write access to dependency database repository, disabling repository operations
 {
     "ALARM": [
         "R3-8-modified",
@@ -40,7 +47,15 @@ warning: no write access to dependency database, forcing dbrepomode 'get'
     ]
 }
 
-warning: no write access to dependency database, forcing dbrepomode 'get'
+warning: no write access to dependency database repository, disabling repository operations
+{
+    "ALARM": [
+        "R3-8-modified",
+        "R3-7"
+    ]
+}
+
+warning: no write access to dependency database repository, disabling repository operations
 {
     "ALARM": [
         "R3-8-modified",

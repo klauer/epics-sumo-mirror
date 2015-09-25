@@ -49,16 +49,16 @@ $SUMO build --dbdir $DEPSDIR --builddir $SUPPORTDIR --detail 3 try BASE ALARM:R3
 
 echo -e "\n----------------------------"
 echo -e "\ntry with completely versioned modulelist, detail 0:\n"
-$SUMO build --dbdir $DEPSDIR --builddir $SUPPORTDIR try BASE:R3-14-12-2-1 ALARM:R3-8-modified MCAN:R2-6-1 BSPDEP_TIMER:R6-2 BSPDEP_VMETAS:TAGLESS-2-1-modified MISC_DBC:PATH-3-0 MISC_DEBUGMSG:R3-0 SOFT_DEVHWCLIENT:TAR-3-0
+$SUMO build --dbdir $DEPSDIR --builddir $SUPPORTDIR try BASE:R3-14-12-2-1 ALARM:R3-8-modified MCAN:TAGLESS-2-6-1 BSPDEP_TIMER:R6-2 BSPDEP_VMETAS:TAGLESS-2-1-modified MISC_DBC:PATH-3-0 MISC_DEBUGMSG:R3-0 SOFT_DEVHWCLIENT:TAR-3-0
 
 echo -e "\n----------------------------"
 echo -e "\ntry with completely versioned modulelist, detail 1:\n"
-$SUMO build --dbdir $DEPSDIR --builddir $SUPPORTDIR --detail 1 try BASE:R3-14-12-2-1 ALARM:R3-8-modified MCAN:R2-6-1 BSPDEP_TIMER:R6-2 BSPDEP_VMETAS:TAGLESS-2-1-modified MISC_DBC:PATH-3-0 MISC_DEBUGMSG:R3-0 SOFT_DEVHWCLIENT:TAR-3-0
+$SUMO build --dbdir $DEPSDIR --builddir $SUPPORTDIR --detail 1 try BASE:R3-14-12-2-1 ALARM:R3-8-modified MCAN:TAGLESS-2-6-1 BSPDEP_TIMER:R6-2 BSPDEP_VMETAS:TAGLESS-2-1-modified MISC_DBC:PATH-3-0 MISC_DEBUGMSG:R3-0 SOFT_DEVHWCLIENT:TAR-3-0
 
 echo -e "\n----------------------------"
 echo -e "\ntry with completely versioned modulelist, detail 2:\n"
-$SUMO build --dbdir $DEPSDIR --builddir $SUPPORTDIR --detail 2 try BASE:R3-14-12-2-1 ALARM:R3-8-modified MCAN:R2-6-1 BSPDEP_TIMER:R6-2 BSPDEP_VMETAS:TAGLESS-2-1-modified MISC_DBC:PATH-3-0 MISC_DEBUGMSG:R3-0 SOFT_DEVHWCLIENT:TAR-3-0
+$SUMO build --dbdir $DEPSDIR --builddir $SUPPORTDIR --detail 2 try BASE:R3-14-12-2-1 ALARM:R3-8-modified MCAN:TAGLESS-2-6-1 BSPDEP_TIMER:R6-2 BSPDEP_VMETAS:TAGLESS-2-1-modified MISC_DBC:PATH-3-0 MISC_DEBUGMSG:R3-0 SOFT_DEVHWCLIENT:TAR-3-0
 
 echo -e "\n----------------------------"
 echo -e "\ntry with completely versioned modulelist, detail 3:\n"
-$SUMO build --dbdir $DEPSDIR --builddir $SUPPORTDIR --detail 3 try BASE:R3-14-12-2-1 ALARM:R3-8-modified MCAN:R2-6-1 BSPDEP_TIMER:R6-2 BSPDEP_VMETAS:TAGLESS-2-1-modified MISC_DBC:PATH-3-0 MISC_DEBUGMSG:R3-0 SOFT_DEVHWCLIENT:TAR-3-0
+$SUMO build --dbdir $DEPSDIR --builddir $SUPPORTDIR --detail 3 try BASE:R3-14-12-2-1 ALARM:R3-8-modified MCAN:TAGLESS-2-6-1 BSPDEP_TIMER:R6-2 BSPDEP_VMETAS:TAGLESS-2-1-modified MISC_DBC:PATH-3-0 MISC_DEBUGMSG:R3-0 SOFT_DEVHWCLIENT:TAR-3-0

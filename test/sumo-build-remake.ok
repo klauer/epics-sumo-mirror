@@ -29,6 +29,11 @@ directory tree (without darcs, maxdepth 2)
 ./BSPDEP_VMETAS/TAGLESS-2-1-modified+MYAPP-001/Makefile
 ./DEPS.DB
 ./sumo.config
+./EK
+./EK/R2-2+MYAPP-001
+./EK/R2-2+MYAPP-001/LICENSE
+./EK/R2-2+MYAPP-001/configure
+./EK/R2-2+MYAPP-001/Makefile
 ./MISC_DBC
 ./MISC_DBC/PATH-3-0+MYAPP-001
 ./MISC_DBC/PATH-3-0+MYAPP-001/LICENSE
@@ -61,6 +66,7 @@ content of BUILDS
             "BASE": "R3-14-12-2-1",
             "BSPDEP_TIMER": "R6-2",
             "BSPDEP_VMETAS": "TAGLESS-2-1-modified",
+            "EK": "R2-2",
             "MISC_DBC": "PATH-3-0",
             "MISC_DEBUGMSG": "R3-0"
         },
@@ -85,19 +91,21 @@ distclean:
 	touch $@
 
 content of Makefile-MYAPP-001
-all: ALARM/R3-7+MYAPP-001/stamp BASE/R3-14-12-2-1+MYAPP-001/stamp BSPDEP_TIMER/R6-2+MYAPP-001/stamp BSPDEP_VMETAS/TAGLESS-2-1-modified+MYAPP-001/stamp MISC_DBC/PATH-3-0+MYAPP-001/stamp MISC_DEBUGMSG/R3-0+MYAPP-001/stamp
+all: ALARM/R3-7+MYAPP-001/stamp BASE/R3-14-12-2-1+MYAPP-001/stamp BSPDEP_TIMER/R6-2+MYAPP-001/stamp BSPDEP_VMETAS/TAGLESS-2-1-modified+MYAPP-001/stamp EK/R2-2+MYAPP-001/stamp MISC_DBC/PATH-3-0+MYAPP-001/stamp MISC_DEBUGMSG/R3-0+MYAPP-001/stamp
 
 clean:
 	-$(MAKE) -C ALARM/R3-7+MYAPP-001 clean
 	-$(MAKE) -C BASE/R3-14-12-2-1+MYAPP-001 clean
 	-$(MAKE) -C BSPDEP_TIMER/R6-2+MYAPP-001 clean
 	-$(MAKE) -C BSPDEP_VMETAS/TAGLESS-2-1-modified+MYAPP-001 clean
+	-$(MAKE) -C EK/R2-2+MYAPP-001 clean
 	-$(MAKE) -C MISC_DBC/PATH-3-0+MYAPP-001 clean
 	-$(MAKE) -C MISC_DEBUGMSG/R3-0+MYAPP-001 clean
 	rm -f ALARM/R3-7+MYAPP-001/stamp
 	rm -f BASE/R3-14-12-2-1+MYAPP-001/stamp
 	rm -f BSPDEP_TIMER/R6-2+MYAPP-001/stamp
 	rm -f BSPDEP_VMETAS/TAGLESS-2-1-modified+MYAPP-001/stamp
+	rm -f EK/R2-2+MYAPP-001/stamp
 	rm -f MISC_DBC/PATH-3-0+MYAPP-001/stamp
 	rm -f MISC_DEBUGMSG/R3-0+MYAPP-001/stamp
 
@@ -106,12 +114,14 @@ distclean:
 	-$(MAKE) -C BASE/R3-14-12-2-1+MYAPP-001 distclean
 	-$(MAKE) -C BSPDEP_TIMER/R6-2+MYAPP-001 distclean
 	-$(MAKE) -C BSPDEP_VMETAS/TAGLESS-2-1-modified+MYAPP-001 distclean
+	-$(MAKE) -C EK/R2-2+MYAPP-001 distclean
 	-$(MAKE) -C MISC_DBC/PATH-3-0+MYAPP-001 distclean
 	-$(MAKE) -C MISC_DEBUGMSG/R3-0+MYAPP-001 distclean
 	rm -f ALARM/R3-7+MYAPP-001/stamp
 	rm -f BASE/R3-14-12-2-1+MYAPP-001/stamp
 	rm -f BSPDEP_TIMER/R6-2+MYAPP-001/stamp
 	rm -f BSPDEP_VMETAS/TAGLESS-2-1-modified+MYAPP-001/stamp
+	rm -f EK/R2-2+MYAPP-001/stamp
 	rm -f MISC_DBC/PATH-3-0+MYAPP-001/stamp
 	rm -f MISC_DEBUGMSG/R3-0+MYAPP-001/stamp
 
@@ -121,6 +131,8 @@ ALARM/R3-7+MYAPP-001/stamp: BASE/R3-14-12-2-1+MYAPP-001/stamp BSPDEP_TIMER/R6-2+
 BSPDEP_TIMER/R6-2+MYAPP-001/stamp: BASE/R3-14-12-2-1+MYAPP-001/stamp
 
 BSPDEP_VMETAS/TAGLESS-2-1-modified+MYAPP-001/stamp: BASE/R3-14-12-2-1+MYAPP-001/stamp
+
+EK/R2-2+MYAPP-001/stamp: BASE/R3-14-12-2-1+MYAPP-001/stamp MISC_DEBUGMSG/R3-0+MYAPP-001/stamp
 
 MISC_DBC/PATH-3-0+MYAPP-001/stamp: BASE/R3-14-12-2-1+MYAPP-001/stamp
 

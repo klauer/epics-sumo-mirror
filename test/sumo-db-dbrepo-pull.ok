@@ -21,9 +21,24 @@ sumo db list ALARM without --dbrepo:
     ]
 }
 
+{
+    "ALARM": [
+        "R3-8-modified",
+        "R3-7"
+    ]
+}
+
 
 sumo db list ALARM with --dbrepo (fetch changes from central repo)
 ------------------------------------------------------------------
+
+{
+    "ALARM": [
+        "R3-8-modified",
+        "R3-8-1",
+        "R3-7"
+    ]
+}
 
 {
     "ALARM": [

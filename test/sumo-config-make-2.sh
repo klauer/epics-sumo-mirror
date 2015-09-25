@@ -23,7 +23,7 @@ echo "generated config file:"
 cat $CONFIG
 
 # create modules file:
-$SUMO --no-default-config -m 'MCAN:R2-6-1 ALARM:R3-7 BSPDEP_TIMER:R6-2 BSPDEP_VMETAS:R2-0 MISC_DBC:R3-0  MISC_DEBUGMSG:R3-0 SOFT_DEVHWCLIENT:R3-0' config make $MODULES
+$SUMO --no-default-config -m 'MCAN:TAGLESS-2-6-1 ALARM:R3-7 BSPDEP_TIMER:R6-2 BSPDEP_VMETAS:R2-0 MISC_DBC:R3-0  MISC_DEBUGMSG:R3-0 SOFT_DEVHWCLIENT:R3-0' config make $MODULES
 
 echo "generated modules file:"
 cat $MODULES

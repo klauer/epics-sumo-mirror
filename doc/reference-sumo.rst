@@ -175,6 +175,7 @@ found. It is a map with a single key. The key has one of the following values:
 - darcs: This specifies a *darcs repository*. 
 - hg: This specifies a *mercurial repository*. 
 - git: This specifies a *git repository*. 
+- svn This specifies a *subversion repository*. 
 
 In the following description of source data, *FILEURL* means a string that is
 either the path of a file on the local filesystem *or* an url of a file with
@@ -288,8 +289,8 @@ The key "tag" is also optional, if it is given it specifies the mercurial tag
 that is used to fetch the source. Note that "rev" and "tag" MUST NOT be given
 both.
 
-The key "url" is a darcs repository specification (see manual of mercurial for
-further information).
+The key "url" is a mercurial repository specification (see manual of mercurial
+for further information).
 
 git
 ^^^
@@ -318,8 +319,39 @@ The key "tag" is also optional, if it is given it specifies the git tag
 that is used to fetch the source. Note that "rev" and "tag" MUST NOT be given
 both.
 
-The key "url" is a darcs repository specification (see manual of git for
+The key "url" is a git repository specification (see manual of git for
 further information).
+
+svn
+^^^
+
+This is used to specify a source from a subversion repository.  
+
+The *source data* has this form:: 
+
+  {
+      "svn": {
+          "patches": PATCHFILES,
+          "rev": "REVISION",
+          "tag": "TAG",
+          "url": "REPOSITORY"
+      }
+  }
+
+The key "patches" is optional. If it is given the patches are applied to the
+source in the given order.
+
+The key "rev" is optional, if it is given it specifies the subversion revision
+that is used to fetch the source. Note that "rev" and "tag" MUST NOT be given
+both.
+
+The key "tag" is also optional, if it is given it specifies the subversion tag
+that is used to fetch the source. Note that "rev" and "tag" MUST NOT be given
+both. If "tag" is given the string "tags" and the tag name are appended to the
+repository url.
+
+The key "url" is a subversion repository specification (see manual of
+subversion for further information).
 
 The scan database
 +++++++++++++++++
@@ -1047,12 +1079,49 @@ Here is a short overview on command line options:
     A default for this option can be put in a configuration file.
 ``--dbrepomode MODE``
     Specify how sumo should use the dependency database repository. There are
-    three possible values: 'get', 'pull' and 'push'. With 'get' the foreign
-    repository is cloned if the local repository does not yet exist. With
-    'pull' sumo does a pull and merge before each read operation on the
-    database. With 'push' it additionally does a push after each modification
-    of the database. The default is 'get'." A default for this option can be
-    put in a configuration file.
+    three possible values: 'get', 'pull' and 'push'. Mode 'get' is the default.
+    The meaning depends on the used version control system (VCS), if it is
+    distributed (git,mercurial,darcs) or centralized (subversion). There are
+    three possible operations on the dependency database:
+
+      * init : create the dependency database if it doesn't exist
+      * read : read the dependency database
+      * write: write (change) the dependency database
+
+    Here is what happens during these operations depending on the mode:
+
+    +------+----------+--------------------------------------------+
+    |mode  |operation |action                                      |
+    +======+==========+============================================+
+    |get   |init      |create the repository if it doesn't exist   |
+    |      +----------+--------------------------------------------+
+    |      |read      |none                                        |
+    |      +----------+--------------------------------------------+
+    |      |write     |distr. VCS: commit changes                  |
+    |      |          +--------------------------------------------+
+    |      |          |centr. VCS: none                            |
+    +------+----------+--------------------------------------------+
+    |pull  |init      |create the repository if it doesn't exist   |
+    |      +----------+--------------------------------------------+
+    |      |read      |distr. VCS: pull                            |
+    |      |          +--------------------------------------------+
+    |      |          |centr. VCS: update                          |
+    |      +----------+--------------------------------------------+
+    |      |write     |distr. VCS: commit changes                  |
+    |      |          +--------------------------------------------+
+    |      |          |centr. VCS: none                            |
+    +------+----------+--------------------------------------------+
+    |push  |init      |create the repository if it doesn't exist   |
+    |      +----------+--------------------------------------------+
+    |      |read      |distr. VCS: pull                            |
+    |      |          +--------------------------------------------+
+    |      |          |centr. VCS: update                          |
+    |      +----------+--------------------------------------------+
+    |      |write     |distr. VCS: pull, commit changes, push      |
+    |      |          +--------------------------------------------+
+    |      |          |centr. VCS: update, commit changes          |
+    +------+----------+--------------------------------------------+
+
 ``--dbrepo REPOSITORY``
     Define a REPOSITORY for the db file. REPOSITORY must consist of 'REPOTYPE
     URL', REPOTYPE may be 'darcs', 'hg' or 'git'. Option --dbdir must specify a

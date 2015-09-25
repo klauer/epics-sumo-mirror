@@ -261,8 +261,9 @@
             }
         },
         "/data/epics/support/ek/2-2": {
-            "darcs": {
-                "url": "/data/epics/support/ek/2-2"
+            "svn": {
+                "tag": "R2-2",
+                "url": "file:///data/repos/support/ek"
             }
         },
         "/data/epics/support/genSub/1-6-1": {
@@ -273,8 +274,7 @@
         },
         "/data/epics/support/mcan/2-6-1": {
             "darcs": {
-                "tag": "R2-6-1",
-                "url": "/data/repos/support/mcan"
+                "url": "/data/epics/support/mcan/2-6-1"
             }
         },
         "/data/epics/support/mcan/2-6-3-gp": {

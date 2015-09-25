@@ -29,13 +29,13 @@ $SUMO -c sumo.config config standalone sumo
 $SUMO -c sumo.config -y db cloneversion ALARM R3-7 R3-9 darcs '*' | sed -e "s#$PWD_REAL##;s#$PWD_NICE##"
 
 # now create a new build
-$SUMO -c sumo.config --no-make build new BASE:R3-14-12-2-1 ALARM:R3-9 BSPDEP_TIMER:R6-2 MISC_DBC:PATH-3-0
+$SUMO -c sumo.config --no-make build new BASE:R3-14-12-2-1 ALARM:R3-9 EK:R2-2 BSPDEP_TIMER:R6-2 MISC_DBC:PATH-3-0 MISC_DEBUGMSG:R3-0
 
 echo -e "\ncontents of sumo.config" 
 cat sumo.config | sed -e "s#$PWD_NICE##;s#$PWD_REAL##"
 
 echo -e "\nbuild directory tree (without darcs, maxdepth 2)"
-find sumo -maxdepth 3 | grep -v '_darcs\|\.hg\(\|ignore\)\|\.git\(\|ignore\)\|\.tmp\|\.bak\|\.coverage'
+find sumo -maxdepth 3 | grep -v '_darcs\|\.hg\(\|ignore\)\|\.svn\|\.git\(\|ignore\)\|\.tmp\|\.bak\|\.coverage'
 
 echo -e "\ncontent of DEPS.DB"
 cat sumo/database/DEPS.DB | sed -e "s#$PWD_NICE##;s#$PWD_REAL##;s#\"[0-9a-f]\{12\}\"#\"ABCDABCDABCD\"#"

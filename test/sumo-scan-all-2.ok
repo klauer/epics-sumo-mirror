@@ -15,6 +15,10 @@
         "/tmp-sumo-build-new-2/CSM/TAR-4-1+MYAPP-001": {
             "EPICS_BASE": "/tmp-sumo-build-new-2/BASE/R3-14-12-2-1+BASE-001"
         },
+        "/tmp-sumo-build-new-2/EK/R2-2+MYAPP-001": {
+            "EPICS_BASE": "/tmp-sumo-build-new-2/BASE/R3-14-12-2-1+BASE-001",
+            "MISC": "/tmp-sumo-build-new-2/MISC_DEBUGMSG/R3-0+MYAPP-001"
+        },
         "/tmp-sumo-build-new-2/MCAN/R2-6-3-gp+MYAPP-001": {
             "ALARM": "/tmp-sumo-build-new-2/ALARM/R3-8-modified+MYAPP-001",
             "DBC": "/tmp-sumo-build-new-2/MISC_DBC/PATH-3-0+MYAPP-001",
@@ -57,6 +61,11 @@
         "CSM": {
             "/tmp-sumo-build-new-2/CSM": [
                 "TAR-4-1+MYAPP-001"
+            ]
+        },
+        "EK": {
+            "/tmp-sumo-build-new-2/EK": [
+                "R2-2+MYAPP-001"
             ]
         },
         "MCAN": {
@@ -107,6 +116,12 @@
         },
         "/tmp-sumo-build-new-2/CSM/TAR-4-1+MYAPP-001": {
             "path": "/tmp-sumo-build-new-2/CSM/TAR-4-1+MYAPP-001"
+        },
+        "/tmp-sumo-build-new-2/EK/R2-2+MYAPP-001": {
+            "svn": {
+                "tag": "R2-2",
+                "url": "file:///data/repos/support/ek"
+            }
         },
         "/tmp-sumo-build-new-2/MCAN/R2-6-3-gp+MYAPP-001": {
             "darcs": {
