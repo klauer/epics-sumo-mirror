@@ -77,22 +77,28 @@ class DB(sumolib.JSON.Container):
         while True:
             d= self.datadict()
             if not isinstance(d, dict):
+                diag="data is no dict"
                 break
             module= _somevalue(d)
             if not isinstance(module, dict):
+                diag="module data is no dict"
                 break
             version= _somevalue(module)
             if not isinstance(version, dict):
+                diag="module version data is no dict"
                 break
             deps= version.get("dependencies")
             if deps is not None:
                 if not isinstance(deps, list):
+                    diag="dependencies are not a list"
                     break
             src= version.get("source")
             if not src:
+                diag="source data missing"
                 break
             return
-        raise ValueError("Error, dependency data is invalid %s" % msg)
+        raise ValueError("Error, dependency data is invalid (%s) %s" % \
+                         (diag,msg))
     def __init__(self, dict_= None, lock_timeout= None):
         """create the object."""
         super(DB, self).__init__(dict_, lock_timeout)

@@ -18,6 +18,7 @@ rm -rf $EXAMPLEDIR
 mkdir $EXAMPLEDIR
 cd $EXAMPLEDIR > /dev/null
 
+# create an error by putting a BUILD.DB file to DEPS.DB:
 cat > DEPS.DB <<HEE
 {
     "MYAPP-001": {
@@ -45,7 +46,7 @@ HEE
 
 echo -e "sumo db --dbdir tmp-sumo-db-convert samples check:"
 
-$SUMO db --dbdir $DEPSDIR check
+$SUMO db --dbdir ../$DEPSDIR check
 
 echo -e "\nsumo db --dbdir $EXAMPLEDIR check:"
 
