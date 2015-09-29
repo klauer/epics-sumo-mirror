@@ -18,8 +18,6 @@ OTHERDIR=tmp-sumo-build-new
 
 rm -rf $EXAMPLEDIR
 
-echo -e "\tcopy $OTHERDIR to $MYTESTDIR..." >&2
-
 cp -a $OTHERDIR $EXAMPLEDIR
 
 cd $EXAMPLEDIR > /dev/null
@@ -32,7 +30,7 @@ rm -f *.tmp
 rm -f *.bak
 
 # use an auto generated build tag:
-$SUMO build --dbdir . --builddir . -m ':build:MYAPP-001 ALARM:R3-7' --buildtag MYAPP-002 new 1>&2 
+$SUMO build --dbdir . --builddir . -m ':build:MYAPP-001 ALARM:R3-7' --buildtag MYAPP-002 new --makeflags '-s' 2>&1 
 
 echo -e "\ndirectory tree"
 echo "> ls $EXAMPLEDIR:"

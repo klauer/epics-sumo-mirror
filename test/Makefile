@@ -21,7 +21,7 @@ CREATE_TESTS=no
 shell_tests:= $(shell cat TESTS | xargs)
 
 # *.sh are the shell scripts:
-shell_tests_sh:= $(addsuffix .tst, $(shell_tests))
+shell_tests_sh:= $(addsuffix .sh, $(shell_tests))
 
 # *.tst are pseudo files:
 shell_tests_tst:= $(addsuffix .tst, $(shell_tests))
@@ -39,16 +39,22 @@ help:
 
 # sample epics support dir must be generated
 data/epics/stamp: data/repos/stamp
+	@echo
+	@echo "================================================="
 	@echo "creating sample support dir..."
 	$(MAKE) -C $(@D)
 
 # sample repositories must be generated:
 data/repos/stamp: data/src/stamp
+	@echo
+	@echo "================================================="
 	@echo "creating sample repositories..."
 	$(MAKE) -C $(@D)
 
 # sample sources must be unpacked:
 data/src/stamp:
+	@echo
+	@echo "================================================="
 	@echo "unpacking sample sources..."
 	$(MAKE) -C $(@D)
 
@@ -74,7 +80,7 @@ shallowclean:
 	rm -rf *.bak
 
 writable:
-	if ls tmp-* > /dev/null 2>&1; then \
+	@if ls tmp-* > /dev/null 2>&1; then \
 	    chmod -R u+w tmp-* ;\
 	fi
 
@@ -94,11 +100,26 @@ $(script_tests_tst): %.tst: ../bin/%
 
 .PHONY : target_module_tests target_script_tests target_shell_tests
 
-target_module_tests: $(module_tests_tst)
+target_module_tests_msg:
+	@echo
+	@echo "================================================="
+	@echo "python module self tests"
 
-target_script_tests: $(script_tests_tst)
+target_module_tests: target_module_tests_msg $(module_tests_tst)
 
-target_shell_tests: data/epics/stamp $(shell_tests_tst)
+target_script_tests_msg:
+	@echo
+	@echo "================================================="
+	@echo "python scripts self tests"
+
+target_script_tests: target_script_tests_msg $(script_tests_tst)
+
+target_shell_tests_msg:
+	@echo
+	@echo "================================================="
+	@echo "tests of sumo-scan and sumo commands"
+
+target_shell_tests: data/epics/stamp target_shell_tests_msg $(shell_tests_tst)
 
 include deps
 
@@ -107,7 +128,7 @@ deps:
 
 # how to generate an out file:
 %.out: %.sh 
-	bash ./$< $(PYTHON) > $@
+	@bash ./$< $(PYTHON) > $@
 
 ifeq "$(CREATE_TESTS)" "yes"
 %.ok: %.out
@@ -116,5 +137,5 @@ endif
 
 # how to perform a shell test:
 $(shell_tests_tst): %.tst: %.sh %.ok %.out
-	diff $(wordlist 2, 3, $+) 
+	@diff $(wordlist 2, 3, $+) 
 
