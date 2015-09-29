@@ -69,6 +69,16 @@ distclean: clean
 clean: writable shallowclean
 	rm -rf tmp-*
 
+clean-%: 
+	if [ -d tmp-$* ]; then \
+	    chmod -R u+w tmp-$*; \
+	fi
+	rm -rf $*.out
+	rm -rf $*.tmp
+	rm -rf $*.bak
+	rm -rf tmp-$*
+
+
 # do not remove tmp-010.. since it takes relatively long to create:
 
 almostclean: writable shallowclean
