@@ -13,7 +13,6 @@ source settings.sh
 echo -e "\n-> Test sumo db list with --dbrepo (repo cloning)" >&2
 
 rm -rf $EXAMPLEDIR
-echo -e "\n\tcreating directory $EXAMPLEDIR" >&2
 mkdir -p $EXAMPLEDIR/central 
 
 OLD_DEPS=tmp-sumo-db-convert/DEPS.DB

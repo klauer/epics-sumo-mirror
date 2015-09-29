@@ -19,7 +19,6 @@ if [ -d $EXAMPLEDIR ]; then
     rm -rf $EXAMPLEDIR
 fi
 
-echo -e "\n\tcreating directory $EXAMPLEDIR" >&2
 cp -a $DEPSDIR $EXAMPLEDIR
 chmod a-w $EXAMPLEDIR
 

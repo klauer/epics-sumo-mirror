@@ -14,7 +14,7 @@ echo -e "\n-> Test sumo-scan: checkout many modules and scan the directory tree.
 echo -e "\tIf run for the first time this may take a while..." >&2
 
 if [ ! -d $EXAMPLEDIR ]; then
-    echo -e "\n\tcreating directory $EXAMPLEDIR" >&2
+    echo -e "\tcreating directory $EXAMPLEDIR" >&2
     mkdir $EXAMPLEDIR
 fi
 

@@ -13,7 +13,7 @@ source settings.sh
 echo -e "\n-> Test sumo lock" >&2
 
 rm -rf $EXAMPLEDIR
-echo -e "\n\tcreating directory $EXAMPLEDIR" >&2
+echo -e "\tcreating directory $EXAMPLEDIR" >&2
 mkdir -p $EXAMPLEDIR
 touch $EXAMPLEDIR/A
 

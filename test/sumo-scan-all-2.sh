@@ -14,5 +14,5 @@ echo -e "\n-> Test sumo-scan all with buildtree" >&2
 
 TESTDIR=tmp-sumo-build-new-2
 
-$SUMO_SCAN --ignore-changes 'configure/RELEASE' -d $TESTDIR --group-basedir `pwd -P`/$TESTDIR -p -N TOP -N SUPPORT -N EPICS_SUPPORT -N TEMPLATE_TOP all --buildtag MYAPP-001 | sed -e "s#`pwd -P`##;s#$PWD_NICE##;s#\"[0-9a-f]\{12\}\"#\"ABCDABCDABCD\"#"
+$SUMO_SCAN --ignore-changes 'configure/RELEASE' -d $TESTDIR --group-basedir `pwd -P`/$TESTDIR -N TOP -N SUPPORT -N EPICS_SUPPORT -N TEMPLATE_TOP all --buildtag MYAPP-001 | sed -e "s#`pwd -P`##;s#$PWD_NICE##;s#\"[0-9a-f]\{12\}\"#\"ABCDABCDABCD\"#"
 

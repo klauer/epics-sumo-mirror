@@ -22,12 +22,12 @@ cp ../$DEPS .
 
 $SUMO --dbdir . --builddir . config make sumo.config
 
-$SUMO -c sumo.config build  --buildtag-stem BASE --no-make new BASE:R3-14-12-2-1 1>&2 
-$SUMO -c sumo.config build  state BASE-001 stable 1>&2 
-$SUMO -c sumo.config build  --buildtag DISABLED --no-make new BASE:R3-14-12-2-1 BSPDEP_TIMER:R6-2 1>&2 
-$SUMO -c sumo.config build  state DISABLED disabled 1>&2 
-$SUMO -c sumo.config build  --buildtag-stem MYAPP --no-make new BASE:R3-14-12-2-1 ALARM:R3-8-modified EK:R2-2 MCAN:R2-6-3-gp BSPDEP_TIMER:R6-2 BSPDEP_VMETAS:TAGLESS-2-1-modified CSM:TAR-4-1 MISC_DBC:PATH-3-0 MISC_DEBUGMSG:R3-0 SOFT_DEVHWCLIENT:TAR-3-0 1>&2 
-$SUMO -c sumo.config build  state MYAPP-001 testing 1>&2 
+$SUMO -c sumo.config build  --buildtag-stem BASE --no-make new BASE:R3-14-12-2-1 2>&1 
+$SUMO -c sumo.config build  state BASE-001 stable 2>&1 
+$SUMO -c sumo.config build  --buildtag DISABLED --no-make new BASE:R3-14-12-2-1 BSPDEP_TIMER:R6-2 2>&1 
+$SUMO -c sumo.config build  state DISABLED disabled 2>&1 
+$SUMO -c sumo.config build  --buildtag-stem MYAPP --no-make new BASE:R3-14-12-2-1 ALARM:R3-8-modified EK:R2-2 MCAN:R2-6-3-gp BSPDEP_TIMER:R6-2 BSPDEP_VMETAS:TAGLESS-2-1-modified CSM:TAR-4-1 MISC_DBC:PATH-3-0 MISC_DEBUGMSG:R3-0 SOFT_DEVHWCLIENT:TAR-3-0 2>&1 
+$SUMO -c sumo.config build  state MYAPP-001 testing 2>&1 
 
 echo -e "\ndirectory tree (without darcs, maxdepth 2)"
 find . -maxdepth 3 | grep -v '_darcs\|\.hg\(\|ignore\)\|\.svn\|\.git\(\|ignore\)\|\.tmp\|\.bak\|\.coverage'

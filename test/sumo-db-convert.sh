@@ -15,7 +15,7 @@ source settings.sh
 echo -e "\n-> Test sumo db convert." >&2
 
 if [ ! -d $EXAMPLEDIR ]; then
-    echo -e "\n\tcreating directory $EXAMPLEDIR" >&2
+    echo -e "\tcreating directory $EXAMPLEDIR" >&2
     mkdir $EXAMPLEDIR
 fi
 

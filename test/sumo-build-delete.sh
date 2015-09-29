@@ -21,8 +21,6 @@ if [ -e $EXAMPLEDIR ]; then
     rm -rf $EXAMPLEDIR
 fi
 
-echo -e "\tcopy $TESTDIR to $MYTESTDIR..." >&2
-
 cp -a $TESTDIR $EXAMPLEDIR
 
 cd $EXAMPLEDIR > /dev/null
