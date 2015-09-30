@@ -471,7 +471,7 @@ Here is an example on how this file looks like::
 
 For each dependency of a module this structure contains the version of the
 dependency and a state. The state can be "stable" or "testing" or "scanned" but
-is always "scanned" if the file was generated with sumo-db.
+is always "scanned" if the file was generated with sumo db.
 
 .. _reference-sumo-The-build-database:
 

@@ -33,7 +33,9 @@ Create a "HEAD" version of a module
 -----------------------------------
 
 We now create a new entry in our local dependency database for the test version
-of module "ALARM"::
+of module "ALARM". Our version control system is darcs in this case, this could
+also be "hg", "git", "svn" or "cvs". We have to use "darcs ." in this case in
+order to create an entry in the dependency database that uses to tag::
 
   sumo db cloneversion ALARM R3-8 HEAD darcs .
 
@@ -41,6 +43,10 @@ Answer 'y' when the program asks if the changes are correct.
 
 Build the module for the first time
 -----------------------------------
+
+Note: If you have an application at hand that is used to test the support
+module it is easier to continue at `Test in an application`_. How you change
+and compile the support is described at `Change and recompile`_.
 
 We first have to see which other modules are needed by "ALARM"::
 
@@ -112,3 +118,60 @@ then create the application::
   make clean && make
 
 You can now test the support in your application.
+
+Commit the changes and define a tag
+-----------------------------------
+
+When the new version of the support is shown to work, we should first commit
+all changes in our version control system. The new version should have tag
+"R3-9" in this example.
+
+Commands for darcs::
+
+  cd sandbox/build/ALARM/HEAD+local-BL-001
+  darcs record
+  darcs tag R3-9
+  darcs push
+  
+Commands for mercurial::
+
+  cd sandbox/build/ALARM/HEAD+local-BL-001
+  hg commit
+  hg tag R3-9
+  hg push
+
+Commands for git::
+
+  cd sandbox/build/ALARM/HEAD+local-BL-001
+  git commit -a
+  git tag R3-9
+  git push
+
+Commands for subversion::
+
+  cd sandbox/build/ALARM/HEAD+local-BL-001
+  svn commit 
+  svn tag R3-9
+
+Commands for cvs::
+
+  cd sandbox/build/ALARM/HEAD+local-BL-001
+  cvs commit 
+  cvs tag R3-9
+
+Add the new support to the dependency database
+----------------------------------------------
+
+Finally we have to add the new version of the support module to the dependency
+database. 
+
+We must ensure that we do not use the sandbox this time but the global sumo
+database. This means that sumo must not load the file "sumo.config" that was
+created by the command "sumo config local". Since sumo always loads
+"sumo.config" from current working directory, we change to a different
+directory before we issue the command::
+
+  cd sandbox/database
+  sumo db cloneversion ALARM R3-8 R3-9
+
+We can now use the new version of the support in our applications.
