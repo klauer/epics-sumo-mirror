@@ -747,6 +747,7 @@ def create_source(db, modulename, versionname,
     try:
         sumolib.repos.checkout(sourcespec,
                                destdir,
+                               LOCK_TIMEOUT,
                                verbose, dry_run)
     except IOError, e:
         if not catch_exceptions:
@@ -3482,8 +3483,8 @@ option_help_topics= {
     Specify how sumo should use the dependency database repository. There are
     three possible values: 'get', 'pull' and 'push'. Mode 'get' is the default.
     The meaning depends on the used version control system (VCS), if it is
-    distributed (git,mercurial,darcs) or centralized (subversion). There are
-    three possible operations on the dependency database:
+    distributed (git,mercurial,darcs) or centralized (subversion,cvs). There
+    are three possible operations on the dependency database:
 
       * init : create the dependency database if it doesn't exist
       * read : read the dependency database

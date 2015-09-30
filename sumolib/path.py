@@ -57,7 +57,7 @@ class Repo(object):
         d= {"path": self.directory}
         return d
     @staticmethod
-    def checkout(spec, destdir, verbose, dry_run):
+    def checkout(spec, destdir, _, verbose, dry_run):
         """spec must be a string.
         """
         if not isinstance(spec, basestring):

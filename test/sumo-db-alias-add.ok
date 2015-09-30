@@ -117,9 +117,9 @@ DB file:
                 "BASE"
             ],
             "source": {
-                "darcs": {
+                "cvs": {
                     "tag": "R4-1",
-                    "url": "/data/repos/support/bspDep/cpuBoardInit"
+                    "url": "/data/repos/support/bspDep/cpuBoardInit/cpuBoardInit"
                 }
             }
         }
