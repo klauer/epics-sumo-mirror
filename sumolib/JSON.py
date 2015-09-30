@@ -19,7 +19,7 @@ import cPickle
 import tempfile
 import sumolib.lock
 
-__version__="2.8.4" #VERSION#
+__version__="2.9" #VERSION#
 
 assert __version__==sumolib.lock.__version__
 

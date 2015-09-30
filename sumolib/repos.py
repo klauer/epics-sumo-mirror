@@ -18,7 +18,7 @@ import sumolib.git
 import sumolib.subversion # "svn"
 import sumolib.cvs
 
-__version__="2.8.4" #VERSION#
+__version__="2.9" #VERSION#
 
 assert __version__==sumolib.utils.__version__
 assert __version__==sumolib.lock.__version__

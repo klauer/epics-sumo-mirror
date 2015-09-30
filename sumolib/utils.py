@@ -15,7 +15,7 @@ import os.path
 import re
 import sumolib.system
 
-__version__="2.8.4" #VERSION#
+__version__="2.9" #VERSION#
 
 _pyver= (sys.version_info[0], sys.version_info[1])
 
