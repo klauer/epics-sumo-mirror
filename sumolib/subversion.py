@@ -310,13 +310,19 @@ class Repo(object):
         self.update()
         if not logmessage:
             m_param=""
+            # if subversion starts an editor, we must not catch stdout:
+            catch_stdout= False
         else:
             m_param="-m '%s'" % logmessage
+            # with a log message provided with "-m", subversion doesn't start
+            # an editor. In order to keep it silent, we catch stdout in this
+            # case:
+            catch_stdout= True
         assert_svn()
         cmd="svn commit %s" % m_param
         cwd= sumolib.utils.changedir(self.directory)
         (_,_,rc)= sumolib.system.system_rc(cmd,
-                                           True, False,
+                                           catch_stdout, False,
                                            self.verbose, self.dry_run)
         sumolib.utils.changedir(cwd)
         if rc:

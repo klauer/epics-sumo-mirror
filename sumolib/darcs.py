@@ -259,11 +259,17 @@ class Repo(object):
         """commit changes."""
         if not logmessage:
             m_param=""
+            # if darcs starts an editor, we must not catch stdout:
+            catch_stdout= False
         else:
             m_param="-m '%s'" % logmessage
+            # with a log message provided with "-m", darcs doesn't start an
+            # editor. In order to keep it silent, we catch stdout in this case:
+            catch_stdout= True
         assert_darcs()
         cmd="darcs record --repodir %s -a %s" % (self.directory, m_param)
-        sumolib.system.system(cmd, True, False,
+        sumolib.system.system(cmd,
+                              catch_stdout, False,
                               self.verbose, self.dry_run)
         self.local_changes= False
     def push(self):
