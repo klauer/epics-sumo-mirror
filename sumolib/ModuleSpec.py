@@ -15,7 +15,7 @@ if __name__ == "__main__":
 import sumolib.utils
 import sumolib.JSON
 
-__version__="2.8.4" #VERSION#
+__version__="2.9" #VERSION#
 
 assert __version__==sumolib.utils.__version__
 assert __version__==sumolib.JSON.__version__
