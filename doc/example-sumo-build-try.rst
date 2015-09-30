@@ -246,6 +246,6 @@ The output is now::
 Since our module specifications are complete, we could now create a new build
 with::
 
-  sumo-build new
+  sumo build new
 
 
