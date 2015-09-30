@@ -95,7 +95,7 @@ env_help= os.environ.get(ENV_HELP,"")
 if env_help:
     helpoptions= [h_item.strip() for h_item in env_help.split(",")]
     if "nocache" in helpoptions:
-        sumolib.cli.CACHING_ENABLED= False
+        sumolib.complete.CACHING_ENABLED= False
     for pm in KNOWN_PAGER_MODES:
         if "pager:%s" % pm in helpoptions:
             pager_mode= pm
