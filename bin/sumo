@@ -49,35 +49,77 @@ assert __version__==sumolib.Dependencies.__version__
 assert __version__==sumolib.Builds.__version__
 assert __version__==sumolib.repos.__version__
 
-KNOWN_MAIN_COMMANDS=set(("help","lock","unlock",
-                         "config", "db","build"))
+KNOWN_MAIN_COMMANDS=set(("build",
+                         "config",
+                         "db",
+                         "help",
+                         "lock",
+                         "unlock" \
+                         ))
 
-KNOWN_CONFIG_COMMANDS=set(("list", "show", "make", "standalone", "local"))
+KNOWN_CONFIG_COMMANDS=set(("list",
+                           "local",
+                           "make",
+                           "show",
+                           "standalone" \
+                         ))
 
-KNOWN_DB_COMMANDS=set(("alias-add", "appconvert", "check", "clonemodule",
-                       "cloneversion", "convert", "convert-old",
+KNOWN_DB_COMMANDS=set(("alias-add",
+                       "appconvert",
+                       "check",
+                       "clonemodule",
+                       "cloneversion",
+                       "convert",
+                       "convert-old",
+                       "dependency-add",
+                       "dependency-delete",
                        "edit",
-                       "find", "format",
-                       "list", "merge", "dependency-add",
-                       "dependency-delete", "replaceversion", "show",
-                       "weight"))
+                       "find",
+                       "format",
+                       "list",
+                       "merge",
+                       "replaceversion",
+                       "show",
+                       "weight" \
+                     ))
 
-KNOWN_BUILD_COMMANDS=set(("delete", "find", "list",
+KNOWN_BUILD_COMMANDS=set(("delete",
+                          "find",
+                          "list",
                           "new",
                           "remake",
-                          "show", "state", "try", "use"))
+                          "show",
+                          "state",
+                          "try",
+                          "use" \
+                        ))
 
-KNOWN_CONFIG_OPTIONS=set(( "#preload", "#opt-preload", "#postload",
-                           "#opt-postload", "alias", "buildtag-stem", "dbdir",
-                           "dbrepo", "dbrepomode", "editor", "extra",
-                           "makeflags", "module", "progress", "readonly",
-                           "scandb", "dir-patch", "url-patch", "builddir",
-                           "localbuilddir",
-                           "verbose"))
+KNOWN_CONFIG_OPTIONS=set(("#preload",
+                          "#opt-preload",
+                          "#postload",
+                          "#opt-postload",
+                          "alias",
+                          "buildtag-stem",
+                          "dbdir",
+                          "dbrepo",
+                          "dbrepomode",
+                          "editor",
+                          "extra",
+                          "makeflags",
+                          "module",
+                          "progress",
+                          "readonly",
+                          "scandb",
+                          "dir-patch",
+                          "url-patch",
+                          "builddir",
+                          "localbuilddir",
+                          "verbose" \
+                        ))
 
 KNOWN_REPO_MODES=set(( "get", "pull", "push"))
 
-KNOWN_PAGER_MODES=set(("off", "on", "always"))
+KNOWN_PAGER_MODES=set(("always", "off", "on"))
 
 CONFIG_NAME="sumo.config"
 ENV_CONFIG="SUMOCONFIG"
