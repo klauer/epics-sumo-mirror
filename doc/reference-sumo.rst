@@ -1029,8 +1029,9 @@ Cache files
 +++++++++++
 
 Sumo will create cache files in your home directory to speed up command
-completion. If you don't want this set the environment variable "SUMOHELP" that
-it contains the string "nocache" like in::
+completion. These are the files ".dbcache.sumo" and ".buildcache.sumo". If you
+don't want this set the environment variable "SUMOHELP" that it contains the
+string "nocache" like in::
 
   export SUMOHELP="nocache"
 
