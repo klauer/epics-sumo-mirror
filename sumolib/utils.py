@@ -373,22 +373,6 @@ def tag2version(ver):
                 return ver
     return ver
 
-def is_standardpath(path, revision_tag):
-    """checks if path is complient to Bessy convention for support paths.
-
-    Here are some examples:
-    >>> is_standardpath("support/mcan/2-3", "R2-3")
-    True
-    >>> is_standardpath("support/mcan/2-3", "R2-4")
-    False
-    >>> is_standardpath("support/mcan/head", "R2-3")
-    False
-    >>> is_standardpath("support/mcan/2-3+001", "R2-3")
-    True
-    """
-    l= split_path(path)
-    return tag2version(l[1])==tag2version(revision_tag)
-
 # -----------------------------------------------
 # generic datastructure utilities
 # -----------------------------------------------
