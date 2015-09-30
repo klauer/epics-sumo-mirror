@@ -286,7 +286,7 @@ class Repo(object):
         assert_hg()
         cmd="hg -R %s commit %s" % (self.directory, m_param)
         sumolib.system.system(cmd,
-                              True, False,
+                              False, False,
                               self.verbose, self.dry_run)
         self.local_changes= False
     def push(self):

@@ -448,13 +448,18 @@ class Repo(object):
         self.update()
         if not logmessage:
             m_param=""
+            # if cvs starts an editor, we must not catch stdout:
+            catch_stdout= False
         else:
             m_param=" -m '%s'" % logmessage
+            # with a log message provided with "-m", cvs doesn't start an
+            # editor. In order to keep it silent, we catch stdout in this case:
+            catch_stdout= True
         cmd="cvs commit%s" % m_param
         try:
             cwd= sumolib.utils.changedir(self.directory)
             (_,stderr,rc)= sumolib.system.system_rc(cmd,
-                                                    True, True,
+                                                    catch_stdout, True,
                                                     self.verbose,
                                                     self.dry_run)
         finally:
