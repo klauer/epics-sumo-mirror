@@ -78,6 +78,7 @@ KNOWN_DB_COMMANDS=set(("alias-add",
                        "format",
                        "list",
                        "merge",
+                       "modconvert",
                        "replaceversion",
                        "show",
                        "weight" \
@@ -1588,6 +1589,51 @@ def subcmd_db_convert_old(arguments, options):
         db_to_repo(options, None, db, "convert-old", arguments)
         # ^^^ does also unlock the file
 
+def subcmd_db_modconvert(arguments, options):
+    """implement "db modconvert"."""
+    argspec= sumolib.cli.CmdSpecs()
+    argspec.add("SCANFILE", completion= sumolib.cli.complete_file)
+    argspec.add("MODULES", array= True, optional= True)
+    args= sumolib.cli.process_args(arguments, argspec, options.list)
+
+    modulespecs= []
+    if options.module:
+        modulespecs.extend(options.module)
+    if args.defined("MODULES"):
+        if "module" in options.append:
+            modulespecs.extend(args.MODULES) # pylint: disable=no-member
+        else:
+            modulespecs= args.MODULES # pylint: disable=no-member
+
+    try:
+        modulespecs_obj= sumolib.ModuleSpec.Specs.from_strings(modulespecs,\
+                                                        None)
+    except ValueError, e:
+        if not catch_exceptions:
+            raise
+        sys.exit(errtxt("",e))
+
+    scandata= sumolib.JSON.loadfile(args.SCANFILE) # pylint: disable=no-member
+    deps= scandata["dependencies"]
+    repoinfo= scandata["repos"]
+    groups= scandata["groups"]
+    (_, db)= create_database(deps, repoinfo, groups,
+                             options.dir_patch,
+                             options.url_patch)
+    if options.dump_modules:
+        dump_modules(modulespecs_obj)
+        sys.exit(0)
+    if modulespecs:
+        try:
+            db= db.partial_copy_by_modulespecs(modulespecs_obj)
+        except KeyError, e:
+            if not catch_exceptions:
+                raise
+            # note: str(e) generates a string with quotes
+            sys.exit(("Error, module %s not found in "
+                      "dependency database") % str(e))
+    db.json_print()
+
 def subcmd_db_appconvert(arguments, options):
     """implement "db appconvert"."""
     argspec= sumolib.cli.CmdSpecs()
@@ -2675,6 +2721,10 @@ def maincmd_db(commands, options):
         subcmd_db_convert_old(c_args, options)
         return
 
+    if cmd=="modconvert":
+        subcmd_db_modconvert(c_args, options)
+        return
+
     if cmd=="appconvert":
         subcmd_db_appconvert(c_args, options)
         return
@@ -3217,6 +3267,7 @@ subcommands here:
   convert      - convert a scanfile created by sumo-scan to a DB file
   convert-old  - convert DB file from old to new format
   appconvert   - convert a scanfile to a MODULES file for an application
+  modconvert   - convert a scanfile to DB file format for a list of supports
   edit         - edit the dependency file with an editor
   format       - reformat the dependency file
   weight       - set the weight factor for modules
@@ -3258,7 +3309,7 @@ known subcommands:
 db convert SCANFILE
 
 Convert SCANFILE created by "sumo-scan all" to a new dependency database. If
-SCANFILE is a dash "-" the program expects the scanfile on stdin.  Note that
+SCANFILE is a dash "-" the program expects the scanfile on stdin. Note that
 options "--dbdir" and "--scandb" are mandatory here. With "--dbdir" you specify
 the drectory where the new created dependency database file is stored, with
 "--scandb" you specify the name of the scan database file.  The scan database
@@ -3273,19 +3324,23 @@ had architecture data ("arch") for each moduleversion. In the new format this
 data is removed. Note that this command IGNORES option "--dbrepo", it directly
 operates on the dependency database file in the directory given with option
 "--dbdir".
-
-Convert a SCANFILE that was created by applying sumo-scan to an application to
-a list of aliases and modulespecs in JSON format. The result is printed to the
-console. It can be used with --config to put these in the configuration file of
-sumo.
 """,
         "db appconvert":"""
 db appconvert SCANFILE
 
 Convert a scanfile that was created by applying "sumo-scan all" to an
-application to a list of aliases and modulespecs in JSON format. The result is
-printed to the console. It can be used with --config to put these in the
-configuration file of sumo.
+application to a list of aliases and modulespecs in JSON format. If SCANFILE is
+a dash "-" the program expects the scanfile on stdin. The result is printed to
+the console. 
+""",
+        "db modconvert":"""
+db modconvert SCANFILE MODULES
+
+Convert a scanfile that was created by applying "sumo-scan all" to the
+dependency database format for all the selected modules. If SCANFILE is a dash
+"-" the program expects the scanfile on stdin. The result is printed to the
+console. This data can be added to the dependency database using the command
+"db edit".
 """,
         "db edit": """
 db edit
