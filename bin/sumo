@@ -1511,8 +1511,13 @@ def subcmd_db_convert(arguments, options):
                        options.verbose, options.dry_run)
     mngr.prepare_read() # does a "pull"
     db_to_repo(options, mngr, db, "convert", arguments)
-    buildcache.json_save(options.scandb,
-                         options.verbose, options.dry_run)
+    try:
+        buildcache.json_save(options.scandb,
+                             options.verbose, options.dry_run)
+    except ValueError, e:
+        if not catch_exceptions:
+            raise
+        sys.exit(errtxt("Error while saving scan database file,",e))
 
 def subcmd_db_convert_old(arguments, options):
     """implement "db convert-old"."""
