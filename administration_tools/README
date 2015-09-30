@@ -64,7 +64,7 @@ Create distribution files:
 mk-dist.sh          : create distribution (*.tar.gz) files
 cleanup-distdirs.sh : clean the distribution directory
 mk-rpm.sh           : create an rpm file (works only on a fedora system)
-mk-deb.sh           : create a debian file, should be used ion a debian system
+mk-deb.sh           : create a debian file, should be used on a debian system
                       or a debian docker container.
 
 -----------------------------
@@ -72,8 +72,18 @@ Docker support:
 
 docker          : the directory with the docker files
 docker-build.sh : build docker debian containers needed for mk-xxx.sh scripts
+                  run this as docker-build.sh <system-name>
+                  with system-name one of:
+                    debian-7 debian-8 fedora-21 fedora-22
 docker-run.sh   : run a docker container
-mk-deb.sh       : create debian packages, should be run within the
+                  run this as docker-run.sh <system-name>
+                  with system-name one of:
+                    debian-7 debian-8 fedora-21 fedora-22
+                  within docker execute one of the commands shown on the
+                  console
+mk-deb.sh       : create debian packages, should be run from within the
+                  debian docker container
+mk-rpm.sh       : create rpm packages, should be run from within the
                   debian docker container
 
 -----------------------------
