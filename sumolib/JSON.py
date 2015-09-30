@@ -16,6 +16,7 @@ import pprint
 import os.path
 import time
 import cPickle
+import tempfile
 import sumolib.lock
 
 __version__="2.8.4" #VERSION#
@@ -71,8 +72,13 @@ def dump_file(filename, var):
     that we have a lock on the file so the temporary filename does not yet
     exist.
     """
-    tmp_filename= "%s.tmp" % filename
-    fh= open(tmp_filename, "w")
+    (f_dir, f_name)= os.path.split(filename)
+    if not f_dir:
+        f_dir= os.getcwd()
+    (fd, tmp_filename)= tempfile.mkstemp(prefix=f_name,
+                                         dir= f_dir,
+                                         text= True)
+    fh= os.fdopen(fd, "wt")
     # modern python JSON modules add a trailing space at lines that end with a
     # comma. It seems that this is only fixed in python 3.4. So for now we
     # remove the spaces manually here, which is done by json_str().
