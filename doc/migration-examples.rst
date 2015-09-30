@@ -12,8 +12,8 @@ Migrating the support directory
 
 This chapter shows how to *migrate* your existing installation of support
 modules to sumo. sumo-scan can help you to create a first version of the
-dependency database. Alternatively you can create the dependency database from
-scratch.
+:ref:`dependency database <reference-sumo-db-The-dependency-database>`.
+Alternatively you can create the dependency database from scratch.
 
 Set up the sumo directory
 +++++++++++++++++++++++++
@@ -29,9 +29,10 @@ Scan the support directory with sumo-scan
 +++++++++++++++++++++++++++++++++++++++++
 
 sumo-scan has many command line options that help you create a first version of
-a dependency database that is almost correct. You may however, have to edit the
-created text files in order to remove wrong dependencies or give repository
-specifications a canonical form.
+a :ref:`dependency database <reference-sumo-db-The-dependency-database>` that
+is almost correct. You may however, have to edit the created text files in
+order to remove wrong dependencies or give repository specifications a
+canonical form.
 
 For details see :ref:`sumo scan options <reference-sumo-scan-Options>`.
 
@@ -77,7 +78,9 @@ repository URLs in the scan file manually. For more information on this topic se
 Create the dependency database
 ++++++++++++++++++++++++++++++
 
-Like sumo-scan, sumo also has command line options that may help you a more correct version of the dependency database. 
+Like sumo-scan, sumo also has command line options that may help you a more
+correct version of the 
+:ref:`dependency database <reference-sumo-db-The-dependency-database>`. 
 
 For details see :ref:`sumo options <reference-sumo-Options>`.
 
@@ -104,6 +107,32 @@ library path. You get the name of this directory with this command::
 
 You find more information on configuration files at 
 :doc:`configuration-files`.
+
+Migrating a single support
+--------------------------
+
+We first have to scan the existing RELEASE file with sumo-scan. We have to know
+the paths of the used `EPICS <http://www.aps.anl.gov/epics>`_ base and the
+directory with used support modules. These are given as option "-g" to the
+program. The output of sumo-scan is directed to sumo which prints 
+`JSON <http://www.json.org>`_ data compatible with the 
+:ref:`dependency database <reference-sumo-db-The-dependency-database>` to the
+console::
+
+  sumo-scan -d . -g <supportdir> -g <epics-basedir> --ignore-changes '.*' | sumo db modconvert - <supportname>
+
+Option "--ignore-changes 'configure/RELEASE'" is needed if file
+configure/RELEASE has uncomitted changes. If sumo-scan finds any uncomitted
+changes it sets the :ref:`source data <reference-sumo-source-data>` to type
+'path' which usually is not what you want.
+
+Note that you may omit <supportname> but in this case the `JSON
+<http://www.json.org>`_ data contains not just your support module but also all
+dependent modules. 
+
+You may direct the youtput to a file and use 
+:ref:`sumo edit <reference-sumo-db-edit>` to add this to the 
+:ref:`dependency database <reference-sumo-db-The-dependency-database>`.
 
 Migrating an application
 ------------------------
