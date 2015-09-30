@@ -19,5 +19,5 @@ if [ ! -e docker/$DOCKERFILE ]; then
     exit 1
 fi
 
-cd docker && docker build -t $DOCKERIMAGE -f $DOCKERFILE $PWD 
+cd docker && docker build -t $DOCKERIMAGE -f `pwd -P`/$DOCKERFILE `pwd -P`
 
