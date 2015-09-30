@@ -635,18 +635,6 @@ config
 
 This is the maincommand for all operations for configuration files.
 
-edit FILE
-:::::::::
-
-Start the editor specified by the environment variable "VISUAL" or "EDITOR"
-with that file. This command first aquires a file-lock on the file that is only
-released when the editor program is terminated. If you want to edit a
-:term:`DEPS.DB` :term:`BUILDS.DB` file directly, you should always do it with this
-with this command. The file locking prevents other users to use the file at the
-same time you modify it.
-
-This command must be followed by a *filename*.
-
 lock FILE
 :::::::::
 
@@ -769,6 +757,21 @@ Convert a :term:`scanfile` that was created by applying
 :term:`aliases` and :term:`modulespecs` in `JSON <http://www.json.org>`_
 format. The result is printed to the console. It can be used with
 --config to put these in the configuration file of sumo.
+
+db edit
+:::::::
+
+Start the editor specified by option --editor or the environment variables
+"VISUAL" or "EDITOR" to edit the dependency database file. This command first
+aquires a file-lock on the file, that prevents other users from acessing the
+file at the same time.  When the editor program is terminated, sumo checks if
+the file is still a valid `JSON <http://www.json.org>`_ file. If not, you can
+start the editor again or abort the program. If the file is valid 
+`JSON <http://www.json.org>`_, sumo commits the changes if option --dbrepo was
+specified.  If option --logmsg was given, this is used as commit log message,
+otherwise an editor is started where you can enter a log message.  Finally the
+file lock is released. If you want to edit the dependency database file you
+should always do it with this command.
 
 db format
 :::::::::

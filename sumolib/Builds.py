@@ -105,9 +105,9 @@ class DB(sumolib.JSON.Container):
     def is_generated_buildtag(buildtag):
         """return True of the buildtag was generated."""
         return buildtag.startswith("AUTO-")
-    def __init__(self, dict_= None, lock_timeout= None):
+    def __init__(self, dict_= None, use_lock= True, lock_timeout= None):
         """create the object."""
-        super(DB, self).__init__(dict_, lock_timeout)
+        super(DB, self).__init__(dict_, use_lock, lock_timeout)
     def merge(self, other):
         """merge with another builddb.
 
@@ -328,9 +328,9 @@ class DB_overlay(DB):
     """
     # pylint: disable=R0904
     #                          Too many public methods
-    def __init__(self, dict_= None, lock_timeout= None):
+    def __init__(self, dict_= None, use_lock= True, lock_timeout= None):
         """create the object."""
-        super(DB_overlay, self).__init__(dict_, lock_timeout)
+        super(DB_overlay, self).__init__(dict_, use_lock, lock_timeout)
         self.overlay_keys= {}
         self.overlay_files= []
         self.overlay_mode= True
@@ -348,9 +348,10 @@ class DB_overlay(DB):
         if new_mode is None:
             return self.overlay_mode
         self.overlay_mode= new_mode
-    def overlay(self, filename):
+    def overlay(self, filename, use_lock= True):
         """merge with another builddb from a file."""
-        other= DB.from_json_file(filename, keep_lock= False)
+        other= DB.from_json_file(filename, use_lock= use_lock,
+                                 keep_lock= False)
         new_keys= self.merge(other)
         self.overlay_files.append(filename)
         idx= len(self.overlay_files)-1
@@ -405,9 +406,9 @@ class BuildCache(sumolib.JSON.Container):
       }
 
     """
-    def __init__(self, dict_= None, lock_timeout= None):
+    def __init__(self, dict_= None, use_lock= True, lock_timeout= None):
         """create the object."""
-        super(BuildCache, self).__init__(dict_, lock_timeout)
+        super(BuildCache, self).__init__(dict_, use_lock, lock_timeout)
     def add_dependency(self, modulename, versionname,
                        dep_name, dep_version, state):
         """add a single dependency with a state."""

@@ -84,10 +84,10 @@ class MyLock(object):
         On other systems the created directory contains a file whose name has
         some information on the user, host and process ID.
         """
-        if self.disabled:
+        if self._disabled:
             return
-        if self.has_lock:
-            raise AssertionError("cannot lock '%s' twice" % self.filename)
+        if self._has_lock:
+            raise AssertionError("cannot lock '%s' twice" % self._filename)
         self.info="%s@%s:%s" % (current_user(),
                                 platform.node(),
                                 os.getpid())
@@ -108,31 +108,31 @@ class MyLock(object):
                         continue
                     if self.method=="link":
                         raise LockedError("file '%s' is locked: %s" % \
-                                      (self.filename,
+                                      (self._filename,
                                        os.readlink(self.lockname)))
                     else:
                         txt= " ".join(os.listdir(self.lockname))
                         raise LockedError("file '%s' is locked: %s" % \
-                                      (self.filename, txt))
+                                      (self._filename, txt))
                 elif e.errno==errno.EACCES:
                     # cannot write to directory
                     raise AccessError(("no rights to create lock for "
-                                       "file '%s'") % self.filename)
+                                       "file '%s'") % self._filename)
                 else:
                     # re-raise exception in all other cases
                     raise
             break
-        self.has_lock= True
-    def __init__(self, filename, timeout= None):
+        self._has_lock= True
+    def __init__(self, filename_, timeout= None):
         """create a portable lock.
 
         If timeout is a number, wait up to this time (seconds) to aquire the
         lock.
         """
         if not use_lockfile:
-            self.disabled= True
+            self._disabled= True
         else:
-            self.disabled= False
+            self._disabled= False
         if timeout is None:
             self.timeout= 0
         else:
@@ -142,9 +142,9 @@ class MyLock(object):
                 raise ValueError("timeout must be >=0")
             self.timeout= timeout
 
-        self.filename= filename
-        self.lockname= "%s.lock" % self.filename
-        self.has_lock= False
+        self._filename= filename_
+        self.lockname= "%s.lock" % self._filename
+        self._has_lock= False
         self.info= None
         if platform.system()=="Linux":
             self.method= "link"
@@ -152,10 +152,10 @@ class MyLock(object):
             self.method= "mkdir"
     def unlock(self, force= False):
         """unlock."""
-        if self.disabled:
+        if self._disabled:
             return
         if not force:
-            if not self.has_lock:
+            if not self._has_lock:
                 raise AssertionError("cannot unlock since a lock "
                                      "wasn't taken")
         if self.method=="link":
@@ -164,7 +164,16 @@ class MyLock(object):
             for f in os.listdir(self.lockname):
                 os.unlink(os.path.join(self.lockname,f))
             os.rmdir(self.lockname)
-        self.has_lock= False
+        self._has_lock= False
+    def filename(self, filename_= None):
+        """gets or sets the name of the file that should be locked."""
+        if filename_ is None:
+            return self._filename
+        if self._has_lock:
+            raise AssertionError("cannot change filename if we already "
+                                 "have a lock")
+        self._filename= filename_
+        self.lockname= "%s.lock" % self._filename
 
 # -----------------------------------------------
 # edit with lock:

@@ -165,7 +165,7 @@ class SourceSpec(sumolib.JSON.Container):
     #                          Too many public methods
     def __init__(self, dict_= None):
         """create the object."""
-        super(SourceSpec, self).__init__(dict_)
+        super(SourceSpec, self).__init__(dict_, use_lock= True)
     # pylint: disable=C0301
     #                          Line too long
     @classmethod

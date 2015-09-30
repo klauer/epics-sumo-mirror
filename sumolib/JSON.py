@@ -208,15 +208,16 @@ class Container(object):
         # pylint: disable=R0201
         #                          Method could be a function
         return
-    def __init__(self, dict_= None, lock_timeout= None):
+    def __init__(self, dict_= None, use_lock= True, timeout= None):
         """create the object."""
         if dict_ is None:
             self.dict_= {}
         else:
             self.dict_= dict_
         self.lock= None
+        self._use_lock= use_lock
         self._filename= None
-        self._lock_timeout= lock_timeout
+        self.timeout= timeout
     def filename(self, new_name= None):
         """return or set the internal filename."""
         if new_name is None:
@@ -231,17 +232,21 @@ class Container(object):
         return os.path.dirname(self._filename)
     def lock_file(self):
         """lock a file and store filename and lock in the object."""
+        if not self._use_lock:
+            return
         if not self._filename:
             raise ValueError("cannot lock JSON object: filename is not set")
         if self.lock:
             # already locked
             return
-        lk= sumolib.lock.MyLock(self._filename, self._lock_timeout)
+        lk= sumolib.lock.MyLock(self._filename, self.timeout)
         # may raise lock.LockedError, lock.AccessError or OSError:
         lk.lock()
         self.lock= lk
     def unlock_file(self):
         """remove a filelock if there is one."""
+        if not self._use_lock:
+            return
         if self.lock:
             self.lock.unlock()
             self.lock= None
@@ -270,13 +275,14 @@ class Container(object):
         return obj
     @classmethod
     def from_json_file(cls, filename,
+                       use_lock,
                        keep_lock,
-                       lock_timeout= None):
+                       timeout= None):
         """create an object from a json file.
 
         """
-        # pylint: disable=R0912
-        #                          Too many branches
+        # pylint: disable=too-many-branches
+        # pylint: disable=too-many-statements
         if not isinstance(keep_lock, bool):
             raise TypeError("wrong type of keep_lock")
         if filename=="-":
@@ -285,62 +291,62 @@ class Container(object):
             return result
         if not os.path.exists(filename):
             raise IOError("file \"%s\" not found" % filename)
-        l= sumolib.lock.MyLock(filename, lock_timeout)
-        # may raise lock.LockedError, lock.AccessError or OSError:
+        l= None
+        if not use_lock:
+            # load the file the simple way:
+            data= loadfile(filename)
+        else:
+            # use locking
+            l= sumolib.lock.MyLock(filename, timeout)
+            # may raise lock.LockedError, lock.AccessError or OSError:
+            try:
+                l.lock()
+            except sumolib.lock.AccessError, _:
+                if keep_lock:
+                    # we cannot keep the lock since we cannot create it, this
+                    # is an error:
+                    raise
+                # we cannot create a lock but try to continue anyway:
+                l= None
 
-        try:
-            l.lock()
-        except sumolib.lock.AccessError, _:
-            if keep_lock:
-                # we cannot keep the lock since we cannot create it, this is an
-                # error:
-                raise
-            # we cannot create a lock but try to continue anyway:
-            l= None
-
-        if l is None:
-            # We cannot create a file lock but be we try to read consistently:
-            # it must be valid JSON and the file modification date must not
-            # change.
-            tmo= lock_timeout
-            while True:
-                t1= os.path.getmtime(filename)
+            if l is not None:
+                # regular locking
                 try:
                     data= loadfile(filename)
-                except ParseError, _:
-                    if tmo<=0:
-                        raise
-                    # if there is a timeout specified, try again:
-                    tmo-=1
-                    time.sleep(1)
-                    continue
-                t2= os.path.getmtime(filename)
-                if t2!=t1:
-                    # file modification time changed, we have to read again
-                    # unless the time is expired:
-                    if tmo<=0:
-                        raise InconsistentError("File %s: cannot lock "
-                                                "and cannot read "
-                                                "consistently" % filename)
-                    time.sleep(1)
-                    tmo-=1
-                    continue
-                break
-        else:
-            try:
-                # simplejson and json raise different kinds of exceptions
-                # in case of a syntax error within the JSON file.
-                data= loadfile(filename)
-            except Exception, _:
-                if l is not None:
-                    l.unlock()
-                raise
+                finally:
+                    if not keep_lock:
+                        l.unlock()
+                        l= None
+            else:
+                # We cannot create a file lock but be we try to read
+                # consistently: it must be valid JSON and the file modification
+                # date must not change.
+                tmo= timeout
+                while True:
+                    t1= os.path.getmtime(filename)
+                    try:
+                        data= loadfile(filename)
+                    except ParseError, _:
+                        if tmo<=0:
+                            raise
+                        # if there is a timeout specified, try again:
+                        tmo-=1
+                        time.sleep(1)
+                        continue
+                    t2= os.path.getmtime(filename)
+                    if t2!=t1:
+                        # file modification time changed, we have to read again
+                        # unless the time is expired:
+                        if tmo<=0:
+                            raise InconsistentError("File %s: cannot lock "
+                                                    "and cannot read "
+                                                    "consistently" % filename)
+                        tmo-=1
+                        time.sleep(1)
+                        continue
+                    break
 
-        result= cls(data, lock_timeout)
-
-        if (not keep_lock) and (l is not None):
-            l.unlock()
-            l= None
+        result= cls(data, use_lock, timeout)
         result.lock= l
         result.filename(filename)
         result.selfcheck("(created from JSON file %s)" % filename)
@@ -365,25 +371,18 @@ class Container(object):
         if filename:
             if self._filename!=filename:
                 # remove a lock that may still exist:
+                # unlocks only of self._use_lock==True:
                 self.unlock_file()
             self._filename= filename
-        backup= "%s.bak" % self._filename
         try:
             if not dry_run:
+                # locks only of self._use_lock==True:
                 self.lock_file()
-            if os.path.exists(backup):
-                if verbose:
-                    print "remove %s" % backup
-                if not dry_run:
-                    os.remove(backup)
-            if os.path.exists(self._filename):
-                if verbose:
-                    print "rename %s to %s" % (self._filename, backup)
-                if not dry_run:
-                    os.rename(self._filename, backup)
+            sumolib.utils.backup_file(self._filename, verbose, dry_run)
             if not dry_run:
                 dump_file(self._filename, self.to_dict())
         finally:
+            # unlocks only of self._use_lock==True:
             self.unlock_file()
     def pickle_save(self, filename):
         """save using cPickle, don't use lockfiles or anything."""
