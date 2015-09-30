@@ -2,6 +2,8 @@
 
 if [ -z "$1" ]; then
     PYTHON="python"
+else
+    PYTHON="$1"
 fi
 
 BINDIR=`pwd`/../bin
