@@ -18,6 +18,7 @@ import os
 import re
 import errno
 import shutil
+import filecmp
 import textwrap
 import pydoc
 
@@ -48,13 +49,14 @@ assert __version__==sumolib.Dependencies.__version__
 assert __version__==sumolib.Builds.__version__
 assert __version__==sumolib.repos.__version__
 
-KNOWN_MAIN_COMMANDS=set(("help","lock","unlock","edit",
+KNOWN_MAIN_COMMANDS=set(("help","lock","unlock",
                          "config", "db","build"))
 
 KNOWN_CONFIG_COMMANDS=set(("list", "show", "make", "standalone", "local"))
 
 KNOWN_DB_COMMANDS=set(("alias-add", "appconvert", "check", "clonemodule",
                        "cloneversion", "convert", "convert-old",
+                       "edit",
                        "find", "format",
                        "list", "merge", "dependency-add",
                        "dependency-delete", "replaceversion", "show",
@@ -64,13 +66,12 @@ KNOWN_BUILD_COMMANDS=set(("delete", "find", "list",
                           "new",
                           "remake",
                           "show", "state", "try", "use"))
-KNOWN_FILE_COMMANDS=set(("lock", "unlock", "edit"))
 
 KNOWN_CONFIG_OPTIONS=set(( "#preload", "#opt-preload", "#postload",
                            "#opt-postload", "alias", "buildtag-stem", "dbdir",
-                           "dbrepo", "dbrepomode", "extra", "makeflags",
-                           "module", "progress", "readonly", "scandb",
-                           "dir-patch", "url-patch", "builddir",
+                           "dbrepo", "dbrepomode", "editor", "extra",
+                           "makeflags", "module", "progress", "readonly",
+                           "scandb", "dir-patch", "url-patch", "builddir",
                            "localbuilddir",
                            "verbose"))
 
@@ -264,6 +265,9 @@ def load_config_files(options, disable_loading):
 
 def repo_msg(prefix, args):
     """generate a standard commit message."""
+    if (not prefix) and (not args):
+        # no log message given
+        return
     return "%s %s" % (prefix, " ".join(args))
 
 def repo_manager(dbdir, sourcespec_string, mode,
@@ -286,11 +290,13 @@ def repo_manager(dbdir, sourcespec_string, mode,
                                     dbdir, LOCK_TIMEOUT, verbose, dry_run)
     return mngr
 
-def db_from_json_file(filename, keep_locked= False):
+def db_from_json_file(filename, use_lock= True, keep_locked= False):
     """load a db, exits gracefully in case of an error."""
     try:
         db= sumolib.Dependencies.DB.from_json_file(filename,
-                                                   keep_locked, LOCK_TIMEOUT)
+                                                   use_lock= use_lock,
+                                                   keep_lock=keep_locked,
+                                                   timeout= LOCK_TIMEOUT)
     except ValueError, e:
         if not catch_exceptions:
             raise
@@ -338,7 +344,7 @@ def db_from_repo(options, keep_locked= False, changes_check= True,
         if not catch_exceptions:
             raise
         sys.exit(errtxt("Error while loading dependency database,",e))
-    db= db_from_json_file(db_f(options.dbdir), keep_locked)
+    db= db_from_json_file(db_f(options.dbdir), True, keep_locked)
     return (mngr, db)
 
 def db_to_module_cache(options):
@@ -392,13 +398,17 @@ def builddb_from_json_file(path, path_local, keep_locked= False,
             sys.exit("Error build database '%s' doesn't exist" % \
                      file_)
         # just create an empty object:
-        builddb= sumolib.Builds.DB_overlay(lock_timeout= LOCK_TIMEOUT)
+        builddb= sumolib.Builds.DB_overlay(use_lock= True,
+                                           lock_timeout= LOCK_TIMEOUT)
         # set default filename in the object (JSON.Container method):
         builddb.filename(file_)
     else:
         try:
             builddb= sumolib.Builds.DB_overlay.from_json_file(\
-                                    file_, keep_locked, LOCK_TIMEOUT)
+                                    file_,
+                                    use_lock= True,
+                                    keep_lock= keep_locked,
+                                    timeout= LOCK_TIMEOUT)
         except ValueError, e:
             if not catch_exceptions:
                 raise
@@ -1419,6 +1429,65 @@ def subcmd_config_local(arguments, options):
 # db subcommands
 # -----------------------------------------------
 
+def subcmd_db_edit(arguments, options):
+    """implement "db edit" maincommand."""
+    if options.readonly:
+        sys.exit("--readonly forbids editing a database file")
+    sumolib.cli.process_args(arguments, None, options.list)
+
+    sumolib.cli.assert_options(True, options, "dbdir")
+
+    db_file= db_f(options.dbdir)
+    db_tmp = db_file + ".edit.tmp"
+
+    mylock= sumolib.lock.MyLock(db_file)
+    try:
+        mylock.lock()
+    except sumolib.lock.LockedError, e:
+        # cannot get lock
+        if not catch_exceptions:
+            raise
+        sys.exit(str(e))
+    except sumolib.lock.AccessError, e:
+        # cannot create lock since we have no write access:
+        if not catch_exceptions:
+            raise
+        sys.exit(str(e))
+
+    try:
+        shutil.copyfile(db_file, db_tmp)
+        while True:
+            sumolib.utils.edit_file(db_tmp, options.editor,
+                                    options.verbose, options.dry_run)
+            try:
+                db= db_from_json_file(db_tmp, use_lock= False)
+                break # leave while-loop
+            except sumolib.JSON.ParseError, e:
+                print "\nError: file has parse errors:"
+                print str(e)
+                reply= sumolib.utils.ask_yes_no("Re-edit the file (y) or "
+                                                "abort (n) ? ")
+                if not reply:
+                    # "finally" will take care of the lock
+                    sys.exit("aborting, your changes are in file %s" % db_tmp)
+
+        if filecmp.cmp(db_file, db_tmp):
+            # there were no changes
+            print ("Note: no further action taken since %s was "
+                   "not changed.") % DB
+        else:
+            mngr= repo_manager(options.dbdir, options.dbrepo,
+                               options.dbrepomode,
+                               options.verbose, options.dry_run)
+
+            # the version control system should prompt for a log message if
+            # none was given with --logmsg:
+            db_to_repo(options, mngr, db, None, None)
+
+        os.remove(db_tmp)
+    finally:
+        mylock.unlock()
+
 def subcmd_db_convert(arguments, options):
     """implement "db convert"."""
     argspec= sumolib.cli.CmdSpecs()
@@ -1455,6 +1524,7 @@ def subcmd_db_convert_old(arguments, options):
     try:
         # pylint: disable=no-member
         olddb= sumolib.Dependencies.OldDB.from_json_file(args.OLDDB,
+                                                         use_lock= True,
                                                          keep_lock= False)
     except ValueError, e:
         if not catch_exceptions:
@@ -1597,7 +1667,7 @@ def subcmd_db_merge(arguments, options):
     (mngr, db)= db_from_repo(options,
                              not options.dumpdb and (not options.dry_run))
     # pylint: disable=no-member
-    db2= db_from_json_file(args.DB, keep_locked= False)
+    db2= db_from_json_file(args.DB, True, keep_locked= False)
     db.merge(db2)
     if options.dumpdb:
         db.json_print()
@@ -1884,7 +1954,7 @@ def subcmd_build_show(arguments, options):
                                     options.localbuilddir,
                                     keep_locked= False)
     assert_build_tag(builddb, args.BUILDTAG) # pylint: disable=no-member
-    new_builddb= sumolib.Builds.DB(lock_timeout= LOCK_TIMEOUT)
+    new_builddb= sumolib.Builds.DB(use_lock= True, lock_timeout= LOCK_TIMEOUT)
     new_builddb.add_build(builddb, args.BUILDTAG) # pylint: disable=no-member
     new_builddb.json_print()
 
@@ -2528,30 +2598,6 @@ def maincmd_unlock(arguments, options):
                  args.FILE)
     l.unlock(force= True)
 
-def maincmd_edit(arguments, options):
-    """implement "edit" maincommand."""
-    if options.readonly:
-        sys.exit("--readonly forbids editing a database file")
-    argspec= sumolib.cli.CmdSpecs()
-    argspec.add("FILE", completion= sumolib.cli.complete_file)
-    args= sumolib.cli.process_args(arguments, argspec, options.list)
-
-    mngr= None
-    if args.FILE==db_f(options.dbdir): # pylint: disable=no-member
-        mngr= repo_manager(options.dbdir, options.dbrepo,
-                           options.dbrepomode,
-                           options.verbose, options.dry_run)
-    try:
-        # pylint: disable=no-member
-        sumolib.lock.edit_with_lock(args.FILE,
-                                    options.verbose, options.dry_run)
-    except IOError, e:
-        if not catch_exceptions:
-            raise
-        sys.exit(errtxt("",e))
-    if mngr:
-        mngr.finish_write("edit")
-
 def maincmd_db(commands, options):
     """implement db maincommand."""
     # pylint: disable=R0914
@@ -2569,6 +2615,10 @@ def maincmd_db(commands, options):
     # given:
     (cmd, c_args)= sumolib.cli.process_cmd(commands, KNOWN_DB_COMMANDS,
                                            options.list)
+
+    if cmd=="edit":
+        subcmd_db_edit(c_args, options)
+        return
 
     if cmd=="convert":
         subcmd_db_convert(c_args, options)
@@ -3108,16 +3158,6 @@ unlock FILE
 Unlock a FILE, then exit sumo. If you locked a database with "lock" before you
 should always unlock it later, otherwise sumo can't access the file.
 """,
-        "edit": """
-edit FILE
-
-Start the editor specified by the environment variable "VISUAL" or "EDITOR"
-with that file. This command first aquires a file-lock on the file that is only
-released when the editor program is terminated.  If you want to edit a DB or
-BUILDDB file directly, you should always do it with this with this command. The
-file locking prevents other users to use the file at the same time you modify
-it.
-""",
         "db": """
 
 db [subcommand]
@@ -3128,6 +3168,7 @@ subcommands here:
   convert      - convert a scanfile created by sumo-scan to a DB file
   convert-old  - convert DB file from old to new format
   appconvert   - convert a scanfile to a MODULES file for an application
+  edit         - edit the dependency file with an editor
   format       - reformat the dependency file
   weight       - set the weight factor for modules
   alias-add    - add an alias for a dependency in a module
@@ -3196,6 +3237,20 @@ Convert a scanfile that was created by applying "sumo-scan all" to an
 application to a list of aliases and modulespecs in JSON format. The result is
 printed to the console. It can be used with --config to put these in the
 configuration file of sumo.
+""",
+        "db edit": """
+db edit
+
+Start the editor specified by option --editor or the environment variables
+"VISUAL" or "EDITOR" to edit the dependency database file. This command first
+aquires a file-lock on the file, that prevents other users from acessing the
+file at the same time.  When the editor program is terminated, sumo checks if
+the file is still a valid JSON file. If not, you can start the editor again or
+abort the program. If the file is valid JSON, sumo commits the changes if
+option --dbrepo was specified.  If option --logmsg was given, this is used as
+commit log message, otherwise an editor is started where you can enter a log
+message.  Finally the file lock is released. If you want to edit the dependency
+database file you should always do it with this command.
 """,
         "db format": """
 db format
@@ -3535,6 +3590,11 @@ option_help_topics= {
 --logmsg=BUILDTAG
     Specify a logmessage for automatic commits
 """,
+        "editor":"""
+--editor=EDITOR
+    Specify the preferred editor. If this is not given, sumo takes the name of
+    the editor from environment variables "VISUAL" or EDITOR".
+""",
         "buildtag":"""
 -t BUILDTAG
 --buildtag=BUILDTAG
@@ -3847,9 +3907,6 @@ def process(options, commands):
     elif cmd=="unlock":
         maincmd_unlock(c_args, options)
         return
-    elif cmd=="edit":
-        maincmd_edit(c_args, options)
-        return
     elif cmd=="db":
         maincmd_db(c_args, options)
     elif cmd=="build":
@@ -3898,6 +3955,7 @@ def main():
     specs.add("--scandb", sumolib.cli.complete_file, "SCANDB")
     specs.add("--dumpdb")
     specs.add("--logmsg", arg_name= "BUILDTAG")
+    specs.add("--editor", arg_name= "EDITOR")
     specs.add("--buildtag -t", arg_name= "BUILDTAG")
     specs.add("--buildtag-stem", arg_name= "STEM")
     specs.add("--builddir", sumolib.cli.complete_dir, arg_name= "BUILDDIR")

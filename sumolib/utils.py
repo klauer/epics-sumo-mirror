@@ -13,6 +13,7 @@ import sys
 import os
 import os.path
 import re
+import sumolib.system
 
 __version__="2.8.4" #VERSION#
 
@@ -163,6 +164,53 @@ def mk_text_file(filename, lines, verbose, dry_run):
         file_write(fh, l, verbose, dry_run)
     if filename!="-":
         fh.close()
+
+def backup_file(filename, verbose, dry_run):
+    """rename "filename" to "filename.bak" to make a backup.
+
+    If there exists a file "filename.bak", it is removed.
+    If file "filename" doesn't exist, do nothing.
+    """
+    if not os.path.exists(filename):
+        return
+    backup= "%s.bak" % filename
+    if os.path.exists(backup):
+        if verbose:
+            print "remove %s" % backup
+        if not dry_run:
+            os.remove(backup)
+    if verbose:
+        print "rename %s to %s" % (filename, backup)
+    if not dry_run:
+        os.rename(filename, backup)
+
+def edit_file(filename, editor, verbose, dry_run):
+    """open a file with an editor.
+    """
+    if not os.path.exists(filename):
+        raise IOError("error: file \"%s\" doesn't exist" % filename)
+    if editor:
+        ed_lst= [editor]
+    else:
+        envs=["VISUAL","EDITOR"]
+        ed_lst= [v for v in [os.environ.get(x) for x in envs] \
+                 if v is not None]
+        if not ed_lst:
+            raise IOError("error: environment variable 'VISUAL' or "
+                          "'EDITOR' must be defined")
+    found= False
+    errors= ["couldn't start editor(s):"]
+    for editor in ed_lst:
+        try:
+            sumolib.system.system("%s %s" % (editor, filename),
+                                  False, False, verbose, dry_run)
+            found= True
+            break
+        except IOError, e:
+            # cannot find or not start editor
+            errors.append(str(e))
+    if not found:
+        raise IOError("\n".join(errors))
 
 # -----------------------------------------------
 # directory utilities

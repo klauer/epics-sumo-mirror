@@ -44,9 +44,9 @@ class OldDB(sumolib.JSON.Container):
 
     returns a BuildCache and a Dependency object.
     """
-    def __init__(self, dict_= None, lock_timeout= None):
+    def __init__(self, dict_= None, use_lock= True, lock_timeout= None):
         """create the object."""
-        super(OldDB, self).__init__(dict_, lock_timeout)
+        super(OldDB, self).__init__(dict_, use_lock, lock_timeout)
     def convert(self):
         """convert to a Dependencies and BuildCache object.
         """
@@ -99,9 +99,9 @@ class DB(sumolib.JSON.Container):
             return
         raise ValueError("Error, dependency data is invalid (%s) %s" % \
                          (diag,msg))
-    def __init__(self, dict_= None, lock_timeout= None):
+    def __init__(self, dict_= None, use_lock= True, lock_timeout= None):
         """create the object."""
-        super(DB, self).__init__(dict_, lock_timeout)
+        super(DB, self).__init__(dict_, use_lock, lock_timeout)
     def merge(self, other):
         """merge another Dependencies object to self.
 
