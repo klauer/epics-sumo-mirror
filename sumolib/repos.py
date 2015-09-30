@@ -16,6 +16,7 @@ import sumolib.darcs
 import sumolib.mercurial  # "hg"
 import sumolib.git
 import sumolib.subversion # "svn"
+import sumolib.cvs
 
 __version__="2.8.4" #VERSION#
 
@@ -29,8 +30,9 @@ assert __version__==sumolib.darcs.__version__
 assert __version__==sumolib.mercurial.__version__
 assert __version__==sumolib.git.__version__
 assert __version__==sumolib.subversion.__version__
+assert __version__==sumolib.cvs.__version__
 
-known_repos=set(("darcs","hg","git","svn"))
+known_repos=set(("darcs","hg","git","svn","cvs"))
 known_no_repos= set(("path","tar"))
 known_sources= set(known_no_repos).union(known_repos)
 
@@ -74,6 +76,9 @@ def repo_from_dir(directory, hints, verbose, dry_run):
     obj= sumolib.subversion.Repo.scan_dir(directory, hints, verbose, dry_run)
     if obj is not None:
         return obj
+    obj= sumolib.cvs.Repo.scan_dir(directory, hints, verbose, dry_run)
+    if obj is not None:
+        return obj
     return
 
 def src_from_dir(directory, hints, verbose, dry_run):
@@ -110,7 +115,7 @@ def src_from_dir(directory, hints, verbose, dry_run):
 # ---------------------------------------------------------
 # check out:
 
-def checkout(sourcespec, destdir, verbose, dry_run):
+def checkout(sourcespec, destdir, lock_timeout, verbose, dry_run):
     """check out a working copy.
 
     sourcespec must be a SourceSpec object.
@@ -123,17 +128,26 @@ def checkout(sourcespec, destdir, verbose, dry_run):
     repotype= sourcespec.sourcetype()
     spec= sourcespec.spec_val()
     if repotype == "darcs":
-        sumolib.darcs.Repo.checkout(spec, destdir, verbose, dry_run)
+        sumolib.darcs.Repo.checkout(spec, destdir, lock_timeout,
+                                    verbose, dry_run)
     elif repotype == "hg":
-        sumolib.mercurial.Repo.checkout(spec, destdir, verbose, dry_run)
+        sumolib.mercurial.Repo.checkout(spec, destdir, lock_timeout,
+                                        verbose, dry_run)
     elif repotype == "git":
-        sumolib.git.Repo.checkout(spec, destdir, verbose, dry_run)
+        sumolib.git.Repo.checkout(spec, destdir, lock_timeout,
+                                  verbose, dry_run)
     elif repotype == "svn":
-        sumolib.subversion.Repo.checkout(spec, destdir, verbose, dry_run)
+        sumolib.subversion.Repo.checkout(spec, destdir, lock_timeout,
+                                         verbose, dry_run)
+    elif repotype == "cvs":
+        sumolib.cvs.Repo.checkout(spec, destdir, lock_timeout,
+                                  verbose, dry_run)
     elif repotype== "tar":
-        sumolib.tar.Repo.checkout(spec, destdir, verbose, dry_run)
+        sumolib.tar.Repo.checkout(spec, destdir, lock_timeout,
+                                  verbose, dry_run)
     elif repotype== "path":
-        sumolib.path.Repo.checkout(spec, destdir, verbose, dry_run)
+        sumolib.path.Repo.checkout(spec, destdir, lock_timeout,
+                                   verbose, dry_run)
     else:
         raise ValueError("unsupported repotype: %s" % repotype)
     p= sourcespec.patches()
@@ -360,7 +374,7 @@ class ManagedRepo(object):
         spec must be a dictionary with "url" and "tag" (optional).
 
         Note: distributed VCS: are darcs,mercurial,git
-              centralized VCS: subversion
+              centralized VCS: subversion, cvs
 
         mode must be "get", "pull" or "push".
           get:
@@ -425,6 +439,7 @@ class ManagedRepo(object):
                 # must check out
                 try:
                     checkout(self.sourcespec, self.directory,
+                             self.lock_timeout,
                              self.verbose, self.dry_run)
                 except Exception, _:
                     lk.unlock()

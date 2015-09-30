@@ -12,6 +12,7 @@ source settings.sh
 
 REPOSRC="tmp-sumo-db-dbrepo-create/central"
 REPOSRC_SVN="tmp-sumo-db-dbrepo-create/central-svn"
+REPOSRC_CVS="tmp-sumo-db-dbrepo-create/central-cvs"
 CHG_REPO="tmp-sumo-db-cloneversion-dbrepo"
 
 echo -e "\n-> Test sumo db --dbrepo with a pull-conflict." >&2
@@ -24,14 +25,15 @@ hg clone -q ../$REPOSRC central-hg
 git clone --bare -q ../$REPOSRC central-git
 # do just a file copy from the original subversion repo:
 cp -a ../$REPOSRC_SVN central-svn
+# do just a file copy from the original cvs repo:
+cp -a ../$REPOSRC_CVS central-cvs
 
 # clone the original repositories
 darcs clone -q central-darcs local-darcs
 hg clone -q central-hg local-hg
 git clone -q central-git local-git
 svn checkout -q file://$PWD_NICE/$EXAMPLEDIR/central-svn/trunk local-svn
-svn checkout -q file://$PWD_NICE/$EXAMPLEDIR/central-svn/trunk local-svn-patched
-svn checkout -q file://$PWD_NICE/$CHG_REPO/central-svn/trunk local-svn-chg
+cvs -d $PWD_NICE/$EXAMPLEDIR/central-cvs checkout sumo-database >/dev/null 2>&1 && mv sumo-database local-cvs
 
 # now add patches to the central repositories:
 (cd ../$CHG_REPO/central-darcs && darcs push -a ../../$EXAMPLEDIR/central-darcs > /dev/null)
@@ -39,10 +41,20 @@ svn checkout -q file://$PWD_NICE/$CHG_REPO/central-svn/trunk local-svn-chg
 git clone -q ../$CHG_REPO/central-git delme-git 
 git -C delme-git config push.default simple
 git -C delme-git push -q ../central-git
-(cd local-svn-chg && svn diff -c `svnversion`) > local-svn-patched/PATCH
-svn log local-svn-chg -r head | tail -n 2 | head -n 1 > local-svn-patched/PATCH-LOG
-(cd local-svn-patched >/dev/null && patch -s -p0 < PATCH)
-svn commit -q local-svn-patched -F local-svn-patched/PATCH-LOG
+
+# adding a patch to subversion is a bit more complicated, we use the files
+# PATCH and LOGMESSAGE that were created in another test:
+svn checkout -q file://$PWD_NICE/$EXAMPLEDIR/central-svn/trunk local-svn-patched
+(cd local-svn-patched >/dev/null && patch -s -p1 < ../../$CHG_REPO/extra/PATCH)
+svn commit -q local-svn-patched -F ../$CHG_REPO/extra/LOGMESSAGE
+rm -rf local-svn-patched
+
+# adding a patch to cvs is also a bit more complicated, we use the files
+# PATCH and LOGMESSAGE that were created in another test:
+cvs -d $PWD_NICE/$EXAMPLEDIR/central-cvs checkout sumo-database >/dev/null 2>&1 && mv sumo-database local-cvs-patched
+(cd local-cvs-patched >/dev/null && patch -s -p1 < ../../$CHG_REPO/extra/PATCH)
+(cd local-cvs-patched >/dev/null && cvs commit -F ../../$CHG_REPO/extra/LOGMESSAGE >/dev/null 2>&1)
+rm -rf local-cvs-patched
 
 # provoke a pull conflict by applying the changes that were done in the central
 # repo again. We do use --dbrepomode get in these calls to avoid that sumo does
@@ -50,8 +62,8 @@ svn commit -q local-svn-patched -F local-svn-patched/PATCH-LOG
 $SUMO db --dbdir local-darcs --dbrepo "darcs central-darcs" --dbrepomode get -y cloneversion ALARM R3-7 R3-8-2 >/dev/null
 $SUMO db --dbdir local-hg    --dbrepo "darcs central-hg" --dbrepomode get -y cloneversion ALARM R3-7 R3-8-2 >/dev/null
 $SUMO db --dbdir local-git   --dbrepo "darcs central-git" --dbrepomode get -y cloneversion ALARM R3-7 R3-8-2 >/dev/null
-# Note: with subversion, "sumo cloneversion" would immediately lead to a
-# conflict, since subversion always contacts the central repo. So we do "sumo
+# Note: with subversion and cvs, "sumo cloneversion" would immediately lead to
+# a conflict, since subversion always contacts the central repo. So we do "sumo
 # cloneversion" further below.
 
 echo "Conflict in darcs repo:"
@@ -70,3 +82,8 @@ echo "Conflict in subversion repo:"
 echo "---------------------"
 $SUMO db --dbdir local-svn   --dbrepo "svn file://$PWD_NICE/$EXAMPLEDIR/central-svn" --dbrepomode get -y cloneversion ALARM R3-7 R3-8-2 2>&1 1>/dev/null
 $SUMO db -y --logmsg "local changes" --dbdir local-svn --dbrepo "svn file://$PWD_NICE/$EXAMPLEDIR/central-svn" --dbrepomode pull show ALARM 2>&1 | sed -e "s#$PWD_NICE##;s#$PWD_REAL##;s/: E[0-9]\+//" 
+echo
+echo "Conflict in cvs repo:"
+echo "---------------------"
+$SUMO db --dbdir local-cvs   --dbrepo "cvs file://$PWD_NICE/$EXAMPLEDIR/central-cvs/sumo-database" --dbrepomode get -y cloneversion ALARM R3-7 R3-8-2 2>&1 1>/dev/null
+$SUMO db -y --logmsg "local changes" --dbdir local-cvs --dbrepo "cvs file://$PWD_NICE/$EXAMPLEDIR/central-cvs/sumo-database" --dbrepomode pull show ALARM 2>&1 | sed -e "s#$PWD_NICE##;s#$PWD_REAL##" 

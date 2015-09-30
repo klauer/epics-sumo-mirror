@@ -142,6 +142,41 @@ function MK_SVN
     cd $old > /dev/null
   }
 
+# create subversion repositories
+function MK_CVS
+  { 
+    old=`pwd`
+    sourcepath="$1"
+    destpath="$2"
+    tag="$3"
+    if [ ! -d $destpath ]; then
+        mkdir -p $destpath
+    fi
+    root=`(cd $destpath>/dev/null && pwd -P)`
+    project=`basename $destpath`
+    cvs -d $root init
+    cd $root/.. > /dev/null
+    mkdir CVSTEMP && cd CVSTEMP > /dev/null
+    cvs -d $root import -m 'initial version' $project dummy-user initial-version
+    cd .. && rm -rf CVSTEMP
+    mkdir CVSTEMP && cd CVSTEMP
+    cvs -d $root checkout $project
+    cp -a $sourcepath/* $project && cd $project > /dev/null
+    cp $SRCDIR/cvsignore .cvsignore
+    if [ -n "$EPICSBASE" ]; then
+        sed -i configure/RELEASE -e "s#^\(EPICS_BASE\) *=.*#\1=$EPICSBASE#"
+        sed -i configure/RELEASE -e "s#^\(SUPPORT\) *=.*#\1=$SUPPORTDIR#"
+        sed -i configure/RELEASE -e "s#^\(EPICS_SUPPORT\) *=.*#\1=$SUPPORTDIR#"
+    fi
+    find . -type d | grep -v '^.$' | grep -v CVS | xargs cvs add
+    find . -type f | grep -v CVS | xargs cvs add
+    cvs commit -m 'project files were added.'
+    # create a tag:
+    cvs tag $tag
+    cd ../..  > /dev/null && rm -rf CVSTEMP
+    cd $old > /dev/null
+  }
+
 # create just a directory
 function MK_TAR
   { 
@@ -223,7 +258,7 @@ MK_DARCS $SRCDIR/support/apps/genericTemplate/3-0 support/apps/genericTemplate R
 MK_DARCS $SRCDIR/support/apps/iocWatch/3-0        support/apps/iocWatch        R3-0
 MK_TAR   $SRCDIR/support/asyn/4-17-2 asyn-4-17-2  support/asyn 
 MK_DARCS $SRCDIR/support/bessyRules/2-5           support/bessyRules       R2-5
-MK_DARCS $SRCDIR/support/bspDep/cpuBoardInit/4-1  support/bspDep/cpuBoardInit      R4-1
+MK_CVS   $SRCDIR/support/bspDep/cpuBoardInit/4-1  support/bspDep/cpuBoardInit      R4-1
 MK_DARCS $SRCDIR/support/bspDep/timer/6-2         support/bspDep/timer     R6-2
 MK_HG    $SRCDIR/support/bspDep/VMEtas/2-0        support/bspDep/VMEtas    R2-0
 MK_HG    $SRCDIR/support/bspDep/VMEtas/2-1        support/bspDep/VMEtas    R2-1

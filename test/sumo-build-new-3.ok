@@ -18,6 +18,7 @@ content of BUILDS.DB:
     "MYAPP-002": {
         "linked": {
             "BASE": "BASE-001",
+            "BSPDEP_CPUBOARDINIT": "MYAPP-001",
             "BSPDEP_TIMER": "MYAPP-001",
             "BSPDEP_VMETAS": "MYAPP-001",
             "CSM": "MYAPP-001",
@@ -29,6 +30,7 @@ content of BUILDS.DB:
         "modules": {
             "ALARM": "R3-7",
             "BASE": "R3-14-12-2-1",
+            "BSPDEP_CPUBOARDINIT": "R4-1",
             "BSPDEP_TIMER": "R6-2",
             "BSPDEP_VMETAS": "TAGLESS-2-1-modified",
             "CSM": "TAR-4-1",

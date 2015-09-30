@@ -95,6 +95,30 @@ Added module:
     }
 }
 
+Added module:
+{
+    "ALARM": {
+        "R3-8-1": {
+            "aliases": {
+                "BASE": "EPICS_BASE",
+                "BSPDEP_TIMER": "TIMER",
+                "MISC_DBC": "DBC"
+            },
+            "dependencies": [
+                "BASE",
+                "BSPDEP_TIMER",
+                "MISC_DBC"
+            ],
+            "source": {
+                "darcs": {
+                    "tag": "R3-8-1",
+                    "url": "/data/repos/support/alarm"
+                }
+            }
+        }
+    }
+}
+
 
 ===========================================
 Test of darcs:
@@ -190,6 +214,38 @@ initial commit
 
 Logs of central repository:
 --> With subversion the central repository has ALWAYS
+    the same set of patches as the working copy and 
+    aside from this we cannot simply show all logs of
+    the repository without a working copy.
+
+===========================================
+Test of cvs:
+
+Logs of local repository:
+-------------------------------------------
+
+RCS file: /tmp-sumo-db-cloneversion-dbrepo/central-cvs/sumo-database/DEPS.DB,v
+Working file: DEPS.DB
+head: 1.2
+branch:
+locks: strict
+access list:
+symbolic names:
+keyword substitution: kv
+total revisions: 2;	selected revisions: 2
+description:
+----------------------------
+revision 1.2
+date: Mon Jan 01 01:01:01 2014 +0100;  author: Homer.Simpson@burns.com  state: Exp;  lines: +18 -0
+cloneversion ALARM R3-7 R3-8-1
+----------------------------
+revision 1.1
+date: Mon Jan 01 01:01:01 2014 +0100;  author: Homer.Simpson@burns.com  state: Exp
+DEPS.DB was added to the repository.
+=============================================================================
+
+Logs of central repository:
+--> With cvs the central repository has ALWAYS
     the same set of patches as the working copy and 
     aside from this we cannot simply show all logs of
     the repository without a working copy.

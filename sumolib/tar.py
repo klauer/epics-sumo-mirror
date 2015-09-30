@@ -108,7 +108,7 @@ class Repo(object):
         pars["url"]= self.tar_url
         return d
     @staticmethod
-    def checkout(spec, destdir, verbose, dry_run):
+    def checkout(spec, destdir, _, verbose, dry_run):
         """spec must be a dictionary with key "url".
 
         The tar file is placed in basename(destdir).

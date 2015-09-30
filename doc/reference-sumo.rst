@@ -176,6 +176,7 @@ found. It is a map with a single key. The key has one of the following values:
 - hg: This specifies a *mercurial repository*. 
 - git: This specifies a *git repository*. 
 - svn This specifies a *subversion repository*. 
+- cvs This specifies a *cvs repository*. 
 
 In the following description of source data, *FILEURL* means a string that is
 either the path of a file on the local filesystem *or* an url of a file with
@@ -353,6 +354,42 @@ repository url.
 The key "url" is a subversion repository specification (see manual of
 subversion for further information).
 
+cvs
+^^^
+
+This is used to specify a source from a cvs repository.  
+
+The *source data* has this form:: 
+
+  {
+      "cvs": {
+          "patches": PATCHFILES,
+          "tag": "TAG",
+          "url": "REPOSITORY"
+      }
+  }
+
+The key "patches" is optional. If it is given the patches are applied to the
+source in the given order.
+
+The key "tag" is also optional, if it is given it specifies the cvs tag
+that is used to fetch the source. 
+
+The key "url" is the cvs repository specification. In the following "<cvsroot>"
+means the path of your cvs repository and <module> is the directory within
+"<cvsroot>" where the module is kept. "<user>" and "<host>" are the username
+and hostname when you contact your cvs repository via ssh. There are three
+formats you can use here:
+
+Simple path 
+  This has the form ``<cvsroot>/<module>`` 
+
+Path with "file" prefix 
+  This has the form ``file://<cvsroot>/<module>`` 
+
+SSH path 
+  This has the form ``ssh://<user>@<host>:<cvsroot>/<module>`` 
+  
 The scan database
 +++++++++++++++++
 
@@ -1081,8 +1118,8 @@ Here is a short overview on command line options:
     Specify how sumo should use the dependency database repository. There are
     three possible values: 'get', 'pull' and 'push'. Mode 'get' is the default.
     The meaning depends on the used version control system (VCS), if it is
-    distributed (git,mercurial,darcs) or centralized (subversion). There are
-    three possible operations on the dependency database:
+    distributed (git,mercurial,darcs) or centralized (subversion,cvs). There
+    are three possible operations on the dependency database:
 
       * init : create the dependency database if it doesn't exist
       * read : read the dependency database

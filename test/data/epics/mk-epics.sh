@@ -149,6 +149,39 @@ function MK_SVN_GENERIC {
     make -C $2 1>&2
 }
 
+function MK_CVS {
+    # $1: path
+    # $2: subdir
+    # $3: tag
+    MK_CVS_GENERIC $1 "$1/$2" $3
+}
+
+function MK_CVS_GENERIC {
+    # $1: source path 
+    # $2: destination path
+    # $3: tag
+    echo -e "\t\tprepare $2..." >&2
+    if [ ! -d `dirname $2` ]; then 
+        mkdir -p `dirname $2`
+    fi
+    if [ -z "$3" ]; then
+           rev=""
+    else
+           rev="-r $3"
+    fi
+    # note: CVS repos created by mk-repos.sh have the path:
+    # /<directories>/<project>/<project>
+    # Since CVS is intended to have more than one project under a single
+    # CVS root directory.
+    root=$REPODIR/$1
+    repo=`basename $REPODIR/$1`
+    echo cvs -d $root checkout $rev $repo >&2
+    cvs -d $root checkout $rev $repo >&2
+    mv $repo $2
+    # create fake binary directories:
+    make -C $2 1>&2
+}
+
 function MK_TAR {
     # $1: tarfile
     # $2: destination-dir
@@ -192,7 +225,7 @@ MK_PATH          support/apps/genericTemplate 3-0
 MK_DARCS         support/apps/iocWatch 3-0
 MK_TAR           support/asyn/asyn-4-17-2.tar.gz support
 MK_DARCS         support/bessyRules 2-5
-MK_DARCS         support/bspDep/cpuBoardInit 4-1
+MK_CVS           support/bspDep/cpuBoardInit 4-1 R4-1
 MK_DARCS_MISSING support/bspDep/timer 6-2
 MK_HG            support/bspDep/VMEtas 2-0 R2-0
 MK_HG            support/bspDep/VMEtas 2-1 R2-1

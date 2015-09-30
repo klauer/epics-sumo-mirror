@@ -239,7 +239,7 @@ class Repo(object):
             pars["url"]= self.remote_url
         return d
     @staticmethod
-    def checkout(spec, destdir, verbose, dry_run):
+    def checkout(spec, destdir, _, verbose, dry_run):
         """spec must be a dictionary with "url" and "tag" (optional).
         """
         assert_darcs()
