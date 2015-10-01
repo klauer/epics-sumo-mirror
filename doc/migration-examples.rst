@@ -119,9 +119,9 @@ program. The output of sumo-scan is directed to sumo which prints
 :ref:`dependency database <reference-sumo-db-The-dependency-database>` to the
 console::
 
-  sumo-scan -d . -g <supportdir> -g <epics-basedir> --ignore-changes '.*' | sumo db modconvert - <supportname>
+  sumo-scan -d . -g <supportdir> -g <epics-basedir> --ignore-changes 'configure/RELEASE' | sumo db modconvert - -C <supportname>
 
-Option "--ignore-changes 'configure/RELEASE'" is needed if file
+Option ``--ignore-changes 'configure/RELEASE'`` is needed if file
 configure/RELEASE has uncomitted changes. If sumo-scan finds any uncomitted
 changes it sets the :ref:`source data <reference-sumo-source-data>` to type
 'path' which usually is not what you want.
@@ -130,7 +130,7 @@ Note that you may omit <supportname> but in this case the `JSON
 <http://www.json.org>`_ data contains not just your support module but also all
 dependent modules. 
 
-You may direct the youtput to a file and use 
+You may direct the output to a file and use 
 :ref:`sumo edit <reference-sumo-db-edit>` to add this to the 
 :ref:`dependency database <reference-sumo-db-The-dependency-database>`.
 
