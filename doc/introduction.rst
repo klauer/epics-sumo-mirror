@@ -183,5 +183,5 @@ The functions described above are implemented with two programs:
   `EPICS <http://www.aps.anl.gov/epics>`_ support directory tree to sumo. It
   scans all modules for versions and repository sources. It generates a *scan*
   file which can be converted to a :term:`DEPS.DB` file with
-  `sumo <reference-sumo>`.
+  `sumo <reference-sumo>`_.
 
