@@ -661,7 +661,7 @@ This is the maincommand for all operations that work with the
 dependency database or :term:`DEPS.DB` file.
 
 For all of the db subcommands you have to specify the dependency database
-directory with option --dbdir or a configuration file.
+directory with option ``--dbdir`` or a configuration file.
 
 build
 :::::
@@ -670,7 +670,7 @@ This is the maincommand for all operations that work with builds and the build
 database (:term:`BUILDS.DB`).
 
 For all of the build subcommands you have to specify the dependency database
-directory and the build directory with --dbdir and --builddir or a
+directory and the build directory with ``--dbdir`` and ``--builddir`` or a
 configuration file.
 
 subcommands for maincommand "config"
@@ -735,10 +735,10 @@ db convert SCANFILE
 Convert a :term:`scanfile` that was created by by 
 :doc:`"sumo-scan all"<reference-sumo-scan>` to a new dependency database.  If
 SCANFILE is a dash "-", the program expects the scanfile on stdin.  Note that
-options "--dbdir" and "--scandb" are mandatory here. With "--dbdir" you specify
-the drectory where the new created 
+options ``--dbdir`` and ``--scandb`` are mandatory here. With ``--dbdir`` you
+specify the drectory where the new created 
 :ref:`dependency database <reference-sumo-db-The-dependency-database>` file is
-stored, with "--scandb" you specify the name of the scan database file. The
+stored, with ``--scandb`` you specify the name of the scan database file. The
 scan database file contains information on what moduleversion can be used with
 what dependency version.
 
@@ -748,8 +748,8 @@ db convert-old OLDDB
 Convert a :ref:`dependency database <reference-sumo-db-The-dependency-database>` 
 file OLDDB from old to new format. The old format had architecture data
 ("arch") for each moduleversion. In the new format this data is removed.  Note
-that this command IGNORES option "--dbrepo", it directly operates on the
-dependency database file in the directory given with option "--dbdir".
+that this command IGNORES option ``--dbrepo"`` it directly operates on the
+dependency database file in the directory given with option ``--dbdir``.
 
 db appconvert SCANFILE
 ::::::::::::::::::::::
@@ -775,17 +775,17 @@ can be added to the dependency database using the command `db edit`_.
 db edit
 :::::::
 
-Start the editor specified by option --editor or the environment variables
+Start the editor specified by option ``--editor`` or the environment variables
 "VISUAL" or "EDITOR" to edit the dependency database file. This command first
 aquires a file-lock on the file, that prevents other users from acessing the
 file at the same time.  When the editor program is terminated, sumo checks if
 the file is still a valid `JSON <http://www.json.org>`_ file. If not, you can
 start the editor again or abort the program. If the file is valid 
-`JSON <http://www.json.org>`_, sumo commits the changes if option --dbrepo was
-specified.  If option --logmsg was given, this is used as commit log message,
-otherwise an editor is started where you can enter a log message.  Finally the
-file lock is released. If you want to edit the dependency database file you
-should always do it with this command.
+`JSON <http://www.json.org>`_, sumo commits the changes if option ``--dbrepo``
+was specified.  If option ``--logmsg`` was given, this is used as commit log
+message, otherwise an editor is started where you can enter a log message.
+Finally the file lock is released. If you want to edit the dependency database
+file you should always do it with this command.
 
 db format
 :::::::::
@@ -794,9 +794,9 @@ Just load and save the
 :ref:`dependency database <reference-sumo-db-The-dependency-database>`. 
 This ensures that the file is formatted in the standard sumo format. This is
 useful when the file was edited and you want to ensure that key sort order and
-indentation are restored. If you specified a repository with --dbrepo, the
+indentation are restored. If you specified a repository with ``--dbrepo,`` the
 command will commit the changes. If you want a log message different from "db
-format" use option --logmsg. 
+format" use option ``--logmsg`` 
 
 
 db weight WEIGHT MODULES
@@ -807,7 +807,7 @@ in the generated RELEASE file. Modules there are sorted first by weight, then
 by dependency. Parameter MODULES is a list of :term:`modulespecs`. Use
 modulename:{+-}versionname to select more versions of a module.
 
-Note that this command *does not* use the "--modules" command line option.
+Note that this command *does not* use the ``--modules`` command line option.
 
 Parameter WEIGHT must be an integer.
 
@@ -839,13 +839,13 @@ db check
 ::::::::
 
 Do some consistency checks on the :term:`dependency database` file in the
-directory specifed by --dbdir.
+directory specifed by ``--dbdir``.
 
 db merge DB
 :::::::::::
 
 Merge the given :term:`dependency database` file with the 
-:term:`dependency database` in the directory specifed by --dbdir.
+:term:`dependency database` in the directory specifed by ``--dbdir``.
 
 db cloneversion MODULE OLD-VERSION NEW-VERSION [SOURCESPEC]
 :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
@@ -918,7 +918,7 @@ MODULE:{+-}VERSION that specifies just a module name, a module and some
 versions or a single version. You can specify an incomplete list of
 :term:`modules`.
 
-The detail of the output is determined by option "``--detail``" which is an
+The detail of the output is determined by option ``--detail`` which is an
 integer between 0 and 3. 0, the default, gives the shortest, 3 gives the
 longest report. The program then shows which :term:`modules` you have to
 
@@ -927,7 +927,7 @@ depend on other :term:`modules` of your specification and which ones are
 missing an exact :term:`version`.
 
 If you converted an existing support directory to sumo you have a scan database
-file which you can specify with option "--scandb" to this command.
+file which you can specify with option ``--scandb`` to this command.
 
 For a detailed example see :ref:`try example <example-sumo-build-try>`.
 
@@ -946,8 +946,8 @@ all :term:`modules` are specified with exactly a single :term:`version`. Use
 command "try" in order to create :term:`module` specifications that can be used
 with command "new".  This command calls "make" and, after successful
 completion, sets the state of the :term:`build` to "testing". If you want to
-skip this step, use option "--no-make". In order to provide arbitrary options
-to make use option "--makeflags". 
+skip this step, use option ``--no-make``. In order to provide arbitrary options
+to make use option ``--makeflags``. 
 
 build remake BUILDTAG
 :::::::::::::::::::::
@@ -956,7 +956,7 @@ This command recreates a :term:`build` by first calling "make distclean" and
 then "make all" with the build's makefile. If you develop a support
 :term:`module` (see also "config standalone" and "config local") you want to
 recompile the :term:`build` after changes in the sources. In order to provide
-arbitrary options to make use option "--makeflags". 
+arbitrary options to make use option ``--makeflags``. 
 
 build find MODULES
 ::::::::::::::::::
@@ -965,7 +965,7 @@ This command is used to find matching :term:`builds` for a given list of
 :term:`modulespecs`. Each module in MODULES here is a :term:`modulespec` of the
 form MODULE or MODULE:{+-}VERSION that specifies just a module name, a module
 and some versions or a single version. The command prints a list of
-:term:`buildtags` of matching :term:`builds` on the console. If option --brief
+:term:`buildtags` of matching :term:`builds` on the console. If option ``--brief``
 is given, the program just shows the buildtags. 
 
 .. _reference-sumo-use:
@@ -975,7 +975,7 @@ build use MODULES
 
 This command creates a configure/RELEASE file for an application. Each module
 given in MODULES here is a :term:`modulespec` of the form MODULE:VERSION that
-specifies a single version of a module. If option --buildtag is given, it
+specifies a single version of a module. If option ``--buildtag`` is given, it
 checks if this is compatible with the given :term:`modules`.  Otherwise it
 looks for all :term:`builds` that have the :term:`modules` in the required
 :term:`versions`. If more than one matching :term:`build` found it takes the

@@ -23,7 +23,7 @@ The program collects information in several phases. The output of each phase is
 taken as an input for the next phase. If you use the command "all", the first
 three phases are run at a time. If you run some phases alone by using the
 commands "deps", "groups" or "repos" you have to provide the input of a phase
-from a file by using the command line option "--info-file".
+from a file by using the command line option ``--info-file``.
 
 All three phases that are needed to create the data for generating a dependency
 database with :doc:`sumo db <reference-sumo>` are combined with the command
@@ -95,7 +95,7 @@ collection all the versions of a support module. This is done by parsing module
 paths. The program assumes that each module has a path of the form
 "[BASEDIR]/[MODULEPATH]/[VERSION]". [VERSION] is simply the last part of the
 path that contains no slashes "/". [BASEDIR] is given as a command line option
-to the program (see option "--group-basedir") and [MODULEPATH] is all that
+to the program (see option ``--group-basedir``) and [MODULEPATH] is all that
 remains of the path. In order to create a *modulename* the program changes all
 characters in [MODULEPATH] to uppercase and replaces all slashes "/" with
 underscore "_" characters. Here is an example of the created datastructure in 
@@ -256,8 +256,8 @@ module.
 
 Since all the consecutive calls of "make" may take some time, the results of
 the RELEASE file scan can be saved as a file and used later on with other
-commands like "path2names" or "groups". This is the meaning of the "-i" or
-"--info-file" option.
+commands like "path2names" or "groups". This is the meaning of the ``-i`` or
+``--info-file`` option.
 
 Commands
 --------
