@@ -19,7 +19,7 @@ are used to define lists of values.
 
 The configuration file defines a map where keys are names of long command line
 options and values are booleans, strings or lists of strings. Not all command
-line options can be set in a configuration file, "sumo -h" shows you which can.
+line options can be set in a configuration file, ``sumo -h`` shows you which can.
 
 File format
 -----------
@@ -74,14 +74,14 @@ If SUMOCONFIG *is not set*, these are the predefined default paths:
 Note the sumo reads *all* the configuration files it finds, not just the first
 one.
 
-If you use the "--no-default-config" command line option, the list of default
+If you use the ``--no-default-config`` command line option, the list of default
 paths is made empty.
 
 The config option
 -----------------
 
 After configuration files from default paths were read the program continues
-with all configuration files specified by the "-c" or "--config" option.
+with all configuration files specified by the ``-c`` or ``--config`` option.
 
 Load commands in configuration files
 ------------------------------------
@@ -232,6 +232,10 @@ dbrepomode
   A string that specifies the mode for the dependency database repository, 
   for details see :ref:`sumo options <reference-sumo-Options>`.
 
+editor
+  A string that specifies the editor for command ``sumo db edit``, for details
+  see :ref:`sumo options <reference-sumo-Options>`.
+
 extra
   A list of strings that defines extra lines that are put in generated RELEASE
   files,
@@ -243,10 +247,6 @@ makeflags
 
 module
   A list of module specifications,
-  for details see :ref:`sumo options <reference-sumo-Options>`.
-
-no-cli-caching
-  A boolean for controling the command line completion cache,
   for details see :ref:`sumo options <reference-sumo-Options>`.
 
 progress
