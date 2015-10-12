@@ -171,9 +171,9 @@ def backup_file(filename, verbose, dry_run):
     If there exists a file "filename.bak", it is removed.
     If file "filename" doesn't exist, do nothing.
     """
-    if not os.path.exists(filename):
-        return
     backup= "%s.bak" % filename
+    if not os.path.exists(filename):
+        return backup
     if os.path.exists(backup):
         if verbose:
             print "remove %s" % backup
@@ -183,6 +183,7 @@ def backup_file(filename, verbose, dry_run):
         print "rename %s to %s" % (filename, backup)
     if not dry_run:
         os.rename(filename, backup)
+    return backup
 
 def edit_file(filename, editor, verbose, dry_run):
     """open a file with an editor.

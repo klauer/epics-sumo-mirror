@@ -13,7 +13,9 @@ if __name__ == "__main__":
     sys.path.append("..")
 
 import pprint
+import os
 import os.path
+import shutil
 import time
 import cPickle
 import tempfile
@@ -65,12 +67,14 @@ class InconsistentError(Exception):
 # JSON functions
 # -----------------------------------------------
 
-def dump_file(filename, var):
+def dump_file(filename, var, mode_file):
     """Dump a variable to a file in JSON format.
 
     This function uses a technique to write the file atomically. It assumes
     that we have a lock on the file so the temporary filename does not yet
     exist.
+
+    mode_file is the file we copy the file permissions from.
     """
     (f_dir, f_name)= os.path.split(filename)
     if not f_dir:
@@ -86,6 +90,20 @@ def dump_file(filename, var):
     fh.flush()
     os.fsync(fh.fileno())
     fh.close()
+    # copy file permissions from mode_file to tmp_filename. We have to do this
+    # since mkstemp creates a file with minimal permissions, like "-rw-------":
+    if not os.path.exists(mode_file):
+        # No mode file exists, create one. We assume that is a portable way to
+        # get the standard file permissions on any operating system:
+        fh= open(mode_file, "w")
+        fh.close()
+        shutil.copymode(mode_file, tmp_filename)
+        os.remove(mode_file)
+    else:
+        shutil.copymode(mode_file, tmp_filename)
+    # Set modification date to [now] since shutil.copymode copied the
+    # modification date from mode_file:
+    os.utime(tmp_filename, None)
     os.rename(tmp_filename, filename)
 
 # pylint: disable=C0303
@@ -378,9 +396,10 @@ class Container(object):
             if not dry_run:
                 # locks only of self._use_lock==True:
                 self.lock_file()
-            sumolib.utils.backup_file(self._filename, verbose, dry_run)
+            backup= sumolib.utils.backup_file(self._filename,
+                                              verbose, dry_run)
             if not dry_run:
-                dump_file(self._filename, self.to_dict())
+                dump_file(self._filename, self.to_dict(), backup)
         finally:
             # unlocks only of self._use_lock==True:
             self.unlock_file()
