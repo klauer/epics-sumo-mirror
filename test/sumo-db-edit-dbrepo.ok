@@ -1,0 +1,161 @@
+===========================================
+File diff (darcs):
+6d5
+<                 "BSPDEP_TIMER": "TIMER",
+11d9
+<                 "BSPDEP_TIMER",
+File diff (hg):
+6d5
+<                 "BSPDEP_TIMER": "TIMER",
+11d9
+<                 "BSPDEP_TIMER",
+File diff (git):
+6d5
+<                 "BSPDEP_TIMER": "TIMER",
+11d9
+<                 "BSPDEP_TIMER",
+File diff (svn):
+6d5
+<                 "BSPDEP_TIMER": "TIMER",
+11d9
+<                 "BSPDEP_TIMER",
+File diff (cvs):
+6d5
+<                 "BSPDEP_TIMER": "TIMER",
+11d9
+<                 "BSPDEP_TIMER",
+===========================================
+
+===========================================
+Test of darcs:
+
+Logs of local repository:
+-------------------------------------------
+Mon Jan 01 01:01:01 2014 +0100  Homer.Simpson@burns.com
+  * remove BSPDEP_TIMER dep from ALARM:R3-7
+
+Mon Jan 01 01:01:01 2014 +0100  Homer.Simpson@burns.com
+  * initial record
+
+Logs of central repository:
+-------------------------------------------
+Mon Jan 01 01:01:01 2014 +0100  Homer.Simpson@burns.com
+  * remove BSPDEP_TIMER dep from ALARM:R3-7
+
+Mon Jan 01 01:01:01 2014 +0100  Homer.Simpson@burns.com
+  * initial record
+
+===========================================
+Test of mercurial:
+
+Logs of local repository:
+-------------------------------------------
+changeset:   1:ffffffffffff
+tag:         tip
+user:        Homer.Simpson@burns.com
+date:        Mon Jan 01 01:01:01 2014 +0100
+summary:     remove BSPDEP_TIMER dep from ALARM:R3-7
+
+changeset:   0:ffffffffffff
+user:        Homer.Simpson@burns.com
+date:        Mon Jan 01 01:01:01 2014 +0100
+summary:     initial record
+
+
+Logs of central repository:
+-------------------------------------------
+changeset:   1:ffffffffffff
+tag:         tip
+user:        Homer.Simpson@burns.com
+date:        Mon Jan 01 01:01:01 2014 +0100
+summary:     remove BSPDEP_TIMER dep from ALARM:R3-7
+
+changeset:   0:ffffffffffff
+user:        Homer.Simpson@burns.com
+date:        Mon Jan 01 01:01:01 2014 +0100
+summary:     initial record
+
+
+===========================================
+Test of git:
+
+Logs of local repository:
+-------------------------------------------
+commit ffffffffffff
+Author: Homer.Simpson@burns.com
+Date:   Mon Jan 01 01:01:01 2014 +0100
+
+    remove BSPDEP_TIMER dep from ALARM:R3-7
+
+commit ffffffffffff
+Author: Homer.Simpson@burns.com
+Date:   Mon Jan 01 01:01:01 2014 +0100
+
+    initial record
+
+Logs of central repository:
+-------------------------------------------
+commit ffffffffffff
+Author: Homer.Simpson@burns.com
+Date:   Mon Jan 01 01:01:01 2014 +0100
+
+    remove BSPDEP_TIMER dep from ALARM:R3-7
+
+commit ffffffffffff
+Author: Homer.Simpson@burns.com
+Date:   Mon Jan 01 01:01:01 2014 +0100
+
+    initial record
+
+===========================================
+Test of subversion:
+
+Logs of local repository:
+-------------------------------------------
+------------------------------------------------------------------------
+r2  | Homer.Simpson@burns.com | Mon Jan 01 01:01:01 2014 +0100 | 1 line
+
+remove BSPDEP_TIMER dep from ALARM:R3-7
+------------------------------------------------------------------------
+r1  | Homer.Simpson@burns.com | Mon Jan 01 01:01:01 2014 +0100 | 1 line
+
+initial commit
+------------------------------------------------------------------------
+
+Logs of central repository:
+--> With subversion the central repository has ALWAYS
+    the same set of patches as the working copy and 
+    aside from this we cannot simply show all logs of
+    the repository without a working copy.
+
+===========================================
+Test of cvs:
+
+Logs of local repository:
+-------------------------------------------
+
+RCS file: /tmp-sumo-db-edit-dbrepo/central-cvs/sumo-database/DEPS.DB,v
+Working file: DEPS.DB
+head: 1.2
+branch:
+locks: strict
+access list:
+symbolic names:
+keyword substitution: kv
+total revisions: 2;	selected revisions: 2
+description:
+----------------------------
+revision 1.2
+date: Mon Jan 01 01:01:01 2014 +0100;  author: Homer.Simpson@burns.com  state: Exp;  lines: +0 -2
+remove BSPDEP_TIMER dep from ALARM:R3-7
+----------------------------
+revision 1.1
+date: Mon Jan 01 01:01:01 2014 +0100;  author: Homer.Simpson@burns.com  state: Exp
+DEPS.DB was added to the repository.
+=============================================================================
+
+Logs of central repository:
+--> With cvs the central repository has ALWAYS
+    the same set of patches as the working copy and 
+    aside from this we cannot simply show all logs of
+    the repository without a working copy.
