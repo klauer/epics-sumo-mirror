@@ -30,9 +30,9 @@ $SUMO -c sumo.config build  --buildtag-stem MYAPP --no-make new BASE:R3-14-12-2-
 $SUMO -c sumo.config build  state MYAPP-001 testing 2>&1 
 
 echo -e "\ndirectory tree (without darcs, maxdepth 2)"
-find . -maxdepth 3 | grep -v '_darcs\|\.hg\(\|ignore\)\|\.svn\|CVSROOT\|\.git\(\|ignore\)\|\.tmp\|\.bak\|\.coverage'
+find . -maxdepth 3 | sort -f -d | grep -v '_darcs\|\.hg\(\|ignore\)\|\.svn\|CVSROOT\|\.git\(\|ignore\)\|\.tmp\|\.bak\|\.coverage'
 echo -e "\ncontents of RELEASE files\n"
-for f in `find . -name RELEASE | grep -v 'makeBase\(App\|Ext\)' | sort`; do echo -e "\nFILE: $f"; cat $f | sed -e "s#`pwd -P`#mysumo#"; done
+for f in `find . -name RELEASE | grep -v 'makeBase\(App\|Ext\)' | sort -f -d`; do echo -e "\nFILE: $f"; cat $f | sed -e "s#`pwd -P`#mysumo#"; done
 echo -e "\ncontent of BUILDS"
 cat BUILDS.DB
 echo -e "\ncontent of Makefile-BASE-001"
