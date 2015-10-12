@@ -205,21 +205,11 @@ class ConfigFile(object):
         if filename=="-":
             sumolib.JSON.dump(dump)
             return
-        backup= "%s.bak" % filename
-        if os.path.exists(backup):
-            if verbose:
-                print "remove %s" % backup
-            if not dry_run:
-                os.remove(backup)
-        if os.path.exists(filename):
-            if verbose:
-                print "rename %s to %s" % (filename, backup)
-            if not dry_run:
-                os.rename(filename, backup)
+        backup= sumolib.utils.backup_file(filename, verbose, dry_run)
         if verbose:
             print "creating %s" % filename
         if not dry_run:
-            sumolib.JSON.dump_file(filename, dump)
+            sumolib.JSON.dump_file(filename, dump, backup)
 
     def merge_options(self, option_obj, merge_opts_set):
         """create from an option object.
