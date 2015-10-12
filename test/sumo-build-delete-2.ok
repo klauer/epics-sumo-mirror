@@ -5,8 +5,8 @@ directory tree (without darcs, maxdepth 2)
 .
 ./ALARM
 ./ALARM/R3-8-modified+001
-./ALARM/R3-8-modified+001/LICENSE
 ./ALARM/R3-8-modified+001/configure
+./ALARM/R3-8-modified+001/LICENSE
 ./ALARM/R3-8-modified+001/Makefile
 ./BASE
 ./BUILDS.DB

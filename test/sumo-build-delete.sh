@@ -34,9 +34,9 @@ rm -f *.bak
 
 echo -e "\ndirectory tree:"
 echo "> ls $EXAMPLEDIR:"
-ls  
+ls | sort -f -d 
 echo -e "\nbuild directories:"
-find . -name '*+*'
+find . -name '*+*' | sort -f -d
 
 echo -e "\ncontents of BUILDS file:"
 cat BUILDS.DB
@@ -45,7 +45,7 @@ echo -e "\ndelete build 'MYAPP-002'"
 $SUMO build --dbdir . --builddir . delete MYAPP-002
 
 echo -e "\nbuild directories:"
-find . -name '*+*'
+find . -name '*+*' | sort -f -d
 
 echo -e "\ncontents of BUILDS file:"
 cat BUILDS.DB
@@ -54,7 +54,7 @@ echo -e "\ndelete build 'MYAPP-001'"
 $SUMO build --dbdir . --builddir . delete MYAPP-001
 
 echo -e "\nbuild directories:"
-find . -name '*+*'
+find . -name '*+*' | sort -f -d
 
 echo -e "\ncontents of BUILDS file:"
 cat BUILDS.DB 

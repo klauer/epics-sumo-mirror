@@ -25,13 +25,13 @@ $SUMO build --dbdir ../$OTHERDIR --localbuilddir . --builddir ../$OTHERDIR -m ':
 
 echo -e "\ndirectory tree"
 echo "> ls $EXAMPLEDIR:"
-ls  
+ls | sort -f -d 
 echo
 echo "> ls $EXAMPLEDIR/ALARM:"
-ls  ALARM
+ls  ALARM | sort -f -d
 echo
 echo "> ls $EXAMPLEDIR/MCAN:"
-ls  MCAN
+ls  MCAN | sort -f -d
 echo -e "\ncontent of BUILDS.DB:"
 cat BUILDS.DB 
 echo -e "\ncontent of Makefile-MYAPP-002"

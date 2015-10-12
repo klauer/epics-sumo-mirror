@@ -29,7 +29,7 @@ echo -e "\ncall sumo build remake"
 $SUMO -c sumo.config build remake MYAPP-001 --dry-run | sed -e "s#$PWD_NICE##g;s#$PWD_REAL##g"
 
 echo -e "\ndirectory tree (without darcs, maxdepth 2)"
-find . -maxdepth 3 | grep -v '_darcs\|\.hg\(\|ignore\)\|\.svn\|CVSROOT\|\.git\(\|ignore\)\|\.tmp\|\.bak\|\.coverage'
+find . -maxdepth 3 | sort -f -d | grep -v '_darcs\|\.hg\(\|ignore\)\|\.svn\|CVSROOT\|\.git\(\|ignore\)\|\.tmp\|\.bak\|\.coverage'
 echo -e "\ncontent of BUILDS"
 cat BUILDS.DB
 echo -e "\ncontent of Makefile-BASE-001"
