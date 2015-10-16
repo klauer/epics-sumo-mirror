@@ -11,6 +11,21 @@ The distribution does not contain the configuration files since you have
 to adapt them to your development host. Examples of configuration files are
 shown further below.
 
+Requirements
+------------
+
+Sumo requires at least `Python <https://www.python.org>`_ version 2.5 or newer.
+It currently doesn't run with python 3, but will be ported to this version at
+some time in the future.
+
+Sumo is tested on `debian <https://www.debian.org>`_ and 
+`Fedora <https://getfedora.org>`_ linux distributions but should run on all
+linux distributions. It probably also runs on other flavours of unix, probably
+even MacOS, but this is not tested.
+
+It may run on windows, escpecially the `Cygwin <https://www.cygwin.com>`_
+environment, but this is also not tested.
+
 Packages
 --------
 
