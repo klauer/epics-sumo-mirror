@@ -1,0 +1,33 @@
+create a config file with environment variables...
+
+content of config file:
+{
+    "builddir": "$BUILDDIR",
+    "dbdir": "$DBDIR",
+    "dbrepo": "$DBREPO",
+    "localbuilddir": "$LOCALBUILDDIR"
+}
+read by sumo with environment expansion:
+{
+    "builddir": "my builddir",
+    "dbdir": "my dbdir",
+    "dbrepo": "my dbrepo",
+    "localbuilddir": "my localbuilddir"
+}
+
+now create with escaped backslashes...
+content of config file:
+{
+    "builddir": "\\$BUILDDIR",
+    "dbdir": "\\$DBDIR",
+    "dbrepo": "\\$DBREPO",
+    "localbuilddir": "\\$LOCALBUILDDIR"
+}
+read by sumo with environment expansion:
+{
+    "builddir": "$BUILDDIR",
+    "dbdir": "$DBDIR",
+    "dbrepo": "$DBREPO",
+    "localbuilddir": "$LOCALBUILDDIR"
+}
+
