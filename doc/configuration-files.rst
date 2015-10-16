@@ -18,8 +18,14 @@ Some command line options may be given more than once with an argument, they
 are used to define lists of values.
 
 The configuration file defines a map where keys are names of long command line
-options and values are booleans, strings or lists of strings. Not all command
-line options can be set in a configuration file, ``sumo -h`` shows you which can.
+options and values are booleans, strings or lists of strings. Only some of the
+command line options can be put in a configuration file. 
+
+For sumo-scan you find a list of these at 
+`Keys in the sumo-scan configuration file`_.
+
+For sumo you find a list of these at 
+`Keys in the sumo configuration file`_.
 
 File format
 -----------
