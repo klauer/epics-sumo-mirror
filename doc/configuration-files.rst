@@ -111,7 +111,7 @@ Note that the loaded files can also contain one or more these special keys.
 The configuration file for sumo-scan
 ------------------------------------
 
-The default filename of this file is sumo-scan.config.
+The default name of this file is sumo-scan.config.
 
 Keys in the sumo-scan configuration file
 ++++++++++++++++++++++++++++++++++++++++
@@ -189,7 +189,7 @@ verbose
 The configuration file for sumo
 -------------------------------
 
-The default filename of this file is sumo.config.
+The default name of this file is sumo.config.
 
 Keys in the sumo configuration file
 +++++++++++++++++++++++++++++++++++

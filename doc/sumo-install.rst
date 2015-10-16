@@ -177,9 +177,9 @@ You may want to add these lines to your shell setup, e.g. $HOME/.bashrc.
 The sumo configuration file
 ---------------------------
 
-In order to use sumo on your system you should create a configuration file. See
-:doc:`configuration-files` how to do this. 
-
-For examples on configuration files see 
-:ref:`sumo.config examples <configuration-files-config-examples>`.
+In order to use sumo on your system you should create a configuration file. The
+default name for this file is "sumo.config". See :doc:`configuration-files` for
+a complete description of configuration files, see 
+:ref:`sumo.config examples <configuration-files-config-examples>` for examples
+of configuration files.
 
