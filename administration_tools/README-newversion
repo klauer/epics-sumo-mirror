@@ -1,0 +1,73 @@
+How to create a new version of sumo
+-----------------------------------
+
+* Ensure that all the tests work
+  (chdir test && make distclean && make)
+
+* Go to the administration directory:
+
+  cd administration_tools
+
+* There review all the changes.
+
+* Then show the current version number:
+
+  ./show-version.sh
+
+* Create a new version with:
+
+  ./new-version.sh [NUMBER]
+
+* convert mq patches
+
+  hg qfinish -a
+
+* create a new tag
+  show tags with 
+    hg tags | head
+  create tag with
+    hg tag [TAG]
+
+* Create documentation
+
+  ./doc-rebuild.sh
+
+* Clean distribution directories
+
+  ./cleanup-distdirs.sh
+
+* push changes to local repo
+
+  hg push
+
+* Create distribution tar files
+
+  ./mk-dist.sh
+
+* Create debian packages
+
+  ./docker-run.sh debian-7
+  within run: cd /root/sumo/administration_tools && ./mk-deb.sh
+
+  ./docker-run.sh debian-8
+  within run: cd /root/sumo/administration_tools && ./mk-deb.sh
+
+  ./docker-run.sh fedora-21
+  within run: cd /root/sumo/administration_tools && ./mk-rpm.sh
+
+  ./docker-run.sh fedora-22
+  within run: cd /root/sumo/administration_tools && ./mk-rpm.sh
+
+* upload docs to sourceforge
+
+  ./sourceforge-upload-html.sh
+
+* upload dist files to sourceforge
+
+  ./sourceforge-upload-distfiles.sh
+
+* push changes to sourceforge
+
+  ./sourceforge-push.sh
+
+  
