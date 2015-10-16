@@ -44,6 +44,17 @@ Here is an example of such a file::
       "builddir": "/opt/Epics/sumo/build"
   }
 
+Environment variable expansion
+------------------------------
+
+A few keys in the configuration file of sumo have environment variable
+expansion. This means that strings of the form ``$VARNAME`` are substituted
+with the value of environment variable ``VARNAME`` if it exists. If you want to
+use the string ``$VARNAME`` literally, precede it with a backslash like in
+``\$VARNAME``. The list `Keys in the sumo configuration file`_ shows you which
+keys have environment variable expansion.
+
+
 Using more than one configuration file
 --------------------------------------
 
@@ -227,12 +238,14 @@ buildtag-stem
   for details see :ref:`sumo options <reference-sumo-Options>`.
 
 dbdir
-  The directory where the dependency database file is found,
-  for details see :ref:`sumo options <reference-sumo-Options>`.
+  The directory where the dependency database file is found for details see
+  :ref:`sumo options <reference-sumo-Options>`. This key has 
+  `Environment variable expansion`_.
 
 dbrepo
   The url of the dependency database foreign repository,
-  for details see :ref:`sumo options <reference-sumo-Options>`.
+  for details see :ref:`sumo options <reference-sumo-Options>`. This key has 
+  `Environment variable expansion`_.
 
 dbrepomode
   A string that specifies the mode for the dependency database repository, 
@@ -277,11 +290,13 @@ url-patch
 
 builddir
   The build directory,
-  for details see :ref:`sumo options <reference-sumo-Options>`.
+  for details see :ref:`sumo options <reference-sumo-Options>`. This key has
+  `Environment variable expansion`_.
 
 localbuilddir
-  The local build directory,
-  for details see :ref:`sumo options <reference-sumo-Options>`.
+  The local build directory, for details see 
+  :ref:`sumo options <reference-sumo-Options>`. This key has 
+  `Environment variable expansion`_.
 
 verbose
   A boolean flag that controls the verbosity level,

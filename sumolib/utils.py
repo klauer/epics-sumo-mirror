@@ -79,6 +79,22 @@ def ask_abort(question, force_yes= None):
 # data structure utilities
 # -----------------------------------------------
 
+def env_expand(st):
+    r"""expand environment variables in a string.
+
+    Note: The dollar sign can be escaped with a backslash.
+
+    Here are some examples:
+    >>> env_expand("$PATH:mypath").replace(os.environ["PATH"],"<your PATH>")
+    '<your PATH>:mypath'
+    >>> env_expand(r"\$PATH:mypath").replace(os.environ["PATH"],"<your PATH>")
+    '$PATH:mypath'
+    """
+    if not st:
+        return st
+    return os.path.expandvars(st.replace(r'\$',"$ ")).replace("$ ","$")
+
+
 def opt_join(option, do_sort= False):
     """join command line option values to a single list.
 

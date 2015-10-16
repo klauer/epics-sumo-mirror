@@ -118,6 +118,12 @@ KNOWN_CONFIG_OPTIONS=set(("#preload",
                           "verbose" \
                         ))
 
+CONFIG_ENV_EXPAND =set(("dbdir",
+                        "dbrepo",
+                        "builddir",
+                        "localbuilddir" \
+                      ))
+
 KNOWN_REPO_MODES=set(( "get", "pull", "push"))
 
 KNOWN_PAGER_MODES=set(("always", "off", "on"))
@@ -290,6 +296,7 @@ def load_config_files(options, disable_loading):
         if not catch_exceptions:
             raise
         sys.exit(errtxt("Error while loading config file,",e))
+    config.env_expand(CONFIG_ENV_EXPAND)
     try:
         config.merge_options(options, options.append)
     except ValueError, e:
@@ -3054,6 +3061,18 @@ Here is an example of such a file:
       "builddir": "/opt/Epics/sumo/build"
   }
 
+Environment variable expansion
+------------------------------
+
+A few keys in the configuration file of sumo have environment variable
+expansion. This means that strings of the form "$VARNAME" are substituted
+with the value of environment variable "VARNAME" if it exists. If you want to
+use the string "$VARNAME" literally, precede it with a backslash like in
+"\\$VARNAME". 
+
+The list of configuration keys at the end of this file shows you which ones
+have environment variable expansion.
+
 Using more than one configuration file
 --------------------------------------
 
@@ -3138,8 +3157,8 @@ meanings of the keys see the sumo command line option. Call it with
 #opt-postload  [list of strings]
 alias          [list of strings]
 buildtag_stem  [string]
-dbdir          [string]
-dbrepo         [string]
+dbdir          [string], environment variable expansion
+dbrepo         [string], environment variable expansion
 dbrepomode     [string]
 editor         [string]
 extra          [list of strings]
@@ -3150,8 +3169,8 @@ readonly       [boolean]
 scandb         [string]
 dir-patch      [list of strings]
 url-patch      [list of strings]
-builddir       [string]
-localbuilddir  [string]
+builddir       [string], environment variable expansion
+localbuilddir  [string], environment variable expansion
 verbose        [boolean]
 """,
         "options":"""

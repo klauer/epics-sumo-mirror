@@ -95,6 +95,20 @@ class ConfigFile(object):
     def set(self, optionname, value):
         """set an option to an arbitrary value."""
         self._dict[optionname]= value
+    def env_expand(self, keys):
+        r"""expand environment variables in known values.
+
+        All $VARNAME and ${VARNAME} strings are expaned with the values of the
+        environment variable VARNAME for the keys in [keys]. If you want to
+        keep the dollar '$' sign uninterpreted, precede it with a backslash
+        like in '\$VARNAME'.
+        """
+        dict_= self._dict
+        for key in keys:
+            val= dict_.get(key)
+            if val is None:
+                continue
+            dict_[key]= sumolib.utils.env_expand(val)
     def _merge(self, dict_):
         """merge known keys from dict_ with self.
 
