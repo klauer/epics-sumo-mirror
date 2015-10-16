@@ -170,7 +170,7 @@ For installing sumo this way, enter::
 You must set your environment like this::
 
   export PATH=$HOME/sumo/bin:$PATH
-  export PYTHONPATH=$HOME/lib/python:$PYTHONPATH
+  export PYTHONPATH=$HOME/sumo/lib/python:$PYTHONPATH
 
 You may want to add these lines to your shell setup, e.g. $HOME/.bashrc.
 
