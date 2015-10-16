@@ -225,8 +225,13 @@ def builddb_f(path, path_local):
     (<build db filename>, <overlay build db filename>)
     """
     if not path_local:
+        if not os.path.exists(path):
+            raise ValueError("Error, builddir '%s' doesn't exist" % path)
         return (os.path.join(path, BUILDDB), None)
     else:
+        if not os.path.exists(path_local):
+            raise ValueError("Error, local builddir '%s' doesn't exist" % \
+                             path_local)
         return (os.path.join(path_local, BUILDDB),
                 os.path.join(path, BUILDDB))
 
@@ -441,7 +446,13 @@ def builddb_from_json_file(path, path_local, keep_locked= False,
     """
     # pylint: disable=R0912
     #                          Too many branches
-    (file_, overlay_file)= builddb_f(path, path_local)
+
+    try:
+        (file_, overlay_file)= builddb_f(path, path_local)
+    except ValueError, e:
+        if not catch_exceptions:
+            raise
+        sys.exit(errtxt("",e))
 
     if not os.path.exists(file_):
         if must_exist:
