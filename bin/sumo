@@ -3032,10 +3032,11 @@ Some command line options take no argument, some options require an argument.
 Some command line options may be given more than once with an argument, they
 are used to define lists of values.
 
-The configuration file defines a map that maps keys to values, where keys are
-the names of long command line options and values are booleans, strings or
-lists or strings. Not all command line options can be set in a configuration
-file, "sumo -h" shows you which can.
+The configuration file defines a map where keys are names of long command line
+options and values are booleans, strings or lists of strings. Only some of the
+command line options can be put in a configuration file. 
+
+You find a list of these at the end of this helptext.
 
 File format
 -----------
@@ -3053,15 +3054,18 @@ Here is an example of such a file:
       "builddir": "/opt/Epics/sumo/build"
   }
 
-Merging
--------
+Using more than one configuration file
+--------------------------------------
 
-Sumo can read several configuration files, in this case the data is *merged*.
+Sumo can read more than just one configuration file, in this case the data is
+*merged*.
 
-Merging means that keys not yet defined are simply added. For keys that already
-exist and whose values are strings, the latter one overwrites the first one.
-For keys that already exist and whose values are lists, the lists are simply
-concatenated.
+The files are read one by one and their keys and values are combined in the in
+the following way:
+
+Keys not yet defined are simply added. For keys that already exist and whose values
+are not lists, the last value overwrites the first one.  For keys that
+already exist and whose values are lists, the lists are concatenated.
 
 Default paths
 -------------
@@ -3074,14 +3078,17 @@ paths. The list of default paths can be set by the environment variable
 SUMOCONFIG which must be a colon (on Unix systems) or semicolon (on Windows
 systems) separated list of paths. 
 
-If SUMOCONFIG is not set, these are the predefined default paths:
+If SUMOCONFIG *is not set*, these are the predefined default paths:
 
 - /etc
 - [python-libdir]/sumolib
 - $HOME
 - your current working directory
 
-If you use the "--no-default-config" command line option, the list of default
+Note the sumo reads *all* the configuration files it finds, not just the first
+one.
+
+If you use the ``--no-default-config`` command line option, the list of default
 paths is made empty.
 
 The config option
@@ -3090,11 +3097,11 @@ The config option
 After the configuration files from default paths were read the program reads
 the all configuration files specified by the "-c" or "--config" option.
 
-Loading other files
+Load commands in configuration files
 -------------------
 
 In a configuration file you can specify names of other configuration files that
-can or must be loaded. These files are merged as described above.
+must or may be loaded. These files are merged as described above.
 
 There are 4 special keys in the configuration file that are used to specify
 other files:
@@ -3122,8 +3129,8 @@ Keys in the sumo configuration file
 +++++++++++++++++++++++++++++++++++
 
 This is the list of keys that may be used in a configuration file, for the
-meanings of the keys see the sumo command line option documentation or use
-"sumo -h".
+meanings of the keys see the sumo command line option. Call it with
+"sumo -h --[optionname]".
 
 #preload       [list of strings]
 #opt-preload   [list of strings]
@@ -3601,44 +3608,44 @@ option_help_topics= {
 """,
         "append":"""
 -A OPTIONNAME
---append=OPTIONNAME
+--append OPTIONNAME
     If an option with name OPTIONNAME is given here and it is a list option,
     the list from the command line is *appended* to the list from the
     configuration file.  The default is that options from the command line
     *override* option values from the configuration file.
 """,
         "#preload":"""
---#preload=FILES
+--#preload FILES
     Specify a an '#preload' directive in the configuration file. This option
     has only a meaning if a configuration file is created with the 'makeconfig'
     command. '#preload' means that the following file(s) are loaded before the
     rest of the configuration file.
 """,
         "#opt_preload":"""
---#opt-preload=FILES
+--#opt-preload FILES
     This option does the same as --#preload but the file loading is optional.
     If they do not exist the program continues without an error.
 """,
         "#postload":"""
---#postload=FILES
+--#postload FILES
     Specify a an '#postload' directive in the configuration file. This option
     has only a meaning if a configuration file is created with the 'makeconfig'
     command. '#postload' means that the following file(s) are loaded after the
     rest of the configuration file.
 """,
         "#opt_postload":"""
---#opt-postload=FILES
+--#opt-postload FILES
     This option does the same as --#postload but the file loading is optional.
     If they do not exist the program continues without an error.
 """,
         "dbdir":"""
 
---dbdir=DBDIR
+--dbdir DBDIR
     Define the directory where the dependency database file 'DEPS.DB' is found.
     A default for this option can be put in a configuration file.
 """,
         "dbrepomode":"""
---dbrepomode=MODE
+--dbrepomode MODE
     Specify how sumo should use the dependency database repository. There are
     three possible values: 'get', 'pull' and 'push'. Mode 'get' is the default.
     The meaning depends on the used version control system (VCS), if it is
@@ -3671,7 +3678,7 @@ option_help_topics= {
                       centr. VCS: update, commit changes
 """,
         "dbrepo":"""
---dbrepo=REPOSITORY
+--dbrepo REPOSITORY
     Define a REPOSITORY for the DB file. REPOSITORY must consist of 'REPOTYPE
     URL', REPOTYPE may be 'darcs', 'hg' or 'git'. Option --dbdir must specify a
     directory that will contain the repository for the db file.  Before reading
@@ -3681,7 +3688,7 @@ option_help_topics= {
     default for this option can be put in a configuration file.
 """,
         "scandb":"""
---scandb=SCANDB
+--scandb SCANDB
     Specify the (optional) SCANDB file. The scan database file contains
     information on what moduleversion can be used with what dependency version.
 """,
@@ -3691,21 +3698,21 @@ option_help_topics= {
     weight merge clonemodule cloneversion replaceversion.
 """,
         "logmsg":"""
---logmsg=BUILDTAG
+--logmsg BUILDTAG
     Specify a logmessage for automatic commits
 """,
         "editor":"""
---editor=EDITOR
+--editor EDITOR
     Specify the preferred editor. If this is not given, sumo takes the name of
     the editor from environment variables "VISUAL" or EDITOR".
 """,
         "buildtag":"""
 -t BUILDTAG
---buildtag=BUILDTAG
+--buildtag BUILDTAG
     Specify a buildtag
 """,
         "buildtag_stem":"""
---buildtag-stem=STEM
+--buildtag-stem STEM
     Specify the stem of a buildtag. This option has only an effect on the
     commands 'new' and 'try' if a buildtag is not specified. The program
     generates a new tag in the form 'stem-nnn' where 'nnn' is the smallest
@@ -3713,13 +3720,13 @@ option_help_topics= {
 """,
         "builddir":"""
 
---builddir=BUILDDIR
+--builddir BUILDDIR
     Specify the support directory. If this option is not given take the current
     working directory as support directory. A default for this option can be
     put in a configuration file.
 """,
         "localbuilddir":"""
---localbuilddir=BUILDDIR
+--localbuilddir BUILDDIR
     Specify a local support directory. Modules from the directory specifed by
     --builddir are used but this directory is not modfied. All new builds are
     created in the local build directory and only the build database file there
@@ -3727,20 +3734,20 @@ option_help_topics= {
 """,
         "output":"""
 -o OUTPUTFILE
---output=OUTPUTFILE
+--output OUTPUTFILE
     Define the output for command 'use'. If this option is not given, 'use'
     writes to 'configure/RELEASE'. If this option is '-', the command writes to
     standard-out.
 """,
         "extra":"""
 -x EXTRALINE
---extra=EXTRALINE
+--extra EXTRALINE
     Specify an extra line that is added to the generated RELEASE file. A
     default for this option can be put in a configuration file.
 """,
         "alias":"""
 -a ALIAS
---alias=ALIAS
+--alias ALIAS
     Define an alias for the command 'use'.  An alias must have the form
     FROM:TO. The path of module named 'FROM' is put in the generated RELEASE
     file as a variable named 'TO'. You can specify more than one of these by
@@ -3749,7 +3756,7 @@ option_help_topics= {
 """,
         "module":"""
 -m MODULESPEC
---module=MODULESPEC
+--module MODULESPEC
     Define a modulespec. If you specify modules with this option you don't have
     to put modulespecs after some of the commands.  You can specify more than
     one of these by repeating this option or by joining values in a single
@@ -3758,7 +3765,7 @@ option_help_topics= {
 """,
         "exclude_states":"""
 -X REGEXP
---exclude-states=REGEXP
+--exclude-states REGEXP
     For command 'try' exclude all 'dependents' whose state does match one of
     the regular expressions (REGEXP).
 """,
@@ -3774,7 +3781,7 @@ option_help_topics= {
 """,
         "dir_patch":"""
 -D PATCHEXPRESSION
---dir-patch=PATCHEXPRESSION
+--dir-patch PATCHEXPRESSION
     Specify a directory PATCHEXPRESSION. Such an expression consists of a tuple
     of 2 python strings.  The first is the match expression, the second one is
     the replacement string. The regular expression is applied to every source
@@ -3783,7 +3790,7 @@ option_help_topics= {
 """,
         "url_patch":"""
 -U PATCHEXPRESSION
---url-patch=PATCHEXPRESSION
+--url-patch PATCHEXPRESSION
     Specify a repository url PATCHEXPRESSION. Such an expression consists of a
     tuple of 2 python strings.  The first is the match expression, the second
     one is the replacement string. The regular expression is applied to every
