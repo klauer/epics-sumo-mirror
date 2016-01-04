@@ -27,7 +27,9 @@ assert __version__==sumolib.JSON.__version__
 
 def warn(text):
     """print a warning to the console."""
+    sys.stdout.flush()
     sys.stderr.write(text+"\n")
+    sys.stderr.flush()
 
 # -----------------------------------------------
 # class definitions

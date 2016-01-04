@@ -342,7 +342,9 @@ class Repo(object):
                                                 self.verbose, self.dry_run)
         sumolib.utils.changedir(cwd)
         if stderr is not None:
+            sys.stdout.flush()
             sys.stderr.write(stderr)
+            sys.stderr.flush()
 
         for l in stderr.splitlines():
             if "conflict" in l.lower():

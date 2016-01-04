@@ -557,7 +557,12 @@ def alias(alias_dict, modulename):
 
 def errmsg(msg):
     """print something on stderr."""
+    sys.stdout.flush()
     sys.stderr.write(msg+"\n")
+    sys.stderr.flush()
+
+tracemsg= errmsg
+notemsg= errmsg
 
 # -----------------------------------------------
 # module utilities
@@ -1152,16 +1157,16 @@ def set_weight(db, weight, modulespecs, trace):
     for modulespec in modulespecs:
         modulename= modulespec.modulename
         if trace:
-            sys.stderr.write("%s\n" % modulespec.to_string())
+            tracemsg("%s\n" % modulespec.to_string())
 
         # scan stable, testing and unstable versions:
         for version in db.iter_versions(modulename):
             if trace:
-                sys.stderr.write("test %s:%s\n" % (modulename,version))
+                tracemsg("test %s:%s\n" % (modulename,version))
             if not modulespec.test(version):
                 continue
             if trace:
-                sys.stderr.write("set weight %d on %s:%s\n" % \
+                tracemsg("set weight %d on %s:%s\n" % \
                                  (weight,modulename,version))
             db.weight(modulename, version, weight)
 
@@ -1210,8 +1215,8 @@ def create_modules(dist_dict, db, builddb, builddir, build_tag,
 
     if builddb.is_fully_linked(build_tag):
         # the new build would contain only links, this is maybe not wanted.
-        sys.stderr.write("Note: The generated build '%s' consists only of "
-                         "links.\n" % build_tag)
+        notemsg("Note: The generated build '%s' consists only of "
+                "links.\n" % build_tag)
 
     for modulename in sorted(dist_dict.keys()):
         versionname= builddb.module_version(build_tag, modulename)
@@ -1242,7 +1247,7 @@ def simple_call_make(builddir, makefile, target, makeflags, verbose, dry_run):
                                     builddir,
                                     makefile, target)
     try:
-        # sys.stderr.write("CALLING MAKE: %s\n" % cmd)
+        # tracemsg("CALLING MAKE: %s\n" % cmd)
         sumolib.system.system(cmd, False, False, verbose, dry_run)
     except IOError, e:
         if not catch_exceptions:
@@ -1341,7 +1346,7 @@ def apprelease(build_tag, modulespec_complete, modulespecs,
                           "Select one of the following builds and specify "
                           "it with option '-t': \n%s") % tag_str)
         build_tag= sorted(tags)[0]
-        sys.stderr.write("using build %s\n" % build_tag)
+        notemsg("using build %s\n" % build_tag)
 
 
     build_modules= builddb.modules(build_tag)
@@ -2462,7 +2467,7 @@ def subcmd_build_new(arguments, options):
     if buildtag is None:
         buildtag= builddb_generate_tag(builddb, options.buildtag_stem,
                                        bool(options.localbuilddir))
-        sys.stderr.write("creating build with tag '%s'\n" % buildtag)
+        notemsg("creating build with tag '%s'\n" % buildtag)
 
     if builddb.has_build_tag(buildtag):
         # builddb __del__ method should remove lockfiles
@@ -4130,7 +4135,7 @@ def main():
     specs.add("--dry-run -n")
 
     #x= sys.argv
-    #sys.stderr.write("%s\n" % repr(x))
+    #tracemsg("%s\n" % repr(x))
 
     if len(sys.argv)<=1:
         print usage_help
