@@ -15,8 +15,8 @@ Installation:
     http://epics-sumo.sourceforge.net/sumo-install.html
 
 Files in the download area:
-    * EPICS-sumo-...zip    : sumo source as a zip file
-    * EPICS-sumo-...tar.gz : sumo source as a tar.gz file
+    * epics-sumo-...zip    : sumo source as a zip file
+    * epics-sumo-...tar.gz : sumo source as a tar.gz file
     * debian-7             : directory with debian-7 packages
     * debian-8             : directory with debian-8 packages
     * fedora-21            : directory with fedora-21 packages

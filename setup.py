@@ -17,8 +17,10 @@ import subprocess
 import sys
 
 if sys.version_info[0] == 2:
+    base_name= 'python'
     base_dir = 'python2'
 elif sys.version_info[0] == 3:
+    base_name= 'python3'
     base_dir = 'python3'
 
 # utilities -------------------------
@@ -117,13 +119,17 @@ if not os.path.exists(html_build_dir):
     # "make -C doc html":
     subprocess.check_call(["make", "-C", "doc", "html"])
 
-
 data_files_list= [(doc_install_dir, ["README", "LICENSE"])]
 
 # add all generated html documentation to data_files_list:
 data_files_list.extend(data_statements(html_install_dir, html_build_dir))
 
-setup(name='EPICS-sumo',
+name='epics-sumo'
+#if ("bdist_rpm" in sys.argv) or ("bdist_deb" in sys.argv):
+if "bdist_rpm" in sys.argv:
+    name= base_name+"-"+name
+
+setup(name=name,
       version= my_version,
       description='Python support tools for EPICS software development',
       author='Goetz Pfeiffer',
