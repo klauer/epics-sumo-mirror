@@ -8,6 +8,7 @@ import glob
 import os
 import os.path
 import time
+import pprint
 import sumolib.ModuleSpec
 import sumolib.Dependencies
 
@@ -141,7 +142,8 @@ class Container(object):
         return [k for k in self._args if self.defined(k)]
     def __repr__(self):
         """return python representation."""
-        return "%s(%s)" % (self.__class__.__name__, self._restore_dict())
+        return "%s(%s)" % (self.__class__.__name__,
+                           pprint.pformat(self._restore_dict()))
     def __str__(self):
         """print human representation."""
         d= self._restore_dict()
@@ -979,7 +981,7 @@ def process_args(cli_args, argspec, completion_mode, testmode= False):
     aa-mod
     ab-mod
     >>> t(["mod"], None)
-    Arguments({'MOD': 'mod', 'VER': None, 'ARG': []})
+    Arguments({'ARG': [], 'MOD': 'mod', 'VER': None})
     >>> t(["mod"], "word")
     moda-mod
     modb-mod
@@ -987,7 +989,7 @@ def process_args(cli_args, argspec, completion_mode, testmode= False):
     1-ver
     2-ver
     >>> t(["mod","12"], None)
-    Arguments({'MOD': 'mod', 'VER': '12', 'ARG': []})
+    Arguments({'ARG': [], 'MOD': 'mod', 'VER': '12'})
     >>> t(["mod","12"], "word")
     121-ver
     122-ver
@@ -995,9 +997,9 @@ def process_args(cli_args, argspec, completion_mode, testmode= False):
     a-arg
     b-arg
     >>> t(["mod","12", "a"], None)
-    Arguments({'MOD': 'mod', 'VER': '12', 'ARG': ['a']})
+    Arguments({'ARG': ['a'], 'MOD': 'mod', 'VER': '12'})
     >>> t(["mod","12", "a", "b"], None)
-    Arguments({'MOD': 'mod', 'VER': '12', 'ARG': ['a', 'b']})
+    Arguments({'ARG': ['a', 'b'], 'MOD': 'mod', 'VER': '12'})
     >>> t(["mod","12", "a", "b"], "word")
     ba-arg
     bb-arg
