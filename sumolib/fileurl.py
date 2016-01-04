@@ -31,6 +31,8 @@ def get(url, dest, verbose, dry_run):
     m= rx_url.match(url)
     if m is None:
         # try to copy:
+        if verbose:
+            print "shutil.copyfile(%s, %s)\n" % (repr(url), repr(dest))
         shutil.copyfile(url, dest)
         return
     scheme_name= m.group(1)
@@ -43,6 +45,8 @@ def get(url, dest, verbose, dry_run):
         sumolib.system.system(cmd, False, False, verbose, dry_run)
         return
     if scheme_name in urllib_schemes:
+        if verbose:
+            print "urllib.urlretrieve(%s, %s)\n" % (repr(url), repr(dest))
         urllib.urlretrieve(url, dest)
         return
     raise ValueError("error, url '%s' not supported" % url)
