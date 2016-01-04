@@ -112,7 +112,7 @@ class Spec(object):
                 mode+= 1
                 continue
             raise ValueError("unexpected spec: %s" % spec)
-        #print repr(modulename),repr(versionname),repr(versionflag)
+        #print(repr(modulename),repr(versionname),repr(versionflag))
         return cls(modulename,
                    versionname,
                    versionflag)
@@ -200,7 +200,7 @@ class Specs(object):
 
         >>> def p(s):
         ...     for m in s:
-        ...         print m
+        ...         print(m)
 
         >>> a=Spec('A','R2','eq')
         >>> b=Spec('B','R2','eq')
@@ -254,7 +254,7 @@ class Specs(object):
                     # remove single module
                     if len(special)<=1:
                         raise ValueError("argument to :rm: missing")
-                    if module_dict.has_key(special[1]):
+                    if special[1] in module_dict:
                         module_dict[special[1]][1]= None
                     continue
                 if special[0]=="load":
@@ -282,7 +282,7 @@ class Specs(object):
                 raise ValueError("unexpected spec: %s" % s)
             m= Spec.from_string(s)
             modulename= m.modulename
-            if module_dict.has_key(modulename):
+            if modulename in module_dict:
                 module_dict[modulename][1]= m
                 continue
             module_dict[modulename]= [idx, m]
@@ -309,7 +309,7 @@ class Specs(object):
 
         >>> def p(s):
         ...     for m in s:
-        ...         print m
+        ...         print(m)
 
         >>> p(Specs.from_strings(["A:R2","B:-R3","C:+R1"], None))
         Spec('A','R2','eq')

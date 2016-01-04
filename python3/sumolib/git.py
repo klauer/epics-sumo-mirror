@@ -48,7 +48,7 @@ class Repo(object):
                              "git -C %s remote show origin" % self.directory,
                              True, False,
                              self.verbose, self.dry_run)
-        except IOError, _:
+        except IOError as _:
             # remote repo could not be contacted.
             return
         for line in reply.splitlines():

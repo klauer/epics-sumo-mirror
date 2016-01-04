@@ -131,9 +131,9 @@ def version(module_par_name, ver, result):
     db= db_cache()
     try:
         vers= list(db.iter_versions(result.get(module_par_name)))
-    except AttributeError, _:
+    except AttributeError as _:
         return []
-    except KeyError, _:
+    except KeyError as _:
         return []
     if not ver:
         return vers
@@ -161,7 +161,7 @@ def moduleversion(module_, dummy):
     (module_,version_)= module_.split(":", 1)
     try:
         db.assert_module(module_,None)
-    except KeyError, _:
+    except KeyError as _:
         # module_ does not exist
         return []
     versions= [ver for ver in db.iter_versions(module_) \
@@ -192,9 +192,9 @@ def dependency(module_par_name, dep, result):
     db= db_cache()
     try:
         m= sumolib.ModuleSpec.Spec.from_string(result.get(module_par_name))
-    except AttributeError, _:
+    except AttributeError as _:
         return []
-    except ValueError, _:
+    except ValueError as _:
         return []
     if not m.is_exact_spec():
         return []

@@ -17,7 +17,7 @@ import os
 import os.path
 import shutil
 import time
-import cPickle
+import pickle
 import tempfile
 import sumolib.lock
 
@@ -43,7 +43,7 @@ elif _pyver == (2,5):
     # installed:
     try:
         import simplejson as json
-    except ImportError, _json_err:
+    except ImportError as _json_err:
         sys.exit("ERROR: If SUMO is run with Python %d.%d "
                  "you need to have module 'simplejson' installed." % \
                  (sys.version_info[0],sys.version_info[1]))
@@ -115,7 +115,7 @@ def json_str(var):
     Here is an example:
 
     >>> var= {"key":[1,2,3], "key2":"val", "key3":{"A":1,"B":2}}
-    >>> print json_str(var)
+    >>> print(json_str(var))
     {
         "key": [
             1,
@@ -165,7 +165,7 @@ def dump(var):
     }
     <BLANKLINE>
     """
-    print json_str(var)
+    print(json_str(var))
 
 # pylint: enable=C0303
 #                          Trailing whitespace
@@ -194,7 +194,7 @@ def loadfile(filename):
 
     try:
         results= json.load(fh)
-    except my_exceptionclass, e:
+    except my_exceptionclass as e:
         if filename != "-":
             msg= "%s: %s" % (filename, str(e))
             fh.close()
@@ -202,7 +202,7 @@ def loadfile(filename):
             msg= "<stdin>: %s" % str(e)
         # always re-raise as a value error regardless of _JSON_TYPE:
         raise ParseError(msg)
-    except IOError, e:
+    except IOError as e:
         if filename != "-":
             msg= "%s: %s" % (filename, str(e))
             fh.close()
@@ -320,7 +320,7 @@ class Container(object):
             # may raise lock.LockedError, lock.AccessError or OSError:
             try:
                 l.lock()
-            except sumolib.lock.AccessError, _:
+            except sumolib.lock.AccessError as _:
                 if keep_lock:
                     # we cannot keep the lock since we cannot create it, this
                     # is an error:
@@ -345,7 +345,7 @@ class Container(object):
                     t1= os.path.getmtime(filename)
                     try:
                         data= loadfile(filename)
-                    except ParseError, _:
+                    except ParseError as _:
                         if tmo<=0:
                             raise
                         # if there is a timeout specified, try again:
@@ -375,7 +375,7 @@ class Container(object):
         return json_str(self.to_dict())
     def json_print(self):
         """print a JSON representation of the object."""
-        print self.json_string()
+        print(self.json_string())
     def json_save(self, filename, verbose, dry_run):
         """save as a JSON file.
 
@@ -407,13 +407,13 @@ class Container(object):
     def pickle_save(self, filename):
         """save using cPickle, don't use lockfiles or anything."""
         fh= open(filename, "w")
-        cPickle.dump(self.to_dict(), fh)
+        pickle.dump(self.to_dict(), fh)
         fh.close()
     @classmethod
     def from_pickle_file(cls, filename):
         """load from a cPickle file, don't use lockfiles or anything."""
         fh= open(filename, "r")
-        data= cPickle.load(fh)
+        data= pickle.load(fh)
         fh.close()
         return cls(data)
 

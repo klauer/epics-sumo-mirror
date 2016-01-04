@@ -314,7 +314,7 @@ class SourceSpec(sumolib.JSON.Container):
             self.copy_spec(other)
             return True
 
-        if isinstance(other_pars, basestring):
+        if isinstance(other_pars, str):
             # this is only the case for type "path":
             if other_pars=="*" or other_pars==".":
                 # no changes
@@ -427,7 +427,7 @@ class ManagedRepo(object):
             lk= sumolib.lock.MyLock(self.directory, self.lock_timeout)
             try:
                 lk.lock()
-            except sumolib.lock.AccessError, _:
+            except sumolib.lock.AccessError as _:
                 # we cannot write although we have to check out
                 raise OSError("Error, cannot write to directory %s" % \
                               os.path.dirname(self.directory))
@@ -441,7 +441,7 @@ class ManagedRepo(object):
                     checkout(self.sourcespec, self.directory,
                              self.lock_timeout,
                              self.verbose, self.dry_run)
-                except Exception, _:
+                except Exception as _:
                     lk.unlock()
                     raise
                 if not os.path.exists(self.directory):
@@ -458,7 +458,7 @@ class ManagedRepo(object):
         # get a repository lock:
         try:
             self.lock.lock()
-        except sumolib.lock.AccessError, _:
+        except sumolib.lock.AccessError as _:
             # we do not have write access on the repository:
             no_write_access= True
 

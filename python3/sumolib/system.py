@@ -21,8 +21,13 @@ def system_rc(cmd, catch_stdout, catch_stderr, verbose, dry_run):
     OSError(errno,strerr)
     ValueError
     """
+    def to_str(data):
+        """decode byte stream to unicode string."""
+        if data is None:
+            return None
+        return data.decode()
     if dry_run or verbose:
-        print ">", cmd
+        print(">", cmd)
         if dry_run:
             return (None, None, 0)
     if catch_stdout:
@@ -41,7 +46,7 @@ def system_rc(cmd, catch_stdout, catch_stderr, verbose, dry_run):
     (child_stdout, child_stderr) = p.communicate()
     # pylint: disable=E1101
     #         "Instance 'Popen'has no 'returncode' member
-    return (child_stdout, child_stderr, p.returncode)
+    return (to_str(child_stdout), to_str(child_stderr), p.returncode)
 
 def system(cmd, catch_stdout, catch_stderr, verbose, dry_run):
     """execute a command with returncode.
@@ -52,10 +57,9 @@ def system(cmd, catch_stdout, catch_stderr, verbose, dry_run):
     OSError(errno,strerr)
     ValueError
     """
-    (child_stdout, child_stderr, rc)= system_rc(
-                                            cmd,
-                                            catch_stdout, catch_stderr,
-                                            verbose, dry_run)
+    (child_stdout, child_stderr, rc)= system_rc(cmd,
+                                                catch_stdout, catch_stderr,
+                                                verbose, dry_run)
     if rc!=0:
         if catch_stderr:
             raise IOError(rc,
@@ -74,7 +78,7 @@ def test_program(cmd):
         return
     try:
         system(cmd+" --version", True, True, False, False)
-    except IOError, e:
+    except IOError as e:
         if "not found" in str(e):
             raise IOError("Error, %s: command not found" % cmd)
         raise e

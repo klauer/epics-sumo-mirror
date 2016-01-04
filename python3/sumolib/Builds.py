@@ -58,7 +58,7 @@ class DB(sumolib.JSON.Container):
         """
         def _somevalue(d):
             """return kind of arbitrary value of a dict."""
-            keys= d.keys()
+            keys= list(d.keys())
             key= keys[len(keys)//2]
             return d[key]
         while True:
@@ -78,7 +78,7 @@ class DB(sumolib.JSON.Container):
             if not isinstance(modules, dict):
                 break
             module= _somevalue(modules)
-            if not (isinstance(module, str) or isinstance(module, unicode)):
+            if not isinstance(module, str):
                 break
             return
         raise ValueError("error: builddb data is invalid %s" % msg)
@@ -95,7 +95,7 @@ class DB(sumolib.JSON.Container):
                 b= b.replace(buildtag_stem,"")
                 try:
                     n= int(b)
-                except ValueError, _:
+                except ValueError as _:
                     continue
                 if n>no:
                     no= n
@@ -139,14 +139,14 @@ class DB(sumolib.JSON.Container):
         del d[build_tag]
     def has_build_tag(self, build_tag):
         """returns if build_tag is contained."""
-        return self.datadict().has_key(build_tag)
+        return build_tag in self.datadict()
     def new_build(self, build_tag, state):
         """create a new build with the given state.
         """
         # may raise ValueError:
         self.__class__.check_state(state, new_build= True)
         d= self.datadict()
-        if d.has_key(build_tag):
+        if build_tag in d:
             raise ValueError("cannot create, build %s already exists" % \
                                build_tag)
         d[build_tag]= { "state": state }
@@ -203,7 +203,7 @@ class DB(sumolib.JSON.Container):
         Note: this does NOT do a deep copy, it copies just references.
         """
         d= self.datadict()
-        if d.has_key(build_tag):
+        if build_tag in d:
             raise ValueError("cannot add, build %s already exists" % build_tag)
         d[build_tag]= other.datadict()[build_tag]
     def add_module(self, build_tag,
@@ -220,7 +220,7 @@ class DB(sumolib.JSON.Container):
         """returns if the module is contained here."""
         build_= self.datadict()[build_tag]
         module_dict= build_["modules"]
-        return module_dict.has_key(modulename)
+        return modulename in module_dict
     def module_version(self, build_tag, modulename):
         """returns the version of the module or None."""
         build_= self.datadict()[build_tag]
@@ -361,7 +361,7 @@ class DB_overlay(DB):
             self.overlay_keys[k]= idx
     def tag_is_overlayed(self, build_tag):
         """return True if build_tag is from overlayed builddb."""
-        return self.overlay_keys.has_key(build_tag)
+        return build_tag in self.overlay_keys
     def filename_from_tag(self, build_tag):
         """return the name of the builddb file from a tag."""
         if not self.tag_is_overlayed(build_tag):
@@ -390,7 +390,7 @@ class DB_overlay(DB):
             return super(self.__class__, self).to_dict()
         return dict([(k,v) for (k,v) in \
                            super(self.__class__, self).to_dict().items() \
-                           if not self.overlay_keys.has_key(k)])
+                           if k not in self.overlay_keys])
 
 class BuildCache(sumolib.JSON.Container):
     """Detailed dependency information.
@@ -448,7 +448,7 @@ class BuildCache(sumolib.JSON.Container):
                 try:
                     dep_names= list(db.iter_dependencies(modulename,
                                                          versionname))
-                except KeyError, _:
+                except KeyError as _:
                     warn("WARNING: build '%s', module '%s:%s' not "
                          "in dependency db!" % \
                          (buildtag,modulename,versionname))
@@ -466,7 +466,7 @@ class BuildCache(sumolib.JSON.Container):
         versiondict   = d.get(modulename)
         if not versiondict:
             return False
-        return versiondict.has_key(versionname)
+        return versionname in versiondict
     def relation(self, modulename, versionname, dep_name, dep_version):
         """return the relation between two modules.
 

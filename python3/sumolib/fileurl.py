@@ -5,7 +5,7 @@
 
 import re
 import shutil
-import urllib
+import urllib.request # not needed: urllib.parse, urllib.error
 import sumolib.system
 
 __version__="2.9.2" #VERSION#
@@ -20,7 +20,7 @@ def assert_scp():
     """test if scp exists."""
     try:
         sumolib.system.test_program("scp")
-    except IOError, e:
+    except IOError as e:
         if "usage" in str(e):
             # scp was found, but it returned an error
             sumolib.system.program_tests.add("scp")
@@ -32,7 +32,7 @@ def get(url, dest, verbose, dry_run):
     if m is None:
         # try to copy:
         if verbose:
-            print "shutil.copyfile(%s, %s)\n" % (repr(url), repr(dest))
+            print("shutil.copyfile(%s, %s)\n" % (repr(url), repr(dest)))
         shutil.copyfile(url, dest)
         return
     scheme_name= m.group(1)
@@ -46,8 +46,8 @@ def get(url, dest, verbose, dry_run):
         return
     if scheme_name in urllib_schemes:
         if verbose:
-            print "urllib.urlretrieve(%s, %s)\n" % (repr(url), repr(dest))
-        urllib.urlretrieve(url, dest)
+            print("urllib.urlretrieve(%s, %s)\n" % (repr(url), repr(dest)))
+        urllib.request.urlretrieve(url, dest)
         return
     raise ValueError("error, url '%s' not supported" % url)
 

@@ -407,8 +407,8 @@ def process_opts(args, optionspecs, testmode= False):
     ...     a.extend(args)
     ...     (options,rest)= process_opts(a, spcs, True)
     ...     if options is not None:
-    ...         print options
-    ...         print "rest:", repr(rest)
+    ...         print(options)
+    ...         print("rest:", repr(rest))
 
 
 
@@ -632,7 +632,7 @@ def process_opts(args, optionspecs, testmode= False):
     #                          Too many return statements
     def pr_complete(lst):
         """print completion list."""
-        print "\n".join(sorted(lst))
+        print("\n".join(sorted(lst)))
     def display_help(txt):
         """display help on stderr for a second."""
         txt= " "+txt
@@ -647,7 +647,7 @@ def process_opts(args, optionspecs, testmode= False):
         comp_func= None
         comp_func= spec.completion
         if comp_func:
-            print "\n".join(sorted(comp_func(st, options)))
+            print("\n".join(sorted(comp_func(st, options))))
             return
         if spec.arg_name:
             display_help(spec.arg_name)
@@ -655,7 +655,7 @@ def process_opts(args, optionspecs, testmode= False):
         """exit func."""
         if testmode:
             if msg:
-                print msg
+                print(msg)
         else:
             sys.exit(msg)
     # extract the program name from args:
@@ -903,12 +903,12 @@ def process_cmd(cli_args, cmd_list, completion_mode,
         l= sorted(lst)
         if st:
             l= [s for s in l if s.startswith(st)]
-        print "\n".join(l)
+        print("\n".join(l))
     def my_exit(msg=None):
         """exit func."""
         if testmode:
             if msg:
-                print msg
+                print(msg)
         else:
             sys.exit(msg)
     if not cli_args:
@@ -1031,14 +1031,14 @@ def process_args(cli_args, argspec, completion_mode, testmode= False):
         comp_func= None
         comp_func= spec.completion
         if comp_func:
-            print "\n".join(sorted(comp_func(st, result)))
+            print("\n".join(sorted(comp_func(st, result))))
             return
         display_help(name)
     def my_exit(msg=None):
         """exit func."""
         if testmode:
             if msg:
-                print msg
+                print(msg)
         else:
             sys.exit(msg)
     if not argspec:

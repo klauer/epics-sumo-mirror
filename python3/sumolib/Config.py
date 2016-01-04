@@ -117,11 +117,11 @@ class ConfigFile(object):
         in a config name *actually* contain "_". So this backwards compability
         hack should be removed in the future.
         """
-        for (key, val) in dict_.items():
+        for (key, val) in list(dict_.items()):
             # "_" is always replaced with "-". This will be removed in future
             # versions:
             key= key.replace("_","-")
-            if not self._dict.has_key(key):
+            if key not in self._dict:
                 continue # silently ignore unknown keys
             if isinstance(self._dict[key], list):
                 if not isinstance(val, list):
@@ -221,7 +221,7 @@ class ConfigFile(object):
             return
         backup= sumolib.utils.backup_file(filename, verbose, dry_run)
         if verbose:
-            print "creating %s" % filename
+            print("creating %s" % filename)
         if not dry_run:
             sumolib.JSON.dump_file(filename, dump, backup)
 
@@ -256,7 +256,7 @@ class ConfigFile(object):
                     raise ValueError(
                         "error: '%s' is not a known option" % opt)
         # copy from option_obj to self:
-        for opt in self._dict.keys():
+        for opt in list(self._dict.keys()):
             # in the option object, "-" in option names is always
             # replaced with "_":
             oobj_opt= opt.replace("-", "_")

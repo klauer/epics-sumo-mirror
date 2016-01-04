@@ -99,7 +99,7 @@ class MyLock(object):
                 else:
                     os.mkdir(self.lockname)
                     open(os.path.join(self.lockname,self.info),'w').close()
-            except OSError, e:
+            except OSError as e:
                 # probably "File exists"
                 if e.errno==errno.EEXIST:
                     if tmo>0:
@@ -199,7 +199,7 @@ def edit_with_lock(filename, verbose, dry_run):
                                       False, False, verbose, dry_run)
                 found= True
                 break
-            except IOError, e:
+            except IOError as e:
                 # cannot find or not start editor
                 errors.append(str(e))
     finally:

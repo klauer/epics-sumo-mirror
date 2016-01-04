@@ -60,7 +60,7 @@ class Repo(object):
     def checkout(spec, destdir, _, verbose, dry_run):
         """spec must be a string.
         """
-        if not isinstance(spec, basestring):
+        if not isinstance(spec, str):
             raise TypeError("spec '%s' must be a string here" % repr(spec))
         #cmd= "scp -r -p \"%s\" %s" % (url, destdir)
         # join(url,"") effectively adds a "/" at the end of the path. This is
