@@ -14,6 +14,12 @@ import os.path
 import shutil
 import glob
 import subprocess
+import sys
+
+if sys.version_info[0] == 2:
+    base_dir = 'python2'
+elif sys.version_info[0] == 3:
+    base_dir = 'python3'
 
 # utilities -------------------------
 
@@ -97,19 +103,6 @@ def data_statements(install_path, source_path):
             l.append(os.path.join(path, f))
     return data_dict.items()
 
-def copy_files(dest_dir, source_dir, source_files):
-    """copy files from source to dest if they are newer.
-    """
-    if not os.path.exists(dest_dir):
-        os.mkdir(dest_dir)
-    for f in source_files:
-        src= os.path.join(source_dir,f)
-        dst= os.path.join(dest_dir, f)
-        if os.path.exists(dst):
-            if os.path.getmtime(dst)>=os.path.getmtime(src):
-                continue
-        shutil.copyfile(src, dst)
-
 # main      -------------------------
 
 doc_install_dir= os.path.join("doc","sumo-%s" % my_version)
@@ -137,9 +130,10 @@ setup(name='EPICS-sumo',
       author_email='Goetz.Pfeiffer@helmholtz-berlin.de',
       url='http://epics-sumo.sourceforge.net',
       packages=['sumolib'],
-      #package_dir= {'': 'sumo'},
+      package_dir= {'sumolib': os.path.join(base_dir, "sumolib")},
       #package_data={'sumo': ['data/*']},
       data_files= data_files_list,
       license= "GPLv3",
-      scripts=['bin/sumo','bin/sumo-scan'],
+      scripts=[os.path.join(base_dir,p) \
+               for p in ['bin/sumo','bin/sumo-scan']],
      )

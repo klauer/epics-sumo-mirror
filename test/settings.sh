@@ -1,12 +1,22 @@
 # include file for test scripts
 
-if [ -z "$1" ]; then
-    PYTHON="python"
-else
-    PYTHON="$1"
+if [ $PYVER != 2 -a $PYVER != 3 ]; then 
+    echo "error, PYVER must be set to 2 or 3"
+    exit
 fi
 
-BINDIR=`pwd`/../bin
+# set PYTHON only if it is not yet defined:
+if [ -z "$PYTHON" ]; then
+    PYTHON="python$PYVER"
+fi
+
+# extend PYTHONPATH in order to find Sumo modules:
+PYTHONPATH=`pwd`/../python$PYVER:$PYTHONPATH
+export PYTHONPATH
+
+# set the BINDIR:
+BINDIR=`pwd`/../python$PYVER/bin
+
 SUMO_SCAN="$PYTHON $BINDIR/sumo-scan -C"
 SUMO="$PYTHON $BINDIR/sumo -C"
 
