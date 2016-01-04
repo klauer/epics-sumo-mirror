@@ -279,7 +279,8 @@ class Container(object):
         return self.dict_
     def __repr__(self):
         """return a repr string."""
-        return "%s(%s)" % (self.__class__.__name__, repr(self.to_dict()))
+        return "%s(%s)" % (self.__class__.__name__,
+                           pprint.pformat(self.to_dict()))
     def __str__(self):
         """return a human readable string."""
         txt= ["%s:" % self.__class__.__name__]

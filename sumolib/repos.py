@@ -194,15 +194,15 @@ class SourceSpec(sumolib.JSON.Container):
         >>> SourceSpec.from_string_sourcespec(["darcs","abc"])
         SourceSpec({'darcs': {'url': 'abc'}})
         >>> SourceSpec.from_string_sourcespec(["darcs","abc","R1-2"])
-        SourceSpec({'darcs': {'url': 'abc', 'tag': 'R1-2'}})
+        SourceSpec({'darcs': {'tag': 'R1-2', 'url': 'abc'}})
         >>> SourceSpec.from_string_sourcespec(["darcs"])
         Traceback (most recent call last):
             ...
         ValueError: invalid source spec 'darcs'
         >>> SourceSpec.from_string_sourcespec(["darcs","abc","R1-2","xy"])
-        SourceSpec({'darcs': {'url': 'abc', 'tag': 'R1-2', 'patches': ['xy']}})
+        SourceSpec({'darcs': {'patches': ['xy'], 'tag': 'R1-2', 'url': 'abc'}})
         >>> SourceSpec.from_string_sourcespec(["darcs","abc","R1-2","xy","z"])
-        SourceSpec({'darcs': {'url': 'abc', 'tag': 'R1-2', 'patches': ['xy', 'z']}})
+        SourceSpec({'darcs': {'patches': ['xy', 'z'], 'tag': 'R1-2', 'url': 'abc'}})
         """
         if elms[0] not in known_sources:
             raise ValueError("unknown source type '%s'" % elms[0])
