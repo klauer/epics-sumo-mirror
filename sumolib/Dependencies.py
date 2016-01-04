@@ -71,7 +71,7 @@ class DB(sumolib.JSON.Container):
         """raise exception if obj doesn't look like a dependency database."""
         def _somevalue(d):
             """return kind of arbitrary value of a dict."""
-            keys= d.keys()
+            keys= sorted(d.keys())
             key= keys[len(keys)//2]
             return d[key]
         while True:
