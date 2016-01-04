@@ -19,7 +19,9 @@ import sys
 
 def TRACE(st):
     """trace message"""
+    sys.stdout.flush()
     sys.stderr.write("%s\n" % st)
+    sys.stderr.flush()
 
 def PTRACE(st, verbose):
     """trace message"""
@@ -258,7 +260,9 @@ class Repo(object):
         if is_ssh:
             _cvs_unset_ssh()
         if rc:
+            sys.stdout.flush()
             sys.stderr.write(stderr)
+            sys.stderr.flush()
             msg="error, 'cvs -n -q update' failed"
             raise IOError(msg)
         # flags from cvs update -n -q that indicate a modification:
@@ -429,7 +433,9 @@ class Repo(object):
             (_, stderr, rc)= sumolib.system.system_rc(cmd, True, True,
                                                       verbose, dry_run)
             if rc:
+                sys.stdout.flush()
                 sys.stderr.write(stderr)
+                sys.stderr.flush()
                 msg="error, 'cvs checkout' failed"
                 raise IOError(msg)
             if is_ssh:
@@ -465,7 +471,9 @@ class Repo(object):
         finally:
             sumolib.utils.changedir(cwd)
         if rc:
+            sys.stdout.flush()
             sys.stderr.write(stderr)
+            sys.stderr.flush()
             msg="error, 'cvs commit' failed"
             raise IOError(msg)
         self.local_changes= False

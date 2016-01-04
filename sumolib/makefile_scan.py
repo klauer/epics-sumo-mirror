@@ -77,9 +77,11 @@ def _scan(filenames, external_definitions= None,
         m= rx_def.match(line)
         if m is None:
             if warnings:
+                sys.stdout.flush()
                 sys.stderr.write("\nmakefile_scan.py: warning:\n"
                                  "\tline not parsable in %s\n"
                                  "\t'%s'\n" % (" ".join(filenames),line))
+                sys.stderr.flush()
             continue
         data[m.group(1)]= m.group(2)
     return data

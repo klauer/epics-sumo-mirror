@@ -467,9 +467,11 @@ class ManagedRepo(object):
             # Setting self.sourcespec to <None> basically disables the
             # ManagedRepo object.
             if self.mode!='get':
+                sys.stdout.flush()
                 sys.stderr.write("warning: no write access to dependency "
                                  "database repository, disabling "
                                  "repository operations\n")
+                sys.stderr.flush()
             self.sourcespec= None
             return
 

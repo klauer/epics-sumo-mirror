@@ -1,5 +1,7 @@
 creating build with tag 'BASE-001'
+
 creating build with tag 'MYAPP-001'
+
 
 call sumo build remake
 > make  -C /tmp-sumo-build-remake -f /tmp-sumo-build-remake/Makefile-MYAPP-001 distclean
