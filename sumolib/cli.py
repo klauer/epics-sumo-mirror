@@ -612,13 +612,13 @@ def process_opts(args, optionspecs, testmode= False):
     --flag
     --help
     >>> t(["-","--list"])
+    --flag
+    --help
     -F
     -a
-    --flag
     -h
-    --help
-    -y
     -x
+    -y
     >>> t(["-a","--list"])
     -a
     """
@@ -632,7 +632,7 @@ def process_opts(args, optionspecs, testmode= False):
     #                          Too many return statements
     def pr_complete(lst):
         """print completion list."""
-        print "\n".join(lst)
+        print "\n".join(sorted(lst))
     def display_help(txt):
         """display help on stderr for a second."""
         txt= " "+txt
