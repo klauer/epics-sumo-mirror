@@ -155,7 +155,7 @@ class Repo(object):
         result= result.replace("M","")
         try:
             int(result)
-        except ValueError, _:
+        except ValueError as _:
             return None
         return result
     def _hint(self, name):

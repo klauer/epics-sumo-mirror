@@ -40,7 +40,7 @@ class Repo(object):
                                         self.directory,
                                     True, False,
                                     self.verbose, self.dry_run)
-        except IOError, _:
+        except IOError as _:
             # probably no darcs repo found
             return
         for line in reply.splitlines():
@@ -65,7 +65,7 @@ class Repo(object):
             # error that occurs with the command:
             sumolib.system.system(cmd, True, True,
                                   self.verbose, self.dry_run)
-        except IOError, _:
+        except IOError as _:
             # probably no darcs repo found
             return
         return default_repo
@@ -286,7 +286,7 @@ class Repo(object):
                                                   self.remote_url)
         (stdout,_)= sumolib.system.system(cmd, True, False,
                                           self.verbose, self.dry_run)
-        print stdout
+        print(stdout)
         for l in stdout.splitlines():
             if l.lower().startswith("we have conflicts"):
                 msg="error, 'darcs pull' failed"

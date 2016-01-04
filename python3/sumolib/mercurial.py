@@ -34,7 +34,7 @@ class Repo(object):
                                   "hg paths default -R %s" % self.directory,
                                   True, False,
                                   self.verbose, self.dry_run)
-        except IOError, _:
+        except IOError as _:
             # probably no repo found
             return
         st= reply.splitlines()[0].strip()

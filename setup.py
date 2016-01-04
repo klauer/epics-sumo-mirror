@@ -78,7 +78,7 @@ def path_rebase(path, base):
     base_l= pathsplit(base)
     if len(path_l)<len(base_l):
         return path
-    for i in xrange(len(base_l)):
+    for i in range(len(base_l)):
         if base_l[i]!=path_l[i]:
             return path
     if len(path_l)==len(base_l):
@@ -101,7 +101,7 @@ def data_statements(install_path, source_path):
                 l= []
                 data_dict[destpath]= l
             l.append(os.path.join(path, f))
-    return data_dict.items()
+    return list(data_dict.items())
 
 # main      -------------------------
 

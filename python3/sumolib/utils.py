@@ -55,12 +55,12 @@ def ask_yes_no(question, force_yes= None):
             return True
     question+= " "
     while True:
-        inp= raw_input(question).lower().strip()
+        inp= input(question).lower().strip()
         if inp in ["yes","y"]:
             return True
         if inp in ["no", "n"]:
             return False
-        print "\tplease enter 'y', 'yes, 'n' or 'no'"
+        print("\tplease enter 'y', 'yes, 'n' or 'no'")
         question=""
 
 def ask_abort(question, force_yes= None):
@@ -120,7 +120,7 @@ def dict_of_sets_add(dict_, key, val):
     >>> dict_of_sets_add(d,"a",2)
     >>> dict_of_sets_add(d,"b",1)
     >>> pprint.pprint(d)
-    {'a': set([1, 2]), 'b': set([1])}
+    {'a': {1, 2}, 'b': {1}}
     """
     l= dict_.get(key)
     if l is None:
@@ -150,7 +150,7 @@ def dict_sets_to_lists(dict_):
 def file_w_open(filename, verbose, dry_run):
     """open a file for write."""
     if verbose:
-        print "opening file '%s'" % filename
+        print("opening file '%s'" % filename)
     if dry_run:
         return None
     return open(filename, "w")
@@ -158,7 +158,7 @@ def file_w_open(filename, verbose, dry_run):
 def file_write(fh, st, verbose, dry_run):
     """write a line to a file."""
     if verbose:
-        print st,
+        print(st, end='')
     if not dry_run:
         fh.write(st)
 
@@ -166,7 +166,7 @@ def mk_text_file(filename, lines, verbose, dry_run):
     """create a text file."""
     if verbose:
         if filename!="-":
-            print "creating",filename
+            print("creating",filename)
     if dry_run:
         filename="-"
     if filename=="-":
@@ -192,11 +192,11 @@ def backup_file(filename, verbose, dry_run):
         return backup
     if os.path.exists(backup):
         if verbose:
-            print "remove %s" % backup
+            print("remove %s" % backup)
         if not dry_run:
             os.remove(backup)
     if verbose:
-        print "rename %s to %s" % (filename, backup)
+        print("rename %s to %s" % (filename, backup))
     if not dry_run:
         os.rename(filename, backup)
     return backup
@@ -223,7 +223,7 @@ def edit_file(filename, editor, verbose, dry_run):
                                   False, False, verbose, dry_run)
             found= True
             break
-        except IOError, e:
+        except IOError as e:
             # cannot find or not start editor
             errors.append(str(e))
     if not found:
@@ -334,7 +334,7 @@ def rev2key(rev):
     for e in l:
         try:
             n.append("%03d" % int(e))
-        except ValueError, _:
+        except ValueError as _:
             n.append(str(e))
     return ".".join(n)
 
@@ -373,7 +373,7 @@ def tag2version(ver):
     if len(ver)<1:
         return ver
     mode=0
-    for i in xrange(len(ver)):
+    for i in range(len(ver)):
         if mode==0:
             if ver[i].isalpha():
                 continue
@@ -399,7 +399,7 @@ def single_key(dict_):
 
     Raises ValueError if the dict has more than one key.
     """
-    keys= dict_.keys()
+    keys= list(dict_.keys())
     if len(keys)!=1:
         raise ValueError("dict hasn't exactly one key: %s" % repr(keys))
     return keys[0]
@@ -418,7 +418,7 @@ def dict_update(mydict, other, keylist= None):
     If keylist is given, update only these keys.
     """
     if keylist is None:
-        keylist= other.keys()
+        keylist= list(other.keys())
     for k in keylist:
         v= other[k]
         old_v= mydict.get(k)
@@ -457,7 +457,7 @@ class RegexpMatcher(object):
                 self.add(rx)
     def add(self, regexp):
         """add a regexp."""
-        #print "RX: ",repr(regexp_pair)
+        #print("RX: ",repr(regexp_pair))
         rx= re.compile(regexp)
         self._list.append(rx)
     def match(self, str_):
@@ -493,7 +493,7 @@ class RegexpPatcher(object):
                 self.add(regexp_pair)
     def add(self, regexp_pair):
         """add a from-regexp to-regexp pair."""
-        #print "RX: ",repr(regexp_pair)
+        #print("RX: ",repr(regexp_pair))
         rx= re.compile(regexp_pair[0])
         self._list.append((rx, regexp_pair[1]))
     def apply(self, str_):
@@ -513,9 +513,9 @@ class Hints(object):
         Here is an example:
         >>> h= Hints()
         >>> h.add(r'\d,TAGLESS')
-        >>> print h.flags("ab")
+        >>> print(h.flags("ab"))
         {}
-        >>> print h.flags("ab12")
+        >>> print(h.flags("ab12"))
         {'tagless': True}
         """
         self._hints= []

@@ -130,7 +130,7 @@ def scan(filenames, external_definitions= None, pre= None,
     post= _scan(filenames, external_definitions, warnings, verbose, dry_run)
     new= {}
     for (k,v) in post.items():
-        if pre.has_key(k):
+        if k in pre:
             if pre[k]==post[k]:
                 continue
         new[k]= v

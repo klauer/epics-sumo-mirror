@@ -27,7 +27,7 @@ def PTRACE(st, verbose):
     """trace message"""
     if verbose:
         time.sleep(1)
-        print "%s\n" % st
+        print("%s\n" % st)
 
 # -----------------------------------------------
 # CVS properties

@@ -26,7 +26,7 @@ def call_patch(patch_file, target_dir, verbose, dry_run):
     assert_patch()
     cmd= "patch -p1"
     if dry_run or verbose:
-        print "> cd %s && %s < %s" % (target_dir, cmd, patch_file)
+        print("> cd %s && %s < %s" % (target_dir, cmd, patch_file))
     old_dir= sumolib.utils.changedir(target_dir)
     try:
         inp= open(patch_file, "r")

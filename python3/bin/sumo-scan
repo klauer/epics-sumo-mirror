@@ -73,7 +73,7 @@ def scan_config_file(filename, external_definitions= None,
                                      makefile_scan_pre,
                                      False,
                                      verbose, dry_run)
-    for k in wanted.keys():
+    for k in list(wanted.keys()):
         wanted[k]= data[k]
     return wanted
 
@@ -428,8 +428,8 @@ def process_config(config, commands, options):
         sys.exit("unknown command: %s" % commands[0])
 
     if commands[0]=="list":
-        print "These configuration files were loaded:\n"
-        print "\n".join(config.real_paths())
+        print("These configuration files were loaded:\n")
+        print("\n".join(config.real_paths()))
         return
 
     if commands[0]=="make" or commands[0]=="show":
@@ -470,21 +470,21 @@ def process(options, commands):
 
     try:
         config.load(options.config, not options.disable_loading)
-    except ValueError, e:
+    except ValueError as e:
         if not catch_exceptions:
             raise
         sys.exit("Error while loading config file,\n%s" % str(e))
-    except IOError, e:
+    except IOError as e:
         if not catch_exceptions:
             raise
         sys.exit("Error while loading config file,\n%s" % str(e))
     try:
         config.merge_options(options, options.append)
-    except ValueError, e:
+    except ValueError as e:
         if not catch_exceptions:
             raise
         sys.exit(str(e))
-    except TypeError, e:
+    except TypeError as e:
         if not catch_exceptions:
             raise
         sys.exit(str(e))
@@ -582,19 +582,19 @@ def process(options, commands):
 
 def print_doc():
     """print a short summary of the scripts function."""
-    print __doc__
+    print(__doc__)
 
 def print_summary():
     """print a short summary of the scripts function."""
-    print "%-20s: a tool for scanning EPICS support trees \n" % \
-          script_shortname()
+    print("%-20s: a tool for scanning EPICS support trees \n" % \
+          script_shortname())
 
 def _test():
     """does a self-test of some functions defined here."""
-    print "performing self test..."
+    print("performing self test...")
     import doctest
     doctest.testmod()
-    print "done!"
+    print("done!")
 
 usage = """usage: %prog [options] command
 where command is:

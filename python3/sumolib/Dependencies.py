@@ -127,13 +127,13 @@ class DB(sumolib.JSON.Container):
                             sumolib.utils.dict_update(\
                                         vdict.setdefault(dictname,{}),
                                         dictval)
-                        except ValueError, e:
+                        except ValueError as e:
                             raise ValueError(\
                               "module %s version %s aliases: %s" % \
                               (modulename, versionname, str(e)))
                         continue
                     if dictname=="source":
-                        if not vdict.has_key(dictname):
+                        if dictname not in vdict:
                             vdict[dictname]= vdict2[dictname]
                             continue
                         if vdict[dictname]!=vdict2[dictname]:
@@ -145,7 +145,7 @@ class DB(sumolib.JSON.Container):
                                  repr(vdict2[dictname])))
                         continue
                     if dictname=="dependencies":
-                        if not vdict.has_key(dictname):
+                        if dictname not in vdict:
                             vdict[dictname]= sorted(vdict2[dictname])
                             continue
                         if set(vdict[dictname])!=set(vdict2[dictname]):
@@ -197,7 +197,7 @@ class DB(sumolib.JSON.Container):
         old_spec= sumolib.repos.SourceSpec(old_source)
         try:
             ret= old_spec.change_source_by_tag(tag)
-        except ValueError, e:
+        except ValueError as e:
             raise ValueError("Error, '%s:%s' %s" % \
                              (module_name, versionname, _uq(str(e))))
         version["source"]= old_spec.to_dict()
@@ -247,7 +247,7 @@ class DB(sumolib.JSON.Container):
                                                              versionname):
                     try:
                         self.assert_module(dep_modulename, None)
-                    except KeyError, e:
+                    except KeyError as e:
                         msg.append("%s:%s: dependencies: %s" % \
                                 (modulename, versionname, str(e)))
         return msg
@@ -272,7 +272,7 @@ class DB(sumolib.JSON.Container):
         """add an alias for modulename:versionname."""
         m_dict= self.datadict()[modulename]
         alias_dict= m_dict[versionname].setdefault("aliases",{})
-        if alias_dict.has_key(real_name):
+        if real_name in alias_dict:
             if alias_dict[real_name]==alias_name:
                 return
             raise ValueError(\
@@ -311,7 +311,7 @@ class DB(sumolib.JSON.Container):
         """
         # may raise KeyError exception in this line:
         d= self.datadict()[modulename][versionname]
-        return d.has_key("dependencies")
+        return "dependencies" in d
     def module_source_dict(self, modulename, versionname):
         """return a dict {type:dict} for the module source."""
         return self.datadict()[modulename][versionname]["source"]
@@ -361,7 +361,7 @@ class DB(sumolib.JSON.Container):
         missing= set()
         for modulename,versionname in moduledict.items():
             for dep in self.iter_dependencies(modulename, versionname):
-                if not moduledict.has_key(dep):
+                if dep not in moduledict:
                     missing.add(dep)
         if missing:
             raise ValueError("Error, set of modules is incomplete, these "
@@ -424,7 +424,7 @@ class DB(sumolib.JSON.Container):
                                                        versionname):
                     # ignore dependencies that are not part of the given
                     # moduleversions parameter:
-                    if not module_version_dict.has_key(dep_name):
+                    if dep_name not in module_version_dict:
                         continue
                     dep_version= module_version_dict[dep_name]
                     s.add((dep_name,dep_version))
@@ -451,12 +451,12 @@ class DB(sumolib.JSON.Container):
         return [m for (_,m) in sort_list]
     def iter_modulenames(self):
         """return an iterator on module names."""
-        return self.datadict().iterkeys()
+        return self.datadict().keys()
     def iter_versions(self, modulename):
         """return an iterator on versionnames of a module.
 
         """
-        for versionname, _ in self.datadict()[modulename].iteritems():
+        for versionname, _ in self.datadict()[modulename].items():
             yield versionname
     def sorted_moduleversions(self, modulename):
         """return an iterator on sorted versionnames of a module."""
@@ -477,7 +477,7 @@ class DB(sumolib.JSON.Container):
             raise ValueError("Error, module with name '%s' not found "
                              "in dependency database" % modulename)
 
-        if moduledata.has_key(newversionname):
+        if newversionname in moduledata:
             raise ValueError("Error, module %s: version %s already exists" % \
                     (modulename, newversionname))
         d= copy.deepcopy(self.datadict()[modulename][versionname])
@@ -491,7 +491,7 @@ class DB(sumolib.JSON.Container):
         old_moduledata= self.datadict()[old_modulename]
         if not versions:
             versions= list(self.iter_versions(old_modulename))
-        if self.datadict().has_key(modulename):
+        if modulename in self.datadict():
             raise ValueError("Error, module '%s' already exists" % \
                              modulename)
         m= self.datadict().setdefault(modulename,{})
@@ -569,7 +569,7 @@ class DB(sumolib.JSON.Container):
             found= False
             try:
                 versions= list(self.iter_versions(modulename))
-            except KeyError, _:
+            except KeyError as _:
                 raise KeyError("Error, module '%s' not found in "
                                "dependency database" % modulename)
             for version in versions:
@@ -600,14 +600,14 @@ class DB(sumolib.JSON.Container):
         Returns a set of modulenames of added dependencies.
         """
         modules_added= set()
-        modlist= sets_dict.keys()
+        modlist= list(sets_dict.keys())
         while modlist:
             new_modlist= []
             for modulename in modlist:
                 for versionname in sets_dict[modulename]:
                     for dep_name in self.iter_dependencies(modulename,
                                                            versionname):
-                        if not sets_dict.has_key(dep_name):
+                        if dep_name not in sets_dict:
                             modules_added.add(dep_name)
                             sets_dict[dep_name]= \
                                       set(self.iter_versions(dep_name))
@@ -630,6 +630,6 @@ class DB(sumolib.JSON.Container):
                     try:
                         self.del_dependency(modulename, versionname,
                                             dep_name)
-                    except ValueError, _:
+                    except ValueError as _:
                         pass
 
