@@ -1,12 +1,22 @@
 TOP:=$(shell pwd)
 
-# extend PYTHONPATH in order to find Sumo modules:
-export PYTHONPATH:=$(TOP)/..:$(PYTHONPATH)
+PYVER:=$(strip $(PYVER))
 
-# the basename of the python binary. This complicated expression is needed
-# since the newest python binary on our development host "aragon" is named
-# "python2.5":
-PYTHON:=$(shell python -V 2>&1 | ( grep -q " 2\.[5678]" && echo python || ( python2.5 -V >/dev/null 2>&1 && echo "python2.5" || echo python )))
+ifeq (,$(findstring $(PYVER),2 3))
+$(error error variable PYVER must be set to 2 or 3)
+endif
+
+export PYVER
+
+# set PYTHON only if it is not yet defined:
+ifeq (,$(PYTHON))
+	PYTHON:=python$(PYVER)
+endif
+
+export PYTHONPATH:=$(TOP)/../python$(PYVER):$(PYTHONPATH)
+
+BINDIR:=$(TOP)/../python$(PYVER)/bin
+LIBDIR:=$(TOP)/../python$(PYVER)/sumolib
 
 .PRECIOUS: %.out
 
@@ -94,18 +104,18 @@ writable:
 	    chmod -R u+w tmp-* ;\
 	fi
 
-module_tests:= $(notdir $(basename $(shell grep -l doctest ../sumolib/*.py)))
+module_tests:= $(notdir $(basename $(shell grep -l doctest $(LIBDIR)/*.py)))
 module_tests_tst= $(addsuffix .tst, $(module_tests))
 
-script_tests:= $(sort $(notdir $(basename $(shell ls ../bin))))
+script_tests:= $(sort $(notdir $(basename $(shell ls $(BINDIR)))))
 script_tests_tst= $(addsuffix .tst, $(script_tests))
 
 # static pattern rule to test python modules:
-$(module_tests_tst): %.tst: ../sumolib/%.py
+$(module_tests_tst): %.tst: $(LIBDIR)/%.py
 	$(PYTHON) $<
 
 # static pattern rule to test scripts:
-$(script_tests_tst): %.tst: ../bin/%
+$(script_tests_tst): %.tst: $(BINDIR)/%
 	$(PYTHON) $< --test
 
 .PHONY : target_module_tests target_script_tests target_shell_tests
@@ -138,7 +148,7 @@ deps:
 
 # how to generate an out file:
 %.out: %.sh 
-	@bash ./$< $(PYTHON) > $@
+	@bash ./$< > $@
 
 ifeq "$(CREATE_TESTS)" "yes"
 %.ok: %.out
