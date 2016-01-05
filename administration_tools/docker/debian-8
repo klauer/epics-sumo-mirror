@@ -5,7 +5,9 @@ MAINTAINER Goetz Pfeiffer <goetz.pfeiffer@helmholtz-berlin.de>
 RUN apt-get update
 
 # install python and stdeb:
-RUN apt-get install -y python python-stdeb
+RUN apt-get install -y python-all python3-all python3-pip debhelper
 
-RUN apt-get install -y dh-python
+# install stdeb directly via pip. As a regular debian package the installed
+# version is too old:
+RUN pip3 install stdeb
 
