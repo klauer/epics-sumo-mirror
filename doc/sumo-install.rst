@@ -58,8 +58,8 @@ Note that you have to *configure* sumo after installing it, see
 Install from a rpm package
 ++++++++++++++++++++++++++
 
-There are packages for fedora 21 and fedora 22. In order to see
-what fedora version you use enter::
+There are packages for fedora 21, fedora 22 and fedora 23. In order to see what
+fedora version you use enter::
 
   lsb_release -r
 
@@ -67,6 +67,7 @@ Simply download the rpm package from
 
 * `fedora 21 packages <https://sourceforge.net/projects/epics-sumo/files/fedora-21>`_
 * `fedora 22 packages <https://sourceforge.net/projects/epics-sumo/files/fedora-22>`_
+* `fedora 23 packages <https://sourceforge.net/projects/epics-sumo/files/fedora-23>`_
 
 and install with::
 
