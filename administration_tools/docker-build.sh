@@ -1,6 +1,6 @@
 #!/bin/bash
 
-if [ -z "$1" ]; then
+if [ -z "$1" -o "$1" = "-h" ]; then
     me=`basename $0`
     echo "$me : create a docker container"
     echo

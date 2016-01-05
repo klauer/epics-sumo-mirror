@@ -5,5 +5,5 @@ MAINTAINER Goetz Pfeiffer <goetz.pfeiffer@helmholtz-berlin.de>
 RUN yum update -y
 
 # install python:
-RUN yum install -y python rpm-build
+RUN yum install -y python python3 rpm-build
 
