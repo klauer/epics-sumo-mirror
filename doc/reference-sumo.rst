@@ -1018,9 +1018,25 @@ Command completion means that you can press <TAB> on any incomplete sumo
 command and you get a list of possibilities how to complete that command. By
 pressing <TAB> several times you can try each possible completion.
 
-Command completion is tested with the shells "bash" and "zsh". In order to
-activate this feature you have to configure your shell. There are two ways to
-do this:
+Prerequisites
++++++++++++++
+
+Command completion works with `bash` or `zsh` (Z-Shell), you need to have one
+of these installed. Your environment variable `SHELL` must be set to the binary
+file of the shell, e.g. `/usr/bin/bash` or `/usr/bin/zsh`.
+
+In any case the package `bash-completion` must be installed.
+
+If you use the Z-Shell, the following commands must be executed at start up.
+Add them for example to the file `$HOME/.zshenv`::
+
+  autoload -U +X compinit && compinit
+  autoload -U +X bashcompinit && bashcompinit
+
+Setting sumo command completion
++++++++++++++++++++++++++++++++
+
+There are two ways to do this:
 
 Activate command completion on the fly
 ++++++++++++++++++++++++++++++++++++++
@@ -1039,13 +1055,13 @@ Then add the line::
 
 to your $HOME/.bashrc or $HOME/.zshrc
 
-Cache files
-+++++++++++
+Completion cache files
+++++++++++++++++++++++
 
 Sumo will create cache files in your home directory to speed up command
 completion. These are the files ".dbcache.sumo" and ".buildcache.sumo". If you
-don't want this set the environment variable "SUMOHELP" that it contains the
-string "nocache" like in::
+don't want this set the environment variable "SUMOHELP" in a way that it
+contains the string "nocache" like in::
 
   export SUMOHELP="nocache"
 
