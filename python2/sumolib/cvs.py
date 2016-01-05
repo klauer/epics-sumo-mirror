@@ -11,7 +11,7 @@ import re
 import sumolib.lock
 import time
 
-__version__="2.9.2" #VERSION#
+__version__="3.0" #VERSION#
 
 assert __version__==sumolib.system.__version__
 

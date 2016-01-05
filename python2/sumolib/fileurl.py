@@ -8,7 +8,7 @@ import shutil
 import urllib
 import sumolib.system
 
-__version__="2.9.2" #VERSION#
+__version__="3.0" #VERSION#
 
 assert __version__==sumolib.system.__version__
 
