@@ -15,8 +15,7 @@ Requirements
 ------------
 
 Sumo requires at least `Python <https://www.python.org>`_ version 2.5 or newer.
-It currently doesn't run with python 3, but will be ported to this version at
-some time in the future.
+It can also run with python 3.
 
 Sumo is tested on `debian <https://www.debian.org>`_ and 
 `Fedora <https://getfedora.org>`_ linux distributions but should run on all
@@ -102,6 +101,19 @@ The following chapters are just *examples* how you could install sumo. For a
 complete list of all possibilities see 
 `Installing Python Modules <https://docs.python.org/2/install/index.html#install-index>`_.
 
+Note that the python interpreter you use to start setup.py determines for which python version sumo is installed. 
+
+In order to install for python 2.x use::
+
+  python2 setup.py [options]
+
+In order to install for python 3.x use::
+
+  python3 setup.py [options]
+
+Whenever ``python`` is mentioned in a command line in the following text remember
+to use ``python2`` or ``python3`` instead.
+
 Install as root to default directories
 ::::::::::::::::::::::::::::::::::::::
 
@@ -155,7 +167,7 @@ PYTHONPATH. Here is an example how you could do this::
 where <DIR> is your install directory and <X.Y> is your python version number.
 You get your python version with this command::
 
-  python -c 'import sys;print "%s.%s"%sys.version_info[:2]'
+  python -c 'from sys import *;stdout.write("%s.%s\n"%version_info[:2])'
 
 You may want to add the environment settings ("export...") to your shell setup,
 e.g. $HOME/.bashrc or, if your are the system administrator, to the global
