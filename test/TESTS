@@ -4,6 +4,7 @@ sumo-db-convert
 sumo-db-dependency-delete
 sumo-db-dependency-add
 sumo-db-alias-add
+sumo-db-releasefilename
 sumo-db-replaceversion
 sumo-db-cloneversion
 sumo-db-cloneversion-2
@@ -25,6 +26,7 @@ sumo-config-make
 sumo-config-make-2
 sumo-config-env
 sumo-build-new-0
+sumo-build-new-releasefile
 sumo-build-modulespecs
 sumo-build-try
 sumo-build-new
