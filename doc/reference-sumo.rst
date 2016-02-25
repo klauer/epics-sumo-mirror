@@ -125,6 +125,7 @@ The *versiondata* map has this form::
       "dependencies": {
           <dependency data>
       },
+      "releasefile": <releasefilename>
       "source": {
           <source data>
       }
@@ -163,6 +164,13 @@ in the build database :term:`BUILDS.DB`.  This is the form of the
   ]
 
 .. _reference-sumo-source-data:
+
+releasefile
+:::::::::::
+
+This optional field is used to specify an alternative name for the generated
+RELEASE file. The default name, if releasefile is not given, is
+`configure/RELEASE`.
 
 source data
 :::::::::::
@@ -861,6 +869,18 @@ remain unchanged. PATCHES is a list of patchfiles or URLs of patchfiles. If
 sourcespec is not given, the command adds NEW-VERSION as new tag to the source
 specification. The command always asks for a confirmation of the action unless
 option "-y" is used.
+
+db releasefilename MODULE RELEASEFILENAME
+:::::::::::::::::::::::::::::::::::::::::
+
+This command defines an alternative filename for the RELEASE file of the
+:term:`module`. Usually the RELEASE file is generated as "configure/RELEASE".
+You can specify a different filename for the given :term:`module` with this
+command. This may be useful for support :term:`modules` that have no regular
+EPICS makefile system or for some special configurations of the EPICS base. If
+you set the RELEASEFILENAME to an empty string or "configure/RELEASE", the
+special entry for the filename is removed for this module in the
+:term:`dependency database`.
 
 db replaceversion MODULE OLD-VERSION NEW-VERSION
 ::::::::::::::::::::::::::::::::::::::::::::::::

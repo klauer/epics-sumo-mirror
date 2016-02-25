@@ -6,6 +6,7 @@
 
 import sys
 import copy
+import os.path
 
 if __name__ == "__main__":
     # if this module is directly called like a script, we have to add the path
@@ -22,6 +23,12 @@ __version__="3.0" #VERSION#
 assert __version__==sumolib.ModuleSpec.__version__
 assert __version__==sumolib.JSON.__version__
 assert __version__==sumolib.utils.__version__
+
+# -----------------------------------------------
+# global variables
+# -----------------------------------------------
+
+default_releasefile= os.path.join("configure", "RELEASE")
 
 # -----------------------------------------------
 # utilities
@@ -131,6 +138,18 @@ class DB(sumolib.JSON.Container):
                             raise ValueError(\
                               "module %s version %s aliases: %s" % \
                               (modulename, versionname, str(e)))
+                        continue
+                    if dictname=="releasefile":
+                        if not vdict.has_key(dictname):
+                            vdict[dictname]= vdict2[dictname]
+                            continue
+                        if vdict[dictname]!=vdict2[dictname]:
+                            raise ValueError(
+                                "module %s version %s releasefile: "
+                                "contradiction %s %s" % \
+                                (modulename, versionname,
+                                 repr(vdict[dictname]),
+                                 repr(vdict2[dictname])))
                         continue
                     if dictname=="source":
                         if not vdict.has_key(dictname):
@@ -285,6 +304,19 @@ class DB(sumolib.JSON.Container):
         if a_dict is None:
             return dep_modulename
         return a_dict.get(dep_modulename, dep_modulename)
+    def add_releasefile(self, modulename, versionname, releasefilename):
+        """add an alternative name for the RELEASE file."""
+        m_dict= self.datadict()[modulename][versionname]
+        releasefilename= releasefilename.strip()
+        if (not releasefilename) or (releasefilename==default_releasefile):
+            if m_dict.has_key("releasefile"):
+                del m_dict["releasefile"]
+            return
+        m_dict["releasefile"]= releasefilename
+    def get_releasefile(self, modulename, versionname):
+        """return the alternative name for the RELEASE file."""
+        return self.datadict()[modulename][versionname].get("releasefile",\
+                                                        default_releasefile)
     def weight(self, modulename, versionname, new_weight= None):
         """set the weight factor."""
         if new_weight is None:

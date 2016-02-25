@@ -1,0 +1,374 @@
+DB file:
+{
+    "ALARM": {
+        "R3-7": {
+            "aliases": {
+                "BASE": "EPICS_BASE",
+                "BSPDEP_TIMER": "TIMER",
+                "MISC_DBC": "DBC"
+            },
+            "dependencies": [
+                "BASE",
+                "BSPDEP_TIMER",
+                "MISC_DBC"
+            ],
+            "releasefile": "configure/MYRELEASE",
+            "source": {
+                "darcs": {
+                    "tag": "R3-7",
+                    "url": "/data/repos/support/alarm"
+                }
+            }
+        },
+        "R3-8-modified": {
+            "aliases": {
+                "BASE": "EPICS_BASE",
+                "BSPDEP_TIMER": "TIMER",
+                "MISC_DBC": "DBC"
+            },
+            "dependencies": [
+                "BASE",
+                "BSPDEP_TIMER",
+                "MISC_DBC"
+            ],
+            "source": {
+                "darcs": {
+                    "tag": "R3-8-modified",
+                    "url": "/data/epics/support/alarm/3-8"
+                }
+            }
+        }
+    },
+    "APPS_GENERICTEMPLATE": {
+        "PATH-3-0": {
+            "aliases": {
+                "BASE": "EPICS_BASE"
+            },
+            "dependencies": [
+                "BASE"
+            ],
+            "source": {
+                "path": "/data/epics/support/apps/genericTemplate/3-0"
+            }
+        }
+    },
+    "APPS_IOCWATCH": {
+        "R3-0": {
+            "aliases": {
+                "BASE": "EPICS_BASE"
+            },
+            "dependencies": [
+                "BASE"
+            ],
+            "source": {
+                "darcs": {
+                    "tag": "R3-0",
+                    "url": "/data/repos/support/apps/iocWatch"
+                }
+            }
+        }
+    },
+    "ASYN": {
+        "TAR-4-17-2": {
+            "aliases": {
+                "BASE": "EPICS_BASE"
+            },
+            "dependencies": [
+                "BASE"
+            ],
+            "source": {
+                "tar": {
+                    "url": "file:///data/epics/support/asyn-4-17-2.tar.gz"
+                }
+            }
+        }
+    },
+    "BASE": {
+        "R3-14-12-2-1": {
+            "source": {
+                "darcs": {
+                    "tag": "R3-14-12-2-1",
+                    "url": "/data/repos/base/3-14-12-2-1"
+                }
+            }
+        }
+    },
+    "BESSYRULES": {
+        "R2-5": {
+            "aliases": {
+                "BASE": "EPICS_BASE"
+            },
+            "dependencies": [
+                "BASE"
+            ],
+            "source": {
+                "darcs": {
+                    "tag": "R2-5",
+                    "url": "/data/repos/support/bessyRules"
+                }
+            }
+        }
+    },
+    "BSPDEP_CPUBOARDINIT": {
+        "R4-1": {
+            "aliases": {
+                "BASE": "EPICS_BASE"
+            },
+            "dependencies": [
+                "BASE"
+            ],
+            "source": {
+                "cvs": {
+                    "tag": "R4-1",
+                    "url": "/data/repos/support/bspDep/cpuBoardInit/cpuBoardInit"
+                }
+            }
+        }
+    },
+    "BSPDEP_TIMER": {
+        "R6-2": {
+            "aliases": {
+                "BASE": "EPICS_BASE"
+            },
+            "dependencies": [
+                "BASE"
+            ],
+            "source": {
+                "darcs": {
+                    "tag": "R6-2",
+                    "url": "/data/epics/support/bspDep/timer/6-2"
+                }
+            }
+        }
+    },
+    "BSPDEP_VMETAS": {
+        "R2-0": {
+            "aliases": {
+                "BASE": "EPICS_BASE"
+            },
+            "dependencies": [
+                "BASE"
+            ],
+            "source": {
+                "hg": {
+                    "tag": "R2-0",
+                    "url": "/data/repos/support/bspDep/VMEtas"
+                }
+            }
+        },
+        "R2-1": {
+            "aliases": {
+                "BASE": "EPICS_BASE"
+            },
+            "dependencies": [
+                "BASE"
+            ],
+            "source": {
+                "hg": {
+                    "tag": "R2-1",
+                    "url": "/data/repos/support/bspDep/VMEtas"
+                }
+            }
+        },
+        "TAGLESS-2-1-modified": {
+            "aliases": {
+                "BASE": "EPICS_BASE"
+            },
+            "dependencies": [
+                "BASE"
+            ],
+            "source": {
+                "hg": {
+                    "rev": "ABCDABCDABCD",
+                    "url": "/data/epics/support/bspDep/VMEtas/2-1-modified"
+                }
+            }
+        }
+    },
+    "CSM": {
+        "TAR-4-1": {
+            "aliases": {
+                "BASE": "EPICS_BASE"
+            },
+            "dependencies": [
+                "BASE"
+            ],
+            "source": {
+                "tar": {
+                    "url": "ssh:///data/epics/support/csm-4-1.tar.gz"
+                }
+            }
+        }
+    },
+    "DEVIOCSTATS": {
+        "R3-1-9-bessy3": {
+            "aliases": {
+                "BASE": "EPICS_BASE"
+            },
+            "dependencies": [
+                "BASE"
+            ],
+            "source": {
+                "darcs": {
+                    "tag": "R3-1-9-bessy3",
+                    "url": "/data/repos/support/devIocStats"
+                }
+            }
+        }
+    },
+    "EK": {
+        "R2-2": {
+            "aliases": {
+                "BASE": "EPICS_BASE",
+                "MISC_DEBUGMSG": "MISC"
+            },
+            "dependencies": [
+                "BASE",
+                "MISC_DEBUGMSG"
+            ],
+            "source": {
+                "svn": {
+                    "tag": "R2-2",
+                    "url": "file:///data/repos/support/ek"
+                }
+            }
+        }
+    },
+    "GENSUB": {
+        "R1-6-1": {
+            "aliases": {
+                "BASE": "EPICS_BASE"
+            },
+            "dependencies": [
+                "BASE"
+            ],
+            "source": {
+                "darcs": {
+                    "tag": "R1-6-1",
+                    "url": "/data/repos/support/genSub"
+                }
+            }
+        }
+    },
+    "MCAN": {
+        "R2-6-3-gp": {
+            "aliases": {
+                "BASE": "EPICS_BASE",
+                "BSPDEP_VMETAS": "VMETAS",
+                "MISC_DBC": "DBC",
+                "MISC_DEBUGMSG": "DEBUGMSG",
+                "SOFT_DEVHWCLIENT": "DEVHWCLIENT"
+            },
+            "dependencies": [
+                "ALARM",
+                "BASE",
+                "BSPDEP_VMETAS",
+                "MISC_DBC",
+                "MISC_DEBUGMSG",
+                "SOFT_DEVHWCLIENT"
+            ],
+            "source": {
+                "darcs": {
+                    "tag": "R2-6-3-gp",
+                    "url": "/data/repos/support/mcan"
+                }
+            }
+        },
+        "TAGLESS-2-6-1": {
+            "aliases": {
+                "BASE": "EPICS_BASE",
+                "BSPDEP_VMETAS": "VMETAS",
+                "MISC_DBC": "DBC",
+                "MISC_DEBUGMSG": "DEBUGMSG",
+                "SOFT_DEVHWCLIENT": "DEVHWCLIENT"
+            },
+            "dependencies": [
+                "ALARM",
+                "BASE",
+                "BSPDEP_VMETAS",
+                "MISC_DBC",
+                "MISC_DEBUGMSG",
+                "SOFT_DEVHWCLIENT"
+            ],
+            "source": {
+                "darcs": {
+                    "url": "/data/epics/support/mcan/2-6-1"
+                }
+            }
+        }
+    },
+    "MISC_DBC": {
+        "PATH-3-0": {
+            "aliases": {
+                "BASE": "EPICS_BASE"
+            },
+            "dependencies": [
+                "BASE"
+            ],
+            "source": {
+                "path": "/data/epics/support/misc/dbc/3-0"
+            }
+        }
+    },
+    "MISC_DEBUGMSG": {
+        "R3-0": {
+            "aliases": {
+                "BASE": "EPICS_BASE"
+            },
+            "dependencies": [
+                "BASE"
+            ],
+            "source": {
+                "git": {
+                    "tag": "R3-0",
+                    "url": "/data/repos/support/misc/debugmsg"
+                }
+            }
+        },
+        "R3-1": {
+            "aliases": {
+                "BASE": "EPICS_BASE"
+            },
+            "dependencies": [
+                "BASE"
+            ],
+            "source": {
+                "git": {
+                    "tag": "R3-1",
+                    "url": "/data/repos/support/misc/debugmsg"
+                }
+            }
+        }
+    },
+    "SEQ": {
+        "R2-1-10": {
+            "aliases": {
+                "BASE": "EPICS_BASE"
+            },
+            "dependencies": [
+                "BASE"
+            ],
+            "source": {
+                "darcs": {
+                    "tag": "R2-1-10",
+                    "url": "/data/repos/support/seq"
+                }
+            }
+        }
+    },
+    "SOFT_DEVHWCLIENT": {
+        "TAR-3-0": {
+            "aliases": {
+                "BASE": "EPICS_BASE"
+            },
+            "dependencies": [
+                "BASE"
+            ],
+            "source": {
+                "tar": {
+                    "url": "/data/epics/support/soft/devHwClient-3-0.tar.gz"
+                }
+            }
+        }
+    }
+}

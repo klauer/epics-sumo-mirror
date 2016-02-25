@@ -79,6 +79,7 @@ KNOWN_DB_COMMANDS=set(("alias-add",
                        "list",
                        "merge",
                        "modconvert",
+                       "releasefilename",
                        "replaceversion",
                        "show",
                        "weight" \
@@ -687,7 +688,8 @@ def gen_RELEASE(db, builddb, buildtag,
     #                          Too many arguments
     # pylint: disable=R0914
     #                          Too many local variables
-    filename= os.path.join(module_directory, "configure", "RELEASE")
+    filename= os.path.join(module_directory,
+                           db.get_releasefile(modulename, versionname))
     deps= []
 
     for dep_name in db.iter_dependencies(modulename, versionname):
@@ -1882,6 +1884,34 @@ def subcmd_db_dependency_delete(arguments, options):
         db_to_repo(options, mngr, db, "dependency-delete", arguments)
         # ^^^ does also unlock the file
 
+def subcmd_db_releasefilename(arguments, options):
+    """implement "db releasefilename"."""
+    sumolib.cli.assert_options(True, options, "dbdir")
+
+    argspec= sumolib.cli.CmdSpecs()
+    argspec.add("MODULE", completion= sumolib.complete.moduleversion)
+    argspec.add("RELEASEFILENAME")
+    args= sumolib.cli.process_args(arguments, argspec, options.list)
+
+    # pylint: disable=no-member
+    module_spec= sumolib.ModuleSpec.Spec.from_string(args.MODULE)
+    try:
+        module_spec.assert_exact()
+    except ValueError as e:
+        if not catch_exceptions:
+            raise
+        sys.exit(errtxt("",e))
+    (mngr, db)= db_from_repo(options,
+                             not options.dumpdb and (not options.dry_run))
+    db.add_releasefile(module_spec.modulename,
+                       module_spec.versionname,
+                       args.RELEASEFILENAME)
+    if options.dumpdb:
+        db.json_print()
+    else:
+        db_to_repo(options, mngr, db, "releasefilename", arguments)
+        # ^^^ does also unlock the file
+
 def subcmd_db_clone_replace_version(command, arguments, options):
     """implement "db cloneversion/replaceversion"."""
     sumolib.cli.assert_options(True, options, "dbdir")
@@ -2780,6 +2810,10 @@ def maincmd_db(commands, options):
         subcmd_db_dependency_delete(c_args, options)
         return
 
+    if cmd=="releasefilename":
+        subcmd_db_releasefilename(c_args, options)
+        return
+
     if cmd=="cloneversion" or cmd=="replaceversion":
         subcmd_db_clone_replace_version(cmd, c_args, options)
         return
@@ -3324,6 +3358,8 @@ subcommands here:
   check        - consistency check of the DB file
   merge        - merge two DB files
   cloneversion - create a new DB entry by copying an old one
+  releasefilename -
+                 define an alternative filename for the RELEASE file
   replaceversion - 
                  replace a DB entry with a new one
   clonemodule  - add a module under a new name in the DB file
@@ -3485,6 +3521,17 @@ of patchfiles or URLs of patchfiles. If sourcespec is not given, the command
 adds NEW-VERSION as new tag to the source specification. The command always
 asks for a confirmation of the action unless option "-y" is used.
 
+""",
+        "db releasefilename": """
+db releasefilename MODULE RELEASEFILENAME
+
+This command defines an alternative filename for the RELEASE file of the
+module. Usually the RELEASE file is generated as "configure/RELEASE". You can
+specify a different filename for the given module with this command. This may
+be useful for support modules that have no regular EPICS makefile system or for
+some special configurations of the EPICS base. If you set the RELEASEFILENAME
+to an empty string or "configure/RELEASE", the special entry for the filename
+is removed for this module in the dependency database.
 """,
         "db replaceversion": """
 db replaceversion MODULE OLD-VERSION NEW-VERSION
