@@ -489,6 +489,16 @@ class ManagedRepo(object):
             # ManagedRepo object.
             self.sourcespec= None
 
+        if self.repo_obj.distributed_repo():
+            if self.repo_obj.get_remote_url() is None:
+                # repo found but remote repo couldn't be contacted:
+                self.mode='get'
+                sys.stdout.flush()
+                sys.stderr.write("warning: remote repository for dependency "
+                                 "database repository couldn't be "
+                                 "contacted, forcing mode 'get'.\n")
+                sys.stderr.flush()
+
     def local_changes(self):
         """return if there are local changes."""
         if self.sourcespec is None:

@@ -194,6 +194,9 @@ class Repo(object):
     def get_tag_on_top(self):
         """return the "tag on top" property."""
         return self.tag_on_top
+    def get_remote_url(self):
+        """return the "remote_url" property, this may be None."""
+        return self.remote_url
     @classmethod
     def scan_dir(cls, directory, hints, verbose, dry_run):
         """return a Repo object if a darcs repo was found.
@@ -273,7 +276,10 @@ class Repo(object):
                               self.verbose, self.dry_run)
         self.local_changes= False
     def push(self):
-        """push all changes changes."""
+        """push all changes."""
+        if self.remote_url is None:
+            raise AssertionError("cannot push local patches without "
+                                 "a reachable remote repository.")
         assert_darcs()
         cmd="darcs push --repodir %s -a %s" % (self.directory,
                                                self.remote_url)
@@ -281,6 +287,9 @@ class Repo(object):
                               self.verbose, self.dry_run)
     def pull_merge(self):
         """pull changes and try to merge."""
+        if self.remote_url is None:
+            raise AssertionError("cannot pull patches without "
+                                 "a reachable remote repository.")
         assert_darcs()
         cmd="darcs pull --repodir %s -q -a %s" % (self.directory,
                                                   self.remote_url)
