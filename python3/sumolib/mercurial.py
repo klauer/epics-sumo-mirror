@@ -207,6 +207,9 @@ class Repo(object):
     def get_tag_on_top(self):
         """return the "tag on top" property."""
         return self.tag_on_top
+    def get_remote_url(self):
+        """return the "remote_url" property, this may be None."""
+        return self.remote_url
     def get_revision(self):
         """return the current revision."""
         return self.current_revision
@@ -291,6 +294,9 @@ class Repo(object):
         self.local_changes= False
     def push(self):
         """push all changes changes."""
+        if self.remote_url is None:
+            raise AssertionError("cannot push local patches without "
+                                 "a reachable remote repository.")
         assert_hg()
         cmd="hg push -R %s %s" % (self.directory, self.remote_url)
         sumolib.system.system(cmd,
@@ -298,8 +304,11 @@ class Repo(object):
                               self.verbose, self.dry_run)
     def pull_merge(self):
         """pull changes and try to merge."""
-        # use "-u" to update to head:
+        if self.remote_url is None:
+            raise AssertionError("cannot pull patches without "
+                                 "a reachable remote repository.")
         assert_hg()
+        # use "-u" to update to head:
         cmd="hg pull -q -R %s -u --config ui.merge=internal:merge %s" % \
                 (self.directory, self.remote_url)
         stderr= None
