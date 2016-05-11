@@ -1183,45 +1183,40 @@ def set_weight(db, weight, modulespecs, trace):
 # further builddb functions
 # -----------------------------------------------
 
-def delete_builds(builddb, build_tag, recursive, verbose, dry_run):
-    """delete modules of a build, possibly recursively.
-    """
-    if not recursive:
-        delete_build(builddb, build_tag, check_dependencies=True,
-                     verbose=verbose, dry_run=dry_run)
-        return
-    dependends= builddb.rec_linked_builds(build_tag)
-    dependends.add(build_tag)
-    for build in dependends:
-        delete_build(builddb, build, check_dependencies=False,
-                     verbose=verbose, dry_run=dry_run)
-
-def delete_build(builddb, build_tag, check_dependencies, verbose, dry_run):
+def delete_build(builddb, build_tags, recursive, verbose, dry_run):
     """delete modules of a build.
     """
-    if check_dependencies:
-        dependends= builddb.linked_builds(build_tag)
-        if dependends:
+    given_build_tags= set(build_tags)
+    complete_build_tags= set()
+    for build in build_tags:
+        dependends= builddb.rec_linked_builds(build)
+        dependends.add(build)
+        complete_build_tags.update(dependends)
+    if given_build_tags!=complete_build_tags:
+        if not recursive:
+            extra_builds= complete_build_tags-given_build_tags
             raise ValueError("Error, the following builds dependend on "
-                             "build %s:\n%s"
+                             "the specified build(s):\n%s"
                              "You may delete all these too by using "
                              "option '--recursive'." % \
-                             (build_tag," ".join(sorted(dependends))))
-    must_exist= not builddb.is_incomplete(build_tag)
-    for modulename, versionname in builddb.iter_modules(build_tag):
-        if builddb.module_link(build_tag, modulename):
-            continue
-        delete_module(builddb.dirname(), build_tag, modulename, versionname,
-                      must_exist, verbose, dry_run)
+                             " ".join(sorted(extra_builds)))
+    for build in complete_build_tags:
+        must_exist= not builddb.is_incomplete(build)
+        for modulename, versionname in builddb.iter_modules(build):
+            if builddb.module_link(build, modulename):
+                continue
+            delete_module(builddb.dirname(), build,
+                          modulename, versionname,
+                          must_exist, verbose, dry_run)
 
-    makefile= makefilename(builddb.dirname(), build_tag)
-    if not os.path.exists(makefile):
-        if must_exist:
-            errmsg(("Warning, makefile '%s' cannot be deleted, "
-                    "it does not exist") % makefile)
-    else:
-        os.remove(makefilename(builddb.dirname(), build_tag))
-    builddb.delete(build_tag)
+        makefile= makefilename(builddb.dirname(), build)
+        if not os.path.exists(makefile):
+            if must_exist:
+                errmsg(("Warning, makefile '%s' cannot be deleted, "
+                        "it does not exist") % makefile)
+        else:
+            os.remove(makefilename(builddb.dirname(), build))
+        builddb.delete(build)
 
 def create_modules(dist_dict, db, builddb, builddir, build_tag,
                    extra_lines,
@@ -2193,7 +2188,7 @@ def subcmd_build_delete(arguments, options):
     """implement "subcmd_build_delete"."""
     sumolib.cli.assert_options(True, options, "builddir")
     argspec= sumolib.cli.CmdSpecs()
-    argspec.add("BUILDTAG", completion= sumolib.complete.builds)
+    argspec.add("BUILDTAGS", array= True, completion= sumolib.complete.builds)
     args= sumolib.cli.process_args(arguments, argspec, options.list)
 
     if options.readonly:
@@ -2202,13 +2197,14 @@ def subcmd_build_delete(arguments, options):
     builddb= builddb_from_json_file(options.builddir,
                                     options.localbuilddir,
                                     keep_locked= not options.dry_run)
-    assert_build_tag(builddb, args.BUILDTAG) # pylint: disable=no-member
+    for b in args.BUILDTAGS:
+        assert_build_tag(builddb, b) # pylint: disable=no-member
     try:
         # modifies builddb and deletes directories:
         # pylint: disable=no-member
-        delete_builds(builddb, args.BUILDTAG,
-                      options.recursive,
-                      options.verbose, options.dry_run)
+        delete_build(builddb, args.BUILDTAGS,
+                     options.recursive,
+                     options.verbose, options.dry_run)
     except ValueError, e:
         if not catch_exceptions:
             raise
@@ -3683,12 +3679,12 @@ also set to this state. In this case, unless option '-y' or '--recursive' are
 given, sumo asks for your confirmation.
 """,
         "build delete": """
-build delete BUILDTAG
+build delete BUILDTAGS
 
-The directories of the build are removed and it's entry in the build database
-is deleted. If other builds depend on the build to be deleted, the command
-fails unless option '--recursive' is given. In this case all dependent builds
-are deleted, too.  The buildtag must be given as an argument.
+The directories of the builds are removed and their entries in the build
+database are deleted. If other builds depend on the builds to be deleted, the
+command fails unless option '--recursive' is given. In this case all dependent
+builds are deleted, too.  The buildtags must be given as an argument.
 """,
 }
 

@@ -1,0 +1,129 @@
+
+directory tree:
+> ls tmp-sumo-build-delete-4:
+ALARM
+BASE
+BSPDEP_CPUBOARDINIT
+BSPDEP_TIMER
+BSPDEP_VMETAS
+BUILDS.DB
+CSM
+DEPS.DB
+EK
+Makefile-BASE-001
+Makefile-DISABLED
+Makefile-MYAPP-001
+Makefile-MYAPP-002
+MCAN
+MISC_DBC
+MISC_DEBUGMSG
+SOFT_DEVHWCLIENT
+sumo.config
+
+build directories:
+./ALARM/R3-7+MYAPP-002
+./ALARM/R3-8-modified+MYAPP-001
+./BASE/R3-14-12-2-1+BASE-001
+./BSPDEP_CPUBOARDINIT/R4-1+MYAPP-001
+./BSPDEP_TIMER/R6-2+DISABLED
+./BSPDEP_TIMER/R6-2+MYAPP-001
+./BSPDEP_VMETAS/TAGLESS-2-1-modified+MYAPP-001
+./CSM/TAR-4-1+MYAPP-001
+./EK/R2-2+MYAPP-001
+./MCAN/R2-6-3-gp+MYAPP-001
+./MCAN/R2-6-3-gp+MYAPP-002
+./MISC_DBC/PATH-3-0+MYAPP-001
+./MISC_DEBUGMSG/R3-0+MYAPP-001
+./SOFT_DEVHWCLIENT/TAR-3-0+MYAPP-001
+
+contents of BUILDS file:
+{
+    "BASE-001": {
+        "modules": {
+            "BASE": "R3-14-12-2-1"
+        },
+        "state": "stable"
+    },
+    "DISABLED": {
+        "linked": {
+            "BASE": "BASE-001"
+        },
+        "modules": {
+            "BASE": "R3-14-12-2-1",
+            "BSPDEP_TIMER": "R6-2"
+        },
+        "state": "disabled"
+    },
+    "MYAPP-001": {
+        "linked": {
+            "BASE": "BASE-001"
+        },
+        "modules": {
+            "ALARM": "R3-8-modified",
+            "BASE": "R3-14-12-2-1",
+            "BSPDEP_CPUBOARDINIT": "R4-1",
+            "BSPDEP_TIMER": "R6-2",
+            "BSPDEP_VMETAS": "TAGLESS-2-1-modified",
+            "CSM": "TAR-4-1",
+            "EK": "R2-2",
+            "MCAN": "R2-6-3-gp",
+            "MISC_DBC": "PATH-3-0",
+            "MISC_DEBUGMSG": "R3-0",
+            "SOFT_DEVHWCLIENT": "TAR-3-0"
+        },
+        "state": "testing"
+    },
+    "MYAPP-002": {
+        "linked": {
+            "BASE": "BASE-001",
+            "BSPDEP_CPUBOARDINIT": "MYAPP-001",
+            "BSPDEP_TIMER": "MYAPP-001",
+            "BSPDEP_VMETAS": "MYAPP-001",
+            "CSM": "MYAPP-001",
+            "EK": "MYAPP-001",
+            "MISC_DBC": "MYAPP-001",
+            "MISC_DEBUGMSG": "MYAPP-001",
+            "SOFT_DEVHWCLIENT": "MYAPP-001"
+        },
+        "modules": {
+            "ALARM": "R3-7",
+            "BASE": "R3-14-12-2-1",
+            "BSPDEP_CPUBOARDINIT": "R4-1",
+            "BSPDEP_TIMER": "R6-2",
+            "BSPDEP_VMETAS": "TAGLESS-2-1-modified",
+            "CSM": "TAR-4-1",
+            "EK": "R2-2",
+            "MCAN": "R2-6-3-gp",
+            "MISC_DBC": "PATH-3-0",
+            "MISC_DEBUGMSG": "R3-0",
+            "SOFT_DEVHWCLIENT": "TAR-3-0"
+        },
+        "state": "testing"
+    }
+}
+
+delete builds 'MYAPP-002' and 'MYAPP-001'
+
+build directories:
+./BASE/R3-14-12-2-1+BASE-001
+./BSPDEP_TIMER/R6-2+DISABLED
+
+contents of BUILDS file:
+{
+    "BASE-001": {
+        "modules": {
+            "BASE": "R3-14-12-2-1"
+        },
+        "state": "stable"
+    },
+    "DISABLED": {
+        "linked": {
+            "BASE": "BASE-001"
+        },
+        "modules": {
+            "BASE": "R3-14-12-2-1",
+            "BSPDEP_TIMER": "R6-2"
+        },
+        "state": "disabled"
+    }
+}

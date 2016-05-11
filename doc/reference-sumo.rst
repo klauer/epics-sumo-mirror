@@ -1025,14 +1025,14 @@ the given value. If a :term:`build` is set to :term:`state` 'disabled', all
 dependend builds are also set to this :term:`state.` In this case, unless
 option '-y' or '--recursive' are given, sumo asks for your confirmation.
 
-build delete BUILDTAG
-:::::::::::::::::::::
+build delete BUILDTAGS
+::::::::::::::::::::::
 
-The directories of the :term:`build` are removed and it's entry in the
-:term:`build database` is deleted. If other builds depend on the :term:`build`
-to be deleted, the command fails unless option '--recursive' is given. In this
-case all dependent builds are deleted, too.  The :term:`buildtag` must be given
-as an argument.
+The directories of the :term:`builds` are removed and their entries in the
+:term:`build database` are deleted. If other builds depend on the
+:term:`builds` to be deleted, the command fails unless option '--recursive' is
+given. In this case all dependent builds are deleted, too.  The
+:term:`buildtags` must be given as an argument.
 
 Command completion
 ------------------
