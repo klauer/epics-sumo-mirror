@@ -731,6 +731,7 @@ def gen_RELEASE(db, builddb, buildtag,
 
 def create_makefile(dist_dict, db, builddb,
                     build_tag,
+                    progress,
                     verbose, dry_run):
     """generate a makefile.
 
@@ -766,6 +767,8 @@ def create_makefile(dist_dict, db, builddb,
                                                          modulename,
                                                          versionname)
     filename= makefilename(builddir, build_tag)
+    if progress:
+        notemsg("creating makefile '%s'\n" % filename)
     module_dirs= sorted(paths.values())
     stamps= [os.path.join(p,"stamp") for p in module_dirs]
     fh= sumolib.utils.file_w_open(filename, verbose, dry_run)
@@ -855,6 +858,7 @@ def create_module(db, builddb, build_tag,
                   dist_dict,
                   modulename, versionname,
                   extra_defs,
+                  progress,
                   verbose, dry_run):
     """check out a module.
 
@@ -874,6 +878,8 @@ def create_module(db, builddb, build_tag,
     if os.path.exists(dirname):
         raise ValueError("directory %s already exists" % dirname)
 
+    if progress:
+        notemsg("checking out %s:%s\n" % (modulename, versionname))
     create_source(db, modulename, versionname, dirname, verbose, dry_run)
     gen_RELEASE(db, builddb, build_tag,
                 dist_dict,
@@ -1219,6 +1225,7 @@ def delete_build(builddb, build_tag, check_dependencies, verbose, dry_run):
 def create_modules(dist_dict, db, builddb, builddir, build_tag,
                    extra_lines,
                    no_checkout,
+                   progress,
                    verbose, dry_run):
     """create all modules.
 
@@ -1255,15 +1262,19 @@ def create_modules(dist_dict, db, builddb, builddir, build_tag,
                       module_dict["modulename"],
                       module_dict["versionname"],
                       extra_lines,
+                      progress,
                       verbose, dry_run)
 
-def simple_call_make(builddir, makefile, target, makeflags, verbose, dry_run):
+def simple_call_make(builddir, makefile, target, makeflags,
+                     progress, verbose, dry_run):
     """simple make call."""
     # pylint: disable=R0913
     #                          Too many arguments
     cmd="make %s -C %s -f %s %s" % (" ".join(makeflags),
                                     builddir,
                                     makefile, target)
+    if progress:
+        notemsg("calling make %s %s\n" % (" ".join(makeflags), target))
     try:
         # tracemsg("CALLING MAKE: %s\n" % cmd)
         sumolib.system.system(cmd, False, False, verbose, dry_run)
@@ -1282,6 +1293,7 @@ def call_make(buildtag, options):
                      makefilename(builddir, buildtag),
                      "all",
                      options.makeflags if options.makeflags else [],
+                     options.progress,
                      options.verbose, options.dry_run)
 
     builddb= builddb_from_json_file(options.builddir,
@@ -2431,11 +2443,13 @@ def subcmd_build_remake(arguments, options):
                      makefilename(builddir, buildtag),
                      "distclean",
                      options.makeflags if options.makeflags else [],
+                     options.progress,
                      options.verbose, options.dry_run)
     simple_call_make(builddir,
                      makefilename(builddir, buildtag),
                      "all",
                      options.makeflags if options.makeflags else [],
+                     options.progress,
                      options.verbose, options.dry_run)
     builddb= builddb_from_json_file(options.builddir,
                                     options.localbuilddir,
@@ -2515,6 +2529,9 @@ def subcmd_build_new(arguments, options):
         buildtag= builddb_generate_tag(builddb, options.buildtag_stem,
                                        bool(options.localbuilddir))
         notemsg("creating build with tag '%s'\n" % buildtag)
+    elif options.progress:
+        notemsg("creating build '%s'\n" % buildtag)
+
 
     if builddb.has_build_tag(buildtag):
         # builddb __del__ method should remove lockfiles
@@ -2533,6 +2550,7 @@ def subcmd_build_new(arguments, options):
                    buildtag,
                    options.extra,
                    options.no_checkout,
+                   options.progress,
                    options.verbose, options.dry_run)
     builddb= builddb_from_json_file(options.builddir,
                                     options.localbuilddir,
@@ -2545,6 +2563,7 @@ def subcmd_build_new(arguments, options):
         create_makefile(dist_dict, db,
                         builddb,
                         buildtag,
+                        options.progress,
                         options.verbose,
                         options.dry_run)
 
@@ -3936,8 +3955,8 @@ option_help_topics= {
         "progress":"""
 -p
 --progress
-    Show progress on stderr. A default for this option can be put in a
-    configuration file.
+    Show progress of some commands on stderr. A default for this option can be
+    put in a configuration file.
 """,
         "trace":"""
 --trace

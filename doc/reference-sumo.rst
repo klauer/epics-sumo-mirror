@@ -1308,8 +1308,8 @@ Here is a short overview on command line options:
 ``--nolock``
     Do not use file locking.
 ``-p, --progress``
-    Show progress on stderr. A default for this option can be put in a
-    configuration file.
+    Show progress of some commands on stderr. A default for this option can be
+    put in a configuration file.
 ``--trace``
     Switch on some trace messages.
 ``--tracemore``
