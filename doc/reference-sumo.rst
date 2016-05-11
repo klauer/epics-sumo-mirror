@@ -1020,16 +1020,19 @@ build state BUILDTAG [NEW-STATE]
 This command is used to show or change the :term:`state` of a :term:`build`.
 The :term:`buildtag` must be given as an argument. If there is no new
 :term:`state` given, it just shows the current :term:`state` of the
-:term:`build`. Otherwise the :term:`state` of the :term:`build` is changed
-to the given value. 
+:term:`build`. Otherwise the :term:`state` of the :term:`build` is changed to
+the given value. If a :term:`build` is set to :term:`state` 'disabled', all
+dependend builds are also set to this :term:`state.` In this case, unless
+option '-y' or '--recursive' are given, sumo asks for your confirmation.
 
 build delete BUILDTAG
 :::::::::::::::::::::
 
-If no other :term:`build` depends on the :term:`build` specified by the
-:term:`buildtag`, the directories of the :term:`build` are removed and it's
-entry in the builddb is deleted. The :term:`buildtag` must be given as an
-argument.
+The directories of the :term:`build` are removed and it's entry in the
+:term:`build database` is deleted. If other builds depend on the :term:`build`
+to be deleted, the command fails unless option '--recursive' is given. In this
+case all dependent builds are deleted, too.  The :term:`buildtag` must be given
+as an argument.
 
 Command completion
 ------------------
@@ -1269,6 +1272,9 @@ Here is a short overview on command line options:
     the regular expressions (REGEXP).
 ``-b, --brief``
     Create a more brief output for some commands.
+``--recursive``
+    For command 'build delete', delete all dependend builds, too. For command
+    'build state' with state 'disabled', disable all dependend builds, too.
 ``--detail``
     Control the output of command 'try'. The value must be an integer between 0
     (very short) and 3 (very long)."

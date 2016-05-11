@@ -162,6 +162,9 @@ Here we define some of the terms used in the following text.
   scan database
       See :term:`SCANDB`.
 
+  build database
+      See :term:`BUILDS.DB`.
+
   DEPS.DB
       The dependency database. For further details see
       :ref:`reference-sumo-db-The-dependency-database`.
