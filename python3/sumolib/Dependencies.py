@@ -18,7 +18,7 @@ import sumolib.ModuleSpec
 import sumolib.JSON
 import sumolib.utils
 
-__version__="3.1.1" #VERSION#
+__version__="3.2" #VERSION#
 
 assert __version__==sumolib.ModuleSpec.__version__
 assert __version__==sumolib.JSON.__version__
