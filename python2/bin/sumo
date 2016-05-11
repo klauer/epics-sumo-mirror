@@ -2598,7 +2598,7 @@ def subcmd_build_find(arguments, options):
         print "no matching buildtrees found"
     else:
         if options.brief:
-            for buildtag in builddb.iter_builds():
+            for buildtag in new_builddb.iter_builds():
                 print buildtag
         else:
             new_builddb.json_print()
