@@ -1176,14 +1176,30 @@ def set_weight(db, weight, modulespecs, trace):
 # further builddb functions
 # -----------------------------------------------
 
-def delete_modules(builddb, build_tag, verbose, dry_run):
+def delete_builds(builddb, build_tag, recursive, verbose, dry_run):
+    """delete modules of a build, possibly recursively.
+    """
+    if not recursive:
+        delete_build(builddb, build_tag, check_dependencies=True,
+                     verbose=verbose, dry_run=dry_run)
+        return
+    dependends= builddb.rec_linked_builds(build_tag)
+    dependends.add(build_tag)
+    for build in dependends:
+        delete_build(builddb, build, check_dependencies=False,
+                     verbose=verbose, dry_run=dry_run)
+
+def delete_build(builddb, build_tag, check_dependencies, verbose, dry_run):
     """delete modules of a build.
     """
-    dependends= builddb.linked_builds(build_tag)
-    if dependends:
-        raise ValueError("Error, the following builds dependend on "
-                         "build %s:\n%s" % \
-                         (build_tag," ".join(sorted(dependends))))
+    if check_dependencies:
+        dependends= builddb.linked_builds(build_tag)
+        if dependends:
+            raise ValueError("Error, the following builds dependend on "
+                             "build %s:\n%s"
+                             "You may delete all these too by using "
+                             "option '--recursive'." % \
+                             (build_tag," ".join(sorted(dependends))))
     must_exist= not builddb.is_incomplete(build_tag)
     for modulename, versionname in builddb.iter_modules(build_tag):
         if builddb.module_link(build_tag, modulename):
@@ -2146,7 +2162,7 @@ def subcmd_build_state(arguments, options):
                 print(" ".join(sorted(builds)))
                 sumolib.utils.ask_abort("Disabling %s would also disable "
                                         "these.\nProceed ? " % buildtag,
-                                        options.yes)
+                                        options.yes or options.recursive)
             builds.add(buildtag)
 
         try:
@@ -2177,8 +2193,9 @@ def subcmd_build_delete(arguments, options):
     try:
         # modifies builddb and deletes directories:
         # pylint: disable=no-member
-        delete_modules(builddb, args.BUILDTAG,
-                       options.verbose, options.dry_run)
+        delete_builds(builddb, args.BUILDTAG,
+                      options.recursive,
+                      options.verbose, options.dry_run)
     except ValueError as e:
         if not catch_exceptions:
             raise
@@ -3638,17 +3655,20 @@ argument.
         "build state": """
 build state BUILDTAG [NEW-STATE]
 
-This command is used to show or change the state of a build. The buildtag
-must be given as an argument. If there is no new state given, it just shows
-the current state of the build. Otherwise the state of the build is changed
-to the given value. 
+This command is used to show or change the state of a build. The buildtag must
+be given as an argument. If there is no new state given, it just shows the
+current state of the build. Otherwise the state of the build is changed to the
+given value. If a build is set to state 'disabled', all dependend builds are
+also set to this state. In this case, unless option '-y' or '--recursive' are
+given, sumo asks for your confirmation.
 """,
         "build delete": """
 build delete BUILDTAG
 
-If no other build depends on the build specified by the buildtag, the
-directories of the build are removed and it's entry in the builddb is
-deleted. The buildtag must be given as an argument.
+The directories of the build are removed and it's entry in the build database
+is deleted. If other builds depend on the build to be deleted, the command
+fails unless option '--recursive' is given. In this case all dependent builds
+are deleted, too.  The buildtag must be given as an argument.
 """,
 }
 
@@ -3855,6 +3875,11 @@ option_help_topics= {
 -b
 --brief
     Create a more brief output for some commands.
+""",
+        "recursive":"""
+--recursive
+    For command 'build delete', delete all dependend builds, too. For command
+    'build state' with state 'disabled', disable all dependend builds, too.
 """,
         "detail":"""
 --detail DETAIL
@@ -4159,6 +4184,7 @@ def main():
     specs.add("--module -m", arg_name= "MODULESPEC", array= True)
     specs.add("--exclude-states -X", arg_name= "REGEXP", array= True)
     specs.add("--brief -b")
+    specs.add("--recursive")
     specs.add("--detail", arg_name= "DETAIL", value_list=["0","1","2","3"])
     specs.add("--dir-patch -D", arg_name= "PATCHEXPRESSION", array= True)
     specs.add("--url-patch -U", arg_name= "PATCHEXPRESSION", array= True)
