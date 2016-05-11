@@ -488,8 +488,8 @@ class ManagedRepo(object):
             # Setting self.sourcespec to <None> basically disables the
             # ManagedRepo object.
             self.sourcespec= None
-
-        if self.repo_obj.distributed_repo():
+        elif self.repo_obj.distributed_repo():
+            # ^^^ call "distributed_repo()" only if repo_obj is not None
             if self.repo_obj.get_remote_url() is None:
                 # repo found but remote repo couldn't be contacted:
                 self.mode='get'
