@@ -95,6 +95,7 @@ Sumo is available as a debian or rpm package, as tar.gz or zip file:
 * `sumo download page <https://sourceforge.net/projects/epics-sumo/files/?source=navbar>`_
 * `debian 7 packages <https://sourceforge.net/projects/epics-sumo/files/debian-7>`_
 * `debian 8 packages <https://sourceforge.net/projects/epics-sumo/files/debian-8>`_
+* `debian 9 packages <https://sourceforge.net/projects/epics-sumo/files/debian-9>`_
 * `fedora 21 packages <https://sourceforge.net/projects/epics-sumo/files/fedora-21>`_
 * `fedora 22 packages <https://sourceforge.net/projects/epics-sumo/files/fedora-22>`_
 * `fedora 23 packages <https://sourceforge.net/projects/epics-sumo/files/fedora-23>`_

@@ -43,6 +43,7 @@ Simply download the debian package from
 
 * `debian 7 packages <https://sourceforge.net/projects/epics-sumo/files/debian-7>`_
 * `debian 8 packages <https://sourceforge.net/projects/epics-sumo/files/debian-8>`_
+* `debian 9 packages <https://sourceforge.net/projects/epics-sumo/files/debian-9>`_
 
 and install with::
 
