@@ -86,6 +86,9 @@ class DB(sumolib.JSON.Container):
             if not isinstance(d, dict):
                 diag="data is no dict"
                 break
+            if not d:
+                # dict is totally empty, we explicitly allow this:
+                return
             module= _somevalue(d)
             if not isinstance(module, dict):
                 diag="module data is no dict"
