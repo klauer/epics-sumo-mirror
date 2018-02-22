@@ -66,9 +66,9 @@ fedora version you use enter::
 
 Simply download the rpm package from 
 
-* `fedora 21 packages <https://sourceforge.net/projects/epics-sumo/files/fedora-21>`_
-* `fedora 22 packages <https://sourceforge.net/projects/epics-sumo/files/fedora-22>`_
-* `fedora 23 packages <https://sourceforge.net/projects/epics-sumo/files/fedora-23>`_
+* `fedora 25 packages <https://sourceforge.net/projects/epics-sumo/files/fedora-21>`_
+* `fedora 26 packages <https://sourceforge.net/projects/epics-sumo/files/fedora-22>`_
+* `fedora 27 packages <https://sourceforge.net/projects/epics-sumo/files/fedora-23>`_
 
 and install with::
 

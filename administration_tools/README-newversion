@@ -55,10 +55,13 @@ How to create a new version of sumo
   ./docker-run.sh debian-9
   within run: cd /root/sumo/administration_tools && ./mk-deb.sh
 
-  ./docker-run.sh fedora-21
+  ./docker-run.sh fedora-25
   within run: cd /root/sumo/administration_tools && ./mk-rpm.sh
 
-  ./docker-run.sh fedora-22
+  ./docker-run.sh fedora-26
+  within run: cd /root/sumo/administration_tools && ./mk-rpm.sh
+
+  ./docker-run.sh fedora-27
   within run: cd /root/sumo/administration_tools && ./mk-rpm.sh
 
 * push changes to local repo
