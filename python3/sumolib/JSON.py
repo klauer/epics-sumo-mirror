@@ -406,13 +406,15 @@ class Container(object):
             self.unlock_file()
     def pickle_save(self, filename):
         """save using cPickle, don't use lockfiles or anything."""
-        fh= open(filename, "w")
+        # Note: in python3, a pickle file must be opened in binary mode:
+        fh= open(filename, "wb")
         pickle.dump(self.to_dict(), fh)
         fh.close()
     @classmethod
     def from_pickle_file(cls, filename):
         """load from a cPickle file, don't use lockfiles or anything."""
-        fh= open(filename, "r")
+        # Note: in python3, a pickle file must be opened in binary mode:
+        fh= open(filename, "rb")
         data= pickle.load(fh)
         fh.close()
         return cls(data)
