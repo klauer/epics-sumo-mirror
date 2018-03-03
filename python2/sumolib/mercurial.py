@@ -6,7 +6,6 @@
 
 import re
 import os.path
-import sys
 import sumolib.system
 
 __version__="3.2.1" #VERSION#
@@ -26,6 +25,7 @@ class Repo(object):
     # pylint: disable=R0902
     #                          Too many instance attributes
     rx_tag=re.compile(r'^(.*)\s+([0-9]+):([a-z0-9]+)$')
+    rx_heads=re.compile(r'\bheads\b')
     def _default_repo(self):
         """return the default repo."""
         assert_hg()
@@ -309,24 +309,20 @@ class Repo(object):
                                  "a reachable remote repository.")
         assert_hg()
         # use "-u" to update to head:
-        cmd="hg pull -q -R %s -u --config ui.merge=internal:merge %s" % \
+        cmd="hg pull -R %s -u %s" % \
                 (self.directory, self.remote_url)
-        stderr= None
         # system_rc cannot throw an exception:
-        (_,stderr,rc)= sumolib.system.system_rc(cmd,
-                                                False, True,
+        (stdout,_,rc)= sumolib.system.system_rc(cmd,
+                                                True, False,
                                                 self.verbose, self.dry_run)
-        if stderr is not None:
-            sys.stdout.flush()
-            sys.stderr.write(stderr)
-            sys.stderr.flush()
+        if rc!=0:
+            msg="error, 'hg pull -u' failed"
+            raise IOError(msg)
         must_merge= False
-        for l in stderr.splitlines():
-            if l.lower().startswith("warning: conflicts"):
-                msg="error, 'hg pull -u' created a conflict"
-                raise IOError(msg)
-            if l.lower().startswith("not updating:"):
+        for l in stdout.splitlines():
+            if self.__class__.rx_heads.search(l):
                 must_merge= True
+                break
         if not must_merge:
             return
         cmd=("hg merge -q -R %s --config ui.merge=internal:merge") % \
@@ -337,4 +333,8 @@ class Repo(object):
         if rc:
             msg="error, 'hg merge' failed"
             raise IOError(msg)
-
+        cmd="hg commit -m 'automatic merge' -R %s " % self.directory
+        # the follwing command may raise IOError or OSError:
+        sumolib.system.system(cmd,
+                              False, False,
+                              self.verbose, self.dry_run)
