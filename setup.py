@@ -5,6 +5,8 @@ setup.py file for sumo.
 See http://docs.python.org/install
 on how to use setup.py
 """
+# pylint: disable=invalid-name
+
 my_version="3.2.1" #VERSION#
 
 from distutils.core import setup
@@ -29,20 +31,20 @@ def find_files(path):
     """find files and directories below a given path.
 
     here is an example of the returned data structure:
-    {'doc/_build/html': ['objects.inv', 'searchindex.js', 'index.html'], 
-     'doc/_build': [], 
+    {'doc/_build/html': ['objects.inv', 'searchindex.js', 'index.html'],
+     'doc/_build': [],
      'doc/_build/html/_sources': ['license.txt', 'index.txt']
      'doc/_build/doctrees': ['SDshell.doctree', 'license.doctree']
     }
     """
     paths= {}
-    for dirpath, dirnames, filenames in os.walk(path):
+    for dirpath, _, filenames in os.walk(path):
         paths[dirpath]= filenames
     return paths
 
 def pathsplit(path):
     """splits a path into pieces.
-    
+
     Here are some examples:
     >>> pathsplit("A")
     ['A']
