@@ -128,7 +128,8 @@ The *versiondata* map has this form::
       "releasefile": <releasefilename>
       "source": {
           <source data>
-      }
+      },
+      "weight": <weight>
   }
 
 aliasdata
@@ -168,7 +169,7 @@ in the build database :term:`BUILDS.DB`.  This is the form of the
 releasefile
 :::::::::::
 
-This optional field is used to specify an alternative name for the generated
+This *optional* field is used to specify an alternative name for the generated
 RELEASE file. The default name, if releasefile is not given, is
 `configure/RELEASE`.
 
@@ -239,7 +240,7 @@ The *source data* has this form::
       }
   }
 
-The key "patches" is optional. If it is given the patches are applied to the
+The key "patches" is *optional*. If it is given the patches are applied to the
 source in the given order.
 
 "TARFILE" may be a filename or an URL with one of these forms:
@@ -264,10 +265,10 @@ The *source data* has this form::
       }
   }
 
-The key "patches" is optional. If it is given the patches are applied to the
+The key "patches" is *optional*. If it is given the patches are applied to the
 source in the given order.
 
-The key "tag" is also optional, if it is given it specifies the darcs tag that
+The key "tag" is also *optional*, if it is given it specifies the darcs tag that
 is used to fetch the source. 
 
 The key "url" is a darcs repository specification (see manual of darcs for
@@ -289,14 +290,14 @@ The *source data* has this form::
       }
   }
 
-The key "patches" is optional. If it is given the patches are applied to the
+The key "patches" is *optional*. If it is given the patches are applied to the
 source in the given order.
 
-The key "rev" is optional, if it is given it specifies the mercurial revision
+The key "rev" is *optional*, if it is given it specifies the mercurial revision
 that is used to fetch the source. Note that "rev" and "tag" MUST NOT be given
 both.
 
-The key "tag" is also optional, if it is given it specifies the mercurial tag
+The key "tag" is also *optional*, if it is given it specifies the mercurial tag
 that is used to fetch the source. Note that "rev" and "tag" MUST NOT be given
 both.
 
@@ -319,14 +320,14 @@ The *source data* has this form::
       }
   }
 
-The key "patches" is optional. If it is given the patches are applied to the
+The key "patches" is *optional*. If it is given the patches are applied to the
 source in the given order.
 
-The key "rev" is optional, if it is given it specifies the git revision
+The key "rev" is *optional*, if it is given it specifies the git revision
 that is used to fetch the source. Note that "rev" and "tag" MUST NOT be given
 both.
 
-The key "tag" is also optional, if it is given it specifies the git tag
+The key "tag" is also *optional*, if it is given it specifies the git tag
 that is used to fetch the source. Note that "rev" and "tag" MUST NOT be given
 both.
 
@@ -349,14 +350,14 @@ The *source data* has this form::
       }
   }
 
-The key "patches" is optional. If it is given the patches are applied to the
+The key "patches" is *optional*. If it is given the patches are applied to the
 source in the given order.
 
-The key "rev" is optional, if it is given it specifies the subversion revision
+The key "rev" is *optional*, if it is given it specifies the subversion revision
 that is used to fetch the source. Note that "rev" and "tag" MUST NOT be given
 both.
 
-The key "tag" is also optional, if it is given it specifies the subversion tag
+The key "tag" is also *optional*, if it is given it specifies the subversion tag
 that is used to fetch the source. Note that "rev" and "tag" MUST NOT be given
 both. If "tag" is given the string "tags" and the tag name are appended to the
 repository url.
@@ -379,10 +380,10 @@ The *source data* has this form::
       }
   }
 
-The key "patches" is optional. If it is given the patches are applied to the
+The key "patches" is *optional*. If it is given the patches are applied to the
 source in the given order.
 
-The key "tag" is also optional, if it is given it specifies the cvs tag
+The key "tag" is also *optional*, if it is given it specifies the cvs tag
 that is used to fetch the source. 
 
 The key "url" is the cvs repository specification. In the following "<cvsroot>"
@@ -399,7 +400,13 @@ Path with "file" prefix
 
 SSH path 
   This has the form ``ssh://<user>@<host>:<cvsroot>/<module>`` 
-  
+
+weight
+::::::
+
+This *optional* field is used to define the weight factor for a module. You
+usually don't have to use this, see `db weight WEIGHT MODULES`_ for details.
+
 The scan database
 +++++++++++++++++
 
