@@ -1965,7 +1965,7 @@ def subcmd_db_clone_replace_version(command, arguments, options):
         db.patch_version(modulename,
                          args.OLD_VERSION, args.NEW_VERSION,
                          do_replace)
-    except ValueError, e:
+    except (KeyError, ValueError), e:
         if not catch_exceptions:
             raise
         sys.exit(errtxt("",e))
