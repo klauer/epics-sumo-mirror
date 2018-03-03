@@ -12,6 +12,8 @@ import shutil
 import filecmp
 import textwrap
 import pydoc
+import functools
+import multiprocessing
 
 import sumolib.system
 import sumolib.lock
@@ -140,6 +142,8 @@ LOCK_TIMEOUT=4
 
 catch_exceptions= True
 pager_mode= "on"
+
+use_multiprocessing= True
 
 env_help= os.environ.get(ENV_HELP,"")
 if env_help:
@@ -286,6 +290,42 @@ def _assume_dir(dir_, dry_run):
     if not dry_run:
         if not os.path.exists(dir_):
             sys.exit("Error, directory 'configure' not found")
+
+# -----------------------------------------------
+# exception handling for multiprocessing
+# -----------------------------------------------
+
+# This wrapper is needed for functions started with multiprocessing.Process.
+# When such a function raises an exception it is terminated within the
+# multiprocessing.Process code. The exception handling code in function
+# Process() here in sumo is never reached. So we have to re-implement the
+# exception handling here. Function multiprocess_handle_exception can be used
+# as a decorator for an arbitrary function.
+
+def multiprocess_handle_exception(fun):
+    @functools.wraps(fun)
+    def wrapper(*args, **kwargs):
+        # pylint: disable=broad-except
+        if not use_multiprocessing:
+            return fun(*args, **kwargs)
+        try:
+            fun(*args, **kwargs)
+        except (AssertionError, IOError, KeyError, TypeError, ValueError,
+                sumolib.JSON.ParseError, sumolib.JSON.ParseError,
+                sumolib.lock.AccessError, sumolib.lock.LockedError) as e:
+            if catch_exceptions:
+                st= str(e)
+                if not st.startswith("Error"):
+                    st= "Error: "+st
+                # Note: on our debian 7 deveopment host with python 2.7.3,
+                # sys.exit(STRING) doesn't work together with
+                # multiprocessing.process(). The main process doesn't get a
+                # non-zero error code as expected.  So we separate printing to
+                # stderr from returning an error code, this seems to work:
+                sys.stderr.write(st+"\n")
+                sys.exit(1)
+            raise
+    return wrapper
 
 # -----------------------------------------------
 # load config files
@@ -979,6 +1019,7 @@ def delete_module(builddir, build_tag, modulename, versionname,
         # remove the parent directory if it is empty:
     rm_empty_dir(modulename, verbose, dry_run)
 
+@multiprocess_handle_exception
 def create_module(db, builddb, build_tag,
                   dist_dict,
                   modulename, versionname,
@@ -998,6 +1039,9 @@ def create_module(db, builddb, build_tag,
     May raise:
         IOError from create_source
         ValueError if directory cannot be created
+
+    Note that this function is called with multiprocessing.Process(), this is
+    the reason why we need the multiprocess_handle_exception decorator.
     """
     # pylint: disable=R0913
     #                          Too many arguments
@@ -1422,8 +1466,7 @@ def create_modules(dist_dict, db, builddb, builddir, build_tag,
     May raise:
         IOError, ValueError from create_module
     """
-    # pylint: disable=R0913
-    #                          Too many arguments
+    # pylint: disable=too-many-arguments, too-many-locals, too-many-branches
     module_list  = []
 
     if builddb.is_fully_linked(build_tag):
@@ -1444,15 +1487,40 @@ def create_modules(dist_dict, db, builddb, builddir, build_tag,
         ensure_dir(builddir, dry_run)
     if no_checkout:
         return
+    processes= []
     for module_dict in module_list:
         # may raise IOError, ValueError:
-        create_module(db, builddb, build_tag,
-                      dist_dict,
-                      module_dict["modulename"],
-                      module_dict["versionname"],
-                      extra_lines,
-                      progress,
-                      verbose, dry_run)
+        args=(db, builddb, build_tag,
+              dist_dict,
+              module_dict["modulename"],
+              module_dict["versionname"],
+              extra_lines,
+              progress,
+              verbose, dry_run)
+        if not use_multiprocessing:
+            create_module(*args)
+        else:
+            processes.append( \
+                multiprocessing.Process( target= create_module, args= args))
+    for p in processes:
+        p.start()
+    for p in processes:
+        p.join()
+    for p in processes:
+        # check if one of the processes had an error:
+        if p.exitcode!=0:
+            if catch_exceptions:
+                # the error message was already printed by the sub process, so
+                # silently exit the program:
+                sys.exit(p.exitcode)
+            else:
+                # if catch_exceptions is False we want a traceback that shows
+                # the developer *where* something went wrong. Since the
+                # exception traceback from the sub process does not contain
+                # *this* position in the code, we raise a second exception here
+                # in the main program:
+                raise IOError("create_module sub process failed")
+
 
 def simple_call_make(builddir, makefile, target, makeflags,
                      progress, verbose, dry_run):
@@ -3822,6 +3890,9 @@ option_help_topics= {
         "nolock":
                 doc_options['Options']\
                            ['``--nolock``'],
+        "no-multiprocessing":
+                doc_options['Options']\
+                           ['``--no-multiprocessing``'],
         "progress":
                 doc_options['Options']\
                            ['``-p, --progress``'],
@@ -3959,9 +4030,11 @@ def process(options, commands):
     """do all the work.
     """
     # pylint: disable=global-statement, too-many-branches
-    global catch_exceptions
+    global catch_exceptions, use_multiprocessing
     if options.exceptions:
         catch_exceptions= False
+    if options.no_multiprocessing:
+        use_multiprocessing= False
 
     try:
         (cmd, c_args)= sumolib.cli.process_cmd(commands, KNOWN_MAIN_COMMANDS,
@@ -4083,6 +4156,7 @@ def main():
               arg_is_option= True)
     specs.add("--readonly")
     specs.add("--nolock")
+    specs.add("--no-multiprocessing")
     specs.add("--progress -p")
     specs.add("--trace")
     specs.add("--tracemore")
