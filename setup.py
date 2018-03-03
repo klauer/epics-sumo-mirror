@@ -119,7 +119,7 @@ html_build_dir= os.path.join(doc_dir,"_build","html")
 ## create HTML documentation if it doesn't already exist:
 if not os.path.exists(html_build_dir):
     # "make -C doc html":
-    subprocess.check_call(["make", "-C", "doc", "html"])
+    subprocess.check_call([os.path.join("administration_tools","doc-rebuild.sh")])
 
 data_files_list= [(doc_install_dir, ["README", "LICENSE"])]
 
