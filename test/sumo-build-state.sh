@@ -2,12 +2,6 @@
 
 ME=`basename $0 .sh`
 
-if [ "$1" = "deps" ]; then
-        echo "$ME.tst: $ME.sh $ME.out $ME.ok sumo-build-new-0.tst"
-        echo
-        exit
-fi
-
 source settings.sh
 
 echo -e "\n-> Test sumo build state (query)" >&2

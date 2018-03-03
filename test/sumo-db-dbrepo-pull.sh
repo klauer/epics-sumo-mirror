@@ -2,12 +2,6 @@
 
 ME=`basename $0 .sh`
 
-if [ "$1" = "deps" ]; then
-        echo "$ME.tst: $ME.sh $ME.out $ME.ok sumo-db-dbrepo-create.tst sumo-db-cloneversion-dbrepo.tst"
-        echo
-        exit
-fi
-
 source settings.sh
 
 REPOSRC="tmp-sumo-db-dbrepo-create/central"
