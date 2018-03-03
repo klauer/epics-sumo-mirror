@@ -1456,7 +1456,7 @@ def subcmd_config_list(arguments, options):
     May raise:
         ValueError, IOError, TypeError from load_config_files
     """
-    sumolib.cli.process_args(arguments, None, options.list)
+    sumolib.cli.process_args(arguments, None, options.list, catch_exceptions)
 
     # may raise IOError, TypeError, ValueError:
     (_, config)= load_config_files(options, disable_loading= None)
@@ -1481,7 +1481,8 @@ def subcmd_config_make_show(cmd, arguments, options):
                 completion= lambda o, r: \
                    sumolib.cli.complete_list(KNOWN_CONFIG_OPTIONS, o, r))
 
-    args= sumolib.cli.process_args(arguments, argspec, options.list)
+    args= sumolib.cli.process_args(arguments, argspec, options.list,
+                                   catch_exceptions)
 
     if cmd=="make":
         filename= args.CONFIGFILE # pylint: disable=no-member
@@ -1515,7 +1516,8 @@ def subcmd_config_standalone(arguments, options):
     """
     argspec= sumolib.cli.CmdSpecs()
     argspec.add("SUMODIR", completion= sumolib.cli.complete_dir)
-    args= sumolib.cli.process_args(arguments, argspec, options.list)
+    args= sumolib.cli.process_args(arguments, argspec, options.list,
+                                   catch_exceptions)
 
     # may raise IOError, TypeError, ValueError:
     (options, config)= load_config_files(options, disable_loading= True)
@@ -1558,7 +1560,8 @@ def subcmd_config_local(arguments, options):
     """
     argspec= sumolib.cli.CmdSpecs()
     argspec.add("SUMODIR", completion= sumolib.cli.complete_dir)
-    args= sumolib.cli.process_args(arguments, argspec, options.list)
+    args= sumolib.cli.process_args(arguments, argspec, options.list,
+                                   catch_exceptions)
 
     # may raise IOError, TypeError, ValueError:
     (options, config)= load_config_files(options, disable_loading= True)
@@ -1607,7 +1610,7 @@ def subcmd_db_edit(arguments, options):
     """
     if options.readonly:
         sys.exit("--readonly forbids editing a database file")
-    sumolib.cli.process_args(arguments, None, options.list)
+    sumolib.cli.process_args(arguments, None, options.list, catch_exceptions)
 
     sumolib.cli.assert_options(catch_exceptions,  options, "dbdir")
 
@@ -1666,7 +1669,8 @@ def subcmd_db_convert(arguments, options):
     """
     argspec= sumolib.cli.CmdSpecs()
     argspec.add("SCANFILE", completion= sumolib.cli.complete_file)
-    args= sumolib.cli.process_args(arguments, argspec, options.list)
+    args= sumolib.cli.process_args(arguments, argspec, options.list,
+                                   catch_exceptions)
 
     sumolib.cli.assert_options(catch_exceptions,  options, "dbdir", "scandb")
     if os.path.exists(db_f(options.dbdir)):
@@ -1703,7 +1707,8 @@ def subcmd_db_convert_old(arguments, options):
     """
     argspec= sumolib.cli.CmdSpecs()
     argspec.add("OLDDB", completion= sumolib.cli.complete_file)
-    args= sumolib.cli.process_args(arguments, argspec, options.list)
+    args= sumolib.cli.process_args(arguments, argspec, options.list,
+                                   catch_exceptions)
 
     sumolib.cli.assert_options(catch_exceptions,  options, "dbdir")
     # pylint: disable=no-member
@@ -1733,7 +1738,8 @@ def subcmd_db_modconvert(arguments, options):
     argspec= sumolib.cli.CmdSpecs()
     argspec.add("SCANFILE", completion= sumolib.cli.complete_file)
     argspec.add("MODULES", array= True, optional= True)
-    args= sumolib.cli.process_args(arguments, argspec, options.list)
+    args= sumolib.cli.process_args(arguments, argspec, options.list,
+                                   catch_exceptions)
 
     modulespecs= []
     if options.module:
@@ -1776,7 +1782,8 @@ def subcmd_db_appconvert(arguments, options):
     """
     argspec= sumolib.cli.CmdSpecs()
     argspec.add("SCANFILE", completion= sumolib.cli.complete_file)
-    args= sumolib.cli.process_args(arguments, argspec, options.list)
+    args= sumolib.cli.process_args(arguments, argspec, options.list,
+                                   catch_exceptions)
 
     scandata= sumolib.JSON.loadfile(args.SCANFILE) # pylint: disable=no-member
     deps= scandata["dependencies"]
@@ -1793,7 +1800,7 @@ def subcmd_db_format(arguments, options):
         ValueError, IOError, sumolib.JSON.ParseError from db_from_repo
         IOError from db_to_repo
     """
-    sumolib.cli.process_args(arguments, None, options.list)
+    sumolib.cli.process_args(arguments, None, options.list, catch_exceptions)
 
     sumolib.cli.assert_options(catch_exceptions,  options, "dbdir")
 
@@ -1824,7 +1831,8 @@ def subcmd_db_weight(arguments, options):
     argspec.add("WEIGHT")
     argspec.add("MODULES", array= True,
                 completion= sumolib.complete.moduleversion)
-    args= sumolib.cli.process_args(arguments, argspec, options.list)
+    args= sumolib.cli.process_args(arguments, argspec, options.list,
+                                   catch_exceptions)
 
     try:
         # may raise ValueError:
@@ -1866,7 +1874,8 @@ def subcmd_db_show(arguments, options):
     argspec= sumolib.cli.CmdSpecs()
     argspec.add("MODULES", array= True, optional= True,
                 completion= sumolib.complete.moduleversion)
-    args= sumolib.cli.process_args(arguments, argspec, options.list)
+    args= sumolib.cli.process_args(arguments, argspec, options.list,
+                                   catch_exceptions)
 
     modulespecs= []
     if options.module:
@@ -1902,7 +1911,7 @@ def subcmd_db_check(arguments, options):
     May raise:
         ValueError, IOError, sumolib.JSON.ParseError from db_from_repo
     """
-    sumolib.cli.process_args(arguments, None, options.list)
+    sumolib.cli.process_args(arguments, None, options.list, catch_exceptions)
     sumolib.cli.assert_options(catch_exceptions,  options, "dbdir")
 
     # may raise IOError, ValueError, sumolib.JSON.ParseError:
@@ -1921,7 +1930,8 @@ def subcmd_db_merge(arguments, options):
     """
     argspec= sumolib.cli.CmdSpecs()
     argspec.add("DB", completion= sumolib.cli.complete_file)
-    args= sumolib.cli.process_args(arguments, argspec, options.list)
+    args= sumolib.cli.process_args(arguments, argspec, options.list,
+                                   catch_exceptions)
 
     sumolib.cli.assert_options(catch_exceptions,  options, "dbdir")
 
@@ -1955,7 +1965,8 @@ def subcmd_db_alias_add(arguments, options):
                 completion= lambda d,r: \
                         sumolib.complete.dependency("MODULE", d, r))
     argspec.add("ALIAS")
-    args= sumolib.cli.process_args(arguments, argspec, options.list)
+    args= sumolib.cli.process_args(arguments, argspec, options.list,
+                                   catch_exceptions)
 
     # pylint: disable=no-member
     module_spec= sumolib.ModuleSpec.Spec.from_string(args.MODULE)
@@ -1987,7 +1998,8 @@ def subcmd_db_dependency_add(arguments, options):
     argspec= sumolib.cli.CmdSpecs()
     argspec.add("MODULE", completion= sumolib.complete.moduleversion)
     argspec.add("DEPENDENCY", completion= sumolib.complete.module)
-    args= sumolib.cli.process_args(arguments, argspec, options.list)
+    args= sumolib.cli.process_args(arguments, argspec, options.list,
+                                   catch_exceptions)
 
     # pylint: disable=no-member
     module_spec= sumolib.ModuleSpec.Spec.from_string(args.MODULE)
@@ -2021,7 +2033,8 @@ def subcmd_db_dependency_delete(arguments, options):
     argspec.add("DEPENDENCY",
                 completion= lambda d,r: \
                         sumolib.complete.dependency("MODULE", d, r))
-    args= sumolib.cli.process_args(arguments, argspec, options.list)
+    args= sumolib.cli.process_args(arguments, argspec, options.list,
+                                   catch_exceptions)
 
     # pylint: disable=no-member
     module_spec= sumolib.ModuleSpec.Spec.from_string(args.MODULE)
@@ -2055,7 +2068,8 @@ def subcmd_db_releasefilename(arguments, options):
     argspec= sumolib.cli.CmdSpecs()
     argspec.add("MODULE", completion= sumolib.complete.moduleversion)
     argspec.add("RELEASEFILENAME")
-    args= sumolib.cli.process_args(arguments, argspec, options.list)
+    args= sumolib.cli.process_args(arguments, argspec, options.list,
+                                   catch_exceptions)
 
     # pylint: disable=no-member
     module_spec= sumolib.ModuleSpec.Spec.from_string(args.MODULE)
@@ -2092,7 +2106,8 @@ def subcmd_db_clone_replace_version(command, arguments, options):
                         sumolib.complete.version("MODULE", v, r))
     argspec.add("NEW-VERSION")
     argspec.add("SOURCESPEC", array= True, optional= True)
-    args= sumolib.cli.process_args(arguments, argspec, options.list)
+    args= sumolib.cli.process_args(arguments, argspec, options.list,
+                                   catch_exceptions)
 
     do_replace= (command=="replaceversion")
     modulename= args.MODULE # pylint: disable=no-member
@@ -2153,7 +2168,8 @@ def subcmd_db_clonemodule(arguments, options):
                 completion= lambda v,r: \
                       sumolib.complete.dependency("NEW-MODULE", v, r),
                 array= True, optional= True)
-    args= sumolib.cli.process_args(arguments, argspec, options.list)
+    args= sumolib.cli.process_args(arguments, argspec, options.list,
+                                   catch_exceptions)
 
     # may raise IOError, ValueError, sumolib.JSON.ParseError:
     (mngr, db)= db_from_repo(options,
@@ -2181,7 +2197,8 @@ def subcmd_db_list(arguments, options):
     argspec= sumolib.cli.CmdSpecs()
     argspec.add("MODULES", completion= sumolib.complete.module,
                 array= True, optional= True)
-    args= sumolib.cli.process_args(arguments, argspec, options.list)
+    args= sumolib.cli.process_args(arguments, argspec, options.list,
+                                   catch_exceptions)
 
     # may raise IOError, ValueError, sumolib.JSON.ParseError:
     (_, db)= db_from_repo(options)
@@ -2230,7 +2247,8 @@ def subcmd_db_find(arguments, options):
     """
     argspec= sumolib.cli.CmdSpecs()
     argspec.add("REGEXP")
-    args= sumolib.cli.process_args(arguments, argspec, options.list)
+    args= sumolib.cli.process_args(arguments, argspec, options.list,
+                                   catch_exceptions)
 
     sumolib.cli.assert_options(catch_exceptions,  options, "dbdir")
     # may raise IOError, ValueError, sumolib.JSON.ParseError:
@@ -2258,7 +2276,7 @@ def subcmd_build_list(arguments, options):
     May raise:
         IOError, ValueError from builddb_from_json_file
     """
-    sumolib.cli.process_args(arguments, None, options.list)
+    sumolib.cli.process_args(arguments, None, options.list, catch_exceptions)
 
     sumolib.cli.assert_options(catch_exceptions,  options, "builddir")
     # may raise IOError, ValueError:
@@ -2277,7 +2295,8 @@ def subcmd_build_show(arguments, options):
     sumolib.cli.assert_options(catch_exceptions,  options, "builddir")
     argspec= sumolib.cli.CmdSpecs()
     argspec.add("BUILDTAG", completion= sumolib.complete.builds)
-    args= sumolib.cli.process_args(arguments, argspec, options.list)
+    args= sumolib.cli.process_args(arguments, argspec, options.list,
+                                   catch_exceptions)
 
     if options.buildtag:
         sys.exit("error: you cannot use --buildtag here")
@@ -2302,7 +2321,8 @@ def subcmd_build_state(arguments, options):
     argspec= sumolib.cli.CmdSpecs()
     argspec.add("BUILDTAG", completion= sumolib.complete.builds)
     argspec.add("NEW-STATE", optional= True)
-    args= sumolib.cli.process_args(arguments, argspec, options.list)
+    args= sumolib.cli.process_args(arguments, argspec, options.list,
+                                   catch_exceptions)
 
     if options.buildtag:
         sys.exit("error: you cannot use --buildtag here")
@@ -2361,7 +2381,8 @@ def subcmd_build_delete(arguments, options):
     sumolib.cli.assert_options(catch_exceptions,  options, "builddir")
     argspec= sumolib.cli.CmdSpecs()
     argspec.add("BUILDTAGS", array= True, completion= sumolib.complete.builds)
-    args= sumolib.cli.process_args(arguments, argspec, options.list)
+    args= sumolib.cli.process_args(arguments, argspec, options.list,
+                                   catch_exceptions)
 
     if options.readonly:
         sys.exit("--readonly forbids deleting a support")
@@ -2405,7 +2426,8 @@ def subcmd_build_try(arguments, options):
     argspec= sumolib.cli.CmdSpecs()
     argspec.add("MODULES", array= True, optional= True,
                 completion= sumolib.complete.moduleversion)
-    args= sumolib.cli.process_args(arguments, argspec, options.list)
+    args= sumolib.cli.process_args(arguments, argspec, options.list,
+                                   catch_exceptions)
 
     sumolib.cli.assert_options(catch_exceptions,  options, "builddir")
     buildtag= options.buildtag
@@ -2599,7 +2621,8 @@ def subcmd_build_remake(arguments, options):
     sumolib.cli.assert_options(catch_exceptions,  options, "builddir")
     argspec= sumolib.cli.CmdSpecs()
     argspec.add("BUILDTAG", completion= sumolib.complete.builds)
-    args= sumolib.cli.process_args(arguments, argspec, options.list)
+    args= sumolib.cli.process_args(arguments, argspec, options.list,
+                                   catch_exceptions)
 
     if options.buildtag:
         sys.exit("error: you cannot use --buildtag here")
@@ -2653,7 +2676,8 @@ def subcmd_build_new(arguments, options):
     argspec= sumolib.cli.CmdSpecs()
     argspec.add("MODULES", array= True, optional= True,
                 completion= sumolib.complete.moduleversion)
-    args= sumolib.cli.process_args(arguments, argspec, options.list)
+    args= sumolib.cli.process_args(arguments, argspec, options.list,
+                                   catch_exceptions)
 
     sumolib.cli.assert_options(catch_exceptions,  options, "builddir")
     if options.readonly:
@@ -2757,7 +2781,8 @@ def subcmd_build_find(arguments, options):
     argspec= sumolib.cli.CmdSpecs()
     argspec.add("MODULES", array= True, optional= True,
                 completion= sumolib.complete.moduleversion)
-    args= sumolib.cli.process_args(arguments, argspec, options.list)
+    args= sumolib.cli.process_args(arguments, argspec, options.list,
+                                   catch_exceptions)
 
     sumolib.cli.assert_options(catch_exceptions,  options, "builddir")
 
@@ -2813,7 +2838,8 @@ def subcmd_build_use(arguments, options):
     argspec= sumolib.cli.CmdSpecs()
     argspec.add("MODULES", array= True, optional= True,
                 completion= sumolib.complete.moduleversion)
-    args= sumolib.cli.process_args(arguments, argspec, options.list)
+    args= sumolib.cli.process_args(arguments, argspec, options.list,
+                                   catch_exceptions)
 
     sumolib.cli.assert_options(catch_exceptions,  options, "builddir")
 
@@ -2930,7 +2956,8 @@ def maincmd_lock(arguments, options):
 
     argspec= sumolib.cli.CmdSpecs()
     argspec.add("FILE", completion= sumolib.cli.complete_file)
-    args= sumolib.cli.process_args(arguments, argspec, options.list)
+    args= sumolib.cli.process_args(arguments, argspec, options.list,
+                                   catch_exceptions)
 
     l= sumolib.lock.MyLock(args.FILE) # pylint: disable=no-member
     # may raise sumolib.lock.LockedError, sumolib.lock.AccessError:
@@ -2942,7 +2969,8 @@ def maincmd_unlock(arguments, options):
         sys.exit("--readonly forbids editing a database file")
     argspec= sumolib.cli.CmdSpecs()
     argspec.add("FILE", completion= sumolib.cli.complete_file)
-    args= sumolib.cli.process_args(arguments, argspec, options.list)
+    args= sumolib.cli.process_args(arguments, argspec, options.list,
+                                   catch_exceptions)
 
     l= sumolib.lock.MyLock(args.FILE) # pylint: disable=no-member
     lock_found= False
@@ -3622,7 +3650,8 @@ def maincmd_help(arguments, options):
     argspec.add("SUBTOPIC", optional= True,
                 completion= lambda s,r: \
                          sub_topic_complete(sub_topics, s, r))
-    args= sumolib.cli.process_args(arguments, argspec, options.list)
+    args= sumolib.cli.process_args(arguments, argspec, options.list,
+                                   catch_exceptions)
 
     # pylint: disable=no-member
     if not args.defined("MAINTOPIC"):
@@ -3743,7 +3772,8 @@ def main():
                     sumolib.cli.complete_list(KNOWN_CONFIG_OPTIONS, s, o),
               arg_name= "optionname", array= True)
     specs.add("--#preload", sumolib.cli.complete_file, "FILES", array= True)
-    specs.add("--#opt-preload", sumolib.cli.complete_file, "FILES", array= True)
+    specs.add("--#opt-preload", sumolib.cli.complete_file, "FILES",
+              array= True)
     specs.add("--#postload", sumolib.cli.complete_file, "FILES", array= True)
     specs.add("--#opt-postload", sumolib.cli.complete_file, "FILES",
               array= True)
@@ -3758,7 +3788,8 @@ def main():
     specs.add("--buildtag -t", arg_name= "BUILDTAG")
     specs.add("--buildtag-stem", arg_name= "STEM")
     specs.add("--builddir", sumolib.cli.complete_dir, arg_name= "BUILDDIR")
-    specs.add("--localbuilddir", sumolib.cli.complete_dir, arg_name= "BUILDDIR")
+    specs.add("--localbuilddir", sumolib.cli.complete_dir,
+              arg_name= "BUILDDIR")
     specs.add("--output -o", arg_name= "OUTPUTFILE")
     specs.add("--extra -x", arg_name= "EXTRALINE", array= True)
     specs.add("--alias -a", arg_name= "ALIAS", array= True)
@@ -3800,7 +3831,8 @@ def main():
             print usage_help
             sys.exit(0)
 
-    (options, args)= sumolib.cli.process_opts(sys.argv, specs)
+    (options, args)= sumolib.cli.process_opts(sys.argv, specs,
+                                              catch_exceptions)
 
     # pylint: disable=E1103
     #                          Instance of 'Options' has no .. member

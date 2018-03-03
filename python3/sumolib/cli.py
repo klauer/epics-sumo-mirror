@@ -1,7 +1,6 @@
 """Command line interface."""
 
-# pylint: disable=C0103
-#                          Invalid name for type variable
+# pylint: disable=too-many-lines, invalid-name
 
 import sys
 import glob
@@ -11,6 +10,7 @@ import time
 import pprint
 import sumolib.ModuleSpec
 import sumolib.Dependencies
+import sumolib.JSON
 
 if __name__ == "__main__":
     # if this module is directly called like a script, we have to add the path
@@ -379,17 +379,17 @@ class CliError(Exception):
     """Error from command line parsing."""
     pass
 
-def assert_options(do_exit, options, *opt_list):
+def assert_options(catch_exceptions, options, *opt_list):
     """check for the presence of options."""
     for opt in opt_list:
         if not getattr(options, opt):
             txt= "Error, --%s is mandatory here" % opt
-            if not do_exit:
+            if not catch_exceptions:
                 raise CliError(txt)
             else:
                 sys.exit(txt)
 
-def process_opts(args, optionspecs, testmode= False):
+def process_opts(args, optionspecs, catch_exceptions, testmode= False):
     """parse incomplete options.
 
     expects args[0] to be the program's name.
@@ -405,7 +405,7 @@ def process_opts(args, optionspecs, testmode= False):
     >>> def t(args):
     ...     a= ["dummy"]
     ...     a.extend(args)
-    ...     (options,rest)= process_opts(a, spcs, True)
+    ...     (options,rest)= process_opts(a, spcs, True, True)
     ...     if options is not None:
     ...         print(options)
     ...         print("rest:", repr(rest))
@@ -643,10 +643,15 @@ def process_opts(args, optionspecs, testmode= False):
         sys.stderr.write("".join((bs,sp,bs)))
 
     def complete(spec, st, options):
-        """print completion."""
+        """print completion.
+
+        May raise:
+            any exception from comp_func
+        """
         comp_func= None
         comp_func= spec.completion
         if comp_func:
+            # may raise any exception:
             print("\n".join(sorted(comp_func(st, options))))
             return
         if spec.arg_name:
@@ -657,7 +662,10 @@ def process_opts(args, optionspecs, testmode= False):
             if msg:
                 print(msg)
         else:
-            sys.exit(msg)
+            if msg is None:
+                sys.exit()
+            else:
+                sys.exit("\n"+msg)
     # extract the program name from args:
     # arg0= args[0]
     args= args[1:]
@@ -782,7 +790,13 @@ def process_opts(args, optionspecs, testmode= False):
                 return (options, rest_args)
             else:
                 # completion_mode=="word":
-                complete(consumer, a, options)
+                try:
+                    # may raise any exception:
+                    complete(consumer, a, options)
+                except sumolib.JSON.ParseError as e:
+                    if not catch_exceptions:
+                        raise
+                    my_exit(str(e))
                 my_exit()
                 return (None, None) # never reached
 
@@ -864,7 +878,13 @@ def process_opts(args, optionspecs, testmode= False):
                              "option '%s'") % (optionspec.arg_name, a))
                     return (None, None) # never reached
                 if completion_mode=="new":
-                    complete(optionspec, "", options)
+                    try:
+                        # may raise any exception:
+                        complete(optionspec, "", options)
+                    except sumolib.JSON.ParseError as e:
+                        if not catch_exceptions:
+                            raise
+                        my_exit(str(e))
                     my_exit()
                     return (None, None) # never reached
                 else:
@@ -910,7 +930,10 @@ def process_cmd(cli_args, cmd_list, completion_mode,
             if msg:
                 print(msg)
         else:
-            sys.exit(msg)
+            if msg is None:
+                sys.exit()
+            else:
+                sys.exit("\n"+msg)
     if not cli_args:
         # no args given
         if completion_mode:
@@ -947,7 +970,8 @@ def process_cmd(cli_args, cmd_list, completion_mode,
         return ("",[])
     return(cli_args[0], cli_args[1:])
 
-def process_args(cli_args, argspec, completion_mode, testmode= False):
+def process_args(cli_args, argspec, completion_mode,
+                 catch_exceptions, testmode= False):
     """new command argument processing.
 
     argspec must be None or an CmdSpecs object.
@@ -967,7 +991,7 @@ def process_args(cli_args, argspec, completion_mode, testmode= False):
     >>> import pprint
 
     >>> def t(cli_args, completion_mode):
-    ...     r=process_args(cli_args, tspec, completion_mode, True)
+    ...     r=process_args(cli_args, tspec, completion_mode, True, True)
     ...     if r:
     ...         pprint.pprint(r)
 
@@ -1027,10 +1051,15 @@ def process_args(cli_args, argspec, completion_mode, testmode= False):
         sp= " " * len(txt)
         sys.stderr.write("".join((bs,sp,bs)))
     def complete(name, spec, st, result):
-        """call completion func if it exists and exit."""
+        """call completion func if it exists and exit.
+
+        May raise:
+            any exception from comp_func
+        """
         comp_func= None
         comp_func= spec.completion
         if comp_func:
+            # may raise any exception:
             print("\n".join(sorted(comp_func(st, result))))
             return
         display_help(name)
@@ -1040,7 +1069,10 @@ def process_args(cli_args, argspec, completion_mode, testmode= False):
             if msg:
                 print(msg)
         else:
-            sys.exit(msg)
+            if msg is None:
+                sys.exit()
+            else:
+                sys.exit("\n"+msg)
     if not argspec:
         # no cli_args expected
         if completion_mode:
@@ -1067,7 +1099,13 @@ def process_args(cli_args, argspec, completion_mode, testmode= False):
         if not spec.array:
             (name, spec)= argspec.get()
         if completion_mode=="word" and not rargs:
-            complete(name, spec, arg, result)
+            try:
+                # may raise any exception:
+                complete(name, spec, arg, result)
+            except sumolib.JSON.ParseError as e:
+                if not catch_exceptions:
+                    raise
+                my_exit(str(e))
             my_exit()
             return
         result.put(name, arg, is_array= spec.array)
@@ -1076,7 +1114,13 @@ def process_args(cli_args, argspec, completion_mode, testmode= False):
             if not rargs:
                 if completion_mode=="new":
                     arg=""
-                complete(name, spec, arg, result)
+                try:
+                    # may raise any exception:
+                    complete(name, spec, arg, result)
+                except sumolib.JSON.ParseError as e:
+                    if not catch_exceptions:
+                        raise
+                    my_exit(str(e))
             # if (rargs) is kind of an error here, just do nothing in
             # completion mode:
             my_exit()
@@ -1096,7 +1140,13 @@ def process_args(cli_args, argspec, completion_mode, testmode= False):
                     (name, spec)= argspec.get()
             if completion_mode=="new":
                 arg=""
-            complete(name, spec, arg, result)
+            try:
+                # may raise any exception:
+                complete(name, spec, arg, result)
+            except sumolib.JSON.ParseError as e:
+                if not catch_exceptions:
+                    raise
+                my_exit(str(e))
             my_exit()
             return
         while argspec.more():
@@ -1117,4 +1167,3 @@ def _test():
 
 if __name__ == "__main__":
     _test()
-
