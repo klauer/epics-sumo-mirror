@@ -1195,7 +1195,7 @@ def delete_build(builddb, build_tags, recursive, verbose, dry_run):
         if not recursive:
             extra_builds= complete_build_tags-given_build_tags
             raise ValueError("Error, the following builds dependend on "
-                             "the specified build(s):\n%s"
+                             "the specified build(s):\n%s\n"
                              "You may delete all these too by using "
                              "option '--recursive'." % \
                              " ".join(sorted(extra_builds)))
