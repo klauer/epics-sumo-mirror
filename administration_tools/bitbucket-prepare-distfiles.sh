@@ -13,13 +13,10 @@ mkdir -p dist-bitbucket
 
 for f in dist/*; do
     if [ ! -d "$f" ]; then
-        echo "A"
         cp -a "$f" dist-bitbucket;
     else
         for ff in $f/*; do
             subdir=$(basename $f)
-            echo "f: $f"
-            echo "ff: $ff"
             cp "$ff" dist-bitbucket/$subdir-$(basename $ff)
         done;
     fi

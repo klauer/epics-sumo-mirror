@@ -98,6 +98,22 @@ Enter this command::
 Upload to pypi
 ++++++++++++++
 
+Note: ~/pypirc must have this content (password omitted here)::
+
+  [distutils]
+  index-servers=
+      pypi
+      testpypi
+  
+  [testpypi]
+  repository = https://test.pypi.org/legacy/
+  username = Goetz.Pfeiffer
+  password = ***
+  
+  [pypi]
+  username = Goetz.Pfeiffer
+  password = ***
+
 Since you cannot undo an upload of a specific version, first test with the
 pypi test site.
 
@@ -116,7 +132,7 @@ Now test with these commands::
   pip install EPICS-sumo -i https://testpypi.python.org/pypi --prefix `pwd`
   export PYTHONUSERBASE=`pwd`
   PATH=`pwd`/bin:$PATH
-  expander.py -h
+  sumo -h
   exit
 
 If everything worked, remove the test directory with::
