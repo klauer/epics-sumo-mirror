@@ -8,7 +8,7 @@ A
 
 creating a lock
 try to create the lock again (should fail)
-file 'tmp-sumo-lock/A' is locked: simpson@burns.com:12345
+Error: file 'tmp-sumo-lock/A' is locked: simpson@burns.com:12345
 removing the lock
 listing of tmp-sumo-lock now:
 A
