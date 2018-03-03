@@ -94,13 +94,13 @@ TEMPLATE_TOP=$(EPICS_BASE)/templates/makeBaseApp/top
 #If using the sequencer, point SNCSEQ at its top directory:
 #SNCSEQ=$(EPICS_BASE)/../modules/soft/seq
 
-EPICS_SUPPORT=/net/elbe.acc.bessy.de/srv/projects/ctl/pfeiffer/project-elbe/sumo/test/data/epics/support
+EPICS_SUPPORT=mybase/data/epics/support
 
 TIMER=$(EPICS_SUPPORT)/bspDep/timer/6-2
 DBC=$(EPICS_SUPPORT)/misc/dbc/3-0
 
 # EPICS_BASE usually appears last so other apps can override stuff:
-EPICS_BASE=/net/elbe.acc.bessy.de/srv/projects/ctl/pfeiffer/project-elbe/sumo/test/data/epics/base/3-14-12-2-1
+EPICS_BASE=mybase/data/epics/base/3-14-12-2-1
 
 #Capfast users may need the following definitions
 #CAPFAST_TEMPLATES=

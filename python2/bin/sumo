@@ -744,7 +744,7 @@ def gen_RELEASE(db, builddb, buildtag,
     #                          Too many local variables
 
     filename= os.path.join(module_directory,
-                           db.get_releasefile(modulename, versionname))
+                           db.releasefile_name(modulename, versionname))
     deps= []
 
     for dep_name in db.iter_dependencies(modulename, versionname):
@@ -2117,9 +2117,9 @@ def subcmd_db_releasefilename(arguments, options):
     # may raise IOError, ValueError, sumolib.JSON.ParseError:
     (mngr, db)= db_from_repo(options,
                              not options.dumpdb and (not options.dry_run))
-    db.add_releasefile(module_spec.modulename,
-                       module_spec.versionname,
-                       args.RELEASEFILENAME)
+    db.releasefile_name(module_spec.modulename,
+                        module_spec.versionname,
+                        args.RELEASEFILENAME)
     if options.dumpdb:
         db.json_print()
     else:
