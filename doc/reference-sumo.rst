@@ -45,6 +45,15 @@ dependencies. Here is an example how this file looks like::
             "aliases": {
                 "BASE": "EPICS_BASE"
             },
+            "make-recipes": {
+                "all": [
+                    "cd $DIR && ./configure --prefix=.",
+                    "$(MAKE) -C $DIR"
+                ],
+                "clean": [
+                    "$(MAKE) -C $DIR realclean"
+                ]
+            },
             "dependencies": [
                 "BASE"
             ],
@@ -125,6 +134,9 @@ The *versiondata* map has this form::
       "dependencies": {
           <dependency data>
       },
+      "make-recipes": {
+          <make-recipes data>
+      }
       "releasefile": <releasefilename>
       "source": {
           <source data>
@@ -161,6 +173,63 @@ in the build database :term:`BUILDS.DB`.  This is the form of the
   [
       MODULENAME,
       MODULENAME,
+      ...
+  ]
+
+.. _reference-sumo-make-recipes:
+
+make-recipes
+::::::::::::
+
+This *optional* field is used to specify alternative make recipes for the
+makefile that is generated to build the module. For each of the make targets
+"all", "clean", "config" and "distclean" a list of lines can be defined that is
+put in the generated makefile. In the make-recipes map, each of the map keys
+"all", "clean", "config" and "distclean" is optional. For convenience, the
+string "$DIR" is replaced with the special make variable ``$(@D)`` in every
+line. This is the directory of the checked out module (see also documentation
+of the "make" command). Note that *you do not have to prepend each line with a
+<TAB> character*, sumo already does this.
+
+Note that for the "all" target your last recipe line is usually 
+``$(MAKE) -C $DIR``.
+
+You have an example of a `make-recipes` structure at the top of the chapter
+:ref:`The dependency database <reference-sumo-db-The-dependency-database>` .
+
+You can define make-recipes on the command line with 
+:ref:`sumo db make-recipes<reference-sumo-db-make-recipes>` or directly in the 
+dependency database with :ref:`sumo db edit<reference-sumo-db-edit>`.
+
+Special variables and characters:
+
+- ``$DIR``: (sumo) The directory of the MODULE.
+- ``\"``: (bash) A literal double quote character.
+- ``$(VAR)``: (make) Insert value of make or shell variable ``VAR``.
+- ``$$``: (make) A dollar character passed to the shell.
+- ``\\$$``: (make, bash) A literal dollar character passed to the shell.
+- ``\\``: (json, bash) At the end of the json string this means line continuation for bash.
+
+This is the form of the *make-recipes* map::
+ 
+  "all": [
+      STRING,
+      STRING,
+      ...
+  ],
+  "clean": [
+      STRING,
+      STRING,
+      ...
+  ],
+  "config": [
+      STRING,
+      STRING,
+      ...
+  ],
+  "distclean": [
+      STRING,
+      STRING,
       ...
   ]
 
@@ -721,6 +790,9 @@ dependency-add
 dependency-delete
   delete a dependency of a module
 
+make-recipes
+  define special make-recipes for a module
+
 list
   list modules or versions of modules
 
@@ -771,7 +843,7 @@ new
   create a new build
 
 remake
-  do "make distclean" and "make all" with a build
+  do "make clean" and "make all" with a build
 
 find
   look for builds that match a module specification
@@ -1038,6 +1110,28 @@ Define a new :term:`alias` for a :term:`dependency` of a :term:`module`. MODULE
 here is a :term:`modulespec` of the form MODULE:VERSION that specifies a single
 version of a module.
 
+.. _reference-sumo-db-make-recipes:
+
+db make-recipes MODULE TARGET LINES
+:::::::::::::::::::::::::::::::::::
+
+Define special make recipes for a :term:`module`. See also
+:ref:`"make-recipes"<reference-sumo-make-recipes>` in the chapter "The
+dependency database".
+
+MODULE here is a :term:`modulespec` of the form MODULE:VERSION that specifies a
+single version of a module. TARGET must be "all", "clean", "config" or
+"distclean" and specifies the make target for which a recipe is defined. LINES
+is a list of space separated strings. It is recommended to enclose the line
+strings in single or double quotes.
+
+Special variables and characters when you use double quotes:
+
+- ``\$DIR``: (bash, sumo) The directory of the MODULE.
+- ``\n``: (bash) Separates the lines in the LINES argument, which is a single string.
+- ``\"``: (bash) A literal double quote character.
+- ``\$``: (bash) A literal dollar character.
+
 subcommands for maincommand "build"
 +++++++++++++++++++++++++++++++++++
 
@@ -1086,7 +1180,7 @@ to make use option ``--makeflags``.
 build remake BUILDTAG
 :::::::::::::::::::::
 
-This command recreates a :term:`build` by first calling "make distclean" and
+This command recreates a :term:`build` by first calling "make clean" and
 then "make all" with the build's makefile. If you develop a support
 :term:`module` (see also "config standalone" and "config local") you want to
 recompile the :term:`build` after changes in the sources. In order to provide
@@ -1136,7 +1230,7 @@ The :term:`buildtag` must be given as an argument. If there is no new
 :term:`state` given, it just shows the current :term:`state` of the
 :term:`build`. Otherwise the :term:`state` of the :term:`build` is changed to
 the given value. If a :term:`build` is set to :term:`state` 'disabled', all
-dependend builds are also set to this :term:`state.` In this case, unless
+dependend builds are also set to this :term:`state`. In this case, unless
 option '-y' or '--recursive' are given, sumo asks for your confirmation.
 
 build delete BUILDTAGS

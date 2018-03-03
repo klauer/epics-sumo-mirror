@@ -56,6 +56,7 @@ class OldDB(sumolib.JSON.Container):
     """
     def __init__(self, dict_= None, use_lock= True, lock_timeout= None):
         """create the object."""
+        # pylint: disable=useless-super-delegation
         super(OldDB, self).__init__(dict_, use_lock, lock_timeout)
     def convert(self):
         """convert to a Dependencies and BuildCache object.
@@ -114,6 +115,7 @@ class DB(sumolib.JSON.Container):
                          (diag,msg))
     def __init__(self, dict_= None, use_lock= True, lock_timeout= None):
         """create the object."""
+        # pylint: disable=useless-super-delegation
         super(DB, self).__init__(dict_, use_lock, lock_timeout)
     def merge(self, other):
         """merge another Dependencies object to self.
@@ -334,6 +336,35 @@ class DB(sumolib.JSON.Container):
         if not isinstance(new_weight, int):
             raise TypeError("Error, %s is not an integer" % repr(new_weight))
         self.datadict()[modulename][versionname]["weight"]= new_weight
+    def set_make_recipes(self, modulename, versionname, target, data):
+        """get or define new recipes for the makefile.
+
+        In order to see how this is used, look also in file sumo, function
+        create_makefile().
+
+        This function is used to redefine the way the module is built by the
+        main makefile.
+
+        Parameter target must be the makefile target name, e.g. "all".
+
+        Parameter data must be a list of strings.
+        """
+        m_dict= self.datadict()[modulename][versionname]
+        mk_dict= m_dict.setdefault("make-recipes", {})
+        if not data:
+            if target in mk_dict(target):
+                del mk_dict[target]
+        else:
+            mk_dict[target]= data[:]
+        if not mk_dict:
+            del m_dict["makerules"]
+    def get_all_make_recipes(self, modulename, versionname):
+        """get all makerecipes for a module.
+
+        This returns the complete dictionary, if it exists.
+        """
+        m_dict= self.datadict()[modulename][versionname]
+        return m_dict.get("make-recipes")
     def assert_module(self, modulename, versionname):
         """do nothing if the module is found, raise KeyError otherwise.
 
