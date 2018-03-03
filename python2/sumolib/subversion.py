@@ -333,22 +333,22 @@ class Repo(object):
         """update repo."""
         # use "-u" to update to head:
         assert_svn()
-        cmd="svn update -q --non-interactive"
+        cmd="svn update --non-interactive"
         stderr= None
         cwd= sumolib.utils.changedir(self.directory)
 
-        (_,stderr,rc)= sumolib.system.system_rc(cmd,
-                                                False, True,
+        (stdout,stderr,rc)= sumolib.system.system_rc(cmd, \
+                                                True, True, \
                                                 self.verbose, self.dry_run)
         sumolib.utils.changedir(cwd)
-        if stderr is not None:
+        if stderr:
+            # ensure that output on stderr is always printed to the console:
             sys.stdout.flush()
             sys.stderr.write(stderr)
             sys.stderr.flush()
-
-        for l in stderr.splitlines():
+        for l in stdout.splitlines()+stderr.splitlines():
             if "conflict" in l.lower():
-                msg="error, 'svn update had a conflict"
+                msg="error, 'svn update' had a conflict"
                 raise IOError(msg)
         if rc:
             msg="error, 'svn update' failed"

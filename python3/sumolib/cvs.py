@@ -7,8 +7,8 @@
 import os.path
 import sumolib.system
 import sumolib.utils
-import re
 import sumolib.lock
+import re
 import time
 
 __version__="3.2.1" #VERSION#
@@ -82,6 +82,7 @@ _old_cvs_ssh= None
 def _cvs_set_ssh():
     """enable ssh in cvs.
     """
+    # pylint: disable=global-statement
     global _old_cvs_ssh
     _old_cvs_ssh= os.environ.get("CVS_RSH")
     os.environ["CVS_RSH"]= "ssh"
@@ -485,11 +486,20 @@ class Repo(object):
         cmd="cvs -d %s -q update %s" % (root, self.directory)
         if is_ssh:
             _cvs_set_ssh()
-        (_,_,rc)= sumolib.system.system_rc(cmd,
-                                           True, False,
+        (stdout,stderr,rc)= sumolib.system.system_rc(cmd, \
+                                           True, True, \
                                            self.verbose, self.dry_run)
         if is_ssh:
             _cvs_unset_ssh()
+        if stderr:
+            # ensure that output on stderr is always printed to the console:
+            sys.stdout.flush()
+            sys.stderr.write(stderr)
+            sys.stderr.flush()
+        for l in stdout.splitlines()+stderr.splitlines():
+            if l.startswith("C "):
+                msg="error, 'cvs update' had a conflict"
+                raise IOError(msg)
         if rc:
             msg="error, 'cvs update' failed"
             raise IOError(msg)

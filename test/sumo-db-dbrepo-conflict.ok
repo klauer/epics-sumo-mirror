@@ -18,15 +18,14 @@ Error while loading dependency database: 'git pull' failed
 
 Conflict in subversion repo:
 ---------------------
-svn: Commit failed (details follow):
-svn: Aborting commit: '/tmp-sumo-db-dbrepo-conflict/local-svn/DEPS.DB' remains in conflict
-Error while committing dependency database: 'svn commit' failed
+Uncommitted changes found in dependency database file. Committing changes.
+
+Error while loading dependency database: 'svn update' had a conflict
 
 Conflict in cvs repo:
 ---------------------
+Uncommitted changes found in dependency database file. Committing changes.
+
 rcsmerge: warning: conflicts during merge
 cvs update: conflicts found in local-cvs/DEPS.DB
-cvs commit: Examining .
-cvs commit: file `DEPS.DB' had a conflict and has not been modified
-cvs [commit aborted]: correct above errors first!
-Error while committing dependency database: 'cvs commit' failed
+Error while loading dependency database: 'cvs update' had a conflict
