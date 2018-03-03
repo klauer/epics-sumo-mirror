@@ -9,7 +9,6 @@ echo -e "\n-> Test sumo build delete with two build-tags" >&2
 DEPS=tmp-sumo-db-convert/DEPS.DB
 
 TESTDIR=tmp-sumo-build-new-2
-EXAMPLEDIR=tmp-$ME
 
 if [ -e $EXAMPLEDIR ]; then
     rm -rf $EXAMPLEDIR
