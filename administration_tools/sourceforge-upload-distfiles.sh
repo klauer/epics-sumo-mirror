@@ -1,4 +1,10 @@
-cd ..
+#!/bin/bash
+
+ME=$(readlink -f "$0")
+MYDIR=$(dirname "$ME")
+
+cd "$MYDIR/.."
+
 DESTHOST=goetzpf@frs.sourceforge.net
 DESTPATH=/home/frs/project/epics-sumo
 #scp dist/*.tar.gz $DESTHOST:$DESTPATH

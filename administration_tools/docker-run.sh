@@ -1,5 +1,10 @@
 #!/bin/bash
 
+ME=$(readlink -f "$0")
+MYDIR=$(dirname "$ME")
+
+cd "$MYDIR"
+
 APPLICATION=sumo
 
 set -e

@@ -1,11 +1,18 @@
-#!/bin/sh
+#!/bin/bash
 
-for f in ../python3/bin/*; do
-        2to3 -w -n -f all -f idioms $f
+ME=$(readlink -f "$0")
+MYDIR=$(dirname "$ME")
+
+set -e
+
+cd "$MYDIR/.."
+
+for f in python3/bin/*; do
+        echo "2to3 -w -n -f all -f idioms $f"
 done
 
-for f in ../python3/sumolib/*.py; do
-        2to3 -w -n -f all -f idioms $f
+for f in python3/sumolib/*.py; do
+        echo "2to3 -w -n -f all -f idioms $f"
 done
 
-2to3 -w -n -f all -f idioms ../setup.py > ../setup-3.py
+echo "2to3 -w -n -f all -f idioms ../setup.py > ../setup-3.py"

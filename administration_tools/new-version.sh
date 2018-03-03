@@ -1,7 +1,12 @@
-#!/bin/sh
+#!/bin/bash
+
+ME=$(readlink -f "$0")
+MYDIR=$(dirname "$ME")
 
 # abort on errors:
 set -e
+
+cd "$MYDIR"
 
 if [ -z "$1" ]; then
     echo "usage: $0 <version-string>"
