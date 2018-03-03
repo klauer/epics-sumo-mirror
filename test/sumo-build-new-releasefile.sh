@@ -22,4 +22,4 @@ cat BUILDS.DB
 echo -e "\ndirectory tree (without darcs, maxdepth 2)"
 find . -maxdepth 3 | sort -f -d | grep -v '_darcs\|\.hg\(\|ignore\)\|\.svn\|CVSROOT\|\.git\(\|ignore\)\|\.tmp\|\.bak\|\.coverage'
 echo -e "\ncontents of RELEASE files\n"
-for f in `find . -name '*RELEASE' | grep -v 'makeBase\(App\|Ext\)' | sort -f -d`; do echo -e "\nFILE: $f"; cat $f | sed -e "s#`pwd -P`#mysumo#;s#$PWD_NICE#mybase#"; done
+for f in `find . -name '*RELEASE' | grep -v 'makeBase\(App\|Ext\)' | sort -f -d`; do echo -e "\nFILE: $f"; cat $f | sed -e "s#$PWD_REAL#mysumo#;s#$PWD_NICE#mybase#"; done
