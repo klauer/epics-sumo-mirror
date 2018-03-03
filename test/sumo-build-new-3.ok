@@ -46,32 +46,32 @@ content of BUILDS.DB:
 
 content of Makefile-MYAPP-002
 .PHONY: all clean config distclean
-all: ALARM/R3-7+MYAPP-002/stamp-all MCAN/R2-6-3-gp+MYAPP-002/stamp-all
+all: ALARM/R3-7+MYAPP-002/sumo-all MCAN/R2-6-3-gp+MYAPP-002/sumo-all
 
-config: ALARM/R3-7+MYAPP-002/stamp-config MCAN/R2-6-3-gp+MYAPP-002/stamp-config
+config: ALARM/R3-7+MYAPP-002/sumo-config MCAN/R2-6-3-gp+MYAPP-002/sumo-config
 
-clean: ALARM/R3-7+MYAPP-002/stamp-clean MCAN/R2-6-3-gp+MYAPP-002/stamp-clean
+clean: ALARM/R3-7+MYAPP-002/sumo-clean MCAN/R2-6-3-gp+MYAPP-002/sumo-clean
 
-distclean: ALARM/R3-7+MYAPP-002/stamp-distclean MCAN/R2-6-3-gp+MYAPP-002/stamp-distclean
+distclean: ALARM/R3-7+MYAPP-002/sumo-distclean MCAN/R2-6-3-gp+MYAPP-002/sumo-distclean
 
 
-MCAN/R2-6-3-gp+MYAPP-002/stamp-all: ALARM/R3-7+MYAPP-002/stamp-all
+MCAN/R2-6-3-gp+MYAPP-002/sumo-all: ALARM/R3-7+MYAPP-002/sumo-all
 
-%/stamp-all:
-	rm -f $(@D)/stamp-*
+%/sumo-all:
+	cd $(@D) && rm -f sumo-all sumo-config sumo-clean sumo-distclean
 	$(MAKE) -C $(@D)
 	touch $@
 
-%/stamp-config:
-	rm -f $(@D)/stamp-*
+%/sumo-config:
+	cd $(@D) && rm -f sumo-all sumo-config sumo-clean sumo-distclean
 	touch $@
 
-%/stamp-clean:
-	rm -f $(@D)/stamp-*
+%/sumo-clean:
+	cd $(@D) && rm -f sumo-all sumo-config sumo-clean sumo-distclean
 	$(MAKE) -C $(@D) clean
 	touch $@
 
-%/stamp-distclean:
-	rm -f $(@D)/stamp-*
+%/sumo-distclean:
+	cd $(@D) && rm -f sumo-all sumo-config sumo-clean sumo-distclean
 	$(MAKE) -C $(@D) distclean
 	touch $@

@@ -216,34 +216,34 @@ Makefile for BL-002
 This is the generated makefile for build BL-002::
 
   .PHONY: all clean config distclean
-  all: ALARM/R3-9+BL-002/stamp-all MCAN/R2-6-3-2+BL-002/stamp-all
+  all: ALARM/R3-9+BL-002/sumo-all MCAN/R2-6-3-2+BL-002/sumo-all
   
-  config: ALARM/R3-9+BL-002/stamp-config MCAN/R2-6-3-2+BL-002/stamp-config
+  config: ALARM/R3-9+BL-002/sumo-config MCAN/R2-6-3-2+BL-002/sumo-config
   
-  clean: ALARM/R3-9+BL-002/stamp-clean MCAN/R2-6-3-2+BL-002/stamp-clean
+  clean: ALARM/R3-9+BL-002/sumo-clean MCAN/R2-6-3-2+BL-002/sumo-clean
   
-  distclean: ALARM/R3-9+BL-002/stamp-distclean MCAN/R2-6-3-2+BL-002/stamp-distclean
+  distclean: ALARM/R3-9+BL-002/sumo-distclean MCAN/R2-6-3-2+BL-002/sumo-distclean
   
   
-  MCAN/R2-6-3-2+BL-002/stamp-all: ALARM/R3-9+BL-002/stamp-all
+  MCAN/R2-6-3-2+BL-002/sumo-all: ALARM/R3-9+BL-002/sumo-all
   
-  %/stamp-all:
+  %/sumo-all:
   	$(MAKE) -C $(@D)
-  	rm -f $(@D)/stamp-*
+  	cd $(@D) && rm -f sumo-all sumo-config sumo-clean sumo-distclean
   	touch $@
   
-  %/stamp-config:
-  	rm -f $(@D)/stamp-*
+  %/sumo-config:
+  	cd $(@D) && rm -f sumo-all sumo-config sumo-clean sumo-distclean
   	touch $@
   
-  %/stamp-clean:
+  %/sumo-clean:
   	$(MAKE) -C $(@D) clean
-  	rm -f $(@D)/stamp-*
+  	cd $(@D) && rm -f sumo-all sumo-config sumo-clean sumo-distclean
   	touch $@
   
-  %/stamp-distclean:
+  %/sumo-distclean:
   	$(MAKE) -C $(@D) distclean
-  	rm -f $(@D)/stamp-*
+  	cd $(@D) && rm -f sumo-all sumo-config sumo-clean sumo-distclean
   	touch $@
 
 BUILDS.DB
