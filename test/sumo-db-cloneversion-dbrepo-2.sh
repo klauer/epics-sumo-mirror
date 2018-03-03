@@ -37,11 +37,11 @@ echo "Test of darcs:"
 echo
 echo "Logs of local repository:"
 echo "-------------------------------------------"
-(cd local-darcs >/dev/null && darcs changes | sed -e "s/^\(Date:\).*/\1   $DDATE/;s/^\(Author:\).*/\1 $DUSR/;s/^\(patch\).*/\1 $DHSH/")
+(cd local-darcs >/dev/null && DARCS_DONT_COLOR=1 darcs changes | sed -e "s/^\(Date:\).*/\1   $DDATE/;s/^\(Author:\).*/\1 $DUSR/;s/^\(patch\).*/\1 $DHSH/")
 echo
 echo "Logs of central repository:"
 echo "-------------------------------------------"
-(cd central-darcs >/dev/null && darcs changes | sed -e "s/^\(Date:\).*/\1   $DDATE/;s/^\(Author:\).*/\1 $DUSR/;s/^\(patch\).*/\1 $DHSH/")
+(cd central-darcs >/dev/null && DARCS_DONT_COLOR=1 darcs changes | sed -e "s/^\(Date:\).*/\1   $DDATE/;s/^\(Author:\).*/\1 $DUSR/;s/^\(patch\).*/\1 $DHSH/")
 echo
 echo "==========================================="
 echo "Test of mercurial:"
