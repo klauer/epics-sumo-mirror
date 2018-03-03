@@ -133,6 +133,7 @@ ENV_CONFIG="SUMOCONFIG"
 ENV_HELP="SUMOHELP"
 BUILDDB="BUILDS.DB"
 DB="DEPS.DB"
+STAMPNAME="sumo"
 
 LOCK_TIMEOUT=4
 # timeout for file locking in seconds
@@ -823,7 +824,7 @@ def create_makefile(dist_dict, db, builddb,
     if progress:
         notemsg("creating makefile '%s'\n" % filename)
     module_dirs= sorted(paths.values())
-    stamps= [os.path.join(p,"stamp") for p in module_dirs]
+    stamps= [os.path.join(p, STAMPNAME) for p in module_dirs]
     fh= sumolib.utils.file_w_open(filename, verbose, dry_run)
 
     # define phony targets:
@@ -842,13 +843,14 @@ def create_makefile(dist_dict, db, builddb,
     # collect dependencies for MODULE/stamp-all rule:
     special_make_recipes= {}
     # write dependencies for stamp-all:
+    stamp_all= STAMPNAME+"-all"
     for (modulename, versionname) in sorted(paths.keys()):
         path= paths[(modulename, versionname)]
         # remember special make recipes for this module, if they are defined:
         r_= db.get_all_make_recipes(modulename, versionname)
         if r_:
             special_make_recipes[(modulename, versionname)]= r_
-        own_stamp= os.path.join(path, "stamp-all")
+        own_stamp= os.path.join(path, stamp_all)
         dep_stamps= []
         for dep_name in db.iter_dependencies(modulename, versionname):
             # if this build has only a link of the module, skip it
@@ -861,7 +863,7 @@ def create_makefile(dist_dict, db, builddb,
                 continue
             # use relative paths for dependencies:
             dep_path= module_dir("", build_tag, dep_name, dep_version)
-            dep_stamps.append(os.path.join(dep_path,"stamp-all"))
+            dep_stamps.append(os.path.join(dep_path, stamp_all))
         dep_stamps.sort()
         if dep_stamps:
             sumolib.utils.file_write(fh,\
@@ -870,6 +872,8 @@ def create_makefile(dist_dict, db, builddb,
 
     # write extra make rules for modules where special recipes are defined:
     special_vars= {"DIR": "$(@D)"}
+    all_stamp_files= " ".join([ "%s-%s" % (STAMPNAME, t) \
+                              for t in standard_targets ])
     for modulename, versionname in sorted(special_make_recipes.keys()):
         recipes= special_make_recipes[(modulename, versionname)]
         # replace '$DIR' with '$(@D)':
@@ -880,22 +884,28 @@ def create_makefile(dist_dict, db, builddb,
                 continue
             lines= ["\t"+sumolib.utils.string_interpolate(s, special_vars) \
                     for s in lines]
-            sumolib.utils.file_write(fh, "\n%s/stamp-%s:\n" % (path, target),
+            sumolib.utils.file_write(fh,
+                                     "\n%s/%s-%s:\n" % \
+                                         (path, STAMPNAME, target), \
                                      verbose, dry_run)
-            sumolib.utils.file_write(fh, "\trm -f $(@D)/stamp-*\n",
+            sumolib.utils.file_write(fh,
+                                     "\tcd $(@D) && rm -f %s\n" % \
+                                         all_stamp_files,
                                      verbose, dry_run)
             sumolib.utils.file_writelines_n(fh, lines,
                                             verbose, dry_run)
             sumolib.utils.file_write(fh, "\ttouch $@\n", verbose, dry_run)
 
-    # write pattern rules for stamp-*:
+    # write pattern rules for STAMPNAME-*:
     for target in standard_targets:
-        sumolib.utils.file_write(fh, "\n%%/stamp-%s:\n" % target,
+        sumolib.utils.file_write(fh, "\n%%/%s-%s:\n" % (STAMPNAME, target),
                                  verbose, dry_run)
         # For "config" there is no standard rule to run "make config" in the
         # module directory. The "config" target is here only custom rules by
         # the user, see also command "sumo db makerules".
-        sumolib.utils.file_write(fh, "\trm -f $(@D)/stamp-*\n", verbose, dry_run)
+        sumolib.utils.file_write(fh,
+                                 "\tcd $(@D) && rm -f %s\n" % all_stamp_files,
+                                 verbose, dry_run)
         if target!="config":
             make_target= " %s" % target if target!="all" else ""
             sumolib.utils.file_write(fh,

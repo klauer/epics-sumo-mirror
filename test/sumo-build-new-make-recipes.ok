@@ -67,55 +67,55 @@ directory tree (without darcs, maxdepth 2)
 content of Makefile-AUTO-001
 
 .PHONY: all clean config distclean
-all: ALARM/R3-7+AUTO-001/stamp-all BASE/R3-14-12-2-1+AUTO-001/stamp-all BSPDEP_TIMER/R6-2+AUTO-001/stamp-all BSPDEP_VMETAS/R2-0+AUTO-001/stamp-all MCAN/TAGLESS-2-6-1+AUTO-001/stamp-all MISC_DBC/PATH-3-0+AUTO-001/stamp-all MISC_DEBUGMSG/R3-0+AUTO-001/stamp-all SOFT_DEVHWCLIENT/TAR-3-0+AUTO-001/stamp-all
+all: ALARM/R3-7+AUTO-001/sumo-all BASE/R3-14-12-2-1+AUTO-001/sumo-all BSPDEP_TIMER/R6-2+AUTO-001/sumo-all BSPDEP_VMETAS/R2-0+AUTO-001/sumo-all MCAN/TAGLESS-2-6-1+AUTO-001/sumo-all MISC_DBC/PATH-3-0+AUTO-001/sumo-all MISC_DEBUGMSG/R3-0+AUTO-001/sumo-all SOFT_DEVHWCLIENT/TAR-3-0+AUTO-001/sumo-all
 
-config: ALARM/R3-7+AUTO-001/stamp-config BASE/R3-14-12-2-1+AUTO-001/stamp-config BSPDEP_TIMER/R6-2+AUTO-001/stamp-config BSPDEP_VMETAS/R2-0+AUTO-001/stamp-config MCAN/TAGLESS-2-6-1+AUTO-001/stamp-config MISC_DBC/PATH-3-0+AUTO-001/stamp-config MISC_DEBUGMSG/R3-0+AUTO-001/stamp-config SOFT_DEVHWCLIENT/TAR-3-0+AUTO-001/stamp-config
+config: ALARM/R3-7+AUTO-001/sumo-config BASE/R3-14-12-2-1+AUTO-001/sumo-config BSPDEP_TIMER/R6-2+AUTO-001/sumo-config BSPDEP_VMETAS/R2-0+AUTO-001/sumo-config MCAN/TAGLESS-2-6-1+AUTO-001/sumo-config MISC_DBC/PATH-3-0+AUTO-001/sumo-config MISC_DEBUGMSG/R3-0+AUTO-001/sumo-config SOFT_DEVHWCLIENT/TAR-3-0+AUTO-001/sumo-config
 
-clean: ALARM/R3-7+AUTO-001/stamp-clean BASE/R3-14-12-2-1+AUTO-001/stamp-clean BSPDEP_TIMER/R6-2+AUTO-001/stamp-clean BSPDEP_VMETAS/R2-0+AUTO-001/stamp-clean MCAN/TAGLESS-2-6-1+AUTO-001/stamp-clean MISC_DBC/PATH-3-0+AUTO-001/stamp-clean MISC_DEBUGMSG/R3-0+AUTO-001/stamp-clean SOFT_DEVHWCLIENT/TAR-3-0+AUTO-001/stamp-clean
+clean: ALARM/R3-7+AUTO-001/sumo-clean BASE/R3-14-12-2-1+AUTO-001/sumo-clean BSPDEP_TIMER/R6-2+AUTO-001/sumo-clean BSPDEP_VMETAS/R2-0+AUTO-001/sumo-clean MCAN/TAGLESS-2-6-1+AUTO-001/sumo-clean MISC_DBC/PATH-3-0+AUTO-001/sumo-clean MISC_DEBUGMSG/R3-0+AUTO-001/sumo-clean SOFT_DEVHWCLIENT/TAR-3-0+AUTO-001/sumo-clean
 
-distclean: ALARM/R3-7+AUTO-001/stamp-distclean BASE/R3-14-12-2-1+AUTO-001/stamp-distclean BSPDEP_TIMER/R6-2+AUTO-001/stamp-distclean BSPDEP_VMETAS/R2-0+AUTO-001/stamp-distclean MCAN/TAGLESS-2-6-1+AUTO-001/stamp-distclean MISC_DBC/PATH-3-0+AUTO-001/stamp-distclean MISC_DEBUGMSG/R3-0+AUTO-001/stamp-distclean SOFT_DEVHWCLIENT/TAR-3-0+AUTO-001/stamp-distclean
+distclean: ALARM/R3-7+AUTO-001/sumo-distclean BASE/R3-14-12-2-1+AUTO-001/sumo-distclean BSPDEP_TIMER/R6-2+AUTO-001/sumo-distclean BSPDEP_VMETAS/R2-0+AUTO-001/sumo-distclean MCAN/TAGLESS-2-6-1+AUTO-001/sumo-distclean MISC_DBC/PATH-3-0+AUTO-001/sumo-distclean MISC_DEBUGMSG/R3-0+AUTO-001/sumo-distclean SOFT_DEVHWCLIENT/TAR-3-0+AUTO-001/sumo-distclean
 
 
-ALARM/R3-7+AUTO-001/stamp-all: BASE/R3-14-12-2-1+AUTO-001/stamp-all BSPDEP_TIMER/R6-2+AUTO-001/stamp-all MISC_DBC/PATH-3-0+AUTO-001/stamp-all
+ALARM/R3-7+AUTO-001/sumo-all: BASE/R3-14-12-2-1+AUTO-001/sumo-all BSPDEP_TIMER/R6-2+AUTO-001/sumo-all MISC_DBC/PATH-3-0+AUTO-001/sumo-all
 
-BSPDEP_TIMER/R6-2+AUTO-001/stamp-all: BASE/R3-14-12-2-1+AUTO-001/stamp-all
+BSPDEP_TIMER/R6-2+AUTO-001/sumo-all: BASE/R3-14-12-2-1+AUTO-001/sumo-all
 
-BSPDEP_VMETAS/R2-0+AUTO-001/stamp-all: BASE/R3-14-12-2-1+AUTO-001/stamp-all
+BSPDEP_VMETAS/R2-0+AUTO-001/sumo-all: BASE/R3-14-12-2-1+AUTO-001/sumo-all
 
-MCAN/TAGLESS-2-6-1+AUTO-001/stamp-all: ALARM/R3-7+AUTO-001/stamp-all BASE/R3-14-12-2-1+AUTO-001/stamp-all BSPDEP_VMETAS/R2-0+AUTO-001/stamp-all MISC_DBC/PATH-3-0+AUTO-001/stamp-all MISC_DEBUGMSG/R3-0+AUTO-001/stamp-all SOFT_DEVHWCLIENT/TAR-3-0+AUTO-001/stamp-all
+MCAN/TAGLESS-2-6-1+AUTO-001/sumo-all: ALARM/R3-7+AUTO-001/sumo-all BASE/R3-14-12-2-1+AUTO-001/sumo-all BSPDEP_VMETAS/R2-0+AUTO-001/sumo-all MISC_DBC/PATH-3-0+AUTO-001/sumo-all MISC_DEBUGMSG/R3-0+AUTO-001/sumo-all SOFT_DEVHWCLIENT/TAR-3-0+AUTO-001/sumo-all
 
-MISC_DBC/PATH-3-0+AUTO-001/stamp-all: BASE/R3-14-12-2-1+AUTO-001/stamp-all
+MISC_DBC/PATH-3-0+AUTO-001/sumo-all: BASE/R3-14-12-2-1+AUTO-001/sumo-all
 
-MISC_DEBUGMSG/R3-0+AUTO-001/stamp-all: BASE/R3-14-12-2-1+AUTO-001/stamp-all
+MISC_DEBUGMSG/R3-0+AUTO-001/sumo-all: BASE/R3-14-12-2-1+AUTO-001/sumo-all
 
-SOFT_DEVHWCLIENT/TAR-3-0+AUTO-001/stamp-all: BASE/R3-14-12-2-1+AUTO-001/stamp-all
+SOFT_DEVHWCLIENT/TAR-3-0+AUTO-001/sumo-all: BASE/R3-14-12-2-1+AUTO-001/sumo-all
 
-ALARM/R3-7+AUTO-001/stamp-all:
-	rm -f $(@D)/stamp-*
+ALARM/R3-7+AUTO-001/sumo-all:
+	cd $(@D) && rm -f sumo-all sumo-config sumo-clean sumo-distclean
 	cd $(@D) && ./configure --prefix=.
 	$(MAKE) -C $(@D)
 	touch $@
 
-ALARM/R3-7+AUTO-001/stamp-clean:
-	rm -f $(@D)/stamp-*
+ALARM/R3-7+AUTO-001/sumo-clean:
+	cd $(@D) && rm -f sumo-all sumo-config sumo-clean sumo-distclean
 	$(MAKE) -C $(@D) realclean
 	touch $@
 
-%/stamp-all:
-	rm -f $(@D)/stamp-*
+%/sumo-all:
+	cd $(@D) && rm -f sumo-all sumo-config sumo-clean sumo-distclean
 	$(MAKE) -C $(@D)
 	touch $@
 
-%/stamp-config:
-	rm -f $(@D)/stamp-*
+%/sumo-config:
+	cd $(@D) && rm -f sumo-all sumo-config sumo-clean sumo-distclean
 	touch $@
 
-%/stamp-clean:
-	rm -f $(@D)/stamp-*
+%/sumo-clean:
+	cd $(@D) && rm -f sumo-all sumo-config sumo-clean sumo-distclean
 	$(MAKE) -C $(@D) clean
 	touch $@
 
-%/stamp-distclean:
-	rm -f $(@D)/stamp-*
+%/sumo-distclean:
+	cd $(@D) && rm -f sumo-all sumo-config sumo-clean sumo-distclean
 	$(MAKE) -C $(@D) distclean
 	touch $@
