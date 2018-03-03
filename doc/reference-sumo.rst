@@ -685,6 +685,8 @@ Here are the meanings of the :term:`state` string:
 * testing: the :term:`build` has been compiled successfully
 * stable: the :term:`build` has been tested in production successfully
 * disabled the :term:`build` should no longer be used
+* incomplete the :term:`build` is defined but not all module directories are
+  created
 
 Configuration Files
 +++++++++++++++++++

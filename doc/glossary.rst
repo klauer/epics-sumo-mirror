@@ -127,6 +127,11 @@ Here we define some of the terms used in the following text.
         This set of modules should no longer be used by applications or newer
         builds. It has a defect or cannot be recreated due to changes in the
         dependency database.
+
+      incomplete
+        This is the state of a build while it is created with "sumo build new".
+        When all module directories were created, it's state is set to
+        "unstable".
   
   builds
       See :term:`build`.
