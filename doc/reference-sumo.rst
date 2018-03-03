@@ -1630,6 +1630,14 @@ Here is a short overview on command line options:
 
     Do not use file locking.
 
+``--no-multiprocessing``
+++++++++++++++++++++++++
+
+    Do not use multiprocessing in the program. This is mainly here to help
+    debugging the program. Currently multiprocessing is used when the sources
+    for modules of a build are created by checking out from version control
+    systems.
+
 ``-p, --progress``
 ++++++++++++++++++
 
