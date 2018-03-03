@@ -95,6 +95,41 @@ Enter this command::
 
   ./bitbucket-push.sh
 
+Upload to pypi
+++++++++++++++
+
+Since you cannot undo an upload of a specific version, first test with the
+pypi test site.
+
+pypi test site
+::::::::::::::
+
+Run::
+
+  ./pypi-test-upload.sh
+
+Now test with these commands::
+
+  bash
+  mkdir tmp
+  cd tmp
+  pip install EPICS-sumo -i https://testpypi.python.org/pypi --prefix `pwd`
+  export PYTHONUSERBASE=`pwd`
+  PATH=`pwd`/bin:$PATH
+  expander.py -h
+  exit
+
+If everything worked, remove the test directory with::
+
+  rm -rf tmp
+
+pypi site
+:::::::::
+
+Upload to pypi with::
+
+  ./pypi-upload.sh
+
 Explanation of scripts
 ----------------------
 
@@ -159,6 +194,15 @@ mk-rpm.sh
 mk-deb.sh
   Create a debian file, should be used on a debian system or a debian docker
   container.
+
+pypi support
+++++++++++++
+
+pypi-upload.sh
+  Upload a new version to pypi.
+
+pypi-test-upload.sh
+  Upload a new version to the pypi test server.
 
 Docker support
 ++++++++++++++
