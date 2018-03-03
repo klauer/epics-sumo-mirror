@@ -106,7 +106,7 @@ class Repo(object):
         (reply,_)= sumolib.system.system(cmd, True, False,
                                          self.verbose, self.dry_run)
         last_line= reply.splitlines()[-1].strip()
-        if last_line.startswith("No recorded local changes"):
+        if last_line.startswith("No recorded local"):
             return False
         return True
     def _tag_on_top(self):
