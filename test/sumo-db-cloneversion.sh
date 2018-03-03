@@ -12,6 +12,6 @@ cd $EXAMPLEDIR > /dev/null
 
 cp ../tmp-sumo-db-convert/DEPS.DB .
 
-# this command is inteded to fail with "invalid sourcespec":
-$SUMO db --dbdir . cloneversion ALARM R3-8-modified R3-4 '*' '*' R3-4 2>&1 | grep -v "'lockfile' not found"|| true
+# this command is intended to fail with "invalid sourcespec":
+$SUMO db --dbdir . cloneversion ALARM R3-8-modified R3-4 xtag=R3-4 2>&1 | grep -v "'lockfile' not found"|| true
 

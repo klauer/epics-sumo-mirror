@@ -54,17 +54,20 @@ class Repo(object):
         if self.directory is None:
             raise AssertionError("cannot create source_spec from "
                                  "empty object")
-        d= {"path": self.directory}
+        d= {"type":"path",
+            "url" : self.directory
+           }
         return d
     @staticmethod
     def checkout(spec, destdir, _, verbose, dry_run):
         """spec must be a string.
         """
-        if not isinstance(spec, str):
-            raise TypeError("spec '%s' must be a string here" % repr(spec))
+        url= spec.get("url")
+        if url is None:
+            raise ValueError("spec '%s' has no url" % repr(spec))
         #cmd= "scp -r -p \"%s\" %s" % (url, destdir)
         # join(url,"") effectively adds a "/" at the end of the path. This is
         # needed in order for rsync to work as intended here.
         cmd= "rsync -a -u -L --chmod=Fu+w \"%s\" %s" % \
-             (os.path.join(spec,""), destdir)
+             (os.path.join(url,""), destdir)
         sumolib.system.system(cmd, False, False, verbose, dry_run)

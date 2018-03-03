@@ -1050,14 +1050,52 @@ db cloneversion MODULE OLD-VERSION NEW-VERSION [SOURCESPEC]
 This command adds a new :term:`version` of a :term:`module` to the
 :term:`dependency database` by copying the old :term:`version`. MODULE here is
 just the name of the module since the version follows as a separate argument.
-If sourcespec is given, the command changes the source part according to this
-parameter. A sourcespec has the form "path PATH", "tar TARFILE [PATCHES]",
-"REPOTYPE URL" or "REPOTYPE URL TAG [PATCHES]". REPOTYPE may be "darcs", "hg"
-or "git". Both, URL or TAG may be ".", in this case the original URL or TAG
-remain unchanged. PATCHES is a list of patchfiles or URLs of patchfiles. If
-sourcespec is not given, the command adds NEW-VERSION as new tag to the source
-specification. The command always asks for a confirmation of the action unless
-option "-y" is used.
+
+If SOURCESPEC is not given, the command copies the source specification from
+OLD-VERSION but sets the tag to NEW-VERSION. Note that this is not allowed for
+"path" and "tar" sources (see below).
+
+If SOURCESPEC is given, the source specification from OLD-VERSION is copied an
+the all values from SOURCESPEC are added.
+
+A sourcespec has the form::
+  NAME=VALUE[,VALUE...] [NAME=VALUE[,VALUE..] ...]
+
+In general, NAME must start with a letter or underscore character and must be
+following by a sequence of letters, underscrores or digits.
+
+A VALUE must be a JSON simple value (no map or list). If VALUE is a string, it
+must be enclosed in double quotes '"' if it contains any of the characters '"',
+',' or ' '.
+
+These are possible names:
+
+type
+  The source type. Currently known are "path", "tar", "cvs", "svn", "darcs",
+  "hg" and "git".
+
+url
+  This is the URL. For the types "path" and "tar" it may also be a filename.
+
+tag
+  This defines the revision tag.
+
+rev
+  This defines the revision hash key.
+
+patches
+  This defines names or URLs for patch files. This is the only name, where
+  several values may be provided as a comma separated list.
+
+Note that you can define an empty value (on the bash shell) like in this
+example::
+
+  tag='""'
+
+This means that the "tag" is removed from the source specification.
+
+The command always asks for a confirmation of the action unless option "-y" is
+used.
 
 db releasefilename MODULE RELEASEFILENAME
 :::::::::::::::::::::::::::::::::::::::::
@@ -1470,13 +1508,14 @@ Here is a short overview on command line options:
 ``--dbrepo REPOSITORY``
 +++++++++++++++++++++++
 
-    Define a REPOSITORY for the db file. REPOSITORY must consist of 'REPOTYPE
-    URL', REPOTYPE may be 'darcs', 'hg' or 'git'. Option --dbdir must specify a
-    directory that will contain the repository for the db file.  Before reading
-    the db file a 'pull' command will be executed. When the file is changed, a
-    'commit' and a 'push' command will be executed. If the repository doesn't
-    exist the program tries to check out a working copy from the given URL. A
-    default for this option can be put in a configuration file.
+    Define a REPOSITORY for the db file. REPOSITORY must have the form
+    'REPOTYPE URL' or 'type=REPOTYPE url=URL". REPOTYPE may be 'darcs', 'hg' or
+    'git'. Option --dbdir must specify a directory that will contain the
+    repository for the db file.  Before reading the db file a 'pull' command
+    will be executed. When the file is changed, a 'commit' and a 'push' command
+    will be executed. If the repository doesn't exist the program tries to
+    check out a working copy from the given URL. A default for this option can
+    be put in a configuration file.
 
 ``--scandb SCANDB``
 +++++++++++++++++++

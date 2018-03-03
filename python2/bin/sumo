@@ -393,9 +393,14 @@ def repo_manager(dbdir, sourcespec_string, mode,
         return sumolib.repos.ManagedRepo(None,None,None,None,verbose,dry_run)
     if not mode:
         mode= 'get'
-    source_spec_obj= \
-        sumolib.repos.SourceSpec.from_string_sourcespec(\
-                                          sourcespec_string.split())
+    # Backwards compatibility: If there is no "=" in sourcespec_string we
+    # assume the old sourcespec format:
+    if "=" in sourcespec_string:
+        spec_parser= sumolib.repos.SourceSpec.from_string_sourcespec
+    else:
+        spec_parser= sumolib.repos.SourceSpec.from_string_sourcespec_old
+
+    source_spec_obj= spec_parser(sourcespec_string)
     try:
         # may raise AssertionError, OSError, TypeError, ValueError,
         #           sumolib.lock.AccessError, sumolib.lock.LockedError,
@@ -1005,8 +1010,8 @@ def create_source(db, modulename, versionname,
     """
     # pylint: disable=R0913
     #                          Too many arguments
-    sourcespec= sumolib.repos.SourceSpec(db.module_source_dict(modulename,
-                                                               versionname))
+    sourcespec= sumolib.repos.SourceSpec.from_deps_dict(\
+                    db.module_source_dict(modulename, versionname))
     try:
         # may raise IOError:
         sumolib.repos.checkout(sourcespec,
@@ -2435,7 +2440,7 @@ def subcmd_db_clone_replace_version(command, arguments, options):
 
     do_replace= (command=="replaceversion")
     modulename= args.MODULE # pylint: disable=no-member
-    sourcespec= args.SOURCESPEC # pylint: disable=no-member
+    sourcespec= " ".join(args.SOURCESPEC) # pylint: disable=no-member
 
     # may raise EOFError, IOError, ValueError, sumolib.JSON.ParseError:
     (mngr, db)= db_from_repo(options,

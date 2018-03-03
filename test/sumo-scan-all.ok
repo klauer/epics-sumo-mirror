@@ -182,132 +182,113 @@
     },
     "repos": {
         "/data/epics/base/3-14-12-2-1": {
-            "darcs": {
-                "tag": "R3-14-12-2-1",
-                "url": "/data/repos/base/3-14-12-2-1"
-            }
+            "tag": "R3-14-12-2-1",
+            "type": "darcs",
+            "url": "/data/repos/base/3-14-12-2-1"
         },
         "/data/epics/support/alarm/3-7": {
-            "darcs": {
-                "tag": "R3-7",
-                "url": "/data/repos/support/alarm"
-            }
+            "tag": "R3-7",
+            "type": "darcs",
+            "url": "/data/repos/support/alarm"
         },
         "/data/epics/support/alarm/3-8": {
-            "darcs": {
-                "tag": "R3-8-modified",
-                "url": "/data/epics/support/alarm/3-8"
-            }
+            "tag": "R3-8-modified",
+            "type": "darcs",
+            "url": "/data/epics/support/alarm/3-8"
         },
         "/data/epics/support/apps/genericTemplate/3-0": {
-            "path": "/data/epics/support/apps/genericTemplate/3-0"
+            "type": "path",
+            "url": "/data/epics/support/apps/genericTemplate/3-0"
         },
         "/data/epics/support/apps/iocWatch/3-0": {
-            "darcs": {
-                "tag": "R3-0",
-                "url": "/data/repos/support/apps/iocWatch"
-            }
+            "tag": "R3-0",
+            "type": "darcs",
+            "url": "/data/repos/support/apps/iocWatch"
         },
         "/data/epics/support/asyn/4-17-2": {
-            "tar": {
-                "url": "/data/epics/support/asyn-4-17-2.tar.gz"
-            }
+            "type": "tar",
+            "url": "/data/epics/support/asyn-4-17-2.tar.gz"
         },
         "/data/epics/support/bessyRules/2-5": {
-            "darcs": {
-                "tag": "R2-5",
-                "url": "/data/repos/support/bessyRules"
-            }
+            "tag": "R2-5",
+            "type": "darcs",
+            "url": "/data/repos/support/bessyRules"
         },
         "/data/epics/support/bspDep/VMEtas/2-0": {
-            "hg": {
-                "tag": "R2-0",
-                "url": "/data/repos/support/bspDep/VMEtas"
-            }
+            "tag": "R2-0",
+            "type": "hg",
+            "url": "/data/repos/support/bspDep/VMEtas"
         },
         "/data/epics/support/bspDep/VMEtas/2-1": {
-            "hg": {
-                "tag": "R2-1",
-                "url": "/data/repos/support/bspDep/VMEtas"
-            }
+            "tag": "R2-1",
+            "type": "hg",
+            "url": "/data/repos/support/bspDep/VMEtas"
         },
         "/data/epics/support/bspDep/VMEtas/2-1-modified": {
-            "hg": {
-                "rev": "ABCDABCDABCD",
-                "url": "/data/epics/support/bspDep/VMEtas/2-1-modified"
-            }
+            "rev": "ABCDABCDABCD",
+            "type": "hg",
+            "url": "/data/epics/support/bspDep/VMEtas/2-1-modified"
         },
         "/data/epics/support/bspDep/cpuBoardInit/4-1": {
-            "cvs": {
-                "tag": "R4-1",
-                "url": "/data/repos/support/bspDep/cpuBoardInit/cpuBoardInit"
-            }
+            "tag": "R4-1",
+            "type": "cvs",
+            "url": "/data/repos/support/bspDep/cpuBoardInit/cpuBoardInit"
         },
         "/data/epics/support/bspDep/timer/6-2": {
-            "darcs": {
-                "tag": "R6-2",
-                "url": "/data/epics/support/bspDep/timer/6-2"
-            }
+            "tag": "R6-2",
+            "type": "darcs",
+            "url": "/data/epics/support/bspDep/timer/6-2"
         },
         "/data/epics/support/csm/4-1": {
-            "tar": {
-                "url": "/data/epics/support/csm-4-1.tar.gz"
-            }
+            "type": "tar",
+            "url": "/data/epics/support/csm-4-1.tar.gz"
         },
         "/data/epics/support/devIocStats/3-1-9-bessy3": {
-            "darcs": {
-                "tag": "R3-1-9-bessy3",
-                "url": "/data/repos/support/devIocStats"
-            }
+            "tag": "R3-1-9-bessy3",
+            "type": "darcs",
+            "url": "/data/repos/support/devIocStats"
         },
         "/data/epics/support/ek/2-2": {
-            "svn": {
-                "tag": "R2-2",
-                "url": "file:///data/repos/support/ek"
-            }
+            "tag": "R2-2",
+            "type": "svn",
+            "url": "file:///data/repos/support/ek"
         },
         "/data/epics/support/genSub/1-6-1": {
-            "darcs": {
-                "tag": "R1-6-1",
-                "url": "/data/repos/support/genSub"
-            }
+            "tag": "R1-6-1",
+            "type": "darcs",
+            "url": "/data/repos/support/genSub"
         },
         "/data/epics/support/mcan/2-6-1": {
-            "darcs": {
-                "url": "/data/epics/support/mcan/2-6-1"
-            }
+            "type": "darcs",
+            "url": "/data/epics/support/mcan/2-6-1"
         },
         "/data/epics/support/mcan/2-6-3-gp": {
-            "darcs": {
-                "tag": "R2-6-3-gp",
-                "url": "/data/repos/support/mcan"
-            }
+            "tag": "R2-6-3-gp",
+            "type": "darcs",
+            "url": "/data/repos/support/mcan"
         },
         "/data/epics/support/misc/dbc/3-0": {
-            "path": "/data/epics/support/misc/dbc/3-0"
+            "type": "path",
+            "url": "/data/epics/support/misc/dbc/3-0"
         },
         "/data/epics/support/misc/debugmsg/3-0": {
-            "git": {
-                "tag": "R3-0",
-                "url": "/data/repos/support/misc/debugmsg"
-            }
+            "tag": "R3-0",
+            "type": "git",
+            "url": "/data/repos/support/misc/debugmsg"
         },
         "/data/epics/support/misc/debugmsg/3-1": {
-            "git": {
-                "tag": "R3-1",
-                "url": "/data/repos/support/misc/debugmsg"
-            }
+            "tag": "R3-1",
+            "type": "git",
+            "url": "/data/repos/support/misc/debugmsg"
         },
         "/data/epics/support/seq/2-1-10": {
-            "darcs": {
-                "tag": "R2-1-10",
-                "url": "/data/repos/support/seq"
-            }
+            "tag": "R2-1-10",
+            "type": "darcs",
+            "url": "/data/repos/support/seq"
         },
         "/data/epics/support/soft/devHwClient/3-0": {
-            "tar": {
-                "url": "/data/epics/support/soft/devHwClient-3-0.tar.gz"
-            }
+            "type": "tar",
+            "url": "/data/epics/support/soft/devHwClient-3-0.tar.gz"
         }
     }
 }

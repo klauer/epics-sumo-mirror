@@ -36,6 +36,8 @@ known_repos=set(("darcs","hg","git","svn","cvs"))
 known_no_repos= set(("path","tar"))
 known_sources= set(known_no_repos).union(known_repos)
 
+known_sourcespec_keys=set(("type", "url", "tag", "rev", "patches"))
+
 # ---------------------------------------------------------
 # scan a directory:
 
@@ -67,7 +69,6 @@ def repo_from_dir(directory, hints, verbose, dry_run):
     if not isinstance(hints, dict):
         raise TypeError("hints parameter '%s' is of wrong type" % \
                         repr(hints))
-    # pylint: disable=redefined-variable-type
     obj= sumolib.darcs.Repo.scan_dir(directory, hints, verbose, dry_run)
     if obj is not None:
         return obj
@@ -170,193 +171,277 @@ class SourceSpec(sumolib.JSON.Container):
     """
     # pylint: disable=R0904
     #                          Too many public methods
-    def __init__(self, dict_= None):
+    def __init__(self, dict_):
         """create the object."""
+        if bool(set(dict_.keys()).difference(known_sourcespec_keys)):
+            # Note that __del__(self) is called even if the object was not
+            # constructed properly like here. This matters here since
+            # sumolib.JSON.Container defines __del__(). We handle this problem
+            # in function __del__ in sumolib.JSON.
+            raise ValueError("invalid source spec dict %s" % repr(dict_))
         super(SourceSpec, self).__init__(dict_, use_lock= True)
     # pylint: disable=C0301
     #                          Line too long
+    def to_deps_dict(self):
+        """convert to dict as it is stored in dependency database.
+        """
+        d= self.datadict()
+        type_= d.get("type")
+        if type_ is None:
+            raise ValueError(("incomplete SourceSpec %s cannot be "
+                              "converted to dict\n") % repr(self))
+        if type_=="path":
+            # for 'path' it's a simple string:
+            url= d.get("url")
+            if url is None:
+                raise ValueError(("SourceSpec %s cannot be "
+                                  "converted to dict, url is missing\n") % \
+                                 repr(self))
+            return { type_: url }
+        else:
+            d_cpy= {}
+            for k, v in d.items():
+                if k=="type":
+                    continue
+                # skip over values that are empty strings:
+                if v=="":
+                    continue
+                d_cpy[k]= v
+        return { type_ : d_cpy }
     @classmethod
-    def from_string_sourcespec(cls, elms):
-        """scan a source specification.
+    def from_deps_dict(cls, dict_):
+        """create from a dict as it is stored in dependency database.
+        """
+        type_= sumolib.utils.single_key(dict_)
+        if type_=="path":
+            # for 'path' it's a simple string:
+            new= {"url": dict_[type_]}
+        else:
+            new= dict(dict_[type_])
+        new["type"]= type_
+        return cls(new)
+    @classmethod
+    def from_string_sourcespec_old(cls, string):
+        """scan a source specification in the old format.
 
-        A sourcespec is a list of strings. Currently we support here:
-        ["path",PATH] or ["tar",TARFILE,{PATCHFILES}] or
-        [<repotype>,URL] or [<repotype>,URL,TAG,{PATCHFILES}]
+        A sourcespec has the following format:
 
-        where <repotype> may be one of the strings in
-        sumolib.repos.known_repos
+        TYPE URL
+
+        May raise:
+            ValueError
 
         Here are some examples:
-
-        >>> SourceSpec.from_string_sourcespec(["path","ab"])
-        SourceSpec({'path': 'ab'})
-        >>> SourceSpec.from_string_sourcespec(["path"])
+        >>> SourceSpec.from_string_sourcespec_old("darcs /a/b")
+        SourceSpec({'type': 'darcs', 'url': '/a/b'})
+        >>> SourceSpec.from_string_sourcespec_old("darcs /a/b c")
         Traceback (most recent call last):
             ...
-        ValueError: invalid source spec 'path'
-        >>> SourceSpec.from_string_sourcespec(["path","a","b"])
-        Traceback (most recent call last):
-            ...
-        ValueError: invalid source spec 'path a b'
-        >>> SourceSpec.from_string_sourcespec(["darcs","abc"])
-        SourceSpec({'darcs': {'url': 'abc'}})
-        >>> SourceSpec.from_string_sourcespec(["darcs","abc","R1-2"])
-        SourceSpec({'darcs': {'tag': 'R1-2', 'url': 'abc'}})
-        >>> SourceSpec.from_string_sourcespec(["darcs"])
+        ValueError: invalid source spec 'darcs /a/b c'
+        >>> SourceSpec.from_string_sourcespec_old("darcs")
         Traceback (most recent call last):
             ...
         ValueError: invalid source spec 'darcs'
-        >>> SourceSpec.from_string_sourcespec(["darcs","abc","R1-2","xy"])
-        SourceSpec({'darcs': {'patches': ['xy'], 'tag': 'R1-2', 'url': 'abc'}})
-        >>> SourceSpec.from_string_sourcespec(["darcs","abc","R1-2","xy","z"])
-        SourceSpec({'darcs': {'patches': ['xy', 'z'], 'tag': 'R1-2', 'url': 'abc'}})
+        >>> SourceSpec.from_string_sourcespec_old("darcsx /a/b")
+        Traceback (most recent call last):
+            ...
+        ValueError: invalid source spec 'darcsx /a/b'
         """
-        if elms[0] not in known_sources:
-            raise ValueError("unknown source type '%s'" % elms[0])
-        if len(elms)<2:
-            raise ValueError("invalid source spec '%s'" % (" ".join(elms)))
-        if elms[0]=="path":
-            if len(elms)!=2:
-                raise ValueError("invalid source spec '%s'" % (" ".join(elms)))
-            return cls({elms[0]: elms[1]})
-        if elms[0]=="tar":
-            if len(elms)<2:
-                raise ValueError("invalid source spec '%s'" % (" ".join(elms)))
-            d= { "url": elms[1] }
-            if len(elms)>2:
-                d["patches"]= elms[2:]
-            return cls({elms[0]: d})
-        d= { "url": elms[1] }
-        if len(elms)>2:
-            d["tag"]= elms[2]
-        if len(elms)>3:
-            d["patches"]= elms[3:]
-        return cls({elms[0]: d})
+        l= string.strip().split()
+        if len(l)!=2:
+            raise ValueError("invalid source spec %s" % repr(string))
+        if l[0] not in known_sources:
+            raise ValueError("invalid source spec %s" % repr(string))
+        return cls({ "type": l[0], "url": l[1] })
+    @classmethod
+    def from_string_sourcespec(cls, string):
+        """scan a source specification.
+
+        A sourcespec has the following format:
+
+        DEFINTION [DEFINTION]
+
+        where DEFINTION is:
+
+        NAME=VALUE [,VALUE...]
+
+        Note that VALUE may be a simple string not including
+        the characters '=', ',' and '"' our a JSON string.
+
+        NAME must be one of:
+          type
+          url
+          rev
+          tag
+          patches
+
+        May raise:
+            TypeError, ValueError
+
+        Here are some examples:
+        >>> SourceSpec.from_string_sourcespec("type=path url=ab")
+        SourceSpec({'type': 'path', 'url': 'ab'})
+        >>> SourceSpec.from_string_sourcespec("type=path")
+        SourceSpec({'type': 'path'})
+        >>> SourceSpec.from_string_sourcespec("type=darcs url=ab")
+        SourceSpec({'type': 'darcs', 'url': 'ab'})
+        >>> SourceSpec.from_string_sourcespec("type=darcs url=ab tag=R1-1")
+        SourceSpec({'tag': 'R1-1', 'type': 'darcs', 'url': 'ab'})
+        >>> SourceSpec.from_string_sourcespec("type=darcs url=ab tag=R1-1 patches=f1")
+        SourceSpec({'patches': ['f1'], 'tag': 'R1-1', 'type': 'darcs', 'url': 'ab'})
+        >>> SourceSpec.from_string_sourcespec("type=darcs url=ab tag=R1-1 patches=f1,f2")
+        SourceSpec({'patches': ['f1', 'f2'], 'tag': 'R1-1', 'type': 'darcs', 'url': 'ab'})
+        >>> SourceSpec.from_string_sourcespec("typex=path")
+        Traceback (most recent call last):
+            ...
+        ValueError: invalid names found in source spec 'typex=path'
+        """
+        def patches_to_list(dict_):
+            """ensure that 'patches' in dict is a list."""
+            p= dict_.get("patches")
+            if p is None:
+                return
+            if isinstance(p, list):
+                return
+            dict_["patches"]= [p]
+        def check_dict(allowed_keys, dict_):
+            """check if all dict keys are from a given list."""
+            return not bool(set(dict_.keys()).difference(set(allowed_keys)))
+        if not isinstance(string, str):
+            raise TypeError("wrong type of source spec %s" % repr(string))
+        if (not string) or string.isspace():
+            raise ValueError("invalid source spec %s" % repr(string))
+
+        if not "=" in string:
+            l= string.strip().split(None, 1)
+            if len(l)<=1:
+                raise ValueError("invalid source spec %s" % repr(string))
+            defs= { "type": l[0],
+                    "url" : l[1]
+                  }
+        else:
+            defs= sumolib.utils.definition_list_to_dict(string)
+            if not check_dict(known_sourcespec_keys, defs):
+                raise ValueError("invalid names found in source spec %s" % \
+                                 repr(string))
+            patches_to_list(defs)
+        return cls(defs)
     # pylint: enable=C0301
     #                          Line too long
     def sourcetype(self):
         """return the type of the source."""
         d= self.datadict()
-        return sumolib.utils.single_key(d)
+        return d["type"]
     def is_repo(self):
         """return if SourceSpec refers to a repository.
         """
         return self.sourcetype() in known_repos
     def path(self, new_val= None):
         """return the path if the type is "path"."""
-        (d, type_, pars)= self._unpack()
+        pars= self.datadict()
+        type_= pars["type"]
         if type_!= "path":
             raise TypeError("error, 'path()' can only be called for "
                             "SourceSpec objects of type 'path'")
         if new_val is None:
-            return pars
-        d[type_]= new_val
+            return pars["url"]
+        pars["url"]= new_val
     def tag(self, new_val= None):
         """return the tag if it exists."""
-        (_, type_, pars)= self._unpack()
-        if not isinstance(pars, dict):
-            if new_val is not None:
-                raise ValueError("error, cannot set tag on type %s" % type_)
-            return
+        pars= self.datadict()
         if new_val is None:
             return pars.get("tag")
         pars["tag"]= new_val
     def url(self, new_val= None):
         """return the url if it exists."""
-        (_, type_, pars)= self._unpack()
-        if not isinstance(pars, dict):
-            if new_val is not None:
-                raise ValueError("error, cannot set url on type %s" % type_)
-            return
+        pars= self.datadict()
         if new_val is None:
             return pars.get("url")
         pars["url"]= new_val
     def patches(self, new_val= None):
         """return the patches if they exist."""
-        (_, type_, pars)= self._unpack()
-        if not isinstance(pars, dict):
-            if new_val is not None:
-                raise ValueError("error, cannot set patches on type %s" % type_)
-            return
+        pars= self.datadict()
         if new_val is None:
             return pars.get("patches")
         pars["patches"]= new_val
     def spec_val(self):
         """return the *value* of the source specification.
-
-        As SourceSpec is currently used this can be a string (type "path") or a
-        dict (all other types).
         """
-        (_, _, pars)= self._unpack()
+        pars= self.datadict()
         return pars
-    def _unpack(self):
-        """return the internal dict, the sourcetype and the parameters.
-        """
-        d= self.datadict()
-        type_= sumolib.utils.single_key(d)
-        return (d, type_, d[type_])
     def copy_spec(self, other):
-        """simply overwrite self with other."""
-        (self_d, self_type, _)= self._unpack()
-        # pylint: disable=W0212
-        #                          Access to a protected member
-        (_, other_type, other_pars)= other._unpack()
-        del self_d[self_type]
-        # reconstruct other_pars if it is an object. For dicts this creates a
-        # second independent dict:
-        self_d[other_type]= other_pars.__class__(other_pars)
+        """simply overwrite self with other.
+
+        If a value in other is "", the key is deleted.
+        """
+        pars= self.datadict()
+        o_pars= other.datadict()
+        keys= set(pars.keys())
+        o_keys= set(o_pars.keys())
+        for k in keys.difference(o_keys):
+            del pars[k]
+        for k in o_keys:
+            v= o_pars[k]
+            if v!="":
+                pars[k]= v
+                continue
+            if k in keys:
+                del pars[k]
     def change_source(self, other):
         """set source spec by copying information from another object.
 
-        This can also handle wildcards.
-
         returns True if the spec was changed, False if it wasn't.
-        """
-        (self_d, self_type, self_pars)   = self._unpack()
-        # pylint: disable=W0212
-        #                          Access to a protected member
-        (_, other_type, other_pars)= other._unpack()
 
-        if self_type!=other_type:
+        If a value in other is "", the key is deleted.
+
+        May raise:
+            ValueError
+        """
+        pars= self.datadict()
+        type_= pars.get("type")
+        o_pars= other.datadict()
+        o_type_= o_pars.get("type")
+
+        if o_type_ is None:
+            if type_ is None:
+                raise ValueError("no source type defined in %s" % \
+                                 repr(other))
+            else:
+                # assume same type:
+                o_type_= type_
+        if type_!=o_type_:
+            # different type, replace everything:
             self.copy_spec(other)
             return True
-
-        if isinstance(other_pars, basestring):
-            # this is only the case for type "path":
-            if other_pars=="*" or other_pars==".":
-                # no changes
-                return False
-            self_d[self_type]= other_pars
-            return True
-        if isinstance(other_pars, dict):
-            # tar file or a repository type
-            original= dict(self_pars)
-            self_pars.clear()
-            for (k,v) in other_pars.items():
-                if v=="*" or v==".":
-                    v= original.get(k)
-                    if v is None:
-                        raise ValueError("cannot replace wildcard "
-                                         "for key %s" % k)
-                self_pars[k]= v
-            # return whether there were changes:
-            return self_pars!=original
-        else:
-            raise AssertionError("unexpected type: %s" % repr(other_pars))
+        changed= False
+        for (k,v) in o_pars.items():
+            orig= pars.get(k)
+            if v=="":
+                if orig is None:
+                    continue
+                del pars[k]
+                changed= True
+                continue
+            if orig!=v:
+                changed= True
+                pars[k]= v
+        # return whether there were changes:
+        return changed
     def change_source_by_tag(self, tag):
         """change the source spec just by providing a tag.
 
         returns True if the spec was changed, False if it wasn't.
         """
-        (_, self_type, self_pars)   = self._unpack()
-        if self_type in known_no_repos:
+        pars= self.datadict()
+        type_= pars["type"]
+        if type_ in known_no_repos:
             raise ValueError("you cannot provide just a new tag for "
                              "a source specification of "
-                             "type '%s'" % self_type)
-        old= self_pars.get("tag")
+                             "type '%s'" % type_)
+        old= pars.get("tag")
         if old==tag:
             return False
-        self_pars["tag"]= tag
+        pars["tag"]= tag
         return True
 
 # ---------------------------------------------------------

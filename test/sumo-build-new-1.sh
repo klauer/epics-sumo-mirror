@@ -18,7 +18,7 @@ $SUMO --dbdir . --builddir . config make sumo.config
 
 # add a new version of ALARM R3-8-patch that uses a patchfile:
 # this creates the output "added module":
-$SUMO -y -c sumo.config db cloneversion ALARM R3-8-modified R3-8-patch darcs '*' '*' $REPODIR/support/alarm-3-8-p.patch | sed -e "s#$PWD_REAL##;s#$PWD_NICE##"
+$SUMO -y -c sumo.config db cloneversion ALARM R3-8-modified R3-8-patch patches=$REPODIR/support/alarm-3-8-p.patch | sed -e "s#$PWD_REAL##;s#$PWD_NICE##"
 
 $SUMO -c sumo.config build  --buildtag-stem BASE --no-make new BASE:R3-14-12-2-1 2>&1 
 $SUMO -c sumo.config build  state BASE-001 stable 2>&1 

@@ -163,30 +163,27 @@ in `JSON <http://www.json.org>`_ format::
   {
      "repos": {
         "/srv/csr/Epics/R3.14.10/base/3-14-10-0-1": {
-            "darcs": {
-                "tag": "R3-14-10-0-1",
-                "url": "rcsadm@aragon.acc.bessy.de:/opt/repositories/controls/darcs/epics/base/3-14-10"
-            }
+            "tag": "R3-14-10-0-1",
+            "type": "darcs",
+            "url": "rcsadm@aragon.acc.bessy.de:/opt/repositories/controls/darcs/epics/base/3-14-10"
         },
         "/srv/csr/Epics/R3.14.12/base/3-14-12-2-1": {
-            "darcs": {
-                "url": "rcsadm@aragon.acc.bessy.de:/opt/repositories/controls/darcs/epics/base/3-14-12-2"
-            }
+            "type": "darcs",
+            "url": "rcsadm@aragon.acc.bessy.de:/opt/repositories/controls/darcs/epics/base/3-14-12-2"
         },
         "/srv/csr/Epics/R3.14.8/support/apps/wlsSupport/work": {
-            "path": "rcsadm@aragon.acc.bessy.de:/opt/Epics/R3.14.8/support/apps/wlsSupport/work"
+            "type": "path",
+            "url": "rcsadm@aragon.acc.bessy.de:/opt/Epics/R3.14.8/support/apps/wlsSupport/work"
         },
         "/srv/csr/Epics/R3.14.8/support/NewDyncon/3-0": {
-            "darcs": {
-                "tag": "R3-0",
-                "url": "rcsadm@aragon.acc.bessy.de:/opt/repositories/controls/darcs/epics/support/dyncon"
-            }
+            "tag": "R3-0",
+            "type": "darcs",
+            "url": "rcsadm@aragon.acc.bessy.de:/opt/repositories/controls/darcs/epics/support/dyncon"
         },
         "/srv/csr/Epics/R3.14.8/support/NewDyncon/3-1": {
-            "darcs": {
-                "tag": "R3-1",
-                "url": "rcsadm@aragon.acc.bessy.de:/opt/repositories/controls/darcs/epics/support/dyncon"
-            }
+            "tag": "R3-1",
+            "type": "darcs",
+            "url": "rcsadm@aragon.acc.bessy.de:/opt/repositories/controls/darcs/epics/support/dyncon"
         }
       }
   }
