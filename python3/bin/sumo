@@ -1608,7 +1608,7 @@ def subcmd_db_edit(arguments, options):
         sys.exit("--readonly forbids editing a database file")
     sumolib.cli.process_args(arguments, None, options.list)
 
-    sumolib.cli.assert_options(True, options, "dbdir")
+    sumolib.cli.assert_options(catch_exceptions,  options, "dbdir")
 
     db_file= db_f(options.dbdir)
     db_tmp = db_file + ".edit.tmp"
@@ -1667,7 +1667,7 @@ def subcmd_db_convert(arguments, options):
     argspec.add("SCANFILE", completion= sumolib.cli.complete_file)
     args= sumolib.cli.process_args(arguments, argspec, options.list)
 
-    sumolib.cli.assert_options(True, options, "dbdir", "scandb")
+    sumolib.cli.assert_options(catch_exceptions,  options, "dbdir", "scandb")
     if os.path.exists(db_f(options.dbdir)):
         sys.exit("error, db file '%s' already exists" % db_f(options.dbdir))
     if os.path.exists(options.scandb):
@@ -1704,7 +1704,7 @@ def subcmd_db_convert_old(arguments, options):
     argspec.add("OLDDB", completion= sumolib.cli.complete_file)
     args= sumolib.cli.process_args(arguments, argspec, options.list)
 
-    sumolib.cli.assert_options(True, options, "dbdir")
+    sumolib.cli.assert_options(catch_exceptions,  options, "dbdir")
     # pylint: disable=no-member
     try:
         # may raise IOError, ValueError:
@@ -1794,7 +1794,7 @@ def subcmd_db_format(arguments, options):
     """
     sumolib.cli.process_args(arguments, None, options.list)
 
-    sumolib.cli.assert_options(True, options, "dbdir")
+    sumolib.cli.assert_options(catch_exceptions,  options, "dbdir")
 
     # may raise IOError, ValueError, sumolib.JSON.ParseError:
     (mngr, db)= db_from_repo(options, keep_locked= True, changes_check= False)
@@ -1817,7 +1817,7 @@ def subcmd_db_weight(arguments, options):
     """
     # pylint: disable=R0912
     #                          Too many branches
-    sumolib.cli.assert_options(True, options, "dbdir")
+    sumolib.cli.assert_options(catch_exceptions,  options, "dbdir")
 
     argspec= sumolib.cli.CmdSpecs()
     argspec.add("WEIGHT")
@@ -1860,7 +1860,7 @@ def subcmd_db_show(arguments, options):
         ValueError from ModuleSpec.Specs.from_strings
         KeyError from partial_copy_by_modulespecs
     """
-    sumolib.cli.assert_options(True, options, "dbdir")
+    sumolib.cli.assert_options(catch_exceptions,  options, "dbdir")
 
     argspec= sumolib.cli.CmdSpecs()
     argspec.add("MODULES", array= True, optional= True,
@@ -1902,7 +1902,7 @@ def subcmd_db_check(arguments, options):
         ValueError, IOError, sumolib.JSON.ParseError from db_from_repo
     """
     sumolib.cli.process_args(arguments, None, options.list)
-    sumolib.cli.assert_options(True, options, "dbdir")
+    sumolib.cli.assert_options(catch_exceptions,  options, "dbdir")
 
     # may raise IOError, ValueError, sumolib.JSON.ParseError:
     (_, db)= db_from_repo(options, keep_locked= False, changes_check= False)
@@ -1922,7 +1922,7 @@ def subcmd_db_merge(arguments, options):
     argspec.add("DB", completion= sumolib.cli.complete_file)
     args= sumolib.cli.process_args(arguments, argspec, options.list)
 
-    sumolib.cli.assert_options(True, options, "dbdir")
+    sumolib.cli.assert_options(catch_exceptions,  options, "dbdir")
 
     # may raise IOError, ValueError, sumolib.JSON.ParseError:
     (mngr, db)= db_from_repo(options,
@@ -1946,7 +1946,7 @@ def subcmd_db_alias_add(arguments, options):
         IOError from db_to_repo
         ValueError from module_spec.assert_exact
     """
-    sumolib.cli.assert_options(True, options, "dbdir")
+    sumolib.cli.assert_options(catch_exceptions,  options, "dbdir")
 
     argspec= sumolib.cli.CmdSpecs()
     argspec.add("MODULE", completion= sumolib.complete.moduleversion)
@@ -1981,7 +1981,7 @@ def subcmd_db_dependency_add(arguments, options):
         IOError from db_to_repo
         ValueError from module_spec.assert_exact
     """
-    sumolib.cli.assert_options(True, options, "dbdir")
+    sumolib.cli.assert_options(catch_exceptions,  options, "dbdir")
 
     argspec= sumolib.cli.CmdSpecs()
     argspec.add("MODULE", completion= sumolib.complete.moduleversion)
@@ -2013,7 +2013,7 @@ def subcmd_db_dependency_delete(arguments, options):
         IOError from db_to_repo
         ValueError from module_spec.assert_exact
     """
-    sumolib.cli.assert_options(True, options, "dbdir")
+    sumolib.cli.assert_options(catch_exceptions,  options, "dbdir")
 
     argspec= sumolib.cli.CmdSpecs()
     argspec.add("MODULE", completion= sumolib.complete.moduleversion)
@@ -2049,7 +2049,7 @@ def subcmd_db_releasefilename(arguments, options):
         IOError from db_to_repo
         ValueError from module_spec.assert_exact
     """
-    sumolib.cli.assert_options(True, options, "dbdir")
+    sumolib.cli.assert_options(catch_exceptions,  options, "dbdir")
 
     argspec= sumolib.cli.CmdSpecs()
     argspec.add("MODULE", completion= sumolib.complete.moduleversion)
@@ -2082,7 +2082,7 @@ def subcmd_db_clone_replace_version(command, arguments, options):
         KeyError, ValueError from db.patch_version
         ValueError from repos.SourceSpec.from_string_sourcespec
     """
-    sumolib.cli.assert_options(True, options, "dbdir")
+    sumolib.cli.assert_options(catch_exceptions,  options, "dbdir")
 
     argspec= sumolib.cli.CmdSpecs()
     argspec.add("MODULE", completion= sumolib.complete.module)
@@ -2143,7 +2143,7 @@ def subcmd_db_clonemodule(arguments, options):
         IOError, ValueError, sumolib.JSON.ParseError from db_from_repo
         IOError from db_to_repo
     """
-    sumolib.cli.assert_options(True, options, "dbdir")
+    sumolib.cli.assert_options(catch_exceptions,  options, "dbdir")
 
     argspec= sumolib.cli.CmdSpecs()
     argspec.add("OLD-MODULE", completion= sumolib.complete.module)
@@ -2175,7 +2175,7 @@ def subcmd_db_list(arguments, options):
         ValueError from ModuleSpec.Specs.from_strings
         KeyError id module is not found in dependency database
     """
-    sumolib.cli.assert_options(True, options, "dbdir")
+    sumolib.cli.assert_options(catch_exceptions,  options, "dbdir")
 
     argspec= sumolib.cli.CmdSpecs()
     argspec.add("MODULES", completion= sumolib.complete.module,
@@ -2231,7 +2231,7 @@ def subcmd_db_find(arguments, options):
     argspec.add("REGEXP")
     args= sumolib.cli.process_args(arguments, argspec, options.list)
 
-    sumolib.cli.assert_options(True, options, "dbdir")
+    sumolib.cli.assert_options(catch_exceptions,  options, "dbdir")
     # may raise IOError, ValueError, sumolib.JSON.ParseError:
     (_, db)= db_from_repo(options)
     if options.noignorecase:
@@ -2259,7 +2259,7 @@ def subcmd_build_list(arguments, options):
     """
     sumolib.cli.process_args(arguments, None, options.list)
 
-    sumolib.cli.assert_options(True, options, "builddir")
+    sumolib.cli.assert_options(catch_exceptions,  options, "builddir")
     # may raise IOError, ValueError:
     builddb= builddb_from_json_file(options.builddir,
                                     options.localbuilddir,
@@ -2273,7 +2273,7 @@ def subcmd_build_show(arguments, options):
     May raise:
         IOError, ValueError from builddb_from_json_file
     """
-    sumolib.cli.assert_options(True, options, "builddir")
+    sumolib.cli.assert_options(catch_exceptions,  options, "builddir")
     argspec= sumolib.cli.CmdSpecs()
     argspec.add("BUILDTAG", completion= sumolib.complete.builds)
     args= sumolib.cli.process_args(arguments, argspec, options.list)
@@ -2297,7 +2297,7 @@ def subcmd_build_state(arguments, options):
         ValueError, IOError from builddb_from_json_file
         ValueError from builddb.change_state
     """
-    sumolib.cli.assert_options(True, options, "builddir")
+    sumolib.cli.assert_options(catch_exceptions,  options, "builddir")
     argspec= sumolib.cli.CmdSpecs()
     argspec.add("BUILDTAG", completion= sumolib.complete.builds)
     argspec.add("NEW-STATE", optional= True)
@@ -2309,7 +2309,7 @@ def subcmd_build_state(arguments, options):
     buildtag = args.BUILDTAG # pylint: disable=no-member
     new_state= args.NEW_STATE # pylint: disable=no-member
 
-    sumolib.cli.assert_options(True, options, "builddir")
+    sumolib.cli.assert_options(catch_exceptions,  options, "builddir")
     if options.readonly:
         sys.exit("--readonly forbids changing the state of a build")
 
@@ -2357,7 +2357,7 @@ def subcmd_build_delete(arguments, options):
         ValueError, IOError from builddb_from_json_file
         ValueError from delete_build
     """
-    sumolib.cli.assert_options(True, options, "builddir")
+    sumolib.cli.assert_options(catch_exceptions,  options, "builddir")
     argspec= sumolib.cli.CmdSpecs()
     argspec.add("BUILDTAGS", array= True, completion= sumolib.complete.builds)
     args= sumolib.cli.process_args(arguments, argspec, options.list)
@@ -2399,14 +2399,14 @@ def subcmd_build_try(arguments, options):
     #                          Too many branches
     # pylint: disable=R0915
     #                          Too many statements
-    sumolib.cli.assert_options(True, options, "dbdir")
+    sumolib.cli.assert_options(catch_exceptions,  options, "dbdir")
 
     argspec= sumolib.cli.CmdSpecs()
     argspec.add("MODULES", array= True, optional= True,
                 completion= sumolib.complete.moduleversion)
     args= sumolib.cli.process_args(arguments, argspec, options.list)
 
-    sumolib.cli.assert_options(True, options, "builddir")
+    sumolib.cli.assert_options(catch_exceptions,  options, "builddir")
     buildtag= options.buildtag
 
     exclude_matcher= sumolib.utils.RegexpMatcher(options.exclude_states)
@@ -2595,7 +2595,7 @@ def subcmd_build_remake(arguments, options):
         IOError, ValueError from builddb_from_json_file
         IOError from simple_call_make
     """
-    sumolib.cli.assert_options(True, options, "builddir")
+    sumolib.cli.assert_options(catch_exceptions,  options, "builddir")
     argspec= sumolib.cli.CmdSpecs()
     argspec.add("BUILDTAG", completion= sumolib.complete.builds)
     args= sumolib.cli.process_args(arguments, argspec, options.list)
@@ -2647,14 +2647,14 @@ def subcmd_build_new(arguments, options):
     #                          Too many branches
     # pylint: disable=R0915
     #                          Too many statements
-    sumolib.cli.assert_options(True, options, "dbdir")
+    sumolib.cli.assert_options(catch_exceptions,  options, "dbdir")
 
     argspec= sumolib.cli.CmdSpecs()
     argspec.add("MODULES", array= True, optional= True,
                 completion= sumolib.complete.moduleversion)
     args= sumolib.cli.process_args(arguments, argspec, options.list)
 
-    sumolib.cli.assert_options(True, options, "builddir")
+    sumolib.cli.assert_options(catch_exceptions,  options, "builddir")
     if options.readonly:
         sys.exit("--readonly forbids creating a new build")
 
@@ -2751,14 +2751,14 @@ def subcmd_build_find(arguments, options):
     """
     # pylint: disable=R0912
     #                          Too many branches
-    sumolib.cli.assert_options(True, options, "dbdir")
+    sumolib.cli.assert_options(catch_exceptions,  options, "dbdir")
 
     argspec= sumolib.cli.CmdSpecs()
     argspec.add("MODULES", array= True, optional= True,
                 completion= sumolib.complete.moduleversion)
     args= sumolib.cli.process_args(arguments, argspec, options.list)
 
-    sumolib.cli.assert_options(True, options, "builddir")
+    sumolib.cli.assert_options(catch_exceptions,  options, "builddir")
 
     modulespecs= []
     if options.module:
@@ -2807,14 +2807,14 @@ def subcmd_build_use(arguments, options):
     """
     # pylint: disable=too-many-branches
     # pylint: disable=too-many-statements
-    sumolib.cli.assert_options(True, options, "dbdir")
+    sumolib.cli.assert_options(catch_exceptions,  options, "dbdir")
 
     argspec= sumolib.cli.CmdSpecs()
     argspec.add("MODULES", array= True, optional= True,
                 completion= sumolib.complete.moduleversion)
     args= sumolib.cli.process_args(arguments, argspec, options.list)
 
-    sumolib.cli.assert_options(True, options, "builddir")
+    sumolib.cli.assert_options(catch_exceptions,  options, "builddir")
 
     modulespecs= []
     if options.module:
