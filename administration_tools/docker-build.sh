@@ -1,5 +1,10 @@
 #!/bin/bash
 
+ME=$(readlink -f "$0")
+MYDIR=$(dirname "$ME")
+
+cd "$MYDIR"
+
 APPLICATION=sumo
 
 if [ -z "$1" -o "$1" = "-h" ]; then

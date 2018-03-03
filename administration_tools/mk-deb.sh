@@ -1,11 +1,13 @@
 #!/bin/bash
 
+ME=$(readlink -f "$0")
+MYDIR=$(dirname "$ME")
+
 APPLICATION=sumo
 
 set -e
 
-TOP=$(readlink -e $(dirname $0))
-cd $TOP
+cd "$MYDIR"
 
 if [ -e /root/dist ]; then
     # we are probably running within a docker container
