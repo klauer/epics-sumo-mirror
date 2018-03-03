@@ -205,6 +205,7 @@ sumo-build-state-2.out: sumo-build-new-0.tst
 sumo-build-new-2.out: sumo-build-new.tst sumo-db-convert.tst
 sumo-build-delete.out: sumo-build-new-2.tst sumo-db-convert.tst
 sumo-build-delete-3.out: sumo-build-new-2.tst sumo-db-convert.tst
+sumo-build-delete-5.out: sumo-build-new-2.tst sumo-db-convert.tst
 sumo-build-delete-4.out: sumo-build-new-2.tst sumo-db-convert.tst
 sumo-scan-all-2.out: sumo-build-new-2.tst
 sumo-build-new-3.out: sumo-build-new.tst sumo-db-convert.tst

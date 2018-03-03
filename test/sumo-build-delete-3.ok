@@ -103,6 +103,8 @@ contents of BUILDS file:
 }
 
 delete build 'MYAPP-001' recursively
+Deleting the following builds:
+MYAPP-001 MYAPP-002
 
 build directories:
 ./BASE/R3-14-12-2-1+BASE-001

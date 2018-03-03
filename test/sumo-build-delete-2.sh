@@ -7,7 +7,6 @@ source settings.sh
 echo -e "\n-> Test sumo build delete after crash(some seconds nothing will seem to happen)" >&2
 
 DEPS=tmp-sumo-db-convert/DEPS.DB
-BUILDS="sumo-build-new-0-BUILD.tmp"
 
 if [ -e $EXAMPLEDIR ]; then
     rm -rf $EXAMPLEDIR

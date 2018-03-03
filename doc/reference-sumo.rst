@@ -687,6 +687,7 @@ Here are the meanings of the :term:`state` string:
 * disabled the :term:`build` should no longer be used
 * incomplete the :term:`build` is defined but not all module directories are
   created
+* broken the :term:`build` is broken and should be deleted
 
 Configuration Files
 +++++++++++++++++++

@@ -132,6 +132,11 @@ Here we define some of the terms used in the following text.
         This is the state of a build while it is created with "sumo build new".
         When all module directories were created, it's state is set to
         "unstable".
+
+      broken
+        This can happen if a build was to be deleted but some of the files
+        couldn't be removed. A build with this state can no longer be used and
+        should be deleted soon.
   
   builds
       See :term:`build`.

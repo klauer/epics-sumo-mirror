@@ -13,6 +13,7 @@ if __name__ == "__main__":
     # "sumolib.[module]".
     sys.path.append("..")
 
+# pylint: disable=wrong-import-position
 import sumolib.ModuleSpec
 import sumolib.JSON
 
@@ -39,7 +40,8 @@ class DB(sumolib.JSON.Container):
     """the buildtree database."""
     # pylint: disable=R0904
     #                          Too many public methods
-    states= set(("stable","testing","unstable","incomplete","disabled"))
+    states= set(("stable","testing","unstable",
+                 "incomplete","disabled","broken"))
     @classmethod
     def check_state(cls, state, new_build):
         """checks if a state is allowed."""

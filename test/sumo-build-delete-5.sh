@@ -4,7 +4,7 @@ ME=`basename $0 .sh`
 
 source settings.sh
 
-echo -e "\n-> Test sumo build delete with two build-tags" >&2
+echo -e "\n-> Test sumo build delete --recursive without write permissions" >&2
 
 TESTDIR=tmp-sumo-build-new-2
 
@@ -23,6 +23,9 @@ done
 rm -f *.tmp
 rm -f *.bak
 
+# now intentionally remove write permissions at some place:
+chmod 555 CSM
+
 echo -e "\ndirectory tree:"
 echo "> ls $EXAMPLEDIR:"
 ls | sort -f -d 
@@ -32,12 +35,13 @@ find . -name '*+*' | sort -f -d
 echo -e "\ncontents of BUILDS file:"
 cat BUILDS.DB
 
-echo -e "\ndelete builds 'MYAPP-002' and 'MYAPP-001'"
-$SUMO build --dbdir . --builddir . delete MYAPP-002 MYAPP-001 --yes
+echo -e "\ndelete build 'MYAPP-001' recursively"
+$SUMO build --dbdir . --builddir . delete MYAPP-001 --yes --recursive 2>&1
 
 echo -e "\nbuild directories:"
 find . -name '*+*' | sort -f -d
 
 echo -e "\ncontents of BUILDS file:"
 cat BUILDS.DB
+
 
