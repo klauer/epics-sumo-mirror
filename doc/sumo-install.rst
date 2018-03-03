@@ -11,6 +11,9 @@ The distribution does not contain the configuration files since you have
 to adapt them to your development host. Examples of configuration files are
 shown further below.
 
+Sumo is available as a debian or rpm package, as a tar.gz or zip file and on
+pypi. The sections below describe all installation options.
+
 Requirements
 ------------
 
@@ -25,14 +28,22 @@ even MacOS, but this is not tested.
 It may run on windows, escpecially the `Cygwin <https://www.cygwin.com>`_
 environment, but this is also not tested.
 
-Packages
---------
+Install from pypi with pip
+--------------------------
 
-Sumo is available as a debian or rpm package, as a tar.gz and zip file. How
-sumo has to be installed depends on the package format.
+In order to install sumo with `pip <https://en.wikipedia.org/wiki/Pip_(package_manager)>`_, 
+you use the command [1]_ [2]_::
+
+  pip3 install EPICS-sumo
+
+.. [1] This is the example for python 3, for python 2 the command is "pip"
+.. [2] Your python 3 version of pip may have a different name, e.g. "pip-3" or "pip-3.2"
+
+You find documentation for the usage of pip at `Installing Python Modules
+<https://docs.python.org/3/installing/index.html#installing-index>`_.
 
 Install from a debian package
-+++++++++++++++++++++++++++++
+-----------------------------
 
 There are packages for some of the recent debian versions. In order to see
 what debian version you use enter::
@@ -56,7 +67,7 @@ Note that you have to *configure* sumo after installing it, see
 `The sumo configuration file`_.
 
 Install from a rpm package
-++++++++++++++++++++++++++
+--------------------------
 
 There are packages for some of the recent fedora versions. 
 In order to see what fedora version you use enter::
@@ -80,7 +91,7 @@ Note that you have to *configure* sumo after installing it, see
 `The sumo configuration file`_.
 
 Install from source (tar.gz or zip file)
-++++++++++++++++++++++++++++++++++++++++
+----------------------------------------
 
 Download the file here:
 
@@ -100,7 +111,7 @@ sumo from source you always invoke this script with some command line options.
 
 The following chapters are just *examples* how you could install sumo. For a
 complete list of all possibilities see 
-`Installing Python Modules <https://docs.python.org/2/install/index.html#install-index>`_.
+`<https://docs.python.org/3/installing/index.html#installing-index>`_.
 
 Note that the python interpreter you use to start setup.py determines for which python version sumo is installed. 
 

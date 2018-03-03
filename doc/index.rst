@@ -98,8 +98,8 @@ Sumo is available as a debian or rpm package, as tar.gz or zip here:
 Install
 =======
 
-You install sumo either as a debian or rpm package with your package manager or
-from source.
+You install sumo either as a debian or rpm package with your package manager,
+from source or with pip.
 
 For details on how to install sumo see :doc:`sumo-install`.
 
