@@ -5,22 +5,22 @@ We have conflicts in the following files:
 ./DEPS.DB
 
 
-Error while loading dependency database, 'darcs pull' failed
+Error while loading dependency database: 'darcs pull' failed
 
 Conflict in mercurial repo:
 ---------------------------
 warning: conflicts while merging DEPS.DB! (edit, then use 'hg resolve --mark')
-Error while loading dependency database, 'hg merge' failed
+Error while loading dependency database: 'hg merge' failed
 
 Conflict in git repo:
 ---------------------
-Error while loading dependency database, 'git pull' failed
+Error while loading dependency database: 'git pull' failed
 
 Conflict in subversion repo:
 ---------------------
 svn: Commit failed (details follow):
 svn: Aborting commit: '/tmp-sumo-db-dbrepo-conflict/local-svn/DEPS.DB' remains in conflict
-Error while committing dependency database 'svn commit' failed
+Error while committing dependency database: 'svn commit' failed
 
 Conflict in cvs repo:
 ---------------------
@@ -29,4 +29,4 @@ cvs update: conflicts found in local-cvs/DEPS.DB
 cvs commit: Examining .
 cvs commit: file `DEPS.DB' had a conflict and has not been modified
 cvs [commit aborted]: correct above errors first!
-Error while committing dependency database 'cvs commit' failed
+Error while committing dependency database: 'cvs commit' failed
