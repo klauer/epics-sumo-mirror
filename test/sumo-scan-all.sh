@@ -2,12 +2,6 @@
 
 ME=`basename $0 .sh`
 
-if [ "$1" = "deps" ]; then
-        echo "$ME.tst: $ME.sh $ME.out $ME.ok"
-        echo
-        exit
-fi
-
 source settings.sh
 
 echo -e "\n-> Test sumo-scan: checkout many modules and scan the directory tree." >&2

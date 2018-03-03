@@ -2,12 +2,6 @@
 
 ME=`basename $0 .sh`
 
-if [ "$1" = "deps" ]; then
-        echo "$ME.tst: $ME.sh $ME.out $ME.ok sumo-scan-all.tst"
-        echo
-        exit
-fi
-
 source settings.sh
 
 # This program uses the scan file hat was created for test sumo-scan-all.
