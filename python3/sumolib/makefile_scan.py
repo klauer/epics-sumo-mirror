@@ -41,7 +41,8 @@ assert __version__==sumolib.system.__version__
 # makefile scanning
 # -----------------------------------------------
 
-rx_def= re.compile(r'^(\w+)=(.*)$')
+# bash allows almost *any* character except '=' as variable name:
+rx_def= re.compile(r'^([^=]+)=(.*)$')
 
 def _scan(filenames, external_definitions= None,
           warnings= True,
@@ -73,17 +74,34 @@ def _scan(filenames, external_definitions= None,
     (reply,_)= sumolib.system.system(cmd, True, False, verbose, dry_run)
     if dry_run:
         return data
+    name= None
+    value= None
     for line in reply.splitlines():
         m= rx_def.match(line)
         if m is None:
-            if warnings:
-                sys.stdout.flush()
-                sys.stderr.write("\nmakefile_scan.py: warning:\n"
-                                 "\tline not parsable in %s\n"
-                                 "\t'%s'\n" % (" ".join(filenames),line))
-                sys.stderr.flush()
+            if name is None:
+                # shouldn't happen
+                if warnings:
+                    sys.stdout.flush()
+                    sys.stderr.write("\nmakefile_scan.py: warning:\n"
+                                     "\tline not parsable in %s\n"
+                                     "\t%s\n" % \
+                                     (" ".join(filenames),repr(line)))
+                    sys.stderr.flush()
+                continue
+            # assume that this belongs to a multi-line value:
+            value+= "\n"
+            value+= line
             continue
-        data[m.group(1)]= m.group(2)
+        else:
+            if name is not None:
+                # store the previous one:
+                data[name]= value
+            name= m.group(1)
+            value= m.group(2)
+    if name is not None:
+        # store the last one:
+        data[name]= value
     return data
 
 def scan(filenames, external_definitions= None, pre= None,
