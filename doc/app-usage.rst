@@ -216,16 +216,26 @@ Makefile for BL-002
 This is the generated makefile for build BL-002::
 
   .PHONY: all clean config distclean
-  all: ALARM/R3-9+BL-002/sumo-all MCAN/R2-6-3-2+BL-002/sumo-all
   
-  config: ALARM/R3-9+BL-002/sumo-config MCAN/R2-6-3-2+BL-002/sumo-config
+  all: \
+  	ALARM/R3-9+BL-002/sumo-all \
+  	MCAN/R2-6-3-2+BL-002/sumo-all
   
-  clean: ALARM/R3-9+BL-002/sumo-clean MCAN/R2-6-3-2+BL-002/sumo-clean
+  config: \
+  	ALARM/R3-9+BL-002/sumo-config \
+  	MCAN/R2-6-3-2+BL-002/sumo-config
   
-  distclean: ALARM/R3-9+BL-002/sumo-distclean MCAN/R2-6-3-2+BL-002/sumo-distclean
+  clean: \
+  	ALARM/R3-9+BL-002/sumo-clean \
+  	MCAN/R2-6-3-2+BL-002/sumo-clean
   
+  distclean: \
+  	ALARM/R3-9+BL-002/sumo-distclean \
+  	MCAN/R2-6-3-2+BL-002/sumo-distclean
   
-  MCAN/R2-6-3-2+BL-002/sumo-all: ALARM/R3-9+BL-002/sumo-all
+  MCAN/R2-6-3-2+BL-002/sumo-all: \
+  	ALARM/R3-9+BL-002/sumo-all
+  
   
   %/sumo-all:
   	$(MAKE) -C $(@D)
