@@ -467,7 +467,7 @@ Here is an example on how this file looks like::
       }
   }
 
-  The basic datastructure is this::
+The basic datastructure is this::
 
   {
       MODULENAME: {
