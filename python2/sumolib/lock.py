@@ -16,7 +16,9 @@ if __name__ == "__main__":
     # "sumolib.[module]".
     sys.path.append("..")
 
+# pylint: disable=wrong-import-position
 import sumolib.system
+# pylint: enable=wrong-import-position
 
 __version__="3.2.1" #VERSION#
 
@@ -51,6 +53,14 @@ class AccessError(Exception):
     """
     pass
 
+class NoSuchFileError(Exception):
+    """Cannot create lock, path does not exist.
+
+    This is raised when we can't create a lock since the file path where we
+    want to create it doesn't exist.
+    """
+    pass
+
 # -----------------------------------------------
 # file locking wrapper
 # -----------------------------------------------
@@ -73,10 +83,11 @@ class MyLock(object):
     def lock(self):
         """do the file locking.
 
-        raises:
-          LockedError : can't get lock
-          AccessError : no rights to create lock
-          OSError     : other operating system errors
+        May raise:
+            LockedError     : can't get lock
+            AccessError     : no rights to create lock
+            NoSuchFileError : file path doesn't exist
+            OSError         : other operating system errors
 
         On linux, create a symbolic link, otherwise a directory. The symbolic
         link has some information on the user, host and process ID.
@@ -84,6 +95,7 @@ class MyLock(object):
         On other systems the created directory contains a file whose name has
         some information on the user, host and process ID.
         """
+        # pylint: disable=too-many-branches
         if self._disabled:
             return
         if self._has_lock:
@@ -118,6 +130,10 @@ class MyLock(object):
                     # cannot write to directory
                     raise AccessError(("no rights to create lock for "
                                        "file '%s'") % self._filename)
+                elif e.errno==errno.ENOENT:
+                    # no such file or directory
+                    raise NoSuchFileError(("cannot create %s, path doesn't "
+                                           "exist")  % repr(self.lockname))
                 else:
                     # re-raise exception in all other cases
                     raise
@@ -129,10 +145,7 @@ class MyLock(object):
         If timeout is a number, wait up to this time (seconds) to aquire the
         lock.
         """
-        if not use_lockfile:
-            self._disabled= True
-        else:
-            self._disabled= False
+        self._disabled= not use_lockfile
         if timeout is None:
             self.timeout= 0
         else:
