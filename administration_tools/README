@@ -13,7 +13,6 @@ Set up the new version:
 
 ./new-version.sh <VERSION>
 ./doc-rebuild.sh
-./dist-to-wwwcsr.sh
 ./cleanup-distdirs.sh
 ./mk-dist.sh
 
