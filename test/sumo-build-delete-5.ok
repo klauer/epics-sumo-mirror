@@ -105,7 +105,7 @@ contents of BUILDS file:
 delete build 'MYAPP-001' recursively
 Deleting the following builds:
 MYAPP-001 MYAPP-002
-[Errno 13] Permission denied: '/home/pfeiffer/sumo/test/tmp-sumo-build-delete-5/CSM/TAR-4-1+MYAPP-001'
+[Errno 13] Permission denied: '/tmp-sumo-build-delete-5/CSM/TAR-4-1+MYAPP-001'
 Error, build MYAPP-001 couldn't be deleted completely.
 You have to fix the problem and try to delete the build again.
 

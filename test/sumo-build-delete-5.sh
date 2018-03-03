@@ -36,7 +36,7 @@ echo -e "\ncontents of BUILDS file:"
 cat BUILDS.DB
 
 echo -e "\ndelete build 'MYAPP-001' recursively"
-$SUMO build --dbdir . --builddir . delete MYAPP-001 --yes --recursive 2>&1
+$SUMO build --dbdir . --builddir . delete MYAPP-001 --yes --recursive 2>&1 | sed -e "s#$PWD_REAL##g;s#$PWD_NICE##g"
 
 echo -e "\nbuild directories:"
 find . -name '*+*' | sort -f -d
