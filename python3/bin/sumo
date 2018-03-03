@@ -337,17 +337,34 @@ def repo_manager(dbdir, sourcespec_string, mode,
     sourcespec_string specifies a repo like:
       darcs <darcs-url>
       hg <mercurial-url>
+
+    May raise:
+        AssertionError, OSError, TypeError, ValueError,
+        sumolib.lock.AccessError, sumolib.lock.LockedError,
+        sumolib.lock.NoSuchFileError from ManagedRepo
     """
     if not sourcespec_string:
+        # may raise AssertionError, OSError, TypeError, ValueError,
+        #           sumolib.lock.AccessError, sumolib.lock.LockedError,
+        #           sumolib.lock.NoSuchFileError:
         return sumolib.repos.ManagedRepo(None,None,None,None,verbose,dry_run)
     if not mode:
         mode= 'get'
     source_spec_obj= \
         sumolib.repos.SourceSpec.from_string_sourcespec(\
                                           sourcespec_string.split())
-    mngr= sumolib.repos.ManagedRepo(source_spec_obj,
-                                    mode,
-                                    dbdir, LOCK_TIMEOUT, verbose, dry_run)
+    try:
+        # may raise AssertionError, OSError, TypeError, ValueError,
+        #           sumolib.lock.AccessError, sumolib.lock.LockedError,
+        #           sumolib.lock.NoSuchFileError:
+        mngr= sumolib.repos.ManagedRepo(source_spec_obj,
+                                        mode,
+                                        dbdir, LOCK_TIMEOUT, verbose, dry_run)
+    except (AssertionError, OSError, TypeError, ValueError,
+            sumolib.lock.AccessError,
+            sumolib.lock.LockedError,
+            sumolib.lock.NoSuchFileError) as e:
+        raise annotate("Error while creating/accessing repository, %s", e)
     return mngr
 
 def db_from_json_file(filename, use_lock= True, keep_locked= False):
@@ -382,6 +399,7 @@ def db_from_repo(options, keep_locked= False, changes_check= True,
         repomode= "get"
     else:
         repomode= options.dbrepomode
+    # may raise AssertionError, OSError, TypeError, ValueError:
     mngr= repo_manager(options.dbdir, options.dbrepo, repomode,
                        options.verbose, options.dry_run)
     if mngr.local_changes():
@@ -1559,6 +1577,7 @@ def subcmd_config_standalone(arguments, options):
     dbdir= os.path.join(sumodir, "database")
     config.set("dbdir", dbdir)
     # the following does a checkout of the dependency database:
+    # may raise AssertionError, OSError, TypeError, ValueError:
     _= repo_manager(dbdir,
                     config.get("dbrepo"),
                     config.get("dbrepomode"),
@@ -1603,6 +1622,7 @@ def subcmd_config_local(arguments, options):
     dbdir= os.path.join(sumodir, "database")
     config.set("dbdir", dbdir)
     # the following does a checkout of the dependency database:
+    # may raise AssertionError, OSError, TypeError, ValueError:
     _= repo_manager(dbdir,
                     config.get("dbrepo"),
                     config.get("dbrepomode"),
@@ -1662,6 +1682,7 @@ def subcmd_db_edit(arguments, options):
             print(("Note: no further action taken since %s was "
                    "not changed.") % DB)
         else:
+            # may raise AssertionError, OSError, TypeError, ValueError:
             mngr= repo_manager(options.dbdir, options.dbrepo,
                                options.dbrepomode,
                                options.verbose, options.dry_run)
@@ -1702,6 +1723,7 @@ def subcmd_db_convert(arguments, options):
     (buildcache, db)= create_database(deps, repoinfo, groups,
                                       options.dir_patch,
                                       options.url_patch)
+    # may raise AssertionError, OSError, TypeError, ValueError:
     mngr= repo_manager(options.dbdir, options.dbrepo, options.dbrepomode,
                        options.verbose, options.dry_run)
     mngr.prepare_read() # does a "pull"

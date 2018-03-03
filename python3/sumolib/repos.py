@@ -60,10 +60,14 @@ def repo_from_dir(directory, hints, verbose, dry_run):
     "write check": bool
         If this is True, when the repository data directory is not writable
         the function returns <None>.
+
+    May raise:
+        TypeError : when hints parameter is not a dict
     """
     if not isinstance(hints, dict):
         raise TypeError("hints parameter '%s' is of wrong type" % \
                         repr(hints))
+    # pylint: disable=redefined-variable-type
     obj= sumolib.darcs.Repo.scan_dir(directory, hints, verbose, dry_run)
     if obj is not None:
         return obj
@@ -119,6 +123,9 @@ def checkout(sourcespec, destdir, lock_timeout, verbose, dry_run):
     """check out a working copy.
 
     sourcespec must be a SourceSpec object.
+
+    May raise:
+        ValueError: from sumolib.*.Repo.checkout
     """
     # pylint: disable=R0913
     #                          Too many arguments
@@ -356,13 +363,12 @@ class SourceSpec(sumolib.JSON.Container):
 # ManagedRepo class
 
 class ManagedRepo(object):
+    # pylint: disable=too-many-instance-attributes
     """Object for managing data in a repository.
 
     Do pull before read,
     commit and push after write.
     """
-    # pylint: disable=R0902
-    #                          Too many instance attributes
     def __init__(self, sourcespec,
                  mode, directory,
                  lock_timeout,
@@ -397,11 +403,25 @@ class ManagedRepo(object):
         does nothing.
 
         Does checkout the repository if the directory does not yet exist.
+
+        May raise:
+            TypeError                    : When parameter sourcespec has wrong
+                                           type.
+            AssertionError               : when parameter "mode" is wrong
+                                           when checkout didn't create a directory
+                                           when directory exists but is, in
+                                                fact, a file
+            OSError                      : when directory does not exist or
+                                           cannot be written to
+            ValueError                   : from checkout()
+            sumolib.lock.LockedError     : can't get lock
+            sumolib.lock.AccessError     : no rights to create lock
+            sumolib.lock.NoSuchFileError : file path doesn't exist
+            OSError                      : other operating system errors while
+                                           trying to lock
         """
-        # pylint: disable=R0913
-        #                          Too many arguments
-        # pylint: disable=R0912
-        #                          Too many branches
+        # pylint: disable=too-many-statements, too-many-arguments
+        # pylint: disable=too-many-branches
         self.sourcespec= sourcespec
         if sourcespec is None:
             return
@@ -425,31 +445,25 @@ class ManagedRepo(object):
             # must create
             # first get a lock for the directory to create:
             lk= sumolib.lock.MyLock(self.directory, self.lock_timeout)
-            try:
-                lk.lock()
-            except sumolib.lock.AccessError as _:
-                # we cannot write although we have to check out
-                raise OSError("Error, cannot write to directory %s" % \
-                              os.path.dirname(self.directory))
-            # sumolib.lock.LockedError is not caught here
+            # may raise sumolib.lock.LockedError,
+            #           sumolib.lock.AccessError,
+            #           sumolib.lock.NoSuchFileError
+            lk.lock()
 
-            # the directory may have been created in the meantime by another
-            # process:
-            if not os.path.exists(self.directory):
-                # must check out
-                try:
+            try:
+                # The directory may have been created in the meantime by
+                # another process. Do checkout only if it still doesn't exist:
+                if not os.path.exists(self.directory):
+                    # may raise ValueError:
                     checkout(self.sourcespec, self.directory,
                              self.lock_timeout,
                              self.verbose, self.dry_run)
-                except Exception as _:
-                    lk.unlock()
-                    raise
-                if not os.path.exists(self.directory):
-                    lk.unlock()
-                    raise AssertionError("checkout of %s to %s failed" % \
-                                         (self.sourcespec,
-                                          self.directory))
-            lk.unlock()
+                    if not os.path.exists(self.directory):
+                        raise AssertionError("checkout of %s to %s failed" % \
+                                             (self.sourcespec,
+                                              self.directory))
+            finally:
+                lk.unlock()
         if not os.path.isdir(self.directory):
             raise AssertionError("error, '%s' is not a directory" % \
                                  self.directory)
@@ -458,7 +472,7 @@ class ManagedRepo(object):
         # get a repository lock:
         try:
             self.lock.lock()
-        except sumolib.lock.AccessError as _:
+        except (sumolib.lock.AccessError, sumolib.lock.LockedError):
             # we do not have write access on the repository:
             no_write_access= True
 
@@ -477,6 +491,7 @@ class ManagedRepo(object):
 
         self.repo_obj= None
         try:
+            # will never raise TypeError when called like this:
             self.repo_obj= repo_from_dir(self.directory,
                                          {"write check": True},
                                          self.verbose, self.dry_run)
