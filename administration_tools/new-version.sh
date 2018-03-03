@@ -4,7 +4,7 @@
 set -e
 
 if [ -z "$1" ]; then
-    echo "usage: $0 <version-string"
+    echo "usage: $0 <version-string>"
     echo "patches the version strings in all parts of the project"
     exit 0
 fi
