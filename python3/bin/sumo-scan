@@ -178,7 +178,6 @@ def support_configure_data(support_trees,
     #                                              topdown= True):
     modpath= None
     # progress indicatiors would interfere with trace messages:
-    ignore_archs= ["perl","python"]
     if trace:
         progress= False
     for support_tree in support_trees:
@@ -247,6 +246,7 @@ def path2name_from_deps(deps):
 def groups_from_deps(deps, basedirs):
     """try to group directories.
     """
+    # pylint: disable= too-many-locals
     def _add(dict_, p):
         """add a path."""
         (head,tail)= os.path.split(p)
@@ -416,7 +416,7 @@ def get_configuration(options):
                                  options.trace,
                                  options.progress,
                                  options.verbose,
-                                 options.dry_run)   
+                                 options.dry_run)
     return deps
 
 def process_config(config, commands, options):
@@ -448,10 +448,9 @@ def process(options, commands):
     """do all the work.
 
     """
-    # pylint: disable=R0912
-    #                          Too many branches
-    # pylint: disable=R0915
-    #                          Too many statements
+    # pylint: disable= global-statement
+    # pylint: disable= too-many-branches
+    # pylint: disable= too-many-statements
     global catch_exceptions
     if options.exceptions:
         catch_exceptions= False
@@ -920,4 +919,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-

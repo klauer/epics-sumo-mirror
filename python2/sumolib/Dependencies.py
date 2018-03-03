@@ -205,10 +205,13 @@ class DB(sumolib.JSON.Container):
         version= version_dict.setdefault(versionname, {})
         old_source= version.get("source")
         if old_source is None:
-            version["source"]= sourcespec.to_dict()
+            version["source"]= sourcespec.to_deps_dict()
             return True
-        old_spec= sumolib.repos.SourceSpec(old_source)
-        return old_spec.change_source(sourcespec)
+        old_spec= sumolib.repos.SourceSpec.from_deps_dict(old_source)
+        ret= old_spec.change_source(sourcespec)
+        if ret:
+            version["source"]= old_spec.to_deps_dict()
+        return ret
     def set_source_spec_by_tag(self, module_name, versionname, tag):
         """try to change sourcespec by providing a tag.
 
@@ -221,13 +224,14 @@ class DB(sumolib.JSON.Container):
             raise ValueError("Error, %s:%s source specification is empty, "
                              "cannot simply change the tag." % \
                              (module_name, versionname))
-        old_spec= sumolib.repos.SourceSpec(old_source)
+        old_spec= sumolib.repos.SourceSpec.from_deps_dict(old_source)
         try:
             ret= old_spec.change_source_by_tag(tag)
         except ValueError, e:
             raise ValueError("Error, '%s:%s' %s" % \
                              (module_name, versionname, _uq(str(e))))
-        version["source"]= old_spec.to_dict()
+        if ret:
+            version["source"]= old_spec.to_deps_dict()
         return ret
 
     def set_source_(self, module_name, versionname, sourcespec):
@@ -237,7 +241,7 @@ class DB(sumolib.JSON.Container):
                             "type" % repr(sourcespec))
         version_dict= self.datadict().setdefault(module_name,{})
         version= version_dict.setdefault(versionname, {})
-        version["source"]= sourcespec.to_dict()
+        version["source"]= sourcespec.to_deps_dict()
     def add_dependency(self, modulename, versionname,
                        dep_modulename):
         """add dependency for a module:version.

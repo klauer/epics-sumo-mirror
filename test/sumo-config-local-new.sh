@@ -19,8 +19,9 @@ $SUMO --dbdir $PWD_NICE/$DBDIR --dbrepo "darcs $PWD_NICE/$DBDIR" --dbrepomode pu
 # now override it's settings
 $SUMO -c sumo.config config local sumo
 
-# now change DEPS.DB
-$SUMO -c sumo.config -y db cloneversion ALARM R3-7 R3-9 darcs '*' | sed -e "s#$PWD_REAL##;s#$PWD_NICE##"
+# now change DEPS.DB, do cloneversion but remove the tag field by setting it to
+# an empty string:
+$SUMO -c sumo.config -y db cloneversion ALARM R3-7 R3-9 tag='""' | sed -e "s#$PWD_REAL##;s#$PWD_NICE##"
 
 # now create a new build
 $SUMO -c sumo.config --no-make build new BASE:R3-14-12-2-1 ALARM:R3-9 EK:R2-2 BSPDEP_TIMER:R6-2 MISC_DBC:PATH-3-0 MISC_DEBUGMSG:R3-0 2>&1

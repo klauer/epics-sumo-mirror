@@ -5,17 +5,17 @@
 #                          Invalid name for type variable
 
 import os.path
+import re
+import time
+import sys
+
 import sumolib.system
 import sumolib.utils
 import sumolib.lock
-import re
-import time
 
 __version__="3.2.1" #VERSION#
 
 assert __version__==sumolib.system.__version__
-
-import sys
 
 def TRACE(st):
     """trace message"""
@@ -391,15 +391,14 @@ class Repo(object):
         if self.local_changes:
             raise AssertionError("cannot create spec from repo '%s' with "
                                  "unrecorded changes" % self.directory)
-        pars= {}
-        d= {"cvs": pars}
+        d= {"type":"cvs"}
         if self.tag_on_top is not None:
-            pars["tag"]= self.tag_on_top
+            d["tag"]= self.tag_on_top
 
         if self.remote_url is None:
             raise AssertionError("no remote_url")
         else:
-            pars["url"]= self.remote_url
+            d["url"]= self.remote_url
         return d
     @staticmethod
     def checkout(spec, destdir, lock_timeout, verbose, dry_run):

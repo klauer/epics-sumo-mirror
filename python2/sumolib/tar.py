@@ -103,9 +103,9 @@ class Repo(object):
         if self.directory is None:
             raise AssertionError("cannot create source_spec from "
                                  "empty object")
-        pars= {}
-        d= {"tar": pars}
-        pars["url"]= self.tar_url
+        d= {"type":"tar",
+            "url" : self.tar_url
+           }
         return d
     @staticmethod
     def checkout(spec, destdir, _, verbose, dry_run):
@@ -166,5 +166,3 @@ class Repo(object):
         os.rename(ap_subdir, ap_renamed_subdir)
         shutil.move(ap_renamed_subdir, ap_destdir)
         os.rmdir(ap_tempdir)
-
-
