@@ -96,7 +96,7 @@ clean: shallowclean
 	rm -rf *.tmp
 	rm -rf *.bak
 
-clean-%: 
+%.clean: 
 	if [ -d tmp-$* ]; then \
 	    chmod -R u+w tmp-$*; \
 	fi
@@ -122,44 +122,27 @@ script_tests:= $(sort $(notdir $(basename $(shell ls $(BINDIR)))))
 script_tests_tst= $(addsuffix .tst, $(script_tests))
 
 # static pattern rule to test python modules:
-$(module_tests_tst): %.tst: $(LIBDIR)/%.py target_module_tests_msg
-	$(PYTHON) $<
+$(module_tests_tst): %.tst: $(LIBDIR)/%.py 
+	@echo -e "\n-> run doctest of python$(PYVER)/sumolib/$*.py" >&2
+	@$(PYTHON) $<
+	@touch $@
 
 # static pattern rule to test scripts:
-$(script_tests_tst): %.tst: $(BINDIR)/% target_script_tests_msg
-	$(PYTHON) $< --test
+$(script_tests_tst): %.tst: $(BINDIR)/% 
+	@echo -e "\n-> run selftest of python$(PYVER)/$*" >&2
+	@$(PYTHON) $< --test
+	@touch $@
 
 .PHONY : target_module_tests target_script_tests target_shell_tests
 
-.PHONY : target_module_tests_msg
-
-target_module_tests_msg:
-	@echo
-	@echo "================================================="
-	@echo "python module self tests"
-
 target_module_tests: $(module_tests_tst)
 
-.PHONY: target_script_tests_msg
-
-target_script_tests_msg:
-	@echo
-	@echo "================================================="
-	@echo "python scripts self tests"
-
 target_script_tests: $(script_tests_tst)
-
-.PHONY: target_shell_tests_msg
-
-target_shell_tests_msg:
-	@echo
-	@echo "================================================="
-	@echo "tests of sumo-scan and sumo commands"
 
 target_shell_tests: $(shell_tests_tst)
 
 # how to generate an out file:
-%.out: %.sh target_shell_tests_msg data/epics/stamp
+%.out: %.sh data/epics/stamp
 	@bash ./$< > $@
 
 ifeq "$(CREATE_TESTS)" "yes"
