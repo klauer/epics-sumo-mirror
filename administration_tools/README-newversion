@@ -32,7 +32,7 @@ How to create a new version of sumo
   create tag with
     hg tag [TAG]
 
-* Create documentation
+* Create documentation (must be done before mk-dist.sh)
 
   ./doc-rebuild.sh
 
