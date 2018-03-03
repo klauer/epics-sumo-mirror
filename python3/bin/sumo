@@ -855,8 +855,28 @@ def create_makefile(dist_dict, db, builddb,
         if os.path.exists(fn):
             return True
         return False
-    paths= {}
     builddir= builddb.dirname()
+    filename= makefilename(builddir, build_tag)
+    if progress:
+        notemsg("creating makefile '%s'\n" % filename)
+    fh= sumolib.utils.file_w_open(filename, verbose, dry_run)
+
+    # Put all module path definitions in the makefile, too. We cannot use
+    # aliases here, since they can be defined differently at every place where
+    # a module is used.
+    for modulename in sorted(dist_dict.keys()):
+        versionname= dist_dict[modulename]
+        buildtag_here= builddb.module_link(build_tag, modulename)
+        # ^^^return linked build_tag if the module is linked or None.
+        if buildtag_here is None:
+            buildtag_here= build_tag
+        b_dir= cached_realpath(builddb.dirname_from_tag(buildtag_here))
+        path= module_dir(b_dir, buildtag_here, modulename, versionname)
+        sumolib.utils.file_write(fh, "%s=%s\n" % (modulename,path),
+                                 verbose, dry_run)
+    sumolib.utils.file_write(fh, "\n", verbose, dry_run)
+
+    paths= {}
     for modulename, versionname in builddb.iter_modules(build_tag):
         if not builddb.module_link(build_tag, modulename):
             if not has_makefile(module_dir(builddir, build_tag,
@@ -867,15 +887,11 @@ def create_makefile(dist_dict, db, builddb,
                                                          modulename,
                                                          versionname)
     standard_targets= ("all", "config", "clean", "distclean")
-    filename= makefilename(builddir, build_tag)
-    if progress:
-        notemsg("creating makefile '%s'\n" % filename)
     # sort module_dirs by (modulename, versionname):
     module_dirs= []
     for tp in sorted(paths.keys()):
         module_dirs.append(paths[tp])
     stamps= [os.path.join(p, STAMPNAME) for p in module_dirs]
-    fh= sumolib.utils.file_w_open(filename, verbose, dry_run)
 
     # define phony targets:
     sumolib.utils.file_write(fh,

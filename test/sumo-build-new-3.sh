@@ -29,5 +29,5 @@ ls  MCAN | sort -f -d
 echo -e "\ncontent of BUILDS.DB:"
 cat BUILDS.DB 
 echo -e "\ncontent of Makefile-MYAPP-002"
-cat Makefile-MYAPP-002
+cat Makefile-MYAPP-002 | sed -e "s#$PWD_NICE##;s#$PWD_REAL##"
 

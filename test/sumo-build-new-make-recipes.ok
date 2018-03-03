@@ -66,6 +66,15 @@ directory tree (without darcs, maxdepth 2)
 
 content of Makefile-AUTO-001
 
+ALARM=/tmp-sumo-build-new-make-recipes/ALARM/R3-7+AUTO-001
+BASE=/tmp-sumo-build-new-make-recipes/BASE/R3-14-12-2-1+AUTO-001
+BSPDEP_TIMER=/tmp-sumo-build-new-make-recipes/BSPDEP_TIMER/R6-2+AUTO-001
+BSPDEP_VMETAS=/tmp-sumo-build-new-make-recipes/BSPDEP_VMETAS/R2-0+AUTO-001
+MCAN=/tmp-sumo-build-new-make-recipes/MCAN/TAGLESS-2-6-1+AUTO-001
+MISC_DBC=/tmp-sumo-build-new-make-recipes/MISC_DBC/PATH-3-0+AUTO-001
+MISC_DEBUGMSG=/tmp-sumo-build-new-make-recipes/MISC_DEBUGMSG/R3-0+AUTO-001
+SOFT_DEVHWCLIENT=/tmp-sumo-build-new-make-recipes/SOFT_DEVHWCLIENT/TAR-3-0+AUTO-001
+
 .PHONY: all clean config distclean
 
 all: \

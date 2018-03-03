@@ -27,7 +27,7 @@ find . -maxdepth 3 | sort -f -d | grep -v '_darcs\|\.hg\(\|ignore\)\|\.svn\|CVSR
 echo -e "\ncontent of BUILDS"
 cat BUILDS.DB
 echo -e "\ncontent of Makefile-BASE-001"
-cat Makefile-BASE-001
+cat Makefile-BASE-001 | sed -e "s#$PWD_NICE##;s#$PWD_REAL##"
 echo -e "\ncontent of Makefile-MYAPP-001"
-cat Makefile-MYAPP-001
+cat Makefile-MYAPP-001 | sed -e "s#$PWD_NICE##;s#$PWD_REAL##"
 
