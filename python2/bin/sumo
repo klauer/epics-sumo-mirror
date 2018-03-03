@@ -795,12 +795,7 @@ def create_makefile(dist_dict, db, builddb,
 
     called by create_modules, command "new"
     """
-    # pylint: disable=R0914
-    #                          Too many local variables
-    # pylint: disable=R0912
-    #                          Too many branches
-    # pylint: disable=R0913
-    #                          Too many arguments
+    # pylint: disable=too-many-arguments, too-many-locals
     def has_makefile(path):
         """checks if there is a makefile in path."""
         fn= os.path.join(path,"Makefile")
@@ -827,44 +822,47 @@ def create_makefile(dist_dict, db, builddb,
     module_dirs= sorted(paths.values())
     stamps= [os.path.join(p,"stamp") for p in module_dirs]
     fh= sumolib.utils.file_w_open(filename, verbose, dry_run)
-    sumolib.utils.file_write(fh, "all: %s\n\n" % (" ".join(stamps)),
-                             verbose, dry_run)
 
-    for target in ("clean", "distclean"):
-        sumolib.utils.file_write(fh, "%s:\n" % target, verbose, dry_run)
-        for d in module_dirs:
-            sumolib.utils.file_write(fh, "\t-$(MAKE) -C %s %s\n" % \
-                                         (d, target),
-                                     verbose, dry_run)
-        for f in stamps:
-            sumolib.utils.file_write(fh, "\trm -f %s\n" % f, verbose, dry_run)
-        sumolib.utils.file_write(fh, "\n", verbose, dry_run)
+    # write all, clean and distclean rules:
+    for target in ("all", "clean", "distclean"):
+        target_stamps= ["%s-%s" % (s, target) for s in stamps]
+        sumolib.utils.file_write(fh, "%s: %s\n\n" % \
+                                 (target, " ".join(target_stamps)),
+                                 verbose, dry_run)
 
-    for spec in sorted(paths.keys()):
-        path= paths[spec]
-        (modulename, versionname)= spec
-        own_stamp= os.path.join(path, "stamp")
+    # write dependencies for stamp-all:
+    for (modulename, versionname) in sorted(paths.keys()):
+        path= paths[(modulename, versionname)]
+        own_stamp= os.path.join(path, "stamp-all")
         dep_stamps= []
         for dep_name in db.iter_dependencies(modulename, versionname):
+            # if this build has only a link of the module, skip it
             if builddb.module_link(build_tag, dep_name):
                 continue
             dep_version= dist_dict[dep_name]
-            # do no handle dependencies that are not in the paths
-            # dictionary:
+            # if the module is a dependency but not part of this build, skip
+            # it, too:
             if not paths.has_key((dep_name, dep_version)):
                 continue
             # use relative paths for dependencies:
             dep_path= module_dir("", build_tag, dep_name, dep_version)
-            dep_stamps.append(os.path.join(dep_path,"stamp"))
-
+            dep_stamps.append(os.path.join(dep_path,"stamp-all"))
         dep_stamps.sort()
         if dep_stamps:
             sumolib.utils.file_write(fh,\
                         "\n%s: %s\n" % (own_stamp, " ".join(dep_stamps)),\
                         verbose, dry_run)
-    sumolib.utils.file_write(fh, "\n%/stamp:\n", verbose, dry_run)
-    sumolib.utils.file_write(fh, "\t$(MAKE) -C $(@D)\n", verbose, dry_run)
-    sumolib.utils.file_write(fh, "\ttouch $@\n", verbose, dry_run)
+
+    # write pattern rules for stamp-*:
+    for target in ("all", "clean", "distclean"):
+        sumolib.utils.file_write(fh, "\n%%/stamp-%s:\n" % target,
+                                 verbose, dry_run)
+        make_target= " %s" % target if target!="all" else ""
+        sumolib.utils.file_write(fh, "\trm -f $(@D)/stamp-*\n", verbose, dry_run)
+        sumolib.utils.file_write(fh, "\t$(MAKE) -C $(@D)%s\n" % make_target,
+                                 verbose, dry_run)
+        sumolib.utils.file_write(fh, "\ttouch $@\n", verbose, dry_run)
+
     if not dry_run:
         fh.close()
 

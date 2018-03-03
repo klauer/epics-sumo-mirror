@@ -96,23 +96,26 @@ content of BUILDS.DB:
 }
 
 content of Makefile-MYAPP-002
-all: ALARM/R3-7+MYAPP-002/stamp MCAN/R2-6-3-gp+MYAPP-002/stamp
+all: ALARM/R3-7+MYAPP-002/stamp-all MCAN/R2-6-3-gp+MYAPP-002/stamp-all
 
-clean:
-	-$(MAKE) -C ALARM/R3-7+MYAPP-002 clean
-	-$(MAKE) -C MCAN/R2-6-3-gp+MYAPP-002 clean
-	rm -f ALARM/R3-7+MYAPP-002/stamp
-	rm -f MCAN/R2-6-3-gp+MYAPP-002/stamp
+clean: ALARM/R3-7+MYAPP-002/stamp-clean MCAN/R2-6-3-gp+MYAPP-002/stamp-clean
 
-distclean:
-	-$(MAKE) -C ALARM/R3-7+MYAPP-002 distclean
-	-$(MAKE) -C MCAN/R2-6-3-gp+MYAPP-002 distclean
-	rm -f ALARM/R3-7+MYAPP-002/stamp
-	rm -f MCAN/R2-6-3-gp+MYAPP-002/stamp
+distclean: ALARM/R3-7+MYAPP-002/stamp-distclean MCAN/R2-6-3-gp+MYAPP-002/stamp-distclean
 
 
-MCAN/R2-6-3-gp+MYAPP-002/stamp: ALARM/R3-7+MYAPP-002/stamp
+MCAN/R2-6-3-gp+MYAPP-002/stamp-all: ALARM/R3-7+MYAPP-002/stamp-all
 
-%/stamp:
+%/stamp-all:
+	rm -f $(@D)/stamp-*
 	$(MAKE) -C $(@D)
+	touch $@
+
+%/stamp-clean:
+	rm -f $(@D)/stamp-*
+	$(MAKE) -C $(@D) clean
+	touch $@
+
+%/stamp-distclean:
+	rm -f $(@D)/stamp-*
+	$(MAKE) -C $(@D) distclean
 	touch $@
