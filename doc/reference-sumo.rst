@@ -132,8 +132,8 @@ The *versiondata* map has this form::
       "weight": <weight>
   }
 
-aliasdata
-:::::::::
+aliases
+:::::::
 
 When the support module is to be compiled "sumo build" creates a RELEASE file
 from the known dependencies of the module. The RELEASE file contains variable
@@ -164,8 +164,6 @@ in the build database :term:`BUILDS.DB`.  This is the form of the
       ...
   ]
 
-.. _reference-sumo-source-data:
-
 releasefile
 :::::::::::
 
@@ -173,8 +171,10 @@ This *optional* field is used to specify an alternative name for the generated
 RELEASE file. The default name, if releasefile is not given, is
 `configure/RELEASE`.
 
-source data
-:::::::::::
+.. _reference-sumo-source-data:
+
+source
+::::::
 
 *source data* describes where the :term:`sources` of a :term:`module` can be
 found. It is a map with a single key. The key has one of the following values:
