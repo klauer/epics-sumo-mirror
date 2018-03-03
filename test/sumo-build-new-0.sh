@@ -8,7 +8,6 @@ echo -e "\n-> Test sumo build new --no-checkout." >&2
 
 DEPSDIR=tmp-sumo-db-convert
 
-EXAMPLEDIR=tmp-$ME
 if [ ! -d $EXAMPLEDIR ]; then
     mkdir $EXAMPLEDIR
 fi

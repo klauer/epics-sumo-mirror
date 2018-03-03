@@ -8,7 +8,6 @@ echo -e "\n-> Test sumo build new and sumo db releasefilename." >&2
 
 DEPSDIR=tmp-sumo-db-make-recipes
 
-EXAMPLEDIR=tmp-$ME
 if [ ! -d $EXAMPLEDIR ]; then
     mkdir $EXAMPLEDIR
 fi
