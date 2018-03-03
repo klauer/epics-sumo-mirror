@@ -1,12 +1,11 @@
 """Database file handling.
 """
 
-# pylint: disable=C0103
-#                          Invalid name for type variable
-
 import sys
 import copy
 import os.path
+
+# pylint: disable=invalid-name
 
 if __name__ == "__main__":
     # if this module is directly called like a script, we have to add the path
@@ -14,9 +13,13 @@ if __name__ == "__main__":
     # "sumolib.[module]".
     sys.path.append("..")
 
+# pylint: disable=wrong-import-position
+
 import sumolib.ModuleSpec
 import sumolib.JSON
 import sumolib.utils
+
+# pylint: enable=wrong-import-position
 
 __version__="3.2.1" #VERSION#
 
@@ -307,19 +310,23 @@ class DB(sumolib.JSON.Container):
         if a_dict is None:
             return dep_modulename
         return a_dict.get(dep_modulename, dep_modulename)
-    def add_releasefile(self, modulename, versionname, releasefilename):
-        """add an alternative name for the RELEASE file."""
+    def releasefile_name(self, modulename, versionname, name= None):
+        """get or set the name of the RELEASE file.
+
+        - if name is None, return the RELEASE filename
+        - if name is empty ("" or " "), delete the RELEASE filename entry
+        - else set the RELEASE filename
+        """
+        if name is None:
+            return self.datadict()[modulename][versionname].get(\
+                                "releasefile", default_releasefile)
         m_dict= self.datadict()[modulename][versionname]
-        releasefilename= releasefilename.strip()
+        releasefilename= name.strip()
         if (not releasefilename) or (releasefilename==default_releasefile):
             if m_dict.has_key("releasefile"):
                 del m_dict["releasefile"]
             return
         m_dict["releasefile"]= releasefilename
-    def get_releasefile(self, modulename, versionname):
-        """return the alternative name for the RELEASE file."""
-        return self.datadict()[modulename][versionname].get("releasefile",\
-                                                        default_releasefile)
     def weight(self, modulename, versionname, new_weight= None):
         """set the weight factor."""
         if new_weight is None:
@@ -667,4 +674,3 @@ class DB(sumolib.JSON.Container):
                                             dep_name)
                     except ValueError, _:
                         pass
-
