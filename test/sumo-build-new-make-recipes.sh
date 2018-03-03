@@ -23,5 +23,5 @@ echo -e "\ndirectory tree (without darcs, maxdepth 2)"
 find . -maxdepth 3 | sort -f -d | grep -v '_darcs\|\.hg\(\|ignore\)\|\.svn\|CVSROOT\|\.git\(\|ignore\)\|\.tmp\|\.bak\|\.coverage'
 makefilename=$(ls Makefile-*)
 echo -e "\ncontent of $makefilename\n"
-cat $makefilename
+cat $makefilename | sed -e "s#$PWD_NICE##;s#$PWD_REAL##"
 #for f in `find . -name '*RELEASE' | grep -v 'makeBase\(App\|Ext\)' | sort -f -d`; do echo -e "\nFILE: $f"; cat $f | sed -e "s#`pwd -P`#mysumo#"; done

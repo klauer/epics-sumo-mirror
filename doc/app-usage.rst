@@ -215,6 +215,40 @@ Makefile for BL-002
 
 This is the generated makefile for build BL-002::
 
+  ALARM=/srv/csr/Epics/sumo/build/ALARM/R3-9+BL-002
+  APPS_CRATECTRL=/srv/csr/Epics/sumo/build/APPS_CRATECTRL/R4-1+BL-001
+  APPS_GENERICBOOT=/srv/csr/Epics/sumo/build/APPS_GENERICBOOT/R1-6+BL-001
+  APPS_GENERICTEMPLATE=/srv/csr/Epics/sumo/build/APPS_GENERICTEMPLATE/R3-2-1+BL-001
+  APPS_IOCWATCH=/srv/csr/Epics/sumo/build/APPS_IOCWATCH/R3-1+BL-001
+  APPS_MOTOR=/srv/csr/Epics/sumo/build/APPS_MOTOR/R4-5-6+BL-001
+  APPS_STREAMTEMPLATESANDPROTOCOLS=/srv/csr/Epics/sumo/build/APPS_STREAMTEMPLATESANDPROTOCOLS/R2-18+BL-001
+  ASYN=/srv/csr/Epics/sumo/build/ASYN/R4-30-bessy1+BL-001
+  AUTOSAVE=/srv/csr/Epics/sumo/build/AUTOSAVE/R4-8-bessy4+BL-001
+  BASE=/srv/csr/Epics/sumo/build/BASE/R3-14-12-5-bessy4-rtems-4.9-sumo+BL-001
+  BESSYRULES=/srv/csr/Epics/sumo/build/BESSYRULES/R2-29+BL-001
+  BME=/srv/csr/Epics/sumo/build/BME/R1-0-7+BL-001
+  BSPDEP_CPUBOARDINIT=/srv/csr/Epics/sumo/build/BSPDEP_CPUBOARDINIT/R4-1+BL-001
+  BSPDEP_TIMER=/srv/csr/Epics/sumo/build/BSPDEP_TIMER/R6-2+BL-001
+  BSPDEP_VMETAS=/srv/csr/Epics/sumo/build/BSPDEP_VMETAS/R2-0+BL-001
+  CAPUTLOG=/srv/csr/Epics/sumo/build/CAPUTLOG/R3-3-2+BL-001
+  DEVIOCSTATS=/srv/csr/Epics/sumo/build/DEVIOCSTATS/R3-1-9-bessy5+BL-001
+  DISTVERSION=/srv/csr/Epics/sumo/build/DISTVERSION/R2-2+BL-001
+  ESD=/srv/csr/Epics/sumo/build/ESD/R2-1+BL-001
+  KEITHLEY=/srv/csr/Epics/sumo/build/KEITHLEY/R1-1-19+BL-001
+  MCAN=/srv/csr/Epics/sumo/build/MCAN/R2-6-3-2+BL-002
+  MISC_DBC=/srv/csr/Epics/sumo/build/MISC_DBC/R3-0+BL-001
+  MISC_DEBUGMSG=/srv/csr/Epics/sumo/build/MISC_DEBUGMSG/R3-0+BL-001
+  MOTOR=/srv/csr/Epics/sumo/build/MOTOR/R6-9-bessy5+BL-001
+  RTEMS-BUILD-TOOL=/srv/csr/Epics/sumo/build/RTEMS-BUILD-TOOL/4.9-1.12+BL-001
+  S7PLC=/srv/csr/Epics/sumo/build/S7PLC/R2-0+BL-001
+  SEQ=/srv/csr/Epics/sumo/build/SEQ/R2-1-16+BL-001
+  SOFT_DEVHWCLIENT=/srv/csr/Epics/sumo/build/SOFT_DEVHWCLIENT/R3-0+BL-001
+  STREAMDEVICE=/srv/csr/Epics/sumo/build/STREAMDEVICE/R2-7-7-bessy3+BL-001
+  TOOLS_DBOPT=/srv/csr/Epics/sumo/build/TOOLS_DBOPT/R0-4+BL-001
+  TOOLS_MSI=/srv/csr/Epics/sumo/build/TOOLS_MSI/R1-5-bessy3+BL-001
+  VHQ=/srv/csr/Epics/sumo/build/VHQ/R3-3+BL-001
+  VXBOOTPARAMS=/srv/csr/Epics/sumo/build/VXBOOTPARAMS/R2-4+BL-001
+  
   .PHONY: all clean config distclean
   
   all: \
@@ -255,6 +289,7 @@ This is the generated makefile for build BL-002::
   	$(MAKE) -C $(@D) distclean
   	cd $(@D) && rm -f sumo-all sumo-config sumo-clean sumo-distclean
   	touch $@
+
 
 BUILDS.DB
 +++++++++

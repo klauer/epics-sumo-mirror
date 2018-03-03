@@ -30,8 +30,8 @@ for f in `find . -name RELEASE | grep -v 'makeBase\(App\|Ext\)' | sort -f -d`; d
 echo -e "\ncontent of BUILDS"
 cat BUILDS.DB
 echo -e "\ncontent of Makefile-BASE-001"
-cat Makefile-BASE-001
+cat Makefile-BASE-001 | sed -e "s#$PWD_NICE##;s#$PWD_REAL##"
 echo -e "\ncontent of Makefile-MYAPP-001"
-cat Makefile-MYAPP-001
+cat Makefile-MYAPP-001 | sed -e "s#$PWD_NICE##;s#$PWD_REAL##"
 
 

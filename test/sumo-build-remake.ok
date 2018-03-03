@@ -87,6 +87,8 @@ content of BUILDS
 }
 
 content of Makefile-BASE-001
+BASE=/tmp-sumo-build-remake/BASE/R3-14-12-2-1+BASE-001
+
 .PHONY: all clean config distclean
 
 all: \
@@ -122,6 +124,15 @@ distclean: \
 	touch $@
 
 content of Makefile-MYAPP-001
+ALARM=/tmp-sumo-build-remake/ALARM/R3-7+MYAPP-001
+BASE=/tmp-sumo-build-remake/BASE/R3-14-12-2-1+MYAPP-001
+BSPDEP_CPUBOARDINIT=/tmp-sumo-build-remake/BSPDEP_CPUBOARDINIT/R4-1+MYAPP-001
+BSPDEP_TIMER=/tmp-sumo-build-remake/BSPDEP_TIMER/R6-2+MYAPP-001
+BSPDEP_VMETAS=/tmp-sumo-build-remake/BSPDEP_VMETAS/TAGLESS-2-1-modified+MYAPP-001
+EK=/tmp-sumo-build-remake/EK/R2-2+MYAPP-001
+MISC_DBC=/tmp-sumo-build-remake/MISC_DBC/PATH-3-0+MYAPP-001
+MISC_DEBUGMSG=/tmp-sumo-build-remake/MISC_DEBUGMSG/R3-0+MYAPP-001
+
 .PHONY: all clean config distclean
 
 all: \
