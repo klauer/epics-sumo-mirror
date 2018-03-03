@@ -392,12 +392,12 @@ def db_from_repo(options, keep_locked= False, changes_check= True,
     """load a db, exits gracefully in case of an error.
 
     May raise:
-        ValueError, IOError, sumolib.JSON.ParseError from db_from_json_file
+        EOFError from utils.ask_from_options
+        IOError, ValueError, sumolib.JSON.ParseError from db_from_json_file
         IOError from mngr.commit
         IOError from mngr.prepare_read
     """
-    # pylint: disable=R0913
-    #                          Too many arguments
+    # pylint: disable= too-many-branches
     if just_get_repo:
         repomode= "get"
     else:
@@ -414,12 +414,18 @@ def db_from_repo(options, keep_locked= False, changes_check= True,
                 print "%s Committing changes.\n" % msg_
                 reply= "y"
             else:
-                reply= sumolib.utils.ask_from_options(\
-                        ("%s Commit changes ?\n"
-                         "    'y' commit changes before we continue\n"
-                         "    'n' do not commit and continue\n"
-                         "    'a' abort\n") % msg_,
-                        ["y", "n", "a"])
+                # may raise EOFError:
+                try:
+                    reply= sumolib.utils.ask_from_options(\
+                            ("%s Commit changes ?\n"
+                             "    'y' commit changes before we continue\n"
+                             "    'n' do not commit and continue\n"
+                             "    'a' abort\n") % msg_,
+                            ["y", "n", "a"])
+                except EOFError as e:
+                    raise annotate("%s. "
+                                   "You may want to use option '--yes' "
+                                   "to prevent this error.", e)
             if reply=="a":
                 sys.exit(1)
             if reply=="y":
@@ -453,9 +459,10 @@ def db_to_module_cache(options):
     """create a module cache for module cli.
 
     May raise:
-        ValueError, IOError, sumolib.JSON.ParseError from db_from_repo
+        EOFError, IOError, ValueError, sumolib.JSON.ParseError
+            from db_from_repo
     """
-    # may raise IOError, ValueError, sumolib.JSON.ParseError:
+    # may raise EOFError, IOError, ValueError, sumolib.JSON.ParseError:
     (_, db)= db_from_repo(options,
                           keep_locked= False, changes_check= False,
                           just_get_repo= True)
@@ -1321,6 +1328,7 @@ def delete_build(builddb, build_tags, recursive, verbose, dry_run):
     """delete modules of a build.
 
     May raise:
+        EOFError from utils.ask_yes_no
         ValueError if we cannot delete without --recursive
     """
     given_build_tags= set(build_tags)
@@ -1575,7 +1583,8 @@ def subcmd_config_make_show(cmd, arguments, options):
     """implement "config make" and "config show".
 
     May raise:
-        ValueError, IOError, TypeError from load_config_files
+        EOFError from utils.ask_yes_no
+        IOError, TypeError, ValueError from load_config_files
         ValueError from ModuleSpec.Specs.from_strings
     """
     argspec= sumolib.cli.CmdSpecs()
@@ -1606,10 +1615,16 @@ def subcmd_config_make_show(cmd, arguments, options):
                              mspecs_from_build(options))
         config.set("module", modulespecs_obj.to_stringlist())
     if filename!="-" and os.path.exists(filename):
-        if not sumolib.utils.ask_yes_no(
-                "File %s already exists, overwrite ? (y/n)" % filename,
-                options.yes):
-            sys.exit(0)
+        # may raise EOFError:
+        try:
+            if not sumolib.utils.ask_yes_no(
+                    "File %s already exists, overwrite ? (y/n)" % filename,
+                    options.yes):
+                sys.exit(0)
+        except EOFError as e:
+            raise annotate("%s. "
+                           "You may want to use option '--yes' "
+                           "to prevent this error.", e)
     # pylint: disable=no-member
     config.save(filename, args.OPTIONNAMES, options.verbose, options.dry_run)
 
@@ -1617,7 +1632,8 @@ def subcmd_config_standalone(arguments, options):
     """implement "config standalone".
 
     May raise:
-        ValueError, IOError, TypeError from load_config_files
+        EOFError from utils.ask_yes_no
+        IOError, TypeError, ValueError from load_config_files
     """
     argspec= sumolib.cli.CmdSpecs()
     argspec.add("SUMODIR", completion= sumolib.cli.complete_dir)
@@ -1632,10 +1648,16 @@ def subcmd_config_standalone(arguments, options):
         if not os.path.isdir(sumodir):
             sys.exit("error: '%s' is a file" % sumodir)
         # pylint: disable=no-member
-        if not sumolib.utils.ask_yes_no(\
-                "Directory '%s' already exists, use it ?" % args.SUMODIR,
-                options.yes):
-            sys.exit(0)
+        # may raise EOFError:
+        try:
+            if not sumolib.utils.ask_yes_no(\
+                    "Directory '%s' already exists, use it ?" % args.SUMODIR,
+                    options.yes):
+                sys.exit(0)
+        except EOFError as e:
+            raise annotate("%s. "
+                           "You may want to use option '--yes' "
+                           "to prevent this error.", e)
     ensure_dir(sumodir, options.dry_run)
     if not config.get("dbrepo"):
         sys.exit("error, dbrepo must be specified as command line option "
@@ -1662,7 +1684,8 @@ def subcmd_config_local(arguments, options):
     """implement "config local".
 
     May raise:
-        ValueError, IOError, TypeError from load_config_files
+        EOFError from utils.ask_yes_no
+        IOError, TypeError, ValueError from load_config_files
     """
     argspec= sumolib.cli.CmdSpecs()
     argspec.add("SUMODIR", completion= sumolib.cli.complete_dir)
@@ -1677,10 +1700,16 @@ def subcmd_config_local(arguments, options):
         if not os.path.isdir(sumodir):
             sys.exit("error: '%s' is a file" % sumodir)
         # pylint: disable=no-member
-        if not sumolib.utils.ask_yes_no(\
-                "Directory '%s' already exists, use it ?" % args.SUMODIR,
-                options.yes):
-            sys.exit(0)
+        # may raise EOFError:
+        try:
+            if not sumolib.utils.ask_yes_no(\
+                    "Directory '%s' already exists, use it ?" % args.SUMODIR,
+                    options.yes):
+                sys.exit(0)
+        except EOFError as e:
+            raise annotate("%s. "
+                           "You may want to use option '--yes' "
+                           "to prevent this error.", e)
     ensure_dir(sumodir, options.dry_run)
     if not config.get("dbrepo"):
         sys.exit("error, dbrepo must be specified as command line option "
@@ -1711,8 +1740,9 @@ def subcmd_db_edit(arguments, options):
     """implement "db edit" maincommand.
 
     May raise:
-        ValueError, IOError from db_from_json_file
+        EOFError from utils.ask_yes_no
         IOError from db_to_repo
+        IOError, ValueError from db_from_json_file
         lock.LockedError, lock.AccessError from lock
     """
     if options.readonly:
@@ -1742,8 +1772,14 @@ def subcmd_db_edit(arguments, options):
             except sumolib.JSON.ParseError, e:
                 print "\nError: file has parse errors:"
                 print str(e)
-                reply= sumolib.utils.ask_yes_no("Re-edit the file (y) or "
-                                                "abort (n) ? ")
+                # may raise EOFError:
+                try:
+                    reply= sumolib.utils.ask_yes_no("Re-edit the file (y) or "
+                                                    "abort (n) ? ")
+                except EOFError as e:
+                    raise annotate("%s. "
+                                   "You may want to use option '--yes' "
+                                   "to prevent this error.", e)
                 if not reply:
                     # "finally" will take care of the lock
                     sys.exit("aborting, your changes are in file %s" % db_tmp)
@@ -1907,13 +1943,13 @@ def subcmd_db_format(arguments, options):
 
     May raise:
         ValueError, IOError, sumolib.JSON.ParseError from db_from_repo
-        IOError from db_to_repo
+        EOFError, IOError from db_to_repo
     """
     sumolib.cli.process_args(arguments, None, options.list, catch_exceptions)
 
     sumolib.cli.assert_options(catch_exceptions,  options, "dbdir")
 
-    # may raise IOError, ValueError, sumolib.JSON.ParseError:
+    # may raise EOFError, IOError, ValueError, sumolib.JSON.ParseError:
     (mngr, db)= db_from_repo(options, keep_locked= True, changes_check= False)
 
     if options.dumpdb:
@@ -1927,7 +1963,8 @@ def subcmd_db_weight(arguments, options):
     """implement "db weight".
 
     May raise:
-        ValueError, IOError, sumolib.JSON.ParseError from db_from_repo
+        EOFError from db_from_repo
+        IOError, ValueError, sumolib.JSON.ParseError from db_from_repo
         IOError from db_to_repo
         ValueError if weight is not an integer
         ValueError from ModuleSpec.Specs.from_strings
@@ -1955,7 +1992,7 @@ def subcmd_db_weight(arguments, options):
                                                     args.MODULES,
                                                     None)
 
-    # may raise IOError, ValueError, sumolib.JSON.ParseError:
+    # may raise EOFError, IOError, ValueError, sumolib.JSON.ParseError:
     (mngr, db)= db_from_repo(options,
                              not options.dumpdb and (not options.dry_run))
 
@@ -1974,9 +2011,10 @@ def subcmd_db_show(arguments, options):
     """implement "db show".
 
     May raise:
-        ValueError, IOError, sumolib.JSON.ParseError from db_from_repo
-        ValueError from ModuleSpec.Specs.from_strings
+        EOFError from db_from_repo
+        IOError, ValueError, sumolib.JSON.ParseError from db_from_repo
         KeyError from partial_copy_by_modulespecs
+        ValueError from ModuleSpec.Specs.from_strings
     """
     sumolib.cli.assert_options(catch_exceptions,  options, "dbdir")
 
@@ -1997,7 +2035,7 @@ def subcmd_db_show(arguments, options):
     if not modulespecs:
         sys.exit("error: module specs missing")
 
-    # may raise IOError, ValueError, sumolib.JSON.ParseError:
+    # may raise EOFError, IOError, ValueError, sumolib.JSON.ParseError:
     (_, db)= db_from_repo(options)
     # may raise ValueError:
     modulespecs_obj= sumolib.ModuleSpec.Specs.from_strings(modulespecs,\
@@ -2018,12 +2056,13 @@ def subcmd_db_check(arguments, options):
     """implement "db check".
 
     May raise:
-        ValueError, IOError, sumolib.JSON.ParseError from db_from_repo
+        EOFError from db_from_repo
+        IOError, ValueError, sumolib.JSON.ParseError from db_from_repo
     """
     sumolib.cli.process_args(arguments, None, options.list, catch_exceptions)
     sumolib.cli.assert_options(catch_exceptions,  options, "dbdir")
 
-    # may raise IOError, ValueError, sumolib.JSON.ParseError:
+    # may raise EOFError, IOError, ValueError, sumolib.JSON.ParseError:
     (_, db)= db_from_repo(options, keep_locked= False, changes_check= False)
 
     msg= db.check()
@@ -2033,8 +2072,9 @@ def subcmd_db_merge(arguments, options):
     """implement "db merge".
 
     May raise:
-        ValueError, IOError, sumolib.JSON.ParseError from db_from_json_file
-        ValueError, IOError, sumolib.JSON.ParseError from db_from_repo
+        EOFError from db_from_repo
+        IOError, ValueError, sumolib.JSON.ParseError from db_from_json_file
+        IOError, ValueError, sumolib.JSON.ParseError from db_from_repo
         IOError from db_to_repo
     """
     argspec= sumolib.cli.CmdSpecs()
@@ -2044,7 +2084,7 @@ def subcmd_db_merge(arguments, options):
 
     sumolib.cli.assert_options(catch_exceptions,  options, "dbdir")
 
-    # may raise IOError, ValueError, sumolib.JSON.ParseError:
+    # may raise EOFError, IOError, ValueError, sumolib.JSON.ParseError:
     (mngr, db)= db_from_repo(options,
                              not options.dumpdb and (not options.dry_run))
     # pylint: disable=no-member
@@ -2062,7 +2102,8 @@ def subcmd_db_alias_add(arguments, options):
     """implement "db alias_add".
 
     May raise:
-        ValueError, IOError, sumolib.JSON.ParseError from db_from_repo
+        EOFError from db_from_repo
+        IOError, ValueError, sumolib.JSON.ParseError from db_from_repo
         IOError from db_to_repo
         ValueError from module_spec.assert_exact
     """
@@ -2081,7 +2122,7 @@ def subcmd_db_alias_add(arguments, options):
     module_spec= sumolib.ModuleSpec.Spec.from_string(args.MODULE)
     # may raise ValueError:
     module_spec.assert_exact()
-    # may raise IOError, ValueError, sumolib.JSON.ParseError:
+    # may raise EOFError, IOError, ValueError, sumolib.JSON.ParseError:
     (mngr, db)= db_from_repo(options,
                              not options.dumpdb and (not options.dry_run))
     db.add_alias(module_spec.modulename,
@@ -2098,7 +2139,8 @@ def subcmd_db_dependency_add(arguments, options):
     """implement "db dependency_add".
 
     May raise:
-        ValueError, IOError, sumolib.JSON.ParseError from db_from_repo
+        EOFError from db_from_repo
+        IOError, ValueError, sumolib.JSON.ParseError from db_from_repo
         IOError from db_to_repo
         ValueError from module_spec.assert_exact
     """
@@ -2114,7 +2156,7 @@ def subcmd_db_dependency_add(arguments, options):
     module_spec= sumolib.ModuleSpec.Spec.from_string(args.MODULE)
     # may raise ValueError:
     module_spec.assert_exact()
-    # may raise IOError, ValueError, sumolib.JSON.ParseError:
+    # may raise EOFError, IOError, ValueError, sumolib.JSON.ParseError:
     (mngr, db)= db_from_repo(options,
                              not options.dumpdb and (not options.dry_run))
     db.add_dependency(module_spec.modulename,
@@ -2131,7 +2173,8 @@ def subcmd_db_dependency_delete(arguments, options):
     """implement "db dependency_delete".
 
     May raise:
-        ValueError, IOError, sumolib.JSON.ParseError from db_from_repo
+        EOFError from db_from_repo
+        IOError, ValueError, sumolib.JSON.ParseError from db_from_repo
         IOError from db_to_repo
         ValueError from module_spec.assert_exact
     """
@@ -2151,7 +2194,7 @@ def subcmd_db_dependency_delete(arguments, options):
         sys.exit("module has no version")
     # may raise ValueError:
     module_spec.assert_exact()
-    # may raise IOError, ValueError, sumolib.JSON.ParseError:
+    # may raise EOFError, IOError, ValueError, sumolib.JSON.ParseError:
     (mngr, db)= db_from_repo(options,
                              not options.dumpdb and (not options.dry_run))
     db.del_dependency(module_spec.modulename,
@@ -2168,6 +2211,7 @@ def subcmd_db_make_recipes(arguments, options):
     """implement "db make-recipes".
 
     May raise:
+        EOFError from db_from_repo
         IOError, ValueError, sumolib.JSON.ParseError from db_from_repo
         IOError from db_to_repo
         ValueError from module_spec.assert_exact
@@ -2192,7 +2236,7 @@ def subcmd_db_make_recipes(arguments, options):
     module_spec= sumolib.ModuleSpec.Spec.from_string(args.MODULE)
     # may raise ValueError:
     module_spec.assert_exact()
-    # may raise IOError, ValueError, sumolib.JSON.ParseError:
+    # may raise EOFError, IOError, ValueError, sumolib.JSON.ParseError:
     (mngr, db)= db_from_repo(options,
                              not options.dumpdb and (not options.dry_run))
     db.set_make_recipes(module_spec.modulename, module_spec.versionname,
@@ -2208,6 +2252,7 @@ def subcmd_db_releasefilename(arguments, options):
     """implement "db releasefilename".
 
     May raise:
+        EOFError from db_from_repo
         IOError, ValueError, sumolib.JSON.ParseError from db_from_repo
         IOError from db_to_repo
         ValueError from module_spec.assert_exact
@@ -2224,7 +2269,7 @@ def subcmd_db_releasefilename(arguments, options):
     module_spec= sumolib.ModuleSpec.Spec.from_string(args.MODULE)
     # may raise ValueError:
     module_spec.assert_exact()
-    # may raise IOError, ValueError, sumolib.JSON.ParseError:
+    # may raise EOFError, IOError, ValueError, sumolib.JSON.ParseError:
     (mngr, db)= db_from_repo(options,
                              not options.dumpdb and (not options.dry_run))
     db.releasefile_name(module_spec.modulename,
@@ -2241,7 +2286,9 @@ def subcmd_db_clone_replace_version(command, arguments, options):
     """implement "db cloneversion/replaceversion".
 
     May raise:
-        ValueError, IOError, sumolib.JSON.ParseError from db_from_repo
+        EOFError, ValueError, IOError, sumolib.JSON.ParseError
+            from db_from_repo
+        EOFError from utils.ask_abort
         IOError from db_to_repo
         KeyError, ValueError from db.patch_version
         ValueError from repos.SourceSpec.from_string_sourcespec
@@ -2262,7 +2309,7 @@ def subcmd_db_clone_replace_version(command, arguments, options):
     modulename= args.MODULE # pylint: disable=no-member
     sourcespec= args.SOURCESPEC # pylint: disable=no-member
 
-    # may raise IOError, ValueError, sumolib.JSON.ParseError:
+    # may raise EOFError, IOError, ValueError, sumolib.JSON.ParseError:
     (mngr, db)= db_from_repo(options,
                              not options.dumpdb and (not options.dry_run))
     # pylint: disable=no-member
@@ -2293,7 +2340,13 @@ def subcmd_db_clone_replace_version(command, arguments, options):
                "identical with that of \n"
                "%s:%s, this is probably not what you want!") % \
                (modulename, args.OLD_VERSION)
-    sumolib.utils.ask_abort("Proceed ? ", options.yes)
+    # may raise EOFError:
+    try:
+        sumolib.utils.ask_abort("Proceed ? ", options.yes)
+    except EOFError as e:
+        raise annotate("%s. "
+                       "You may want to use option '--yes' "
+                       "to prevent this error.", e)
     if options.dumpdb:
         db.json_print()
     else:
@@ -2305,7 +2358,8 @@ def subcmd_db_clonemodule(arguments, options):
     """implement "db clonemodule".
 
     May raise:
-        IOError, ValueError, sumolib.JSON.ParseError from db_from_repo
+        EOFError, IOError, ValueError, sumolib.JSON.ParseError
+            from db_from_repo
         IOError from db_to_repo
     """
     sumolib.cli.assert_options(catch_exceptions,  options, "dbdir")
@@ -2320,7 +2374,7 @@ def subcmd_db_clonemodule(arguments, options):
     args= sumolib.cli.process_args(arguments, argspec, options.list,
                                    catch_exceptions)
 
-    # may raise IOError, ValueError, sumolib.JSON.ParseError:
+    # may raise EOFError, IOError, ValueError, sumolib.JSON.ParseError:
     (mngr, db)= db_from_repo(options,
                              not options.dumpdb and (not options.dry_run))
     # pylint: disable=no-member
@@ -2337,9 +2391,10 @@ def subcmd_db_list(arguments, options):
     """implement "db list".
 
     May raise:
-        ValueError, IOError, sumolib.JSON.ParseError from db_from_repo
-        ValueError from ModuleSpec.Specs.from_strings
+        EOFError, IOError, ValueError, sumolib.JSON.ParseError
+            from db_from_repo
         KeyError id module is not found in dependency database
+        ValueError from ModuleSpec.Specs.from_strings
     """
     sumolib.cli.assert_options(catch_exceptions,  options, "dbdir")
 
@@ -2349,7 +2404,7 @@ def subcmd_db_list(arguments, options):
     args= sumolib.cli.process_args(arguments, argspec, options.list,
                                    catch_exceptions)
 
-    # may raise IOError, ValueError, sumolib.JSON.ParseError:
+    # may raise EOFError, IOError, ValueError, sumolib.JSON.ParseError:
     (_, db)= db_from_repo(options)
     # NOTE: option "--modules" is NOT used here
     if not args.defined("MODULES"):
@@ -2392,7 +2447,8 @@ def subcmd_db_find(arguments, options):
     """implement "db find".
 
     May raise:
-        IOError, ValueError, sumolib.JSON.ParseError from db_from_repo
+        EOFError, IOError, ValueError, sumolib.JSON.ParseError
+            from db_from_repo
     """
     argspec= sumolib.cli.CmdSpecs()
     argspec.add("REGEXP")
@@ -2400,7 +2456,7 @@ def subcmd_db_find(arguments, options):
                                    catch_exceptions)
 
     sumolib.cli.assert_options(catch_exceptions,  options, "dbdir")
-    # may raise IOError, ValueError, sumolib.JSON.ParseError:
+    # may raise EOFError, IOError, ValueError, sumolib.JSON.ParseError:
     (_, db)= db_from_repo(options)
     if options.noignorecase:
         rx_flags= 0
@@ -2463,6 +2519,7 @@ def subcmd_build_state(arguments, options):
     """implement "subcmd_build_state".
 
     May raise:
+        EOFError from utils.ask_abort
         ValueError, IOError from builddb_from_json_file
         ValueError from builddb.change_state
     """
@@ -2507,9 +2564,15 @@ def subcmd_build_state(arguments, options):
             if builds:
                 print "The following builds depend on build %s:" % buildtag
                 print " ".join(sorted(builds))
-                sumolib.utils.ask_abort("Disabling %s would also disable "
-                                        "these.\nProceed ? " % buildtag,
-                                        options.yes or options.recursive)
+                # may raise EOFError:
+                try:
+                    sumolib.utils.ask_abort("Disabling %s would also disable "
+                                            "these.\nProceed ? " % buildtag,
+                                            options.yes or options.recursive)
+                except EOFError as e:
+                    raise annotate("%s. "
+                                   "You may want to use option '--yes' "
+                                   "to prevent this error.", e)
             builds.add(buildtag)
 
         for b in builds:
@@ -2525,7 +2588,7 @@ def subcmd_build_delete(arguments, options):
 
     May raise:
         ValueError, IOError from builddb_from_json_file
-        ValueError from delete_build
+        EOFError, ValueError from delete_build
     """
     sumolib.cli.assert_options(catch_exceptions,  options, "builddir")
     argspec= sumolib.cli.CmdSpecs()
@@ -2546,7 +2609,7 @@ def subcmd_build_delete(arguments, options):
     # pylint: enable=no-member
     # modifies builddb and deletes directories:
     # pylint: disable=no-member
-    # may raise ValueError:
+    # may raise EOFError, ValueError:
     delete_build(builddb, args.BUILDTAGS,
                  options.recursive,
                  options.verbose, options.dry_run)
@@ -2556,7 +2619,8 @@ def subcmd_build_try(arguments, options):
     """implement "subcmd_build_try".
 
     May raise:
-        ValueError, IOError, sumolib.JSON.ParseError from db_from_repo
+        EOFError, ValueError, IOError, sumolib.JSON.ParseError
+            from db_from_repo
         ValueError, IOError from builddb_from_json_file
         ValueError, IOError from init_buildcache
         ValueError from ModuleSpec.Specs.from_strings
@@ -2604,7 +2668,7 @@ def subcmd_build_try(arguments, options):
         dump_modules(modulespecs_obj)
         sys.exit(0)
 
-    # may raise IOError, ValueError, sumolib.JSON.ParseError:
+    # may raise EOFError, IOError, ValueError, sumolib.JSON.ParseError:
     (_, db)= db_from_repo(options)
     # may raise IOError, ValueError:
     builddb= builddb_from_json_file(options.builddir,
@@ -2820,8 +2884,9 @@ def subcmd_build_new(arguments, options):
     """implement "subcmd_build_new".
 
     May raise:
-        ValueError, IOError, sumolib.JSON.ParseError from db_from_repo
-        ValueError, IOError from builddb_from_json_file
+        EOFError, IOError, ValueError, umolib.JSON.ParseError
+            from db_from_repo
+        IOError, ValueError, from builddb_from_json_file
         ValueError from ModuleSpec.Specs.from_strings
         ValueError from modulespecs_obj.to_dist_dict
         KeyError, ValueError from db.assert_complete_modulelist
@@ -2855,7 +2920,7 @@ def subcmd_build_new(arguments, options):
     if not modulespecs:
         sys.exit("error: module specs missing")
 
-    # may raise IOError, ValueError, sumolib.JSON.ParseError:
+    # may raise EOFError, IOError, ValueError, sumolib.JSON.ParseError:
     (_, db)= db_from_repo(options)
 
     # mspecs_from_build may raise AssertionError, ValueError:
@@ -2984,11 +3049,12 @@ def subcmd_build_use(arguments, options):
     """implement "subcmd_build_use".
 
     May raise:
-        ValueError, IOError, sumolib.JSON.ParseError from db_from_repo
+        EOFError, IOError, ValueError, sumolib.JSON.ParseError
+            from db_from_repo
+        KeyError from db.assert_complete_modulelist
         ValueError, IOError from builddb_from_json_file
         ValueError from ModuleSpec.Specs.from_strings
         ValueError from modulespecs_obj.to_dist_dict
-        KeyError from db.assert_complete_modulelist
     """
     # pylint: disable=too-many-branches
     # pylint: disable=too-many-statements
@@ -3029,8 +3095,7 @@ def subcmd_build_use(arguments, options):
         # unspecifed build_tag, look if the module list is complete:
         # may raise ValueError:
         dist_dict= modulespecs_obj.to_dist_dict()
-        # may raise ValueError, IOError or
-        # sumolib.JSON.ParseError:
+        # may raise EOFError, ValueError, IOError, sumolib.JSON.ParseError:
         (_, db)= db_from_repo(options)
         try:
             # may raise KeyError, ValueError:
@@ -3044,7 +3109,7 @@ def subcmd_build_use(arguments, options):
         _assume_dir("configure", options.dry_run)
         output= os.path.join("configure","RELEASE")
 
-    # may raise IOError, ValueError, sumolib.JSON.ParseError:
+    # may raise EOFError, IOError, ValueError, sumolib.JSON.ParseError:
     (_, db)= db_from_repo(options)
     # may raise IOError, ValueError:
     builddb= builddb_from_json_file(options.builddir,
@@ -3074,8 +3139,8 @@ def maincmd_config(commands, options):
     """implement "config" maincommand.
 
     May raise:
-        ValueError, IOError, TypeError from subcmd_config_list
-        ValueError, IOError, TypeError from subcmd_config_standalone
+        IOError, TypeError, ValueError from subcmd_config_list
+        EOFError, IOError, TypeError, ValueError from subcmd_config_standalone
     """
     # pylint: disable=R0911
     #                          Too many return statements
@@ -3093,14 +3158,15 @@ def maincmd_config(commands, options):
         return
 
     if cmd=="make" or cmd=="show":
-        # may raise IOError, TypeError, ValueError:
+        # may raise EOFError, IOError, TypeError, ValueError:
         subcmd_config_make_show(cmd, c_args, options)
         return
     if cmd=="standalone":
-        # may raise IOError, TypeError, ValueError:
+        # may raise EOFError, IOError, TypeError, ValueError:
         subcmd_config_standalone(c_args, options)
         return
     if cmd=="local":
+        # may raise EOFError, IOError, TypeError, ValueError:
         subcmd_config_local(c_args, options)
         return
 
@@ -3166,8 +3232,8 @@ def maincmd_db(commands, options):
                                            options.list)
 
     if cmd=="edit":
-        # may raise ValueError, IOError,
-        # lock.LockedError, lock.AccessError:
+        # may raise EOFError, ValueError, IOError,
+        #     lock.LockedError, lock.AccessError:
         subcmd_db_edit(c_args, options)
         return
 
@@ -3236,7 +3302,8 @@ def maincmd_db(commands, options):
         return
 
     if cmd=="cloneversion" or cmd=="replaceversion":
-        # may raise IOError, KeyError, ValueError, sumolib.JSON.ParseError:
+        # may raise EOFError, IOError, KeyError, ValueError,
+        #     sumolib.JSON.ParseError:
         subcmd_db_clone_replace_version(cmd, c_args, options)
         return
 
@@ -3299,7 +3366,7 @@ def maincmd_build(commands, options):
         return
 
     if cmd=="state":
-        # may raise IOError, ValueError
+        # may raise EOFError, IOError, ValueError
         subcmd_build_state(c_args, options)
         return
 

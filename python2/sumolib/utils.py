@@ -43,12 +43,18 @@ def ask_from_options(question, options):
     """ask a yes or no question.
 
     returns the selected option
+
+    May raise:
+        EOFError if stdin has EOF while waiting for input
     """
     if not isinstance(options, list):
         raise TypeError("wrong type: %s" % repr(options))
     question+= " "
     while True:
-        inp= raw_input(question).strip()
+        try:
+            inp= raw_input(question).strip()
+        except EOFError as _:
+            raise EOFError("EOF while waiting for input")
         if inp in options:
             return inp
         # not found
@@ -61,13 +67,19 @@ def ask_yes_no(question, force_yes= None):
     returns:
       True  - if the user answered "yes" or "y"
       False - if the user answered "no" or "n"
+
+    May raise:
+        EOFError if stdin has EOF while waiting for input
     """
     if force_yes is not None:
         if force_yes:
             return True
     question+= " "
     while True:
-        inp= raw_input(question).lower().strip()
+        try:
+            inp= raw_input(question).lower().strip()
+        except EOFError as _:
+            raise EOFError("EOF while waiting for input")
         if inp in ["yes","y"]:
             return True
         if inp in ["no", "n"]:
@@ -79,6 +91,9 @@ def ask_abort(question, force_yes= None):
     """ask if the user wants to abort the program.
 
     Aborts the program if the user enters "y".
+
+    May raise:
+        EOFError from ask_yes_no()
     """
     if force_yes is not None:
         if force_yes:
