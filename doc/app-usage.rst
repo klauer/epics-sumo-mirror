@@ -215,7 +215,10 @@ Makefile for BL-002
 
 This is the generated makefile for build BL-002::
 
+  .PHONY: all clean config distclean
   all: ALARM/R3-9+BL-002/stamp-all MCAN/R2-6-3-2+BL-002/stamp-all
+  
+  config: ALARM/R3-9+BL-002/stamp-config MCAN/R2-6-3-2+BL-002/stamp-config
   
   clean: ALARM/R3-9+BL-002/stamp-clean MCAN/R2-6-3-2+BL-002/stamp-clean
   
@@ -226,6 +229,10 @@ This is the generated makefile for build BL-002::
   
   %/stamp-all:
   	$(MAKE) -C $(@D)
+  	rm -f $(@D)/stamp-*
+  	touch $@
+  
+  %/stamp-config:
   	rm -f $(@D)/stamp-*
   	touch $@
   

@@ -106,6 +106,50 @@ def env_expand(st):
         return st
     return os.path.expandvars(st.replace(r'\$',"$ ")).replace("$ ","$")
 
+rx_var= re.compile(r'(?<!\\)\$([A-Za-z_]\w*)')
+rx_var2= re.compile(r'(?<!\\)\$\{([A-Za-z_]\w*)\}')
+
+def string_interpolate(st, variables):
+    r"""Interpolate '$VAR' or '${VAR} in a string.
+
+    The variables are given in the form of a dictionary.
+
+    Here are some examples:
+    >>> string_interpolate("$ab c${ab}d x$cd$ef", {"ab":"AB","cd":"CD"})
+    'AB cABd xCD$ef'
+    >>> string_interpolate("ab cd", {"ab":"AB","cd":"CD"})
+    'ab cd'
+    >>> string_interpolate("ab $ab \$ab cd", {"ab":"AB","cd":"CD"})
+    'ab AB \\$ab cd'
+    >>> print(string_interpolate("ab $ab \$ab cd", {"ab":"AB","cd":"CD"}))
+    ab AB \$ab cd
+    """
+    result= None
+    if '$' not in st:
+        return st
+    for r in (rx_var2, rx_var):
+        result= []
+        while True:
+            m= r.search(st)
+            if m is None:
+                result.append(st)
+                break
+            v= variables.get(m.group(1))
+            if v is None:
+                result.append(st[0:m.end()])
+            else:
+                if m.start()>0:
+                    result.append(st[0:m.start()])
+                result.append(v)
+            st= st[m.end():]
+            if not st:
+                break
+        st= "".join(result)
+    return st
+
+
+
+
 
 def opt_join(option, do_sort= False):
     """join command line option values to a single list.
@@ -173,6 +217,14 @@ def file_write(fh, st, verbose, dry_run):
         print(st, end='')
     if not dry_run:
         fh.write(st)
+
+def file_writelines_n(fh, lines, verbose, dry_run):
+    """write lines to a file, append "\n" to each line."""
+    l= [s+"\n" for s in lines]
+    if verbose:
+        print("".join(l))
+    if not dry_run:
+        fh.writelines(l)
 
 def mk_text_file(filename, lines, verbose, dry_run):
     """create a text file."""

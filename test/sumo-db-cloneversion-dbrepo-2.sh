@@ -85,7 +85,7 @@ echo "Logs of local repository:"
 echo "-------------------------------------------"
 cd local-cvs >/dev/null
 cvs log 2>/dev/null | sed -e "s#$PWD_REAL##;s#$PWD_NICE##;s/\(date:\) [^;]\+/\1 $DDATE/;s/\(author:\) [^;]\+;/\1 $DUSR/;s/  commitid.*//;s/;$//"
-cd .. /dev/null
+cd .. > /dev/null
 echo
 echo "Logs of central repository:"
 echo "--> With cvs the central repository has ALWAYS"

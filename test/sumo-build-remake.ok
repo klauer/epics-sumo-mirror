@@ -4,7 +4,7 @@ creating build with tag 'MYAPP-001'
 
 
 call sumo build remake
-> make  -C /tmp-sumo-build-remake -f /tmp-sumo-build-remake/Makefile-MYAPP-001 distclean
+> make  -C /tmp-sumo-build-remake -f /tmp-sumo-build-remake/Makefile-MYAPP-001 clean
 > make  -C /tmp-sumo-build-remake -f /tmp-sumo-build-remake/Makefile-MYAPP-001 all
 
 directory tree (without darcs, maxdepth 2)
@@ -87,7 +87,10 @@ content of BUILDS
 }
 
 content of Makefile-BASE-001
+.PHONY: all clean config distclean
 all: BASE/R3-14-12-2-1+BASE-001/stamp-all
+
+config: BASE/R3-14-12-2-1+BASE-001/stamp-config
 
 clean: BASE/R3-14-12-2-1+BASE-001/stamp-clean
 
@@ -97,6 +100,10 @@ distclean: BASE/R3-14-12-2-1+BASE-001/stamp-distclean
 %/stamp-all:
 	rm -f $(@D)/stamp-*
 	$(MAKE) -C $(@D)
+	touch $@
+
+%/stamp-config:
+	rm -f $(@D)/stamp-*
 	touch $@
 
 %/stamp-clean:
@@ -110,7 +117,10 @@ distclean: BASE/R3-14-12-2-1+BASE-001/stamp-distclean
 	touch $@
 
 content of Makefile-MYAPP-001
+.PHONY: all clean config distclean
 all: ALARM/R3-7+MYAPP-001/stamp-all BASE/R3-14-12-2-1+MYAPP-001/stamp-all BSPDEP_CPUBOARDINIT/R4-1+MYAPP-001/stamp-all BSPDEP_TIMER/R6-2+MYAPP-001/stamp-all BSPDEP_VMETAS/TAGLESS-2-1-modified+MYAPP-001/stamp-all EK/R2-2+MYAPP-001/stamp-all MISC_DBC/PATH-3-0+MYAPP-001/stamp-all MISC_DEBUGMSG/R3-0+MYAPP-001/stamp-all
+
+config: ALARM/R3-7+MYAPP-001/stamp-config BASE/R3-14-12-2-1+MYAPP-001/stamp-config BSPDEP_CPUBOARDINIT/R4-1+MYAPP-001/stamp-config BSPDEP_TIMER/R6-2+MYAPP-001/stamp-config BSPDEP_VMETAS/TAGLESS-2-1-modified+MYAPP-001/stamp-config EK/R2-2+MYAPP-001/stamp-config MISC_DBC/PATH-3-0+MYAPP-001/stamp-config MISC_DEBUGMSG/R3-0+MYAPP-001/stamp-config
 
 clean: ALARM/R3-7+MYAPP-001/stamp-clean BASE/R3-14-12-2-1+MYAPP-001/stamp-clean BSPDEP_CPUBOARDINIT/R4-1+MYAPP-001/stamp-clean BSPDEP_TIMER/R6-2+MYAPP-001/stamp-clean BSPDEP_VMETAS/TAGLESS-2-1-modified+MYAPP-001/stamp-clean EK/R2-2+MYAPP-001/stamp-clean MISC_DBC/PATH-3-0+MYAPP-001/stamp-clean MISC_DEBUGMSG/R3-0+MYAPP-001/stamp-clean
 
@@ -134,6 +144,10 @@ MISC_DEBUGMSG/R3-0+MYAPP-001/stamp-all: BASE/R3-14-12-2-1+MYAPP-001/stamp-all
 %/stamp-all:
 	rm -f $(@D)/stamp-*
 	$(MAKE) -C $(@D)
+	touch $@
+
+%/stamp-config:
+	rm -f $(@D)/stamp-*
 	touch $@
 
 %/stamp-clean:

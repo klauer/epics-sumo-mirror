@@ -96,7 +96,10 @@ content of BUILDS.DB:
 }
 
 content of Makefile-MYAPP-002
+.PHONY: all clean config distclean
 all: ALARM/R3-7+MYAPP-002/stamp-all MCAN/R2-6-3-gp+MYAPP-002/stamp-all
+
+config: ALARM/R3-7+MYAPP-002/stamp-config MCAN/R2-6-3-gp+MYAPP-002/stamp-config
 
 clean: ALARM/R3-7+MYAPP-002/stamp-clean MCAN/R2-6-3-gp+MYAPP-002/stamp-clean
 
@@ -108,6 +111,10 @@ MCAN/R2-6-3-gp+MYAPP-002/stamp-all: ALARM/R3-7+MYAPP-002/stamp-all
 %/stamp-all:
 	rm -f $(@D)/stamp-*
 	$(MAKE) -C $(@D)
+	touch $@
+
+%/stamp-config:
+	rm -f $(@D)/stamp-*
 	touch $@
 
 %/stamp-clean:
