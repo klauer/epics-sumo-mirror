@@ -45,3 +45,4 @@
 
 # distribution directory:
 ^dist/
+^dist-bitbucket
