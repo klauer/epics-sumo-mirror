@@ -257,7 +257,9 @@ class Repo(object):
         cmd_l.append(url)
         cmd_l.append(destdir)
         cmd= " ".join(cmd_l)
-        sumolib.system.system(cmd, False, False, verbose, dry_run)
+        # suppress stdout in the follwing command since darcs sometimes prints
+        # the message "Going to specified version":
+        sumolib.system.system(cmd, True, False, verbose, dry_run)
     def commit(self, logmessage):
         """commit changes."""
         if not logmessage:
