@@ -47,6 +47,15 @@ sourceforge-upload-distfiles.sh : upload files from "dist" directory to
 sourceforge-upload-html.sh      : upload html documentation to sourceforge
 
 -----------------------------
+Bitbucket administration:
+
+bitbucket-push.sh               : push patches to mercurial repository at
+                                  Bitbucket
+bitbucket-upload-html.sh        : transfer documentation to my Bitbucket 
+                                  documentation repository
+bitbucket-prepare-distfiles.sh  : prepare upload of distfiles to Bitbucket
+                                  requires still some actions in firefox
+-----------------------------
 Version handling:
 
 check-version.sh    : check if version numbers are consistent

@@ -39,11 +39,10 @@ what debian version you use enter::
 
   lsb_release -r
 
-Simply download the debian package from 
+Download the package here:
 
-* `debian 7 packages <https://sourceforge.net/projects/epics-sumo/files/debian-7>`_
-* `debian 8 packages <https://sourceforge.net/projects/epics-sumo/files/debian-8>`_
-* `debian 9 packages <https://sourceforge.net/projects/epics-sumo/files/debian-9>`_
+* `sumo downloads at Bitbucket <https://bitbucket.org/goetzpf/epics-sumo/downloads>`_
+* `mirror of sumo downloads at Sourceforge <https://sourceforge.net/projects/epics-sumo/files/?source=navbar>`_
 
 and install with::
 
@@ -64,11 +63,10 @@ fedora version you use enter::
 
   lsb_release -r
 
-Simply download the rpm package from 
+Download the package here:
 
-* `fedora 25 packages <https://sourceforge.net/projects/epics-sumo/files/fedora-21>`_
-* `fedora 26 packages <https://sourceforge.net/projects/epics-sumo/files/fedora-22>`_
-* `fedora 27 packages <https://sourceforge.net/projects/epics-sumo/files/fedora-23>`_
+* `sumo downloads at Bitbucket <https://bitbucket.org/goetzpf/epics-sumo/downloads>`_
+* `mirror of sumo downloads at Sourceforge <https://sourceforge.net/projects/epics-sumo/files/?source=navbar>`_
 
 and install with::
 
@@ -84,9 +82,10 @@ Note that you have to *configure* sumo after installing it, see
 Install from source (tar.gz or zip file)
 ++++++++++++++++++++++++++++++++++++++++
 
-In this case download the package from 
+Download the file here:
 
- `sumo download page <https://sourceforge.net/projects/epics-sumo/files/?source=navbar>`_
+* `sumo downloads at Bitbucket <https://bitbucket.org/goetzpf/epics-sumo/downloads>`_
+* `mirror of sumo downloads at Sourceforge <https://sourceforge.net/projects/epics-sumo/files/?source=navbar>`_
 
 unpack the tar.gz file with::
 

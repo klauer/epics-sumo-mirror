@@ -83,24 +83,17 @@ Full list of documents
 License and copyright
 =====================
 
-Copyright (c) 2015 by `Helmholtz-Zentrum Berlin <https://www.helmholtz-berlin.de>`_.
+Copyright (c) 2018 by `Helmholtz-Zentrum Berlin <https://www.helmholtz-berlin.de>`_.
 
 This software of this project can be used under GPL v.3, see :doc:`license`.
 
 Download
 ========
 
-Sumo is available as a debian or rpm package, as tar.gz or zip file:
+Sumo is available as a debian or rpm package, as tar.gz or zip here:
 
-* `sumo download page <https://sourceforge.net/projects/epics-sumo/files/?source=navbar>`_
-* `debian 7 packages <https://sourceforge.net/projects/epics-sumo/files/debian-7>`_
-* `debian 8 packages <https://sourceforge.net/projects/epics-sumo/files/debian-8>`_
-* `debian 9 packages <https://sourceforge.net/projects/epics-sumo/files/debian-9>`_
-* `fedora 25 packages <https://sourceforge.net/projects/epics-sumo/files/fedora-21>`_
-* `fedora 26 packages <https://sourceforge.net/projects/epics-sumo/files/fedora-22>`_
-* `fedora 27 packages <https://sourceforge.net/projects/epics-sumo/files/fedora-23>`_
-* `latest version, tar.gz file <http://downloads.sourceforge.net/project/epics-sumo/sumo.tar.gz>`_
-* `latest version, zip file <http://downloads.sourceforge.net/project/epics-sumo/sumo.zip>`_
+* `sumo downloads at Bitbucket <https://bitbucket.org/goetzpf/epics-sumo/downloads>`_
+* `mirror of sumo downloads at Sourceforge <https://sourceforge.net/projects/epics-sumo/files/?source=navbar>`_
 
 Install
 =======
@@ -110,20 +103,34 @@ from source.
 
 For details on how to install sumo see :doc:`sumo-install`.
 
-Sumo at sourceforge
-===================
+Sumo at Bitbucket
+=================
+
+You find the Bitbucket summary page for sumo at
+`epics-sumo at Bitbucket <https://bitbucket.org/goetzpf/epics-sumo/src/default>`_.
+
+Sumo at sourceforge (mirror)
+============================
 
 You find the sourceforge summary page for sumo at
-`EPICS-sumo <https://sourceforge.net/projects/epics-sumo>`_.
-
+`epics-sumo at Sourceforge <https://sourceforge.net/projects/epics-sumo>`_.
 
 The source
 ==========
 
-In order to browse the mercurial repository click on
-`repository <https://sourceforge.net/p/epics-sumo/mercurial/ci/default/tree/>`_.
+You can browse the mercurial repository here:
 
-or clone it with this command::
+`repository at Bitbucket <https://bitbucket.org/goetzpf/epics-sumo/src/default>`_.
+
+`repository at Sourceforge (mirror) <https://sourceforge.net/p/epics-sumo/mercurial/ci/default/tree/>`_.
+
+or clone it with this command:
+
+Bitbucket::
+
+  hg clone https://hg@bitbucket.org/goetzpf/epics-sumo
+
+Sourceforge (mirror)::
 
   hg clone ssh://goetzpf@hg.code.sf.net/p/epics-sumo/mercurial sumo
 
