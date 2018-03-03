@@ -270,6 +270,13 @@ class Container(object):
             self.lock= None
     def __del__(self):
         """object destructor."""
+        # When a derived class raises an exception *before* __init__ of *this*
+        # class is called, the object is not properly constructed. Nevertheless
+        # python will call the __del__() method. self.unlock_file() will then
+        # fail. We handle this by testing first if the attribute "dict_"
+        # exists. Only if this exists, self.unlock_file() is called.
+        if getattr(self, "dict_", None) is None:
+            return
         self.unlock_file()
     def datadict(self):
         """return the internal dict."""
