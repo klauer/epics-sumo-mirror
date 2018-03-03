@@ -402,13 +402,21 @@ def db_from_repo(options, keep_locked= False, changes_check= True,
             if reply=="a":
                 sys.exit(1)
             if reply=="y":
-                # an empty logmessage here means that the user is asked for one:
+                db_file= db_f(options.dbdir)
+                mylock= sumolib.lock.MyLock(db_file)
+                # may raise sumolib.lock.LockedError,
+                # sumolib.lock.AccessError:
+                mylock.lock()
                 try:
+                    # may raise ValueError, IOError
+                    # or sumolib.JSON.ParseError:
+                    db= db_from_json_file(db_file, use_lock= False)
+                    # the version control system should prompt for a log message if
+                    # none was given with --logmsg:
                     # may raise IOError:
-                    mngr.commit(options.logmsg)
-                except IOError as e:
-                    raise annotate("Error while committing dependency "
-                                   "database: %s" , e)
+                    db_to_repo(options, mngr, db, None, None)
+                finally:
+                    mylock.unlock()
 
     try:
         # may raise IOError:
@@ -3760,9 +3768,8 @@ def main():
 
     parse the command-line options and perform the command
     """
+    # pylint: disable=too-many-statements
     # command-line options and command-line help:
-    # pylint: disable=R0915
-    #                          Too many statements
 
     specs= sumolib.cli.OptionSpecs()
     specs.completion_options("list", "--list", "--listnew")
