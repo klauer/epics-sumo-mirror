@@ -1,5 +1,11 @@
 #!/bin/bash
+
+APPLICATION=sumo
+
 set -e
+
+TOP=$(readlink -e $(dirname $0))
+cd $TOP
 
 if [ -e /root/dist ]; then
     # we are probably running within a docker container
@@ -10,11 +16,11 @@ fi
 
 if [ $docker = "yes" ]; then
     cd ../..
-    echo "copying sumo dir into container..."
+    echo "copying $APPLICATION dir into container..."
     # do not stop the script here if e.g. an editor swap file couldn't be
     # copied:
-    cp -dR --preserve=mode,timestamps sumo mysumo || true
-    cd mysumo
+    cp -dR --preserve=mode,timestamps $APPLICATION my$APPLICATION || true
+    cd my$APPLICATION
     rm -rf dist
 else
     cd ..

@@ -1,5 +1,7 @@
 #!/bin/bash
 
+APPLICATION=sumo
+
 if [ -z "$1" -o "$1" = "-h" ]; then
     me=`basename $0`
     echo "$me : create a docker container"
@@ -12,7 +14,7 @@ fi
 
 DOCKERFILE="$1"
 
-DOCKERIMAGE=hzb/sumo-builder-$DOCKERFILE
+DOCKERIMAGE=hzb/$APPLICATION-builder-$DOCKERFILE
 
 if [ ! -e docker/$DOCKERFILE ]; then
     echo "error, debian version $DEBIANVERSION not supported"

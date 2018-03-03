@@ -1,101 +1,189 @@
-Here are some scripts that I use to administer the project.
+sumo administration scripts
+===========================
 
-Steps to create a new release
------------------------------
+How to create a new release
+---------------------------
 
-Display the current version:
+Create a new version
+++++++++++++++++++++
+
+Show the current version with this command::
 
   ./show-version.sh
 
-Now make up a new version number <VERSION>.
+Make up a new version VERSION and create it with::
 
-Set up the new version:
+  ./new-version.sh <VERSION>
 
-./new-version.sh <VERSION>
-./doc-rebuild.sh
-./cleanup-distdirs.sh
-./mk-dist.sh
+Rebuild documentation
++++++++++++++++++++++
 
-Steps to push all patches to the central repository:
+Enter this command::
 
-hg qcommit -m backup
-hg qfinish -a
-hg tag <VERSION>
-hg push
+  ./doc-rebuild.sh
 
-=============================
+Create tar.gz distribution files
+++++++++++++++++++++++++++++++++
 
-Explanation of scripts:
+Enter these commands::
 
+  ./cleanup-distdirs.sh
+  ./mk-dist.sh
 
------------------------------
-Patch the python interpreter in scripts to "python2.5", only needed on our
-development host aragon here at the hzb:
+Create docker images
+++++++++++++++++++++
 
-patch-python-2.5.sh     : patch interpreter to "python2.5"
-unpatch-python-2.5.sh   : patch interpreter to "python"
+Check if the docker images for sumo exist::
 
------------------------------
-Sourceforge administration:
+  docker images | grep sumo
 
-sourceforge-push.sh             : push patches to mercurial repository at
-                                  sourceforge
-sourceforge-shell.sh            : open an interactive shell at sourceforge
-sourceforge-upload-distfiles.sh : upload files from "dist" directory to 
-                                  sourceforge
-sourceforge-upload-html.sh      : upload html documentation to sourceforge
+If you see nothing, create the images with::
 
------------------------------
-Bitbucket administration:
+  ./docker-build-all.sh
 
-bitbucket-push.sh               : push patches to mercurial repository at
-                                  Bitbucket
-bitbucket-upload-html.sh        : transfer documentation to my Bitbucket 
-                                  documentation repository
-bitbucket-prepare-distfiles.sh  : prepare upload of distfiles to Bitbucket
-                                  requires still some actions in firefox
------------------------------
-Version handling:
+Now create all sumo packages with::
 
-check-version.sh    : check if version numbers are consistent
-show-version.sh     : show version numbers in all scripts and modules
-new-version.sh      : create a new version (see "Steps to create a new release"
-                      in this file)
------------------------------
-Documentation:
+  ./docker-run-all.sh
 
-doc-rebuild.sh      : rebuild the html documentation
+Upload files to sourceforge
++++++++++++++++++++++++++++
 
------------------------------
-Create distribution files:
+Upload the documentation with::
 
-mk-dist.sh          : create distribution (*.tar.gz) files
-cleanup-distdirs.sh : clean the distribution directory
-mk-rpm.sh           : create an rpm file (works only on a fedora system)
-mk-deb.sh           : create a debian file, should be used on a debian system
-                      or a debian docker container.
+  ./sourceforge-upload-html.sh
 
------------------------------
-Docker support:
+Upload the distribution files with::
 
-docker          : the directory with the docker files
-docker-build.sh : build docker debian containers needed for mk-xxx.sh scripts
-                  run this as docker-build.sh <system-name>
-                  with system-name one of:
-                    debian-7 debian-8 fedora-21 fedora-22
-docker-run.sh   : run a docker container
-                  run this as docker-run.sh <system-name>
-                  with system-name one of:
-                    debian-7 debian-8 fedora-21 fedora-22
-                  within docker execute one of the commands shown on the
-                  console
-mk-deb.sh       : create debian packages, should be run from within the
-                  debian docker container
-mk-rpm.sh       : create rpm packages, should be run from within the
-                  debian docker container
+  ./sourceforge-upload-distfiles.sh
 
------------------------------
-2to3.sh                : experimental script to convert to python3
+Upload files to bitbucket
++++++++++++++++++++++++++
 
------------------------------
-redirect.html          : html redirection file for the old webserver
+Upload the documentation with::
+
+  ./bitbucket-upload-html.sh
+
+Upload the distribution files with::
+
+  ./bitbucket-prepare-distfiles.sh
+
+You then have to do the actual uploading in a web browser.
+
+Prepare the local repository
+++++++++++++++++++++++++++++
+
+Use these commands to change mq patches to regular mercurial patches::
+
+  hg qcommit -m backup
+  hg qfinish -a
+
+Give a tag::
+
+  hg tag <VERSION>
+
+upload the repository to sourceforge
+++++++++++++++++++++++++++++++++++++
+
+Push all patches to the central sourceforge repository::
+
+  ./sourceforge-push.sh
+
+upload the repository to bitbucket
+++++++++++++++++++++++++++++++++++
+
+Enter this command::
+
+  ./bitbucket-push.sh
+
+Explanation of scripts
+----------------------
+
+Sourceforge administration
+++++++++++++++++++++++++++
+
+sourceforge-shell.sh
+  Open an interactive shell at sourceforge.
+
+sourceforge-upload-distfiles.sh
+  Upload files from "dist" directory to sourceforge.
+
+sourceforge-upload-html.sh
+  Upload html documentation to sourceforge.
+
+Bitbucket administration
+++++++++++++++++++++++++
+
+bitbucket-push.sh
+  Push patches to mercurial repository at Bitbucket.
+
+bitbucket-transfer-html.sh
+  Transfer documentation to my Bitbucket documentation repository.
+
+bitbucket-upload-distfiles.sh
+  Prepare upload of distfiles to Bitbucket requires still some actions in
+  firefox.
+
+bitbucket-web-checkout.sh
+  Checkout bitbucket website repo.
+
+Version handling
+++++++++++++++++
+
+check-version.sh
+  Check if version numbers are consistent.
+
+show-version.sh
+  Show version numbers in all scripts and modules.
+
+new-version.sh
+  Create a new version (see "Steps to create a new release" in this file).
+
+Documentation
++++++++++++++
+
+doc-rebuild.sh
+  Rebuild the html documentation
+
+Create distribution files
++++++++++++++++++++++++++
+
+mk-dist.sh
+  Create distribution (*.tar.gz) files
+
+cleanup-distdirs.sh
+  Clean the distribution directory
+
+mk-rpm.sh
+  Create an rpm file (works only on a fedora system)
+
+mk-deb.sh
+  Create a debian file, should be used on a debian system or a debian docker
+  container.
+
+Docker support
+++++++++++++++
+
+docker          
+  The directory with the docker files
+
+docker-build.sh
+  Build docker debian containers needed for mk-xxx.sh scripts run this as
+  docker-build.sh <system-name> with system-name one of: debian-7 debian-8
+  fedora-21 fedora-22
+
+docker-build-all.sh 
+  Build docker containers for all supported linux systems.
+
+docker-run.sh
+  Run a docker container run this as docker-run.sh <system-name> with
+  system-name one of: debian-7 debian-8 fedora-21 fedora-22
+
+docker-run-all.sh
+  Build packages for all supported linux systems.
+
+mk-deb.sh
+  Create debian packages, called from within the debian docker container.
+
+mk-rpm.sh
+  Create rpm packages, called from within the fedora docker container.
+
