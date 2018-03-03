@@ -124,15 +124,21 @@ Test of darcs:
 
 Logs of local repository:
 -------------------------------------------
-Mon Jan 01 01:01:01 2014 +0100  Homer.Simpson@burns.com
+patch ffffffffffff
+Author: Homer.Simpson@burns.com
+Date:   Mon Jan 01 01:01:01 2014 +0100
   * cloneversion ALARM R3-7 R3-8-1
 
-Mon Jan 01 01:01:01 2014 +0100  Homer.Simpson@burns.com
+patch ffffffffffff
+Author: Homer.Simpson@burns.com
+Date:   Mon Jan 01 01:01:01 2014 +0100
   * initial record
 
 Logs of central repository:
 -------------------------------------------
-Mon Jan 01 01:01:01 2014 +0100  Homer.Simpson@burns.com
+patch ffffffffffff
+Author: Homer.Simpson@burns.com
+Date:   Mon Jan 01 01:01:01 2014 +0100
   * initial record
 
 ===========================================
