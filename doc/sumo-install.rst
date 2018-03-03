@@ -34,10 +34,10 @@ sumo has to be installed depends on the package format.
 Install from a debian package
 +++++++++++++++++++++++++++++
 
-There are packages for debian 7 (wheezy) and debian 8 (jessie). In order to see
+There are packages for some of the recent debian versions. In order to see
 what debian version you use enter::
 
-  lsb_release -r
+  cat /etc/debian_version
 
 Download the package here:
 
@@ -58,10 +58,10 @@ Note that you have to *configure* sumo after installing it, see
 Install from a rpm package
 ++++++++++++++++++++++++++
 
-There are packages for fedora 21, fedora 22 and fedora 23. In order to see what
-fedora version you use enter::
+There are packages for some of the recent fedora versions. 
+In order to see what fedora version you use enter::
 
-  lsb_release -r
+  cat /etc/fedora-release
 
 Download the package here:
 
