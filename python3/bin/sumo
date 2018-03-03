@@ -1323,13 +1323,16 @@ def set_weight(db, weight, modulespecs, trace):
 # further builddb functions
 # -----------------------------------------------
 
-def delete_build(builddb, build_tags, recursive, verbose, dry_run):
+def delete_build(builddb, build_tags, recursive, yes_option, verbose, dry_run):
     """delete modules of a build.
 
     May raise:
         EOFError from utils.ask_yes_no
         ValueError if we cannot delete without --recursive
+
+    The state of all builds to be deleted is set to "incomplete".
     """
+    # pylint: disable=too-many-arguments, too-many-locals, too-many-branches
     given_build_tags= set(build_tags)
     complete_build_tags= set()
     for build in build_tags:
@@ -1344,23 +1347,64 @@ def delete_build(builddb, build_tags, recursive, verbose, dry_run):
                              "You may delete all these too by using "
                              "option '--recursive'." % \
                              " ".join(sorted(extra_builds)))
+    if len(complete_build_tags)>1:
+        msg_= " ".join(sorted(complete_build_tags))
+        if yes_option:
+            print("Deleting the following builds:")
+            print(msg_)
+        else:
+            print("Would delete the following builds:")
+            print(msg_)
+            # may raise EOFError:
+            try:
+                reply= sumolib.utils.ask_yes_no(\
+                        "continue ?\n"
+                        "    'y' continue\n"
+                        "    'n' abort action\n")
+            except EOFError as e:
+                raise annotate("%s. "
+                               "You may want to use option '--yes' "
+                               "to prevent this error.", e)
+            if not reply:
+                sys.exit(1)
+
+    # make all builds "incomplete" in case the delete command fails:
     for build in complete_build_tags:
-        must_exist= not builddb.is_incomplete(build)
+        builddb.change_state(build, "incomplete")
+    builddb.json_save(None, verbose, dry_run)
+
+    for build in sorted(complete_build_tags):
+        # mark this build "broken" just in case the code below throws an
+        # uncaught exception:
+        builddb.change_state(build, "broken")
+        builddb.json_save(None, verbose, dry_run)
+        error= False
         for modulename, versionname in builddb.iter_modules(build):
             if builddb.module_link(build, modulename):
                 continue
-            delete_module(builddb.dirname(), build,
-                          modulename, versionname,
-                          must_exist, verbose, dry_run)
+            try:
+                delete_module(builddb.dirname(), build,
+                              modulename, versionname,
+                              False, # must_exist==False
+                              verbose, dry_run)
+            except (OSError, IOError) as e:
+                errmsg(str(e))
+                error= True
+                continue
+        if error:
+            errmsg(("Error, "
+                    "build %s couldn't be deleted completely.\n"
+                    "You have to fix the problem and try to delete the build again.") % \
+                   build)
 
         makefile= makefilename(builddb.dirname(), build)
-        if not os.path.exists(makefile):
-            if must_exist:
-                errmsg(("Warning, makefile '%s' cannot be deleted, "
-                        "it does not exist") % makefile)
-        else:
+        if os.path.exists(makefile):
             os.remove(makefilename(builddb.dirname(), build))
-        builddb.delete(build)
+        # leave the BUILD in the build database with state "broken", if there
+        # was an error:
+        if not error:
+            builddb.delete(build)
+            builddb.json_save(None, verbose, dry_run)
 
 def create_modules(dist_dict, db, builddb, builddir, build_tag,
                    extra_lines,
@@ -2606,11 +2650,12 @@ def subcmd_build_delete(arguments, options):
     for b in args.BUILDTAGS:
         assert_build_tag(builddb, b)
     # pylint: enable=no-member
-    # modifies builddb and deletes directories:
+    # modifies and saves builddb and deletes directories:
     # pylint: disable=no-member
     # may raise EOFError, ValueError:
     delete_build(builddb, args.BUILDTAGS,
                  options.recursive,
+                 options.yes,
                  options.verbose, options.dry_run)
     builddb.json_save(None, options.verbose, options.dry_run)
 
@@ -3963,6 +4008,7 @@ def process(options, commands):
             raise AssertionError("unexpected command: %s" % cmd)
         return
     except (AssertionError, IOError, KeyError, TypeError, ValueError,
+            EOFError,
             sumolib.JSON.ParseError, sumolib.JSON.ParseError,
             sumolib.lock.AccessError, sumolib.lock.LockedError) as e:
         if not catch_exceptions:

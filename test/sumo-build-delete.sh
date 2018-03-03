@@ -6,8 +6,6 @@ source settings.sh
 
 echo -e "\n-> Test sumo build delete" >&2
 
-DEPS=tmp-sumo-db-convert/DEPS.DB
-
 TESTDIR=tmp-sumo-build-new-2
 
 if [ -e $EXAMPLEDIR ]; then

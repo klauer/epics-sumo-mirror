@@ -6,8 +6,6 @@ source settings.sh
 
 echo -e "\n-> Test sumo build delete --recursive" >&2
 
-DEPS=tmp-sumo-db-convert/DEPS.DB
-
 TESTDIR=tmp-sumo-build-new-2
 
 if [ -e $EXAMPLEDIR ]; then
@@ -35,7 +33,7 @@ echo -e "\ncontents of BUILDS file:"
 cat BUILDS.DB
 
 echo -e "\ndelete build 'MYAPP-001' recursively"
-$SUMO build --dbdir . --builddir . delete MYAPP-001 --recursive
+$SUMO build --dbdir . --builddir . delete MYAPP-001 --yes --recursive
 
 echo -e "\nbuild directories:"
 find . -name '*+*' | sort -f -d

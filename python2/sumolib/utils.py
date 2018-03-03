@@ -19,6 +19,11 @@ if _pyver < (2,5):
     sys.exit("ERROR: SUMO requires at least Python 2.5, "
              "your version is %d.%d" % _pyver)
 
+# The following variable may be set to True when
+# we have to see on stderr when sumo is waiting for
+# input from stdin:
+_trace_input= False
+
 # -----------------------------------------------
 # tracing support
 # -----------------------------------------------
@@ -52,6 +57,8 @@ def ask_from_options(question, options):
     question+= " "
     while True:
         try:
+            if _trace_input:
+                sys.stderr.write("(wait for input on stdin)\n")
             inp= raw_input(question).strip()
         except EOFError as _:
             raise EOFError("EOF while waiting for input")
@@ -77,6 +84,8 @@ def ask_yes_no(question, force_yes= None):
     question+= " "
     while True:
         try:
+            if _trace_input:
+                sys.stderr.write("(wait for input on stdin)\n")
             inp= raw_input(question).lower().strip()
         except EOFError as _:
             raise EOFError("EOF while waiting for input")
