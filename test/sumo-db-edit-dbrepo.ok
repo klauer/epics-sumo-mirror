@@ -31,18 +31,26 @@ Test of darcs:
 
 Logs of local repository:
 -------------------------------------------
-Mon Jan 01 01:01:01 2014 +0100  Homer.Simpson@burns.com
+patch ffffffffffff
+Author: Homer.Simpson@burns.com
+Date:   Mon Jan 01 01:01:01 2014 +0100
   * remove BSPDEP_TIMER dep from ALARM:R3-7
 
-Mon Jan 01 01:01:01 2014 +0100  Homer.Simpson@burns.com
+patch ffffffffffff
+Author: Homer.Simpson@burns.com
+Date:   Mon Jan 01 01:01:01 2014 +0100
   * initial record
 
 Logs of central repository:
 -------------------------------------------
-Mon Jan 01 01:01:01 2014 +0100  Homer.Simpson@burns.com
+patch ffffffffffff
+Author: Homer.Simpson@burns.com
+Date:   Mon Jan 01 01:01:01 2014 +0100
   * remove BSPDEP_TIMER dep from ALARM:R3-7
 
-Mon Jan 01 01:01:01 2014 +0100  Homer.Simpson@burns.com
+patch ffffffffffff
+Author: Homer.Simpson@burns.com
+Date:   Mon Jan 01 01:01:01 2014 +0100
   * initial record
 
 ===========================================
