@@ -82,7 +82,15 @@ distclean: clean
 	make -C data/src clean
 
 clean: shallowclean
-	rm -rf tmp-* 2>/dev/null || (chmod -R u+w tmp-* && rm -rf tmp-*)
+	for d in tmp-*; do \
+	    echo "DELETING $$d..."; \
+	    rm -rf $$d 2>/dev/null; \
+	    if [ $$? -ne 0 ]; then \
+	        echo chmod -R u+w $$d; \
+	        chmod -R u+w $$d; \
+	        rm -rf $$d; \
+	    fi; \
+	done
 	rm -rf *.tst
 	rm -rf *.out
 	rm -rf *.tmp
