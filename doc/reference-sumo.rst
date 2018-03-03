@@ -626,8 +626,8 @@ to be followed by a *subcommand*.
 maincommands
 ++++++++++++
 
-help [command...]
-:::::::::::::::::
+help COMMAND
+::::::::::::
 
 This command prints help for the given command. It can be invoked as::
 
@@ -640,10 +640,21 @@ You get a list of all known MAINCOMMANDS with::
 
   help maincommand
 
-config
-::::::
+config SUBCOMMAND
+:::::::::::::::::
 
-This is the maincommand for all operations for configuration files.
+Show the configuration or create or modify a configuration file. These are
+known subcommands here:
+
+- list       - list loaded configuration files
+- show       - show configuration data
+- make       - create configuration file
+- standalone - create configuration for "standalone" builds
+- local      - create configuration for "local" builds
+
+You get help on each subcommand with::
+
+  help SUBCOMMAND
 
 lock FILE
 :::::::::
@@ -662,8 +673,8 @@ should always unlock it later, otherwise sumo can't access the file.
 
 This command must be followed by a *filename*.
 
-db
-::
+db SUBCOMMAND
+:::::::::::::
 
 This is the maincommand for all operations that work with the 
 dependency database or :term:`DEPS.DB` file.
@@ -671,8 +682,71 @@ dependency database or :term:`DEPS.DB` file.
 For all of the db subcommands you have to specify the dependency database
 directory with option ``--dbdir`` or a configuration file.
 
-build
-:::::
+These are the known subcommands here:
+
+convert
+  convert a scanfile created by sumo-scan to a DB file
+
+convert-old
+  convert DB file from old to new format
+
+appconvert
+  convert a scanfile to a MODULES file for an application
+
+modconvert
+  convert a scanfile to DB file format for a list of supports
+
+edit
+  edit the dependency file with an editor
+
+format
+  reformat the dependency file
+
+weight
+  set the weight factor for modules
+
+alias-add
+  add an alias for a dependency in a module
+
+dependency-add
+  add a dependency to a module
+
+dependency-delete
+  delete a dependency of a module
+
+list
+  list modules or versions of modules
+
+show
+  show details of moduleversions
+
+find
+  search for modules with a regexp
+
+check
+  consistency check of the DB file
+
+merge
+  merge two DB files
+
+cloneversion
+  create a new DB entry by copying an old one
+
+releasefilename
+  define an alternative filename for the RELEASE file
+
+replaceversion
+  replace a DB entry with a new one
+
+clonemodule
+  add a module under a new name in the DB file
+
+You get help on each subcommand with::
+
+  help SUBCOMMAND
+
+build SUBCOMMAND
+::::::::::::::::
 
 This is the maincommand for all operations that work with builds and the build
 database (:term:`BUILDS.DB`).
@@ -680,6 +754,39 @@ database (:term:`BUILDS.DB`).
 For all of the build subcommands you have to specify the dependency database
 directory and the build directory with ``--dbdir`` and ``--builddir`` or a
 configuration file.
+
+These are the known subcommands:
+
+try
+  check the module specification for completeness and consistency
+
+new
+  create a new build
+
+remake
+  do "make distclean" and "make all" with a build
+
+find
+  look for builds that match a module specification
+
+use
+  use all modules or your module specification in your application
+
+list
+  list names of all builds
+
+show
+  show details of a build
+
+state
+  show or change the state of a build
+
+delete
+  delete a build
+
+You get help on each subcommand with::
+
+  help SUBCOMMAND
 
 subcommands for maincommand "config"
 ++++++++++++++++++++++++++++++++++++
@@ -699,9 +806,6 @@ saved in the configuration file.
 config make FILENAME [OPTIONNAMES]
 ::::::::::::::::::::::::::::::::::
 
-This command is used to create a new sumo directory with an independent build
-directory and an independent copy of the dependency database. 
-
 Create a new configuration file from the options read from configuration files
 and options from the command line. If FILENAME is '-' dump to the console.
 OPTIONNAMES is an optional list of long option names. If OPTIONNAMES are
@@ -710,8 +814,11 @@ specified, only options from this list are saved in the configuration file.
 config standalone DIRECTORY
 :::::::::::::::::::::::::::
 
-Create a new configuration for "standalone" builds. DIRECTORY is created if it
-does not yet exist. This command takes all settings and command line options
+This command is used to create a new sumo directory with an independent build
+directory and an independent copy of the dependency database. 
+
+It creates a new configuration for "standalone" builds. DIRECTORY is created if
+it does not yet exist. This command takes all settings and command line options
 but sets dbrepomode to "pull" and dbdir to DIRECTORY/database. It also sets
 builddir to DIRECTORY/build. Option dbrepo must be set, this is used to create
 a local copy of the dependency database in DIRECTORY/database. If there is a
@@ -819,8 +926,8 @@ Note that this command *does not* use the ``--modules`` command line option.
 
 Parameter WEIGHT must be an integer.
 
-db list [MODULES]
-:::::::::::::::::
+db list MODULES
+:::::::::::::::
 
 If called with no argument, list the names of all :term:`modules`. If called
 with '.', the wildcard symbol, list all :term:`versions` of all
@@ -828,8 +935,8 @@ with '.', the wildcard symbol, list all :term:`versions` of all
 MODULE:{+-}VERSION that specifies :term:`modules` and :term:`versions`, list
 all the matching :term:`versions` of all specified :term:`modules`.
 
-db show [MODULES]
-:::::::::::::::::
+db show MODULES
+:::::::::::::::
 
 This command prints only the parts of the dependency database that contain the
 given :term:`modules`. 
@@ -1056,10 +1163,8 @@ Add them for example to the file `$HOME/.zshenv`::
   autoload -U +X compinit && compinit
   autoload -U +X bashcompinit && bashcompinit
 
-Setting sumo command completion
-+++++++++++++++++++++++++++++++
-
-There are two ways to do this:
+There are two ways to activate command completion, described in the following
+chapters.
 
 Activate command completion on the fly
 ++++++++++++++++++++++++++++++++++++++
@@ -1124,54 +1229,95 @@ Options
 Here is a short overview on command line options:
 
 ``--version``
++++++++++++++
+
     show program's version number and exit
+
 ``-h [OPTIONS], --help [OPTIONS]``
+++++++++++++++++++++++++++++++++++
+
     If other OPTIONS are given, show help for these options. If OPTIONS is
     'all', show help for all options. If OPTIONS is missing, show a short
     generic help message for the program.
+
 ``--summary``
++++++++++++++
     Print a summary of the function of the program.
+
+
 ``--test``
+++++++++++
     Perform some self tests.
+
+
 ``-c FILE, --config FILE``
+++++++++++++++++++++++++++
+
     Load options from the given configuration file. You can specify more than
     one of these.  Unless --no-default-config is given, the program always
     loads configuration files from several standard directories first before it
     loads your configuration file. The contents of all configuration files are
     merged.
+
 ``-C, --no-default-config``
++++++++++++++++++++++++++++
+
     If this option is not given and --no-default-config is not given, the
     program tries to load the default configuration file sumo-scan.config from
     several standard locations (see documentation on configuration files).
+
 ``--disable-loading``
++++++++++++++++++++++
+
     If given, disable execution of load commands like '#preload' in
     configuration files. In this case these keys are treated like ordinary
     keys.
-``-A``, ``--append OPTIONNAME``
+
+``-A, --append OPTIONNAME``
++++++++++++++++++++++++++++++++
+
     If an option with name OPTIONNAME is given here and it is a list option,
     the list from the command line is *appended* to the list from the
     configuration file. The default is that options from the command line
     *override* option values from the configuration file.
-``--#preload FILES`` 
+
+``--#preload FILES``
+++++++++++++++++++++
+
     Specify a an '#preload' directive in the configuration file. This option
     has only a meaning if a configuration file is created with the 'makeconfig'
     command. '#preload' means that the following file(s) are loaded before the
     rest of the configuration file.
-``--#opt-preload FILES`` 
+
+``--#opt-preload FILES``
+++++++++++++++++++++++++
+
     This option does the same as --#preload but the file loading is optional.
     If they do not exist the program continues without an error.
-``--#postload FILES`` 
+
+``--#postload FILES``
++++++++++++++++++++++
+
     Specify a an '#postload' directive in the configuration file. This option
     has only a meaning if a configuration file is created with the 'makeconfig'
     command. '#postload' means that the following file(s) are loaded after the
     rest of the configuration file.
-``--#opt-postload FILES`` 
+
+``--#opt-postload FILES``
++++++++++++++++++++++++++
+
     This option does the same as --#postload but the file loading is optional.
     If they do not exist the program continues without an error.
+
 ``--dbdir DBDIR``
++++++++++++++++++
+
     Define the directory where the dependency database file 'DEPS.DB' is found.
     A default for this option can be put in a configuration file.
+
 ``--dbrepomode MODE``
++++++++++++++++++++++
+
     Specify how sumo should use the dependency database repository. There are
     three possible values: 'get', 'pull' and 'push'. Mode 'get' is the default.
     The meaning depends on the used version control system (VCS), if it is
@@ -1216,7 +1362,10 @@ Here is a short overview on command line options:
     |      |          |centr. VCS: update, commit changes          |
     +------+----------+--------------------------------------------+
 
+
 ``--dbrepo REPOSITORY``
++++++++++++++++++++++++
+
     Define a REPOSITORY for the db file. REPOSITORY must consist of 'REPOTYPE
     URL', REPOTYPE may be 'darcs', 'hg' or 'git'. Option --dbdir must specify a
     directory that will contain the repository for the db file.  Before reading
@@ -1224,110 +1373,215 @@ Here is a short overview on command line options:
     'commit' and a 'push' command will be executed. If the repository doesn't
     exist the program tries to check out a working copy from the given URL. A
     default for this option can be put in a configuration file.
+
 ``--scandb SCANDB``
++++++++++++++++++++
+
     Specify the (optional) :term:`SCANDB` file. The scan database file contains
     information on what moduleversion can be used with what dependency version.
+
 ``--dumpdb``
+++++++++++++
+
     Dump the modified db on the console, currently only for the commands
     "weight", "merge", "cloneversion" and "replaceversion".
-``--logmsg`` LOGMESSAGE
+
+``--logmsg LOGMESSAGE``
++++++++++++++++++++++++
+
     Specify a logmessage for automatic commits when --dbrepo is used.
+
 ``-t BUILDTAG, --buildtag BUILDTAG``
+++++++++++++++++++++++++++++++++++++
+
     Specify a buildtag.
+
 ``--buildtag-stem STEM``
+++++++++++++++++++++++++
+
     Specify the stem of a buildtag. This option has only an effect on the
     commands 'new' and 'try' if a buildtag is not specified. The program
     generates a new tag in the form 'stem-nnn' where 'nnn' is the smallest
     possible number that ensures that the buildtag is unique.
+
 ``--builddir BUILDDIR``
++++++++++++++++++++++++
+
     Specify the support directory. If this option is not given take the current
     working directory as support directory. A default for this option can be
     put in a configuration file.
+
 ``--localbuilddir BUILDDIR``
+++++++++++++++++++++++++++++
+
     Specify a *local* support directory. Modules from the directory specifed
     by --builddir are used but this directory is not modfied. All new builds
     are created in the local build directory and only the build database file
     there is modified.
+
 ``-o OUTPUTFILE, --output OUTPUTFILE``
+++++++++++++++++++++++++++++++++++++++
+
     Define the output for command 'use'. If this option is not given, 'use'
     writes to 'configure/RELEASE'. If this option is '-', the command writes to
     standard-out.",
+
 ``-x EXTRALINE, --extra EXTRALLINE``
+++++++++++++++++++++++++++++++++++++
+
     Specify an extra line that is added to the generated RELEASE file. A
     default for this option can be put in a configuration file.
+
 ``-a ALIAS, --alias ALIAS``
++++++++++++++++++++++++++++
+
     Define an alias for the command 'use'. An alias must have the form FROM:TO.
     The path of module named 'FROM' is put in the generated RELEASE file as a
     variable named 'TO'. You can specify more than one of these by repeating
     this option or by joining values in a single string separated by spaces. A
     default for this option can be put in a configuration file.
+
 ``-m MODULE, --module MODULE``
+++++++++++++++++++++++++++++++
+
     Define a :term:`modulespec`. If you specify modules with this option you
     don't have to put :term:`modulespecs` after some of the commands. You can
     specify more than one of these by repeating this option or by joining
     values in a single string separated by spaces. A default for this option
     can be put in a configuration file.
-``-X, --exclude-states``
+
+``-X REGEXP, --exclude-states REGEXP``
+++++++++++++++++++++++++++++++++++++++
+
     For command 'try' exclude all 'dependents' whose state does match one of
     the regular expressions (REGEXP).
+
 ``-b, --brief``
++++++++++++++++
+
     Create a more brief output for some commands.
+
 ``--recursive``
++++++++++++++++
+
     For command 'build delete', delete all dependend builds, too. For command
     'build state' with state 'disabled', disable all dependend builds, too.
-``--detail``
+
+``--detail NO``
++++++++++++++++
+
     Control the output of command 'try'. The value must be an integer between 0
     (very short) and 3 (very long)."
+
 ``-D EXPRESSION, --dir-patch EXPRESSION``
++++++++++++++++++++++++++++++++++++++++++
+
     Specify a directory patchexpression. Such an expression consists of a tuple
     of 2 python strings. The first is the match expression, the second one is
     the replacement string. The regular expression is applied to every source
     path generated. You can specify more than one patchexpression. A default
     for this option can be put in a configuration file.
+
 ``-U EXPRESSION, --url-patch EXPRESSION``
++++++++++++++++++++++++++++++++++++++++++
+
     Specify a repository url patchexpression. Such an expression consists of a
     tuple of 2 python strings. The first is the match expression, the second
     one is the replacement string. The regular expression is applied to every
     source url generated. You can specify more than one patchexpression. A
     default for this option can be put in a configuration file.
+
 ``--noignorecase``
+++++++++++++++++++
+
     For command 'find', do NOT ignore case.
+
 ``--no-checkout``
++++++++++++++++++
+
     With this option, "new" does not check out sources of support modules. This
     option is only here for test purposes.
+
 ``--no-make``
++++++++++++++
+
     With this option, "new" does not call "make".j
+
 ``--makeflags MAKEFLAGS``
++++++++++++++++++++++++++
+
     Specify extra option strings for make You can specify more than one of
     these by repeating this option or by joining values in a single string
     separated by spaces. A default for this option can be put in a
     configuration file.
+
 ``--readonly``
+++++++++++++++
+
     Do not allow modifying the database files or the support directory. A
     default for this option can be put in a configuration file.
+
 ``--nolock``
+++++++++++++
+
     Do not use file locking.
+
 ``-p, --progress``
+++++++++++++++++++
+
     Show progress of some commands on stderr. A default for this option can be
     put in a configuration file.
+
 ``--trace``
++++++++++++
+
     Switch on some trace messages.
+
 ``--tracemore``
++++++++++++++++
+
     Switch on even more trace messages.
+
 ``--dump-modules``
+++++++++++++++++++
+
     Dump module specs, then stop the program.
+
 ``--list``
+++++++++++
+
     Show information for automatic command completion.
+
 ``-y, --yes``
++++++++++++++
+
     All questions the program may ask are treated as if the user replied 'yes'.
+
+``--editor EDITOR``
++++++++++++++++++++
+
+    Specify the preferred editor. If this is not given, sumo takes the name of
+    the editor from environment variables "VISUAL" or EDITOR".
+
 ``--exceptions``
+++++++++++++++++
+
     On fatal errors that raise python exceptions, don't catch these. This will
     show a python stacktrace instead of an error message and may be useful for
     debugging the program."
+
 ``-v, --verbose``
++++++++++++++++++
+
     Show command calls. A default for this option can be put in a
     configuration file.
+
 ``--version``
++++++++++++++
+
     Show the program version and exit.
+
 ``-n, --dry-run``
++++++++++++++++++
+
     Just show what the program would do.

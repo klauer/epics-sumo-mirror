@@ -33,6 +33,11 @@ import sumolib.ModuleSpec
 import sumolib.Dependencies
 import sumolib.Builds
 import sumolib.repos
+from sumolib.sumo_doc import commands as doc_commands, \
+                             completion as doc_completion, \
+                             pager as doc_pager, \
+                             options as doc_options
+from sumolib.configuration_doc import text as doc_configuration
 
 # version of the program:
 __version__= "3.2.1" #VERSION#
@@ -2988,39 +2993,8 @@ configuration file.
 
 Use "help [maincommand] for further details.
 """,
-        "completion":"""
-Command completion means that you can press <TAB> on any incomplete sumo
-command and you get a list of possibilities how to complete that command. By
-pressing <TAB> several times you can try each possible completion.
-
-Command completion is tested with the shells "bash" and "zsh". In order to
-activate this feature you have to configure your shell. There are two ways to
-do this:
-
-Activate command completion on the fly:
-
-  Enter this command:
-    eval `sumo help completion-line`
-
-Activate command completion permanently:
-
-  Enter this command:
-    sumo help completion-script > $HOME/_sumo
-  Then add 
-    "source $HOME/_sumo" 
-  to your $HOME/.bashrc or $HOME/.zshrc
-
-Cache files:
-
-Sumo will create cache files in your home directory to speed up command
-completion. If you don't want this set the environment variable "SUMOHELP" that
-it contains the string "nocache" like in:
-
-  export SUMOHELP="nocache"
-
-If there are other help options defined in SUMOHELP, you should seperate them
-with commas ",".
-""",
+        "completion":
+            doc_completion['Command completion'],
         "completion-script":"""
 _sumo()
 {
@@ -3081,181 +3055,11 @@ _sumo()
 };
 complete -F _sumo sumo
 """,
-        "pager":"""
-pager
+        "pager":
+            doc_pager['The help pager'],
+        "configuration":
+            doc_configuration['Configuration Files'],
 
-The build in pager allows you to navigate in long help texts that sumo displays
-when you use command "help" or option "-h". There are three modes:
-
-pager:on
-  The pager is used only for long help texts (more than 24 lines).
-
-pager:always
-  The pager is always used, even for short help texts.
-
-Mode "pager:on" is the default.
-
-You define the pager mode by adding one of the three strings to the environment
-variable "SUMOHELP" like in:
-
-    export SUMOHELP="pager:off"
-
-If there are other help options defined in SUMOHELP, you should seperate them
-with commas ",".
-
-""",
-        "configuration":"""
-
-The philosphy
--------------
-
-In sumo you can always specify all parameters for a command with command line
-options and arguments. Configuration files are files that have defaults for
-command line options. 
-
-All command line options start with a dash "-". Short command line options have
-the form "-<char>", long command line options have the form "--<string>".
-
-All command line options have a long form, some also have a short form.
-
-Some command line options take no argument, some options require an argument.
-Some command line options may be given more than once with an argument, they
-are used to define lists of values.
-
-The configuration file defines a map where keys are names of long command line
-options and values are booleans, strings or lists of strings. Only some of the
-command line options can be put in a configuration file. 
-
-You find a list of these at the end of this helptext.
-
-File format
------------
-
-A configuration file is always in JSON format. Each key is the long name of a
-command line option, each value is a boolean, a string or a list of strings.
-
-Here is an example of such a file:
-
-  {
-      "dbdir": "/opt/Epics/sumo/database",
-      "makeflags": [
-          "-s"
-      ],
-      "builddir": "/opt/Epics/sumo/build"
-  }
-
-Environment variable expansion
-------------------------------
-
-A few keys in the configuration file of sumo have environment variable
-expansion. This means that strings of the form "$VARNAME" are substituted
-with the value of environment variable "VARNAME" if it exists. If you want to
-use the string "$VARNAME" literally, precede it with a backslash like in
-"\\$VARNAME". 
-
-The list of configuration keys at the end of this file shows you which ones
-have environment variable expansion.
-
-Using more than one configuration file
---------------------------------------
-
-Sumo can read more than just one configuration file, in this case the data is
-*merged*.
-
-The files are read one by one and their keys and values are combined in the in
-the following way:
-
-Keys not yet defined are simply added. For keys that already exist and whose values
-are not lists, the last value overwrites the first one.  For keys that
-already exist and whose values are lists, the lists are concatenated.
-
-Default paths
--------------
-
-Sumo reads and merges configuration files from various places, which one
-depends on your environment variable settings and command line options. 
-
-First the program tries to read the file sumo.config from a list of default
-paths. The list of default paths can be set by the environment variable
-SUMOCONFIG which must be a colon (on Unix systems) or semicolon (on Windows
-systems) separated list of paths. 
-
-If SUMOCONFIG *is not set*, these are the predefined default paths:
-
-- /etc
-- [python-libdir]/sumolib
-- $HOME
-- your current working directory
-
-Note the sumo reads *all* the configuration files it finds, not just the first
-one.
-
-If you use the ``--no-default-config`` command line option, the list of default
-paths is made empty.
-
-The config option
------------------
-
-After the configuration files from default paths were read the program reads
-the all configuration files specified by the "-c" or "--config" option.
-
-Load commands in configuration files
--------------------
-
-In a configuration file you can specify names of other configuration files that
-must or may be loaded. These files are merged as described above.
-
-There are 4 special keys in the configuration file that are used to specify
-other files:
-
-#preload [file list]
-  Load files *before* all other definitions
-
-#opt-preload [file list]
-  Load files *before* all other definitions, if they exist. 
-
-#postload [file list]
-  Load files *after* all other definitions
-
-#opt-postload [file list]
-  Load files *after* all other definitions, if they exist.
-
-Note that the loaded files can also contain one or more these special keys.
-
-The default filename for the sumo configuration file
-----------------------------------------------------
-
-The default filename of this file is sumo.config.
-
-Keys in the sumo configuration file
-+++++++++++++++++++++++++++++++++++
-
-This is the list of keys that may be used in a configuration file, for the
-meanings of the keys see the sumo command line option. Call it with
-"sumo -h --[optionname]".
-
-#preload       [list of strings]
-#opt-preload   [list of strings]
-#postload      [list of strings]
-#opt-postload  [list of strings]
-alias          [list of strings]
-buildtag_stem  [string]
-dbdir          [string], environment variable expansion
-dbrepo         [string], environment variable expansion
-dbrepomode     [string]
-editor         [string]
-extra          [list of strings]
-makeflags      [list of strings]
-module         [list of strings]
-progress       [boolean]
-readonly       [boolean]
-scandb         [string]
-dir-patch      [list of strings]
-url-patch      [list of strings]
-builddir       [string], environment variable expansion
-localbuilddir  [string], environment variable expansion
-verbose        [boolean]
-""",
         "options":"""
 Options always start with a dash "-". All options have one of these two forms:
     -<letter>
@@ -3265,7 +3069,7 @@ Some options require an option argument.
 
 You get help for all command line options with:
 
-sumo -h
+sumo -h all
 
 You get help for a specific option with:
 
@@ -3276,727 +3080,271 @@ You can display a list of all options with:
 
 sumo -h
 """,
-        "help":"""
-help
+        "help"  :
+            doc_commands['maincommands']['help COMMAND'],
+        "config":
+            doc_commands['maincommands']['config SUBCOMMAND'],
+        "lock":
+            doc_commands['maincommands']['lock FILE'],
+        "unlock":
+            doc_commands['maincommands']['unlock FILE'],
+        "db":
+            doc_commands['maincommands']['db SUBCOMMAND'],
+        "build":
+            doc_commands['maincommands']['build SUBCOMMAND'],
 
-This command prints help for the given command. It can be invoked as::
+        "config list":
+            doc_commands['subcommands for maincommand "config"']\
+                             ['config list'],
+        "config show":
+            doc_commands['subcommands for maincommand "config"']\
+                             ['config show [OPTIONNAMES]'],
+        "config make":
+            doc_commands['subcommands for maincommand "config"']\
+                             ['config make FILENAME [OPTIONNAMES]'],
 
-  help
-  help MAINCOMMAND
-  help SUBCOMMAND
-  help MAINCOMMAND SUBCOMMAND
+        "config standalone":
+            doc_commands['subcommands for maincommand "config"']\
+                             ['config standalone DIRECTORY'],
+        "config local":
+            doc_commands['subcommands for maincommand "config"']\
+                             ['config local DIRECTORY'],
 
-You get a list of all known MAINCOMMANDS with:
+        "db convert":
+            doc_commands['subcommands for maincommand "db"']\
+                             ['db convert SCANFILE'],
+        "db convert-old":
+            doc_commands['subcommands for maincommand "db"']\
+                             ['db convert-old OLDDB'],
+        "db appconvert":
+            doc_commands['subcommands for maincommand "db"']\
+                             ['db appconvert SCANFILE'],
+        "db modconvert":
+            doc_commands['subcommands for maincommand "db"']\
+                             ['db modconvert SCANFILE MODULES'],
+        "db edit":
+            doc_commands['subcommands for maincommand "db"']\
+                             ['db edit'],
+        "db format":
+            doc_commands['subcommands for maincommand "db"']\
+                             ['db format'],
+        "db weight":
+            doc_commands['subcommands for maincommand "db"']\
+                             ['db weight WEIGHT MODULES'],
+        "db alias-add":
+            doc_commands['subcommands for maincommand "db"']\
+                             ['db alias-add MODULE DEPENDENCY ALIAS'],
+        "db dependency-delete":
+            doc_commands['subcommands for maincommand "db"']\
+                             ['db dependency-delete MODULE DEPENDENCY'],
+        "db dependency-add":
+            doc_commands['subcommands for maincommand "db"']\
+                             ['db dependency-add MODULE DEPENDENCY'],
+        "db list":
+            doc_commands['subcommands for maincommand "db"']\
+                             ['db list MODULES'],
+        "db show":
+            doc_commands['subcommands for maincommand "db"']\
+                             ['db show MODULES'],
+        "db find":
+            doc_commands['subcommands for maincommand "db"']\
+                             ['db find REGEXP'],
+        "db check":
+            doc_commands['subcommands for maincommand "db"']\
+                             ['db check'],
+        "db merge":
+            doc_commands['subcommands for maincommand "db"']\
+                             ['db merge DB'],
+        "db cloneversion":
+            doc_commands['subcommands for maincommand "db"']\
+                             ['db cloneversion MODULE OLD-VERSION '+\
+                              'NEW-VERSION [SOURCESPEC]'],
+        "db releasefilename":
+            doc_commands['subcommands for maincommand "db"']\
+                             ['db releasefilename MODULE RELEASEFILENAME'],
+        "db replaceversion":
+            doc_commands['subcommands for maincommand "db"']\
+                             ['db replaceversion '+\
+                              'MODULE OLD-VERSION NEW-VERSION'],
+        "db clonemodule":
+            doc_commands['subcommands for maincommand "db"']\
+                             ['db clonemodule OLD-MODULE '+\
+                              'NEW-MODULE [VERSIONS]'],
 
-  help maincommand
-""",
-        "config":"""
-config [subcommand]
-
-Show the configuration or create or modify a configuration file. These are
-known subcommands here:
-
-  list       - list loaded configuration files
-  show       - show configuration data
-  make       - create configuration file
-  standalone - create configuration for "standalone" builds
-  local      - create configuration for "local" builds
-
-Use "help [subcommand] for further details.
-""",
-        "config list":"""
-config list
-
-List all configuration files that were loaded.
-""",
-        "config show":"""
-config show [OPTIONNAMES]
-
-Show the configuration in JSON format.  OPTIONNAMES is an optional list of long
-option names. If OPTIONNAMES are specified, only options from this list are
-saved in the configuration file.
-""",
-        "config make":"""
-config make FILENAME [OPTIONNAMES]
-
-Create a new configuration file from the options read from configuration files
-and options from the command line. If FILENAME is '-' dump to the console. 
-OPTIONNAMES is an optional list of long option names. If OPTIONNAMES are 
-specified, only options from this list are saved in the configuration file.
-""",
-        "config standalone":"""
-config standalone DIRECTORY
-
-This command is used to create a new sumo directory with an independent build
-directory and an independent copy of the dependency database. 
-
-DIRECTORY is created if it does not yet exist. This command takes all settings
-and command line options but sets dbrepomode to "pull" and dbdir to
-DIRECTORY/database. It also sets builddir to DIRECTORY/build. Option dbrepo
-must be set, this is used to create a local copy of the dependency database in
-DIRECTORY/database. If there is a file "sumo.config" in the current working
-directory it is copied to "sumo.config.bak". A new file "sumo.config" is then
-created in the current working directory.
-""",
-        "config local":"""
-config local DIRECTORY
-
-This command is used to create a new sumo directory with a new build directory
-but using existing builds from your current build directory. It also creates an
-independent copy of the dependency database. 
-
-DIRECTORY is created if it does not yet exist. This command takes all settings
-and command line options but sets dbrepomode to "pull" and dbdir to
-DIRECTORY/database. It also sets localbuilddir to DIRECTORY/build. Option
-dbrepo must be set, this is used to create a local copy of the dependency
-database in DIRECTORY/database. If there is a file "sumo.config" in the current
-working directory it is copied to "sumo.config.bak". A new file "sumo.config"
-is then created in the current working directory.
-""",
-        "lock": """
-lock FILE
-
-Lock a FILE, then exit sumo. This is useful if you want to read or write a
-database file without sumo interfering. Don't forget to remove the lock later
-with the "unlock" command.
-""",
-        "unlock": """
-unlock FILE
-
-Unlock a FILE, then exit sumo. If you locked a database with "lock" before you
-should always unlock it later, otherwise sumo can't access the file.
-""",
-        "db": """
-
-db [subcommand]
-
-Query or modify the dependency database (DB) file. These are the known
-subcommands here:
-
-  convert      - convert a scanfile created by sumo-scan to a DB file
-  convert-old  - convert DB file from old to new format
-  appconvert   - convert a scanfile to a MODULES file for an application
-  modconvert   - convert a scanfile to DB file format for a list of supports
-  edit         - edit the dependency file with an editor
-  format       - reformat the dependency file
-  weight       - set the weight factor for modules
-  alias-add    - add an alias for a dependency in a module
-  dependency-add - 
-                 add a dependency to a module
-  dependency-delete - 
-                 delete a dependency of a module
-  list         - list modules or versions of modules
-  show         - show details of moduleversions
-  find         - search for modules with a regexp
-  check        - consistency check of the DB file
-  merge        - merge two DB files
-  cloneversion - create a new DB entry by copying an old one
-  releasefilename -
-                 define an alternative filename for the RELEASE file
-  replaceversion - 
-                 replace a DB entry with a new one
-  clonemodule  - add a module under a new name in the DB file
-
-Use "help [subcommand] for further details.
-""",
-        "build": """
-
-build [subcommand]
-
-Manage the build database (BUILDDB) and create or delete builds. These are the
-known subcommands:
-
-  try       - check the module specification for completeness and consistency
-  new       - create a new build
-  remake    - do "make distclean" and "make all" with a build
-  find      - look for builds that match a module specification
-  use       - use all modules or your module specification in your application
-  list      - list names of all builds
-  show      - show details of a build
-  state     - show or change the state of a build
-  delete    - delete a build
-""",
-        "db convert":"""
-db convert SCANFILE
-
-Convert SCANFILE created by "sumo-scan all" to a new dependency database. If
-SCANFILE is a dash "-" the program expects the scanfile on stdin. Note that
-options "--dbdir" and "--scandb" are mandatory here. With "--dbdir" you specify
-the drectory where the new created dependency database file is stored, with
-"--scandb" you specify the name of the scan database file.  The scan database
-file contains information on what moduleversion can be used with what
-dependency version.
-""",
-        "db convert-old":"""
-db convert OLDDB
-
-Convert a dependency database file OLDDB from old to new format. The old format
-had architecture data ("arch") for each moduleversion. In the new format this
-data is removed. Note that this command IGNORES option "--dbrepo", it directly
-operates on the dependency database file in the directory given with option
-"--dbdir".
-""",
-        "db appconvert":"""
-db appconvert SCANFILE
-
-Convert a scanfile that was created by applying "sumo-scan all" to an
-application to a list of aliases and modulespecs in JSON format. If SCANFILE is
-a dash "-" the program expects the scanfile on stdin. The result is printed to
-the console. 
-""",
-        "db modconvert":"""
-db modconvert SCANFILE MODULES
-
-Convert a scanfile that was created by applying "sumo-scan all" to the
-dependency database format for all the selected modules. If SCANFILE is a dash
-"-" the program expects the scanfile on stdin. The result is printed to the
-console. This data can be added to the dependency database using the command
-"db edit".
-""",
-        "db edit": """
-db edit
-
-Start the editor specified by option --editor or the environment variables
-"VISUAL" or "EDITOR" to edit the dependency database file. This command first
-aquires a file-lock on the file, that prevents other users from acessing the
-file at the same time.  When the editor program is terminated, sumo checks if
-the file is still a valid JSON file. If not, you can start the editor again or
-abort the program. If the file is valid JSON, sumo commits the changes if
-option --dbrepo was specified.  If option --logmsg was given, this is used as
-commit log message, otherwise an editor is started where you can enter a log
-message.  Finally the file lock is released. If you want to edit the dependency
-database file you should always do it with this command.
-""",
-        "db format": """
-db format
-
-Just load and save the dependency database. This ensures that the file is
-formatted in the standard sumo format. This is useful when the file was edited
-and you want to ensure that key sort order and indentation are restored. If you
-specified a repository with --dbrepo, the command will commit the changes. If
-you want a log message different from "db format" use option --logmsg. 
-""",
-        "db weight": """
-db weight WEIGHT MODULES
-
-Set the weight factor for module. A weight determines where a module is placed
-in the generated RELEASE file. Modules there are sorted first by weight, then
-by dependency. Parameter MODULES is a list of modulespecs. Use
-modulename:{+-}versionname to select more versions of a module.
-
-Note that this command *does not* use the "--modules" option.
-
-Parameter WEIGHT must be an integer.
-""",
-        "db alias-add": """
-db alias-add MODULE DEPENDENCY ALIAS
-
-Define a new alias for a dependency of a module. MODULE here is a modulespec of
-the form MODULE:VERSION that specifies a single version of a module.
-""",
-        "db dependency-delete": """
-db dependency-delete MODULE DEPENDENCY
-
-Delete a dependency of a module. MODULE here is a modulespec of the form
-MODULE:VERSION that specifies a single version of a module.
-""",
-        "db dependency-add": """
-db dependency-add MODULE DEPENDENCY
-
-Add a dependency to a module. MODULE here is a modulespec of the form
-MODULE:VERSION that specifies a single version of a module.
-""",
-        "db list": """
-db list [MODULES]
-
-If called with no argument, list the names of all modules. If called with '.',
-the wildcard symbol, list all versions of all modules. If called with argument
-MODULES, a list of modulespecs MODULE:{+-}VERSION that specifies modules and
-versions, list all the matching versions of all specified modules.
-""",
-        "db show": """
-db show [MODULES]
-
-This command prints only the parts of the dependency database that contain the
-given modules. 
-
-Parameter MODULES is a list of modulespecs MODULE:{+-}VERSION that specifies
-the modules and versions to operate on. 
-""",
-        "db find": """
-db find REGEXP
-
-Show all modules whose names or sources match regexp.
-""",
-        "db check": """
-db check 
-
-Do some consistency checks on the dependency database file in the directory
-specifed by --dbdir.
-""",
-        "db merge": """
-db merge DB
-
-Merge the given dependency database file with the dependency database in the
-directory specifed by --dbdir.
-""",
-        "db cloneversion": """
-db cloneversion MODULE OLD-VERSION NEW-VERSION [SOURCESPEC]
-
-This command adds a new version of a module to the dependency database by
-copying the old version. MODULE here is just the name of the module since the
-version follows as a separate argument.  If sourcespec is given, the command
-changes the source part according to this parameter. A sourcespec has the form
-"path PATH", "tar TARFILE [PATCHES]", "REPOTYPE URL" or "REPOTYPE URL TAG
-[PATCHES]". REPOTYPE may be "darcs", "hg" or "git". Both, URL or TAG may be
-".", in this case the original URL or TAG remain unchanged. PATCHES is a list
-of patchfiles or URLs of patchfiles. If sourcespec is not given, the command
-adds NEW-VERSION as new tag to the source specification. The command always
-asks for a confirmation of the action unless option "-y" is used.
-
-""",
-        "db releasefilename": """
-db releasefilename MODULE RELEASEFILENAME
-
-This command defines an alternative filename for the RELEASE file of the
-module. Usually the RELEASE file is generated as "configure/RELEASE". You can
-specify a different filename for the given module with this command. This may
-be useful for support modules that have no regular EPICS makefile system or for
-some special configurations of the EPICS base. If you set the RELEASEFILENAME
-to an empty string or "configure/RELEASE", the special entry for the filename
-is removed for this module in the dependency database.
-""",
-        "db replaceversion": """
-db replaceversion MODULE OLD-VERSION NEW-VERSION
-
-This command replaces a version of a module with a new
-version. MODULE here is just the name of the module since the version
-follows as a separate argument. All the data of the module is copied.
-If sourcespec is given, the command changes the source part according to this
-parameter. A sourcespec has the form "path PATH", "tar TARFILE", "REPOTYPE URL"
-or "REPOTYPE URL TAG".  REPOTYPE may be "darcs", "hg" or "git". Both, URL or
-TAG may be ".", in this case the original URL or TAG remains unchanged.
-""",
-        "db clonemodule": """
-db clonemodule OLD-MODULE NEW-MODULE [VERSIONS]
-
-Copy all versions of the existing old module and add this with the name of thew
-new module to the dependency database.  OLD-MODULE and NEW-MODULE here are just
-the module names since the versions may follow as a separate argument. If there
-are no versions specified, the command copies all existing versions. Note that
-this DOES NOT add the new module as dependency to any other modules.
-""",
-        "build try": """
-build try MODULES
-
-This command is intended to help you create module specifications for the "new"
-command. 
-
-Each MODULE here is a modulespec of the form MODULE or MODULE:{+-}VERSION that
-specifies just a module name, a module and some versions or a single version.
-You can specify an incomplete list of modules.
-
-The detail of the output is determined by option "--detail" which is an integer
-between 0 and 3. 0, the default, gives the shortest, 3 gives the longest
-report. The program then shows which modules you have to
-
-In any case the command shows which modules are missing since they depend on
-other modules of your specification and which ones are missing an exact
-version.
-
-If you converted an existing support directory to sumo you have a scan database
-file which you can specify with option "--scandb" to this command.
-
-For a detailed example see the try example in the HTML documentation.
-""",
-        "build new": """
-build new MODULES
-
-This command creates a new build. Each module given in MODULES here is
-a modulespec of the form MODULE:VERSION that specifies a single version
-of a module. If the buildtag is not given as an option, the program
-generates a buildtag in the form "AUTO-nnn". A new build is
-created according to the modulespecs. Your modulespecifications must be
-*complete* and *exact* meaning that all dependencies are included and
-all modules are specified with exactly a single version. Use
-command "try" in order to create module specifications that can be used
-with command "new".  This command calls "make" and, after successful
-completion, sets the state of the build to "testing". If you want to
-skip this step, use option "--no-make". In order to provide arbitrary options
-to make use option "--makeflags". 
-""",
-        "build remake": """
-build remake BUILDTAG
-
-This command recreates a build by first calling "make distclean" and then "make
-all" with the build's makefile. If you develop a support module (see also
-"config standalone" and "config local") you want to recompile the build after
-changes in the sources. In order to provide arbitrary options
-to make use option "--makeflags". 
-""",
-        "build find": """
-build find MODULESPECS
-
-This command is used to find matching builds for a given list of modulespecs.
-Each module in MODULES here is a modulespec of the form MODULE or
-MODULE:{+-}VERSION that specifies just a module name, a module and some
-versions or a single version. The command prints a list of buildtags of
-matching builds on the console. If option --brief is given, the program just
-shows the buildtags. 
-
-""",
-        "build use": """
-build use MODULES
-
-This command creates a configure/RELEASE file for an application. Each module
-given in MODULES here is a modulespec of the form MODULE:VERSION that specifies
-a single version of a module. If option --buildtag is given, it checks if this
-is compatible with the given modules.  Otherwise it looks for all builds that
-have the modules in the required versions. If more than one matching build
-found it takes the one with the alphabetically first buildtag. The RELEASE file
-created includes only the modules that are specified. Output to another file or
-the console can be specified with option '-o'.
-""",
-        "build list": """
-build list    
-
-This command lists the names of all builds.
-""",
-        "build show": """
-build show BUILDTAG
-
-This command shows the data of a build. The buildtag must be given as an 
-argument.
-""",
-        "build state": """
-build state BUILDTAG [NEW-STATE]
-
-This command is used to show or change the state of a build. The buildtag must
-be given as an argument. If there is no new state given, it just shows the
-current state of the build. Otherwise the state of the build is changed to the
-given value. If a build is set to state 'disabled', all dependend builds are
-also set to this state. In this case, unless option '-y' or '--recursive' are
-given, sumo asks for your confirmation.
-""",
-        "build delete": """
-build delete BUILDTAGS
-
-The directories of the builds are removed and their entries in the build
-database are deleted. If other builds depend on the builds to be deleted, the
-command fails unless option '--recursive' is given. In this case all dependent
-builds are deleted, too.  The buildtags must be given as an argument.
-""",
+        "build try":
+            doc_commands['subcommands for maincommand "build"']\
+                             ['build try MODULES'],
+        "build new":
+            doc_commands['subcommands for maincommand "build"']\
+                             ['build new MODULES'],
+        "build remake":
+            doc_commands['subcommands for maincommand "build"']\
+                             ['build remake BUILDTAG'],
+        "build find":
+            doc_commands['subcommands for maincommand "build"']\
+                             ['build find MODULES'],
+        "build use":
+            doc_commands['subcommands for maincommand "build"']\
+                             ['build use MODULES'],
+        "build list":
+            doc_commands['subcommands for maincommand "build"']\
+                             ['build list'],
+        "build show":
+            doc_commands['subcommands for maincommand "build"']\
+                             ['build show BUILDTAG'],
+        "build state":
+            doc_commands['subcommands for maincommand "build"']\
+                             ['build state BUILDTAG [NEW-STATE]'],
+        "build delete":
+            doc_commands['subcommands for maincommand "build"']\
+                             ['build delete BUILDTAGS'],
 }
 
 option_help_topics= {
-        "help":"""
--h [OPTIONS]
---help [OPTIONS]
-    If other OPTIONS are given, show help for these options. If OPTIONS is
-    'all', show help for all options. If OPTIONS is missing, show a short
-    generic help message for the program.
-""",
-        "summary":"""
---summary
-    Print a summary of the function of the program.
-""",
-        "test":"""
---test
-    Perform simple self-test.
-""",
-        "config":"""
--c CONFIGFILE
---config CONFIGFILE
-    Load options from the given configuration file. You can specify more than
-    one of these.  Unless --no- default-config is given, the program always
-    loads configuration files from several standard directories first before it
-    loads your configuration file. The contents of all configuration files are
-    merged.
-""",
-        "no_default_config":"""
--C
---no-default-config
-    If this option is given the program doesn't load the default configuration.
-""",
-        "disable_loading":"""
---disable-loading
-    If given, disable execution of load commands like '#preload' in
-    configuration files. In this case these keys are treated like ordinary
-    keys.
-""",
-        "append":"""
--A OPTIONNAME
---append OPTIONNAME
-    If an option with name OPTIONNAME is given here and it is a list option,
-    the list from the command line is *appended* to the list from the
-    configuration file.  The default is that options from the command line
-    *override* option values from the configuration file.
-""",
-        "#preload":"""
---#preload FILES
-    Specify a an '#preload' directive in the configuration file. This option
-    has only a meaning if a configuration file is created with the 'makeconfig'
-    command. '#preload' means that the following file(s) are loaded before the
-    rest of the configuration file.
-""",
-        "#opt_preload":"""
---#opt-preload FILES
-    This option does the same as --#preload but the file loading is optional.
-    If they do not exist the program continues without an error.
-""",
-        "#postload":"""
---#postload FILES
-    Specify a an '#postload' directive in the configuration file. This option
-    has only a meaning if a configuration file is created with the 'makeconfig'
-    command. '#postload' means that the following file(s) are loaded after the
-    rest of the configuration file.
-""",
-        "#opt_postload":"""
---#opt-postload FILES
-    This option does the same as --#postload but the file loading is optional.
-    If they do not exist the program continues without an error.
-""",
-        "dbdir":"""
-
---dbdir DBDIR
-    Define the directory where the dependency database file 'DEPS.DB' is found.
-    A default for this option can be put in a configuration file.
-""",
-        "dbrepomode":"""
---dbrepomode MODE
-    Specify how sumo should use the dependency database repository. There are
-    three possible values: 'get', 'pull' and 'push'. Mode 'get' is the default.
-    The meaning depends on the used version control system (VCS), if it is
-    distributed (git,mercurial,darcs) or centralized (subversion,cvs). There
-    are three possible operations on the dependency database:
-
-      * init : create the dependency database if it doesn't exist
-      * read : read the dependency database
-      * write: write (change) the dependency database
-
-    Here is what happens during these operations depending on the mode:
-
-    mode   operation  action
-    ------------------------------------------------
-    get    init       create the repository if it doesn't exist
-           read       none
-           write      distr. VCS: commit changes
-                      centr. VCS: none
-
-    pull   init       create the repository if it doesn't exist
-           read       distr. VCS: pull
-                      centr. VCS: update 
-           write      distr. VCS: commit changes
-                      centr. VCS: none
-
-    push   init       create the repository if it doesn't exist
-           read       distr. VCS: pull
-                      centr. VCS: update 
-           write      distr. VCS: pull, commit changes, push
-                      centr. VCS: update, commit changes
-""",
-        "dbrepo":"""
---dbrepo REPOSITORY
-    Define a REPOSITORY for the DB file. REPOSITORY must consist of 'REPOTYPE
-    URL', REPOTYPE may be 'darcs', 'hg' or 'git'. Option --dbdir must specify a
-    directory that will contain the repository for the db file.  Before reading
-    the db file a 'pull' command will be executed. When the file is changed, a
-    'commit' and a 'push' command will be executed. If the repository doesn't
-    exist the program tries to check out a working copy from the given URL. A
-    default for this option can be put in a configuration file.
-""",
-        "scandb":"""
---scandb SCANDB
-    Specify the (optional) SCANDB file. The scan database file contains
-    information on what moduleversion can be used with what dependency version.
-""",
-        "dumpdb":"""
---dumpdb
-    Dump the db on the console, currently only for these commands : format
-    weight merge clonemodule cloneversion replaceversion.
-""",
-        "logmsg":"""
---logmsg BUILDTAG
-    Specify a logmessage for automatic commits
-""",
-        "editor":"""
---editor EDITOR
-    Specify the preferred editor. If this is not given, sumo takes the name of
-    the editor from environment variables "VISUAL" or EDITOR".
-""",
-        "buildtag":"""
--t BUILDTAG
---buildtag BUILDTAG
-    Specify a buildtag
-""",
-        "buildtag_stem":"""
---buildtag-stem STEM
-    Specify the stem of a buildtag. This option has only an effect on the
-    commands 'new' and 'try' if a buildtag is not specified. The program
-    generates a new tag in the form 'stem-nnn' where 'nnn' is the smallest
-    possible number that ensures that the buildtag is unique.
-""",
-        "builddir":"""
-
---builddir BUILDDIR
-    Specify the support directory. If this option is not given take the current
-    working directory as support directory. A default for this option can be
-    put in a configuration file.
-""",
-        "localbuilddir":"""
---localbuilddir BUILDDIR
-    Specify a local support directory. Modules from the directory specifed by
-    --builddir are used but this directory is not modfied. All new builds are
-    created in the local build directory and only the build database file there
-    is modified.
-""",
-        "output":"""
--o OUTPUTFILE
---output OUTPUTFILE
-    Define the output for command 'use'. If this option is not given, 'use'
-    writes to 'configure/RELEASE'. If this option is '-', the command writes to
-    standard-out.
-""",
-        "extra":"""
--x EXTRALINE
---extra EXTRALINE
-    Specify an extra line that is added to the generated RELEASE file. A
-    default for this option can be put in a configuration file.
-""",
-        "alias":"""
--a ALIAS
---alias ALIAS
-    Define an alias for the command 'use'.  An alias must have the form
-    FROM:TO. The path of module named 'FROM' is put in the generated RELEASE
-    file as a variable named 'TO'. You can specify more than one of these by
-    repeating this option or by joining values in a single string separated by
-    spaces.  A default for this option can be put in a configuration file.
-""",
-        "module":"""
--m MODULESPEC
---module MODULESPEC
-    Define a modulespec. If you specify modules with this option you don't have
-    to put modulespecs after some of the commands.  You can specify more than
-    one of these by repeating this option or by joining values in a single
-    string separated by spaces. A default for this option can be put in a
-    configuration file.
-""",
-        "exclude_states":"""
--X REGEXP
---exclude-states REGEXP
-    For command 'try' exclude all 'dependents' whose state does match one of
-    the regular expressions (REGEXP).
-""",
-        "brief":"""
--b
---brief
-    Create a more brief output for some commands.
-""",
-        "recursive":"""
---recursive
-    For command 'build delete', delete all dependend builds, too. For command
-    'build state' with state 'disabled', disable all dependend builds, too.
-""",
-        "detail":"""
---detail DETAIL
-    Control the output of command 'try'. The value must be an integer between 0
-    (very short) and 3 (very long).
-""",
-        "dir_patch":"""
--D PATCHEXPRESSION
---dir-patch PATCHEXPRESSION
-    Specify a directory PATCHEXPRESSION. Such an expression consists of a tuple
-    of 2 python strings.  The first is the match expression, the second one is
-    the replacement string. The regular expression is applied to every source
-    path generated. You can specify more than one PATCHEXPRESSION. A default
-    for this option can be put in a configuration file.
-""",
-        "url_patch":"""
--U PATCHEXPRESSION
---url-patch PATCHEXPRESSION
-    Specify a repository url PATCHEXPRESSION. Such an expression consists of a
-    tuple of 2 python strings.  The first is the match expression, the second
-    one is the replacement string. The regular expression is applied to every
-    source url generated. You can specify more than one PATCHEXPRESSION. A
-    default for this option can be put in a configuration file.
-""",
-        "noignorecase":"""
---noignorecase
-    For command 'find', do NOT ignore case.
-""",
-        "no_checkout":"""
---no-checkout
-    With this option, "new" does not check out sources of support modules. This
-    option is only here for test purposes.
-""",
-        "no_make":"""
---no-make
-    With this option, "new" does not call "make".
-""",
-        "makeflags":"""
---makeflags MAKEFLAGS
-    Specify extra option strings for "make"You can specify more than one of
-    these by repeating this option or by joining values in a single string
-    separated by spaces.  A default for this option can be put in a
-    configuration file.
-""",
-        "readonly":"""
---readonly
-    Do not allow modifying the database files or the support directory. A
-    default for this option can be put in a configuration file.
-""",
-        "nolock":"""
---nolock
-    Do not use file locking.
-""",
-        "progress":"""
--p
---progress
-    Show progress of some commands on stderr. A default for this option can be
-    put in a configuration file.
-""",
-        "trace":"""
---trace
-    Switch on some trace messages.
-""",
-        "tracemore":"""
---tracemore
-    Switch on even more trace messages.
-""",
-        "dump_modules":"""
---dump-modules
-    Dump module specs, then stop the program.
-""",
-        "list":"""
---list
-    Show information for automatic command completion.
-""",
-        "yes":"""
--y
---yes
-    All questions the program may ask are treated as if the user replied 'yes'.
-""",
-        "exceptions":"""
---exceptions
-    On fatal errors that raise python exceptions, don't catch these. This will
-    show a python stacktrace instead of an error message and may be useful for
-    debugging the program.
-""",
-        "verbose":"""
--v
---verbose
-    Show command calls. A default for this option can be put in a configuration
-    file.
-""",
-        "version":"""
---version
-    Show the program version and exit.
-""",
-        "dry_run":"""
--n
---dry-run
-    Just show what the program would do.
-"""
+        "help":
+            doc_options['Options']\
+                       ['``-h [OPTIONS], --help [OPTIONS]``'],
+        "summary":
+            doc_options['Options']\
+                       ['``--summary``'],
+        "test":
+            doc_options['Options']\
+                       ['``--test``'],
+        "config":
+            doc_options['Options']\
+                       ['``-c FILE, --config FILE``'],
+        "no_default_config":
+            doc_options['Options']\
+                       ['``-C, --no-default-config``'],
+        "disable_loading":
+            doc_options['Options']\
+                       ['``--disable-loading``'],
+        "append":
+            doc_options['Options']\
+                       ['``-A, --append OPTIONNAME``'],
+        "#preload":
+            doc_options['Options']\
+                       ['``--#preload FILES``'],
+        "#opt_preload":
+            doc_options['Options']\
+                       ['``--#opt-preload FILES``'],
+        "#postload":
+            doc_options['Options']\
+                       ['``--#postload FILES``'],
+        "#opt_postload":
+            doc_options['Options']\
+                       ['``--#opt-postload FILES``'],
+        "dbdir":
+            doc_options['Options']\
+                       ['``--dbdir DBDIR``'],
+        "dbrepomode":
+            doc_options['Options']\
+                       ['``--dbrepomode MODE``'],
+        "dbrepo":
+            doc_options['Options']\
+                       ['``--dbrepo REPOSITORY``'],
+        "scandb":
+            doc_options['Options']\
+                       ['``--scandb SCANDB``'],
+        "dumpdb":
+            doc_options['Options']\
+                       ['``--dumpdb``'],
+        "logmsg":
+            doc_options['Options']\
+                       ['``--logmsg LOGMESSAGE``'],
+        "buildtag":
+                doc_options['Options']\
+                           ['``-t BUILDTAG, --buildtag BUILDTAG``'],
+        "buildtag_stem":
+                doc_options['Options']\
+                           ['``--buildtag-stem STEM``'],
+        "builddir":
+                doc_options['Options']\
+                           ['``--builddir BUILDDIR``'],
+        "localbuilddir":
+                doc_options['Options']\
+                           ['``--localbuilddir BUILDDIR``'],
+        "output":
+                doc_options['Options']\
+                           ['``-o OUTPUTFILE, --output OUTPUTFILE``'],
+        "extra":
+                doc_options['Options']\
+                           ['``-x EXTRALINE, --extra EXTRALLINE``'],
+        "alias":
+                doc_options['Options']\
+                           ['``-a ALIAS, --alias ALIAS``'],
+        "module":
+                doc_options['Options']\
+                           ['``-m MODULE, --module MODULE``'],
+        "exclude_states":
+                doc_options['Options']\
+                           ['``-X REGEXP, --exclude-states REGEXP``'],
+        "brief":
+                doc_options['Options']\
+                           ['``-b, --brief``'],
+        "recursive":
+                doc_options['Options']\
+                           ['``--recursive``'],
+        "detail":
+                doc_options['Options']\
+                           ['``--detail NO``'],
+        "dir_patch":
+                doc_options['Options']\
+                           ['``-D EXPRESSION, --dir-patch EXPRESSION``'],
+        "url_patch":
+                doc_options['Options']\
+                           ['``-U EXPRESSION, --url-patch EXPRESSION``'],
+        "noignorecase":
+                doc_options['Options']\
+                           ['``--noignorecase``'],
+        "no_checkout":
+                doc_options['Options']\
+                           ['``--no-checkout``'],
+        "no_make":
+                doc_options['Options']\
+                           ['``--no-make``'],
+        "makeflags":
+                doc_options['Options']\
+                           ['``--makeflags MAKEFLAGS``'],
+        "readonly":
+                doc_options['Options']\
+                           ['``--readonly``'],
+        "nolock":
+                doc_options['Options']\
+                           ['``--nolock``'],
+        "progress":
+                doc_options['Options']\
+                           ['``-p, --progress``'],
+        "trace":
+                doc_options['Options']\
+                           ['``--trace``'],
+        "tracemore":
+                doc_options['Options']\
+                           ['``--tracemore``'],
+        "dump_modules":
+                doc_options['Options']\
+                           ['``--dump-modules``'],
+        "list":
+                doc_options['Options']\
+                           ['``--list``'],
+        "yes":
+                doc_options['Options']\
+                           ['``-y, --yes``'],
+        "editor":
+                doc_options['Options']\
+                           ['``--editor EDITOR``'],
+        "exceptions":
+                doc_options['Options']\
+                           ['``--exceptions``'],
+        "verbose":
+                doc_options['Options']\
+                           ['``-v, --verbose``'],
+        "version":
+                doc_options['Options']\
+                           ['``--version``'],
+        "dry_run":
+                doc_options['Options']\
+                           ['``-n, --dry-run``'],
 }
 
 def print_option_help(option_list=None):
