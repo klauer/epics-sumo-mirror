@@ -241,13 +241,18 @@ content of BUILDS
 
 content of Makefile-BASE-001
 .PHONY: all clean config distclean
-all: BASE/R3-14-12-2-1+BASE-001/sumo-all
 
-config: BASE/R3-14-12-2-1+BASE-001/sumo-config
+all: \
+	BASE/R3-14-12-2-1+BASE-001/sumo-all
 
-clean: BASE/R3-14-12-2-1+BASE-001/sumo-clean
+config: \
+	BASE/R3-14-12-2-1+BASE-001/sumo-config
 
-distclean: BASE/R3-14-12-2-1+BASE-001/sumo-distclean
+clean: \
+	BASE/R3-14-12-2-1+BASE-001/sumo-clean
+
+distclean: \
+	BASE/R3-14-12-2-1+BASE-001/sumo-distclean
 
 
 %/sumo-all:
@@ -271,20 +276,69 @@ distclean: BASE/R3-14-12-2-1+BASE-001/sumo-distclean
 
 content of Makefile-MYAPP-001
 .PHONY: all clean config distclean
-all: ALARM/R3-8-patch+MYAPP-001/sumo-all BSPDEP_CPUBOARDINIT/R4-1+MYAPP-001/sumo-all BSPDEP_TIMER/R6-2+MYAPP-001/sumo-all BSPDEP_VMETAS/TAGLESS-2-1-modified+MYAPP-001/sumo-all CSM/TAR-4-1+MYAPP-001/sumo-all EK/R2-2+MYAPP-001/sumo-all MCAN/R2-6-3-gp+MYAPP-001/sumo-all MISC_DBC/PATH-3-0+MYAPP-001/sumo-all MISC_DEBUGMSG/R3-0+MYAPP-001/sumo-all SOFT_DEVHWCLIENT/TAR-3-0+MYAPP-001/sumo-all
 
-config: ALARM/R3-8-patch+MYAPP-001/sumo-config BSPDEP_CPUBOARDINIT/R4-1+MYAPP-001/sumo-config BSPDEP_TIMER/R6-2+MYAPP-001/sumo-config BSPDEP_VMETAS/TAGLESS-2-1-modified+MYAPP-001/sumo-config CSM/TAR-4-1+MYAPP-001/sumo-config EK/R2-2+MYAPP-001/sumo-config MCAN/R2-6-3-gp+MYAPP-001/sumo-config MISC_DBC/PATH-3-0+MYAPP-001/sumo-config MISC_DEBUGMSG/R3-0+MYAPP-001/sumo-config SOFT_DEVHWCLIENT/TAR-3-0+MYAPP-001/sumo-config
+all: \
+	ALARM/R3-8-patch+MYAPP-001/sumo-all \
+	BSPDEP_CPUBOARDINIT/R4-1+MYAPP-001/sumo-all \
+	BSPDEP_TIMER/R6-2+MYAPP-001/sumo-all \
+	BSPDEP_VMETAS/TAGLESS-2-1-modified+MYAPP-001/sumo-all \
+	CSM/TAR-4-1+MYAPP-001/sumo-all \
+	EK/R2-2+MYAPP-001/sumo-all \
+	MCAN/R2-6-3-gp+MYAPP-001/sumo-all \
+	MISC_DBC/PATH-3-0+MYAPP-001/sumo-all \
+	MISC_DEBUGMSG/R3-0+MYAPP-001/sumo-all \
+	SOFT_DEVHWCLIENT/TAR-3-0+MYAPP-001/sumo-all
 
-clean: ALARM/R3-8-patch+MYAPP-001/sumo-clean BSPDEP_CPUBOARDINIT/R4-1+MYAPP-001/sumo-clean BSPDEP_TIMER/R6-2+MYAPP-001/sumo-clean BSPDEP_VMETAS/TAGLESS-2-1-modified+MYAPP-001/sumo-clean CSM/TAR-4-1+MYAPP-001/sumo-clean EK/R2-2+MYAPP-001/sumo-clean MCAN/R2-6-3-gp+MYAPP-001/sumo-clean MISC_DBC/PATH-3-0+MYAPP-001/sumo-clean MISC_DEBUGMSG/R3-0+MYAPP-001/sumo-clean SOFT_DEVHWCLIENT/TAR-3-0+MYAPP-001/sumo-clean
+config: \
+	ALARM/R3-8-patch+MYAPP-001/sumo-config \
+	BSPDEP_CPUBOARDINIT/R4-1+MYAPP-001/sumo-config \
+	BSPDEP_TIMER/R6-2+MYAPP-001/sumo-config \
+	BSPDEP_VMETAS/TAGLESS-2-1-modified+MYAPP-001/sumo-config \
+	CSM/TAR-4-1+MYAPP-001/sumo-config \
+	EK/R2-2+MYAPP-001/sumo-config \
+	MCAN/R2-6-3-gp+MYAPP-001/sumo-config \
+	MISC_DBC/PATH-3-0+MYAPP-001/sumo-config \
+	MISC_DEBUGMSG/R3-0+MYAPP-001/sumo-config \
+	SOFT_DEVHWCLIENT/TAR-3-0+MYAPP-001/sumo-config
 
-distclean: ALARM/R3-8-patch+MYAPP-001/sumo-distclean BSPDEP_CPUBOARDINIT/R4-1+MYAPP-001/sumo-distclean BSPDEP_TIMER/R6-2+MYAPP-001/sumo-distclean BSPDEP_VMETAS/TAGLESS-2-1-modified+MYAPP-001/sumo-distclean CSM/TAR-4-1+MYAPP-001/sumo-distclean EK/R2-2+MYAPP-001/sumo-distclean MCAN/R2-6-3-gp+MYAPP-001/sumo-distclean MISC_DBC/PATH-3-0+MYAPP-001/sumo-distclean MISC_DEBUGMSG/R3-0+MYAPP-001/sumo-distclean SOFT_DEVHWCLIENT/TAR-3-0+MYAPP-001/sumo-distclean
+clean: \
+	ALARM/R3-8-patch+MYAPP-001/sumo-clean \
+	BSPDEP_CPUBOARDINIT/R4-1+MYAPP-001/sumo-clean \
+	BSPDEP_TIMER/R6-2+MYAPP-001/sumo-clean \
+	BSPDEP_VMETAS/TAGLESS-2-1-modified+MYAPP-001/sumo-clean \
+	CSM/TAR-4-1+MYAPP-001/sumo-clean \
+	EK/R2-2+MYAPP-001/sumo-clean \
+	MCAN/R2-6-3-gp+MYAPP-001/sumo-clean \
+	MISC_DBC/PATH-3-0+MYAPP-001/sumo-clean \
+	MISC_DEBUGMSG/R3-0+MYAPP-001/sumo-clean \
+	SOFT_DEVHWCLIENT/TAR-3-0+MYAPP-001/sumo-clean
 
+distclean: \
+	ALARM/R3-8-patch+MYAPP-001/sumo-distclean \
+	BSPDEP_CPUBOARDINIT/R4-1+MYAPP-001/sumo-distclean \
+	BSPDEP_TIMER/R6-2+MYAPP-001/sumo-distclean \
+	BSPDEP_VMETAS/TAGLESS-2-1-modified+MYAPP-001/sumo-distclean \
+	CSM/TAR-4-1+MYAPP-001/sumo-distclean \
+	EK/R2-2+MYAPP-001/sumo-distclean \
+	MCAN/R2-6-3-gp+MYAPP-001/sumo-distclean \
+	MISC_DBC/PATH-3-0+MYAPP-001/sumo-distclean \
+	MISC_DEBUGMSG/R3-0+MYAPP-001/sumo-distclean \
+	SOFT_DEVHWCLIENT/TAR-3-0+MYAPP-001/sumo-distclean
 
-ALARM/R3-8-patch+MYAPP-001/sumo-all: BSPDEP_TIMER/R6-2+MYAPP-001/sumo-all MISC_DBC/PATH-3-0+MYAPP-001/sumo-all
+ALARM/R3-8-patch+MYAPP-001/sumo-all: \
+	BSPDEP_TIMER/R6-2+MYAPP-001/sumo-all \
+	MISC_DBC/PATH-3-0+MYAPP-001/sumo-all
 
-EK/R2-2+MYAPP-001/sumo-all: MISC_DEBUGMSG/R3-0+MYAPP-001/sumo-all
+EK/R2-2+MYAPP-001/sumo-all: \
+	MISC_DEBUGMSG/R3-0+MYAPP-001/sumo-all
 
-MCAN/R2-6-3-gp+MYAPP-001/sumo-all: ALARM/R3-8-patch+MYAPP-001/sumo-all BSPDEP_VMETAS/TAGLESS-2-1-modified+MYAPP-001/sumo-all MISC_DBC/PATH-3-0+MYAPP-001/sumo-all MISC_DEBUGMSG/R3-0+MYAPP-001/sumo-all SOFT_DEVHWCLIENT/TAR-3-0+MYAPP-001/sumo-all
+MCAN/R2-6-3-gp+MYAPP-001/sumo-all: \
+	ALARM/R3-8-patch+MYAPP-001/sumo-all \
+	BSPDEP_VMETAS/TAGLESS-2-1-modified+MYAPP-001/sumo-all \
+	MISC_DBC/PATH-3-0+MYAPP-001/sumo-all \
+	MISC_DEBUGMSG/R3-0+MYAPP-001/sumo-all \
+	SOFT_DEVHWCLIENT/TAR-3-0+MYAPP-001/sumo-all
+
 
 %/sumo-all:
 	cd $(@D) && rm -f sumo-all sumo-config sumo-clean sumo-distclean

@@ -823,22 +823,29 @@ def create_makefile(dist_dict, db, builddb,
     filename= makefilename(builddir, build_tag)
     if progress:
         notemsg("creating makefile '%s'\n" % filename)
-    module_dirs= sorted(paths.values())
+    # sort module_dirs by (modulename, versionname):
+    module_dirs= []
+    for tp in sorted(paths.keys()):
+        module_dirs.append(paths[tp])
     stamps= [os.path.join(p, STAMPNAME) for p in module_dirs]
     fh= sumolib.utils.file_w_open(filename, verbose, dry_run)
 
     # define phony targets:
     sumolib.utils.file_write(fh,
-                             ".PHONY: %s\n" % \
+                             ".PHONY: %s\n\n" % \
                              (" ".join(sorted(standard_targets))),
                              verbose, dry_run)
 
     # write generic all, clean and distclean rules:
     for target in standard_targets:
         target_stamps= ["%s-%s" % (s, target) for s in stamps]
-        sumolib.utils.file_write(fh, "%s: %s\n\n" % \
-                                 (target, " ".join(target_stamps)),
+        if not target_stamps:
+            sumolib.utils.file_write(fh, "%s:\n\n" % target, verbose, dry_run)
+            continue
+        sumolib.utils.file_write(fh, "%s: \\\n\t" % target, verbose, dry_run)
+        sumolib.utils.file_write(fh, " \\\n\t".join(target_stamps),
                                  verbose, dry_run)
+        sumolib.utils.file_write(fh, "\n\n", verbose, dry_run)
 
     # collect dependencies for MODULE/stamp-all rule:
     special_make_recipes= {}
@@ -851,7 +858,7 @@ def create_makefile(dist_dict, db, builddb,
         if r_:
             special_make_recipes[(modulename, versionname)]= r_
         own_stamp= os.path.join(path, stamp_all)
-        dep_stamps= []
+        dep_stamps= {}
         for dep_name in db.iter_dependencies(modulename, versionname):
             # if this build has only a link of the module, skip it
             if builddb.module_link(build_tag, dep_name):
@@ -863,12 +870,17 @@ def create_makefile(dist_dict, db, builddb,
                 continue
             # use relative paths for dependencies:
             dep_path= module_dir("", build_tag, dep_name, dep_version)
-            dep_stamps.append(os.path.join(dep_path, stamp_all))
-        dep_stamps.sort()
+            dep_stamps[(dep_name, dep_version)]= \
+                os.path.join(dep_path, stamp_all)
         if dep_stamps:
-            sumolib.utils.file_write(fh,\
-                        "\n%s: %s\n" % (own_stamp, " ".join(dep_stamps)),\
-                        verbose, dry_run)
+            sumolib.utils.file_write(fh, "%s: \\\n\t" % own_stamp,
+                                     verbose, dry_run)
+            dep_paths= []
+            for tp in sorted(dep_stamps.keys()):
+                dep_paths.append(dep_stamps[tp])
+            sumolib.utils.file_write(fh, " \\\n\t".join(dep_paths),
+                                     verbose, dry_run)
+            sumolib.utils.file_write(fh, "\n\n", verbose, dry_run)
 
     # write extra make rules for modules where special recipes are defined:
     special_vars= {"DIR": "$(@D)"}
