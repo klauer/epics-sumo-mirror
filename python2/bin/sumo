@@ -385,21 +385,30 @@ def db_from_repo(options, keep_locked= False, changes_check= True,
     mngr= repo_manager(options.dbdir, options.dbrepo, repomode,
                        options.verbose, options.dry_run)
     if mngr.local_changes():
+        msg_= "Uncommitted changes found in dependency database file."
         if not changes_check:
-            print "Uncommitted changes found in dependency database file"
+            sys.stderr.write("Note: %s\n" % msg_)
         else:
-            if not sumolib.utils.ask_yes_no(
-                    "Uncommitted changes found in dependency database file,\n"
-                    "answer 'y' to record them or 'n' to abort",
-                    options.yes):
-                sys.exit(0)
-            # an empty logmessage here means that the user is asked for one:
-            try:
-                # may raise IOError:
-                mngr.commit(options.logmsg)
-            except IOError as e:
-                raise annotate("Error while committing dependency "
-                               "database: " , e)
+            if options.yes:
+                print "%s Committing changes.\n" % msg_
+                reply= "y"
+            else:
+                reply= sumolib.utils.ask_from_options(\
+                        ("%s Commit changes ?\n"
+                         "    'y' commit changes before we continue\n"
+                         "    'n' do not commit and continue\n"
+                         "    'a' abort\n") % msg_,
+                        ["y", "n", "a"])
+            if reply=="a":
+                sys.exit(1)
+            if reply=="y":
+                # an empty logmessage here means that the user is asked for one:
+                try:
+                    # may raise IOError:
+                    mngr.commit(options.logmsg)
+                except IOError as e:
+                    raise annotate("Error while committing dependency "
+                                   "database: %s" , e)
 
     try:
         # may raise IOError:

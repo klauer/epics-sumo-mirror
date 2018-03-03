@@ -3,12 +3,8 @@
 """Utilities for the SUMO scripts.
 """
 
-# pylint: disable=C0322
-#                          Operator not preceded by a space
-# pylint: disable=C0103
-#                          Invalid name for type variable
-# pylint: disable=W0141
-#                          Used builtin function ...
+# pylint: disable=invalid-name
+
 import sys
 import os
 import os.path
@@ -42,6 +38,22 @@ def show_progress(cnt, cnt_max, message= None):
 # -----------------------------------------------
 # user interaction
 # -----------------------------------------------
+
+def ask_from_options(question, options):
+    """ask a yes or no question.
+
+    returns the selected option
+    """
+    if not isinstance(options, list):
+        raise TypeError("wrong type: %s" % repr(options))
+    question+= " "
+    while True:
+        inp= raw_input(question).strip()
+        if inp in options:
+            return inp
+        # not found
+        print "\tinvalid answer, please enter again"
+        question=""
 
 def ask_yes_no(question, force_yes= None):
     """ask a yes or no question.
