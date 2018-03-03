@@ -10,6 +10,7 @@ import os
 import os.path
 import re
 import sumolib.system
+import sumolib.JSON
 
 __version__="3.2.1" #VERSION#
 
@@ -130,8 +131,8 @@ def env_expand(st):
         return st
     return os.path.expandvars(st.replace(r'\$',"$ ")).replace("$ ","$")
 
-rx_var= re.compile(r'(?<!\\)\$([A-Za-z_]\w*)')
-rx_var2= re.compile(r'(?<!\\)\$\{([A-Za-z_]\w*)\}')
+rx_ivar= re.compile(r'(?<!\\)\$([A-Za-z_]\w*)')
+rx_ivar2= re.compile(r'(?<!\\)\$\{([A-Za-z_]\w*)\}')
 
 def string_interpolate(st, variables):
     r"""Interpolate '$VAR' or '${VAR} in a string.
@@ -151,7 +152,7 @@ def string_interpolate(st, variables):
     result= None
     if '$' not in st:
         return st
-    for r in (rx_var2, rx_var):
+    for r in (rx_ivar2, rx_ivar):
         result= []
         while True:
             m= r.search(st)
@@ -171,10 +172,6 @@ def string_interpolate(st, variables):
         st= "".join(result)
     return st
 
-
-
-
-
 def opt_join(option, do_sort= False):
     """join command line option values to a single list.
 
@@ -189,6 +186,85 @@ def opt_join(option, do_sort= False):
     if do_sort:
         lst.sort()
     return lst
+
+rx_var= re.compile(r'\s*([A-Za-z_][A-Za-z_0-9]*)\s*=\s*')
+rx_quo= re.compile(r'(".*?(?<!\\)")')
+rx_raw= re.compile(r'([^",][^\s,]*)')
+rx_sep= re.compile(r'\s*,\s*')
+
+def definition_list_to_dict(deflist):
+    """convert a list of NAME=VALUE pairs to a dict.
+
+    Here are some examples:
+    >>> import pprint
+    >>> def test(st):
+    ...     pprint.pprint(definition_list_to_dict(st))
+    ...
+    >>> test("a=1")
+    {'a': 1}
+    >>> test("a=1 b=2")
+    {'a': 1, 'b': 2}
+    >>> test('a=1 b=2 c="x=y"')
+    {'a': 1, 'b': 2, 'c': 'x=y'}
+    >>> test('a=1 b=2 c="x=y" d=1,2.0,a,true')
+    {'a': 1, 'b': 2, 'c': 'x=y', 'd': [1, 2.0, 'a', True]}
+    >>> test('a =1 b= 2 c="x=y" d=1 ,2.0, a, true')
+    {'a': 1, 'b': 2, 'c': 'x=y', 'd': [1, 2.0, 'a', True]}
+    >>> test('a =')
+    Traceback (most recent call last):
+        ...
+    ValueError: parse error in definition 'a =' pos 3
+    >>> test('a =1 b=')
+    Traceback (most recent call last):
+        ...
+    ValueError: parse error in definition 'a =1 b=' pos 7
+    >>> test('a =1 b=,')
+    Traceback (most recent call last):
+        ...
+    ValueError: parse error in definition 'a =1 b=,' pos 7
+    >>> test('a =1 b=True')
+    {'a': 1, 'b': 'True'}
+    """
+    def errmsg(def_,pos):
+        """error message utility."""
+        return "parse error in definition %s pos %d" % \
+            (repr(def_),pos)
+    d= {}
+    deflist= deflist.strip()
+    if not deflist:
+        return d
+    pos=0
+    last= len(deflist)
+    while True:
+        name= None
+        m= rx_var.match(deflist, pos)
+        if m is None:
+            raise ValueError(errmsg(deflist, pos))
+        name= m.group(1)
+        pos= m.end()
+        val= None
+        while True:
+            m= rx_quo.match(deflist, pos)
+            if m is None:
+                m= rx_raw.match(deflist, pos)
+            if m is None:
+                raise ValueError(errmsg(deflist, pos))
+            pos= m.end()
+            if val is None:
+                val= sumolib.JSON.anytxt2scalar(m.group(1))
+            else:
+                if not isinstance(val, list):
+                    val= [val]
+                val.append(sumolib.JSON.anytxt2scalar(m.group(1)))
+            m= rx_sep.match(deflist, pos)
+            if m is None:
+                break
+            pos= m.end()
+            if pos>=last:
+                break
+        d[name]= val
+        if pos>=last:
+            return d
 
 def dict_of_sets_add(dict_, key, val):
     """add a key, create a set if needed.
@@ -222,6 +298,8 @@ def dict_sets_to_lists(dict_):
     for (k,v) in dict_.items():
         new[k]= sorted(list(v))
     return new
+
+
 
 # -----------------------------------------------
 # file utilities
@@ -305,9 +383,9 @@ def edit_file(filename, editor, verbose, dry_run):
                           "'EDITOR' must be defined")
     found= False
     errors= ["couldn't start editor(s):"]
-    for editor in ed_lst:
+    for ed in ed_lst:
         try:
-            sumolib.system.system("%s %s" % (editor, filename),
+            sumolib.system.system("%s %s" % (ed, filename),
                                   False, False, verbose, dry_run)
             found= True
             break
@@ -343,8 +421,8 @@ def dirwalk(start_dir):
     """
     for (dirpath, dirnames, filenames) in os.walk(start_dir, topdown= True):
         yield (dirpath, dirnames, filenames)
-        for dn in dirnames:
-            p= os.path.join(dirpath, dn)
+        for dirname in dirnames:
+            p= os.path.join(dirpath, dirname)
             if os.path.islink(p):
                 for (dp, dn, fn) in dirwalk(p):
                     yield (dp, dn, fn)
@@ -475,8 +553,7 @@ def tag2version(ver):
         if mode==2:
             if ver[i].isdigit():
                 return ver[i:]
-            else:
-                return ver
+            return ver
     return ver
 
 # -----------------------------------------------
