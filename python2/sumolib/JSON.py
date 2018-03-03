@@ -1,8 +1,8 @@
+# -*- coding: UTF-8 -*-
 """JSON utilities.
 """
 
-# pylint: disable=C0103
-#                          Invalid name for type variable
+# pylint: disable=wrong-import-position, invalid-name
 
 import sys
 
@@ -174,6 +174,47 @@ def json_load(data):
     """decode a JSON string.
     """
     return json.loads(data)
+
+def anytxt2scalar(txt):
+    r"""convert a simple text or JSON string to scalar.
+
+    (python 2 version)
+
+    Here are some examples:
+    >>> anytxt2scalar('1')
+    1
+    >>> anytxt2scalar('true')
+    True
+    >>> anytxt2scalar('1.2')
+    1.2
+    >>> anytxt2scalar('abc')
+    'abc'
+    >>> anytxt2scalar('"1"')
+    '1'
+    >>> anytxt2scalar('Ä')
+    '\xc3\x84'
+    >>> anytxt2scalar('')
+    ''
+    """
+    if not isinstance(txt, str):
+        raise TypeError("error, argument must be of type str, not %s" % \
+                        type(txt))
+    ret= None
+    try:
+        ret= json.loads(txt)
+    except ValueError as _:
+        pass
+    if ret is None:
+        try:
+            ret= json.loads('"'+txt+'"')
+        except ValueError as _:
+            raise ValueError("error, invalid string: %s" % repr(txt))
+    # conversion via JSON was successful:
+    # if returned value is unicode type:
+    if isinstance(ret, unicode):
+        # convert to str type:
+        return ret.encode('utf-8')
+    return ret
 
 def loadfile(filename):
     """load a JSON file.
