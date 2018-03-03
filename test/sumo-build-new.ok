@@ -205,75 +205,53 @@ content of BUILDS
 }
 
 content of Makefile-BASE-001
-all: BASE/R3-14-12-2-1+BASE-001/stamp
+all: BASE/R3-14-12-2-1+BASE-001/stamp-all
 
-clean:
-	-$(MAKE) -C BASE/R3-14-12-2-1+BASE-001 clean
-	rm -f BASE/R3-14-12-2-1+BASE-001/stamp
+clean: BASE/R3-14-12-2-1+BASE-001/stamp-clean
 
-distclean:
-	-$(MAKE) -C BASE/R3-14-12-2-1+BASE-001 distclean
-	rm -f BASE/R3-14-12-2-1+BASE-001/stamp
+distclean: BASE/R3-14-12-2-1+BASE-001/stamp-distclean
 
 
-%/stamp:
+%/stamp-all:
+	rm -f $(@D)/stamp-*
 	$(MAKE) -C $(@D)
 	touch $@
 
+%/stamp-clean:
+	rm -f $(@D)/stamp-*
+	$(MAKE) -C $(@D) clean
+	touch $@
+
+%/stamp-distclean:
+	rm -f $(@D)/stamp-*
+	$(MAKE) -C $(@D) distclean
+	touch $@
+
 content of Makefile-MYAPP-001
-all: ALARM/R3-8-modified+MYAPP-001/stamp BSPDEP_CPUBOARDINIT/R4-1+MYAPP-001/stamp BSPDEP_TIMER/R6-2+MYAPP-001/stamp BSPDEP_VMETAS/TAGLESS-2-1-modified+MYAPP-001/stamp CSM/TAR-4-1+MYAPP-001/stamp EK/R2-2+MYAPP-001/stamp MCAN/R2-6-3-gp+MYAPP-001/stamp MISC_DBC/PATH-3-0+MYAPP-001/stamp MISC_DEBUGMSG/R3-0+MYAPP-001/stamp SOFT_DEVHWCLIENT/TAR-3-0+MYAPP-001/stamp
+all: ALARM/R3-8-modified+MYAPP-001/stamp-all BSPDEP_CPUBOARDINIT/R4-1+MYAPP-001/stamp-all BSPDEP_TIMER/R6-2+MYAPP-001/stamp-all BSPDEP_VMETAS/TAGLESS-2-1-modified+MYAPP-001/stamp-all CSM/TAR-4-1+MYAPP-001/stamp-all EK/R2-2+MYAPP-001/stamp-all MCAN/R2-6-3-gp+MYAPP-001/stamp-all MISC_DBC/PATH-3-0+MYAPP-001/stamp-all MISC_DEBUGMSG/R3-0+MYAPP-001/stamp-all SOFT_DEVHWCLIENT/TAR-3-0+MYAPP-001/stamp-all
 
-clean:
-	-$(MAKE) -C ALARM/R3-8-modified+MYAPP-001 clean
-	-$(MAKE) -C BSPDEP_CPUBOARDINIT/R4-1+MYAPP-001 clean
-	-$(MAKE) -C BSPDEP_TIMER/R6-2+MYAPP-001 clean
-	-$(MAKE) -C BSPDEP_VMETAS/TAGLESS-2-1-modified+MYAPP-001 clean
-	-$(MAKE) -C CSM/TAR-4-1+MYAPP-001 clean
-	-$(MAKE) -C EK/R2-2+MYAPP-001 clean
-	-$(MAKE) -C MCAN/R2-6-3-gp+MYAPP-001 clean
-	-$(MAKE) -C MISC_DBC/PATH-3-0+MYAPP-001 clean
-	-$(MAKE) -C MISC_DEBUGMSG/R3-0+MYAPP-001 clean
-	-$(MAKE) -C SOFT_DEVHWCLIENT/TAR-3-0+MYAPP-001 clean
-	rm -f ALARM/R3-8-modified+MYAPP-001/stamp
-	rm -f BSPDEP_CPUBOARDINIT/R4-1+MYAPP-001/stamp
-	rm -f BSPDEP_TIMER/R6-2+MYAPP-001/stamp
-	rm -f BSPDEP_VMETAS/TAGLESS-2-1-modified+MYAPP-001/stamp
-	rm -f CSM/TAR-4-1+MYAPP-001/stamp
-	rm -f EK/R2-2+MYAPP-001/stamp
-	rm -f MCAN/R2-6-3-gp+MYAPP-001/stamp
-	rm -f MISC_DBC/PATH-3-0+MYAPP-001/stamp
-	rm -f MISC_DEBUGMSG/R3-0+MYAPP-001/stamp
-	rm -f SOFT_DEVHWCLIENT/TAR-3-0+MYAPP-001/stamp
+clean: ALARM/R3-8-modified+MYAPP-001/stamp-clean BSPDEP_CPUBOARDINIT/R4-1+MYAPP-001/stamp-clean BSPDEP_TIMER/R6-2+MYAPP-001/stamp-clean BSPDEP_VMETAS/TAGLESS-2-1-modified+MYAPP-001/stamp-clean CSM/TAR-4-1+MYAPP-001/stamp-clean EK/R2-2+MYAPP-001/stamp-clean MCAN/R2-6-3-gp+MYAPP-001/stamp-clean MISC_DBC/PATH-3-0+MYAPP-001/stamp-clean MISC_DEBUGMSG/R3-0+MYAPP-001/stamp-clean SOFT_DEVHWCLIENT/TAR-3-0+MYAPP-001/stamp-clean
 
-distclean:
-	-$(MAKE) -C ALARM/R3-8-modified+MYAPP-001 distclean
-	-$(MAKE) -C BSPDEP_CPUBOARDINIT/R4-1+MYAPP-001 distclean
-	-$(MAKE) -C BSPDEP_TIMER/R6-2+MYAPP-001 distclean
-	-$(MAKE) -C BSPDEP_VMETAS/TAGLESS-2-1-modified+MYAPP-001 distclean
-	-$(MAKE) -C CSM/TAR-4-1+MYAPP-001 distclean
-	-$(MAKE) -C EK/R2-2+MYAPP-001 distclean
-	-$(MAKE) -C MCAN/R2-6-3-gp+MYAPP-001 distclean
-	-$(MAKE) -C MISC_DBC/PATH-3-0+MYAPP-001 distclean
-	-$(MAKE) -C MISC_DEBUGMSG/R3-0+MYAPP-001 distclean
-	-$(MAKE) -C SOFT_DEVHWCLIENT/TAR-3-0+MYAPP-001 distclean
-	rm -f ALARM/R3-8-modified+MYAPP-001/stamp
-	rm -f BSPDEP_CPUBOARDINIT/R4-1+MYAPP-001/stamp
-	rm -f BSPDEP_TIMER/R6-2+MYAPP-001/stamp
-	rm -f BSPDEP_VMETAS/TAGLESS-2-1-modified+MYAPP-001/stamp
-	rm -f CSM/TAR-4-1+MYAPP-001/stamp
-	rm -f EK/R2-2+MYAPP-001/stamp
-	rm -f MCAN/R2-6-3-gp+MYAPP-001/stamp
-	rm -f MISC_DBC/PATH-3-0+MYAPP-001/stamp
-	rm -f MISC_DEBUGMSG/R3-0+MYAPP-001/stamp
-	rm -f SOFT_DEVHWCLIENT/TAR-3-0+MYAPP-001/stamp
+distclean: ALARM/R3-8-modified+MYAPP-001/stamp-distclean BSPDEP_CPUBOARDINIT/R4-1+MYAPP-001/stamp-distclean BSPDEP_TIMER/R6-2+MYAPP-001/stamp-distclean BSPDEP_VMETAS/TAGLESS-2-1-modified+MYAPP-001/stamp-distclean CSM/TAR-4-1+MYAPP-001/stamp-distclean EK/R2-2+MYAPP-001/stamp-distclean MCAN/R2-6-3-gp+MYAPP-001/stamp-distclean MISC_DBC/PATH-3-0+MYAPP-001/stamp-distclean MISC_DEBUGMSG/R3-0+MYAPP-001/stamp-distclean SOFT_DEVHWCLIENT/TAR-3-0+MYAPP-001/stamp-distclean
 
 
-ALARM/R3-8-modified+MYAPP-001/stamp: BSPDEP_TIMER/R6-2+MYAPP-001/stamp MISC_DBC/PATH-3-0+MYAPP-001/stamp
+ALARM/R3-8-modified+MYAPP-001/stamp-all: BSPDEP_TIMER/R6-2+MYAPP-001/stamp-all MISC_DBC/PATH-3-0+MYAPP-001/stamp-all
 
-EK/R2-2+MYAPP-001/stamp: MISC_DEBUGMSG/R3-0+MYAPP-001/stamp
+EK/R2-2+MYAPP-001/stamp-all: MISC_DEBUGMSG/R3-0+MYAPP-001/stamp-all
 
-MCAN/R2-6-3-gp+MYAPP-001/stamp: ALARM/R3-8-modified+MYAPP-001/stamp BSPDEP_VMETAS/TAGLESS-2-1-modified+MYAPP-001/stamp MISC_DBC/PATH-3-0+MYAPP-001/stamp MISC_DEBUGMSG/R3-0+MYAPP-001/stamp SOFT_DEVHWCLIENT/TAR-3-0+MYAPP-001/stamp
+MCAN/R2-6-3-gp+MYAPP-001/stamp-all: ALARM/R3-8-modified+MYAPP-001/stamp-all BSPDEP_VMETAS/TAGLESS-2-1-modified+MYAPP-001/stamp-all MISC_DBC/PATH-3-0+MYAPP-001/stamp-all MISC_DEBUGMSG/R3-0+MYAPP-001/stamp-all SOFT_DEVHWCLIENT/TAR-3-0+MYAPP-001/stamp-all
 
-%/stamp:
+%/stamp-all:
+	rm -f $(@D)/stamp-*
 	$(MAKE) -C $(@D)
+	touch $@
+
+%/stamp-clean:
+	rm -f $(@D)/stamp-*
+	$(MAKE) -C $(@D) clean
+	touch $@
+
+%/stamp-distclean:
+	rm -f $(@D)/stamp-*
+	$(MAKE) -C $(@D) distclean
 	touch $@
