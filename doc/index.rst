@@ -132,7 +132,7 @@ Bitbucket::
 
 Sourceforge (mirror)::
 
-  hg clone ssh://goetzpf@hg.code.sf.net/p/epics-sumo/mercurial sumo
+  hg clone http://hg.code.sf.net/p/epics-sumo/mercurial epics-sumo
 
 Indices and tables
 ==================
