@@ -122,7 +122,8 @@ You can browse the mercurial repository here:
 
 `repository at Bitbucket <https://bitbucket.org/goetzpf/epics-sumo/src/default>`_.
 
-`repository at Sourceforge (mirror) <https://sourceforge.net/p/epics-sumo/mercurial/ci/default/tree/>`_.
+`repository at Sourceforge (mirror) <hg clone http://hg.code.sf.net/p/epics-sumo/mercurial epics-sumo>`_.
+
 
 or clone it with this command:
 
