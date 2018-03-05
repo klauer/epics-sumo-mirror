@@ -1168,10 +1168,12 @@ strings in single or double quotes.
 
 Special variables and characters when you use double quotes:
 
-- ``\$DIR``: (bash, sumo) The directory of the MODULE.
-- ``\n``: (bash) Separates the lines in the LINES argument, which is a single string.
+- ``$DIR``: (sumo) The directory of the MODULE.
 - ``\"``: (bash) A literal double quote character.
-- ``\$``: (bash) A literal dollar character.
+- ``$(VAR)``: (make) Insert value of make or shell variable ``VAR``.
+- ``$$``: (make) A dollar character passed to the shell.
+- ``\\$$``: (make, bash) A literal dollar character passed to the shell.
+- ``\\``: (json, bash) At the end of the json string this means line continuation for bash.
 
 subcommands for maincommand "build"
 +++++++++++++++++++++++++++++++++++
