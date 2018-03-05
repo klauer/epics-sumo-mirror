@@ -3738,6 +3738,9 @@ sumo -h
         "db dependency-add":
             doc_commands['subcommands for maincommand "db"']\
                              ['db dependency-add MODULE DEPENDENCY'],
+        "db make-recipes":
+            doc_commands['subcommands for maincommand "db"']\
+                             ['db make-recipes MODULE TARGET LINES'],
         "db list":
             doc_commands['subcommands for maincommand "db"']\
                              ['db list MODULES'],
