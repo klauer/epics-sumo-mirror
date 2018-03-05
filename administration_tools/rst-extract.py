@@ -380,18 +380,18 @@ def process(options,args):
         for chapter_name in result["_order"]:
             chapter= result[chapter_name]
             if options.no_subchapters:
-                my_print('%s: """\n' % repr(chapter_name))
+                my_print('%s: r"""\n' % repr(chapter_name))
                 my_print("\n".join(chapter))
                 my_print('""",\n')
             else:
                 my_print('%s: {\n' % repr(chapter_name))
                 my_print('%s: %s,\n' % (repr("_order"),
                                         repr(chapter["_order"])))
-                my_print('"": """\n')
+                my_print('"": r"""\n')
                 my_print("\n".join(chapter[""]))
                 my_print('""",\n')
                 for subchapter_name in chapter["_order"]:
-                    my_print('%s: """\n' % repr(subchapter_name))
+                    my_print('%s: r"""\n' % repr(subchapter_name))
                     my_print("\n".join(chapter[subchapter_name]))
                     my_print('""",\n')
                 my_print("},\n")
