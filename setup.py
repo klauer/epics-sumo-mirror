@@ -150,6 +150,7 @@ setup(name=name,
       author_email='Goetz.Pfeiffer@helmholtz-berlin.de',
       url='https://goetzpf.bitbucket.io/sumo',
       download_url='https://bitbucket.org/goetzpf/epics-sumo/downloads',
+      bugtrack_url='https://bitbucket.org/goetzpf/epics-sumo/issues?status=new&status=open',
 
       classifiers=[
           'Development Status :: 6 - Mature',
