@@ -67,6 +67,7 @@ KNOWN_DB_COMMANDS=set(("alias-add",
                        "check",
                        "clonemodule",
                        "cloneversion",
+                       "commands",
                        "convert",
                        "convert-old",
                        "dependency-add",
@@ -2413,6 +2414,45 @@ def subcmd_db_releasefilename(arguments, options):
         db_to_repo(options, mngr, db, "releasefilename", arguments)
         # ^^^ does also unlock the file
 
+def subcmd_db_commands(arguments, options):
+    """implement "db commands".
+
+    May raise:
+
+        EOFError from db_from_repo
+        IOError, ValueError, sumolib.JSON.ParseError from db_from_repo
+        IOError from db_to_repo
+        ValueError from module_spec.assert_exact
+    """
+    sumolib.cli.assert_options(catch_exceptions,  options, "dbdir")
+
+    argspec= sumolib.cli.CmdSpecs()
+    argspec.add("MODULE", completion= sumolib.complete.moduleversion)
+    argspec.add("LINES", array= True, optional= False)
+
+    args= sumolib.cli.process_args(arguments, argspec, options.list,
+                                   catch_exceptions)
+
+    # pylint: disable=no-member
+    module_spec= sumolib.ModuleSpec.Spec.from_string(args.MODULE)
+    # pylint: enable=no-member
+    # may raise ValueError:
+    module_spec.assert_exact()
+    # may raise EOFError, IOError, ValueError, sumolib.JSON.ParseError:
+    (mngr, db)= db_from_repo(options,
+                             not options.dumpdb and (not options.dry_run))
+    sourcespec= db.module_source_object(module_spec.modulename,\
+                                        module_spec.versionname)
+    sourcespec.commands(args.LINES) # pylint: disable=no-member
+    db.set_source_spec(module_spec.modulename, module_spec.versionname,
+                       sourcespec)
+    if options.dumpdb:
+        db.json_print()
+    else:
+        # may raise IOError:
+        db_to_repo(options, mngr, db, "commands", arguments)
+        # ^^^ does also unlock the file
+
 def subcmd_db_clone_replace_version(command, arguments, options):
     """implement "db cloneversion/replaceversion".
 
@@ -3424,6 +3464,10 @@ def maincmd_db(commands, options):
         subcmd_db_dependency_delete(c_args, options)
         return
 
+    if cmd=="commands":
+        subcmd_db_commands(c_args, options)
+        return
+
     if cmd=="make-recipes":
         subcmd_db_make_recipes(c_args, options)
         return
@@ -3737,6 +3781,9 @@ sumo -h
         "db dependency-add":
             doc_commands['subcommands for maincommand "db"']\
                              ['db dependency-add MODULE DEPENDENCY'],
+        "db commands":
+            doc_commands['subcommands for maincommand "db"']\
+                             ['db commands MODULE LINES'],
         "db make-recipes":
             doc_commands['subcommands for maincommand "db"']\
                              ['db make-recipes MODULE TARGET LINES'],
