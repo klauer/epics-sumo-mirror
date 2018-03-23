@@ -4,7 +4,7 @@ ME=`basename $0 .sh`
 
 source settings.sh
 
-echo -e "\n-> Test sumo build new and sumo db releasefilename." >&2
+echo -e "\n-> Test sumo build new with make recipes" >&2
 
 DEPSDIR=tmp-sumo-db-make-recipes
 
