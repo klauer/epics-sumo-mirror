@@ -1010,8 +1010,7 @@ def create_source(db, modulename, versionname,
     """
     # pylint: disable=R0913
     #                          Too many arguments
-    sourcespec= sumolib.repos.SourceSpec.from_deps_dict(\
-                    db.module_source_dict(modulename, versionname))
+    sourcespec= db.module_source_object(modulename, versionname)
     try:
         # may raise IOError:
         sumolib.repos.checkout(sourcespec,
