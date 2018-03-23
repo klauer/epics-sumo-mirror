@@ -156,6 +156,7 @@ sumo-db-dependency-add.out: sumo-db-convert.tst
 sumo-db-alias-add.out: sumo-db-convert.tst
 sumo-db-releasefilename.out: sumo-db-convert.tst
 sumo-db-make-recipes.out: sumo-db-convert.tst
+sumo-db-commands.out: sumo-db-convert.tst
 sumo-db-replaceversion.out: sumo-db-convert.tst
 sumo-db-cloneversion.out: sumo-db-convert.tst
 sumo-db-cloneversion-2.out: sumo-db-convert.tst
@@ -178,6 +179,7 @@ sumo-config-make-2.out: sumo-db-convert.tst
 sumo-build-new-0.out: sumo-db-convert.tst
 sumo-build-new-releasefile.out: sumo-db-releasefilename.tst 
 sumo-build-new-make-recipes.out: sumo-db-make-recipes.tst 
+sumo-build-new-commands.out: sumo-db-commands.tst 
 sumo-build-modulespecs.out: sumo-build-new-0.tst sumo-db-convert.tst
 sumo-build-try.out: sumo-build-new-0.tst sumo-db-convert.tst
 sumo-build-new.out: sumo-db-convert.tst

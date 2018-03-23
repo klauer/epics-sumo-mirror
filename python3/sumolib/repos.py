@@ -36,7 +36,7 @@ known_repos=set(("darcs","hg","git","svn","cvs"))
 known_no_repos= set(("path","tar"))
 known_sources= set(known_no_repos).union(known_repos)
 
-known_sourcespec_keys=set(("type", "url", "tag", "rev", "patches"))
+known_sourcespec_keys=set(("type", "url", "tag", "rev", "patches", "commands"))
 
 # ---------------------------------------------------------
 # scan a directory:
@@ -120,6 +120,17 @@ def src_from_dir(directory, hints, verbose, dry_run):
 # ---------------------------------------------------------
 # check out:
 
+def apply_commands(cmds, target_dir, verbose, dry_run):
+    """apply custom commands in module."""
+    old_dir= sumolib.utils.changedir(target_dir)
+    if dry_run or verbose:
+        print("> cd %s" % target_dir)
+    try:
+        for cmd in cmds:
+            sumolib.system.system(cmd, False, False, verbose, dry_run)
+    finally:
+        sumolib.utils.changedir(old_dir)
+
 def checkout(sourcespec, destdir, lock_timeout, verbose, dry_run):
     """check out a working copy.
 
@@ -158,6 +169,9 @@ def checkout(sourcespec, destdir, lock_timeout, verbose, dry_run):
                                    verbose, dry_run)
     else:
         raise ValueError("unsupported repotype: %s" % repotype)
+    cmds= sourcespec.commands()
+    if cmds is not None:
+        apply_commands(cmds, destdir, verbose, dry_run)
     p= sourcespec.patches()
     if p:
         sumolib.patch.apply_patches(destdir, p, verbose, dry_run)
@@ -274,6 +288,7 @@ class SourceSpec(sumolib.JSON.Container):
           rev
           tag
           patches
+          commands
 
         May raise:
             TypeError, ValueError
@@ -358,6 +373,12 @@ class SourceSpec(sumolib.JSON.Container):
         if new_val is None:
             return pars.get("url")
         pars["url"]= new_val
+    def commands(self, new_val= None):
+        """return the patches if they exist."""
+        pars= self.datadict()
+        if new_val is None:
+            return pars.get("commands")
+        pars["commands"]= new_val
     def patches(self, new_val= None):
         """return the patches if they exist."""
         pars= self.datadict()

@@ -267,6 +267,14 @@ this form:
 - ``ssh://``
 - ``file://``
 
+.. _reference-sumo-db-commands:
+
+In the following description, *COMMANDS* means a list of strings that are
+command lines which are executed in the given order inside the module directory
+*after* the module was checked out. Possible patches (see below) are applied
+after the commands. You may find the feature useful for git sub repositories
+which must be initialized by an extra git command.
+
 In the following description of source data, *PATCHFILES* means a list of
 strings that are names of *patchfiles*. These are applied to the source with
 the patch utility after the source is fetched. The strings specifying
@@ -304,13 +312,13 @@ The *source data* has this form::
 
   {
       "tar": {
+          "commands": COMMANDS,
           "patches": PATCHFILES,
           "url": "FILEURL"
       }
   }
 
-The key "patches" is *optional*. If it is given the patches are applied to the
-source in the given order.
+The keys "commands" and "patches" are *optional*. 
 
 "TARFILE" may be a filename or an URL with one of these forms:
 
@@ -328,14 +336,14 @@ The *source data* has this form::
 
   {
       "darcs": {
+          "commands": COMMANDS,
           "patches": PATCHFILES,
           "tag": "TAG",
           "url": "REPOSITORY"
       }
   }
 
-The key "patches" is *optional*. If it is given the patches are applied to the
-source in the given order.
+The keys "commands" and "patches" are *optional*. 
 
 The key "tag" is also *optional*, if it is given it specifies the darcs tag that
 is used to fetch the source. 
@@ -352,6 +360,7 @@ The *source data* has this form::
 
   {
       "hg": {
+          "commands": COMMANDS,
           "patches": PATCHFILES,
           "rev": "REVISION",
           "tag": "TAG",
@@ -359,8 +368,7 @@ The *source data* has this form::
       }
   }
 
-The key "patches" is *optional*. If it is given the patches are applied to the
-source in the given order.
+The keys "commands" and "patches" are *optional*. 
 
 The key "rev" is *optional*, if it is given it specifies the mercurial revision
 that is used to fetch the source. Note that "rev" and "tag" MUST NOT be given
@@ -382,6 +390,7 @@ The *source data* has this form::
 
   {
       "git": {
+          "commands": COMMANDS,
           "patches": PATCHFILES,
           "rev": "REVISION",
           "tag": "TAG",
@@ -389,8 +398,7 @@ The *source data* has this form::
       }
   }
 
-The key "patches" is *optional*. If it is given the patches are applied to the
-source in the given order.
+The keys "commands" and "patches" are *optional*. 
 
 The key "rev" is *optional*, if it is given it specifies the git revision
 that is used to fetch the source. Note that "rev" and "tag" MUST NOT be given
@@ -412,6 +420,7 @@ The *source data* has this form::
 
   {
       "svn": {
+          "commands": COMMANDS,
           "patches": PATCHFILES,
           "rev": "REVISION",
           "tag": "TAG",
@@ -419,8 +428,7 @@ The *source data* has this form::
       }
   }
 
-The key "patches" is *optional*. If it is given the patches are applied to the
-source in the given order.
+The keys "commands" and "patches" are *optional*. 
 
 The key "rev" is *optional*, if it is given it specifies the subversion revision
 that is used to fetch the source. Note that "rev" and "tag" MUST NOT be given
@@ -443,14 +451,14 @@ The *source data* has this form::
 
   {
       "cvs": {
+          "commands": COMMANDS,
           "patches": PATCHFILES,
           "tag": "TAG",
           "url": "REPOSITORY"
       }
   }
 
-The key "patches" is *optional*. If it is given the patches are applied to the
-source in the given order.
+The keys "commands" and "patches" are *optional*. 
 
 The key "tag" is also *optional*, if it is given it specifies the cvs tag
 that is used to fetch the source. 
@@ -793,6 +801,9 @@ dependency-add
 dependency-delete
   delete a dependency of a module
 
+commands
+  define commands to be executed after module checkout
+
 make-recipes
   define special make-recipes for a module
 
@@ -1087,6 +1098,10 @@ patches
   This defines names or URLs for patch files. This is the only name, where
   several values may be provided as a comma separated list.
 
+commands
+  This defines commands that are executed *after* the source code is checked
+  out and *before* any patches are applied.
+
 Note that you can define an empty value (on the bash shell) like in this
 example::
 
@@ -1150,6 +1165,25 @@ db alias-add MODULE DEPENDENCY ALIAS
 Define a new :term:`alias` for a :term:`dependency` of a :term:`module`. MODULE
 here is a :term:`modulespec` of the form MODULE:VERSION that specifies a single
 version of a module.
+
+db commands MODULE LINES
+::::::::::::::::::::::::
+
+Define commands that are executed after a :term:`module` is checked out. See
+also :ref:`"commands"<reference-sumo-db-commands>` in the chapter "The
+dependency database".
+
+MODULE here is a :term:`modulespec` of the form MODULE:VERSION that specifies a
+single version of a module. LINES is a list of space separated strings. It is
+recommended to enclose the line strings in single or double quotes.
+
+Special variables and characters when you use double quotes:
+
+- ``\"``: (bash) A literal double quote character.
+- ``$(VAR)``: (make) Insert value of make or shell variable ``VAR``.
+- ``$$``: (make) A dollar character passed to the shell.
+- ``\\$$``: (make, bash) A literal dollar character passed to the shell.
+- ``\\``: (json, bash) At the end of the json string this means line continuation for bash.
 
 .. _reference-sumo-db-make-recipes:
 
