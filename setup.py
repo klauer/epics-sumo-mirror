@@ -134,7 +134,7 @@ if not os.path.exists(html_build_dir):
     # "make -C doc html":
     subprocess.check_call([os.path.join("administration_tools","doc-rebuild.sh")])
 
-data_files_list= [(doc_install_dir, ["README", "LICENSE"])]
+data_files_list= [(doc_install_dir, ["README.rst", "LICENSE"])]
 
 # add all generated html documentation to data_files_list:
 data_files_list.extend(data_statements(html_install_dir, html_build_dir))
