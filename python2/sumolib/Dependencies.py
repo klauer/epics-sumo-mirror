@@ -287,16 +287,16 @@ class DB(sumolib.JSON.Container):
 
         Returns a list of tuples (modulename, versionname).
         """
-        results= []
+        results= set()
         for modulename in self.iter_modulenames():
             if rx_object.search(modulename):
                 for versionname in self.iter_versions(modulename):
-                    results.append((modulename, versionname))
+                    results.add((modulename, versionname))
                 continue
             for versionname in self.iter_versions(modulename):
-                repr_st= self.module_source_string(modulename, versionname)
-                if rx_object.search(repr_st):
-                    results.append((modulename, versionname))
+                st_= self.module_source_object(modulename, versionname).url()
+                if rx_object.search(st_):
+                    results.add((modulename, versionname))
         return sorted(results)
     def add_alias(self, modulename, versionname,
                   alias_name, real_name):
@@ -390,20 +390,20 @@ class DB(sumolib.JSON.Container):
         d= self.datadict()[modulename][versionname]
         return d.has_key("dependencies")
     def module_source_dict(self, modulename, versionname):
-        """return a dict {type:dict} for the module source."""
+        """return a dict {type:dict} for the module source.
+
+        May raise:
+            KeyError
+        """
         return self.datadict()[modulename][versionname]["source"]
-    def module_source_pair(self, modulename, versionname):
-        """return a tuple (type,dict) for the module source."""
-        l= self.datadict()[modulename][versionname]["source"]
-        return sumolib.utils.single_key_item(l)
-    def module_source_string(self, modulename, versionname):
-        """return the source url or tar-file or path for a module."""
-        (tp,val)= self.module_source_pair(modulename, versionname)
-        if tp not in sumolib.repos.known_sources:
-            raise AssertionError("unexpected source tag '%s' at '%s:%s'" % \
-                    (tp, modulename, versionname))
-        # due to variety of source specs, just return the "repr" string here:
-        return repr(val)
+    def module_source_object(self, modulename, versionname):
+        """return the SourceSpec object for the module.
+
+        May raise:
+            KeyError
+        """
+        src= self.datadict()[modulename][versionname]["source"]
+        return sumolib.repos.SourceSpec.from_deps_dict(src)
     def iter_dependencies(self, modulename, versionname):
         """return an iterator on dependency modulenames of a module."""
         md= self.datadict().get(modulename)
