@@ -36,7 +36,7 @@ elif sys.version_info[0] == 3:
     base_name= 'python3'
     base_dir = 'python3'
 
-__version__="3.3" #VERSION#
+__version__="3.4" #VERSION#
 
 # utilities -------------------------
 
