@@ -67,7 +67,9 @@ Upload the distribution files with::
 
   ./bitbucket-prepare-distfiles.sh
 
-You then have to do the actual uploading in a web browser.
+and follow the instructions printed on the console. Note
+that you have to be logged in at Bitbucket before you can 
+do this. You do the actual uploading in a web browser.
 
 Prepare the local repository
 ++++++++++++++++++++++++++++
@@ -98,7 +100,7 @@ Enter this command::
 Upload to pypi
 ++++++++++++++
 
-Note: ~/pypirc must have this content (password omitted here)::
+Note: ~/.pypirc must have this content (password omitted here)::
 
   [distutils]
   index-servers=
@@ -124,16 +126,27 @@ Run::
 
   ./pypi-test-upload.sh
 
-Now test with these commands::
+Now test with these commands for python 2::
 
-  bash
-  mkdir tmp
+  virtualenv tmp
   cd tmp
-  pip install EPICS-sumo -i https://testpypi.python.org/pypi --prefix `pwd`
-  export PYTHONUSERBASE=`pwd`
-  PATH=`pwd`/bin:$PATH
+  source bin/activate
+  pip install EPICS-sumo -i https://testpypi.python.org/pypi
   sumo -h
-  exit
+  <ctrl-d>
+
+If everything worked, remove the test directory with::
+
+  rm -rf tmp
+
+Now test with these commands for python 3::
+
+  virtualenv-3 tmp
+  cd tmp
+  source bin/activate
+  pip install EPICS-sumo -i https://testpypi.python.org/pypi
+  sumo -h
+  <ctrl-d>
 
 If everything worked, remove the test directory with::
 
