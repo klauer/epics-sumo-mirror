@@ -1187,8 +1187,8 @@ Special variables and characters when you use double quotes:
 
 .. _reference-sumo-db-make-recipes:
 
-db make-recipes MODULE TARGET LINES
-:::::::::::::::::::::::::::::::::::
+db make-recipes MODULE TARGET [LINES]
+:::::::::::::::::::::::::::::::::::::
 
 Define special make recipes for a :term:`module`. See also
 :ref:`"make-recipes"<reference-sumo-make-recipes>` in the chapter "The
@@ -1198,7 +1198,8 @@ MODULE here is a :term:`modulespec` of the form MODULE:VERSION that specifies a
 single version of a module. TARGET must be "all", "clean", "config" or
 "distclean" and specifies the make target for which a recipe is defined. LINES
 is a list of space separated strings. It is recommended to enclose the line
-strings in single or double quotes.
+strings in single or double quotes. If LINES is not given, all special rules
+for the TARGET are removed.
 
 Special variables and characters when you use double quotes:
 
