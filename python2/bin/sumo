@@ -2378,7 +2378,7 @@ def subcmd_db_make_recipes(arguments, options):
         db.json_print()
     else:
         # may raise IOError:
-        db_to_repo(options, mngr, db, "make-recipes", arguments)
+        db_to_repo(options, mngr, db, "make-recipes", [args.TARGET, "..."])
         # ^^^ does also unlock the file
 
 def subcmd_db_releasefilename(arguments, options):
