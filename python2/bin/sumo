@@ -2357,7 +2357,7 @@ def subcmd_db_make_recipes(arguments, options):
     argspec.add("TARGET",
                 completion= lambda o, r: \
                    sumolib.cli.complete_list(KNOWN_MAKERULE_TARGETS, o, r))
-    argspec.add("LINES", array= True, optional= False)
+    argspec.add("LINES", array= True, optional= True)
 
     args= sumolib.cli.process_args(arguments, argspec, options.list,
                                    catch_exceptions)
@@ -3785,7 +3785,7 @@ sumo -h
                              ['db commands MODULE LINES'],
         "db make-recipes":
             doc_commands['subcommands for maincommand "db"']\
-                             ['db make-recipes MODULE TARGET LINES'],
+                             ['db make-recipes MODULE TARGET [LINES]'],
         "db list":
             doc_commands['subcommands for maincommand "db"']\
                              ['db list MODULES'],
