@@ -196,9 +196,9 @@ def anytxt2scalar(txt):
     >>> anytxt2scalar('')
     ''
     """
-    if not isinstance(txt, str):
-        raise TypeError("error, argument must be of type str, not %s" % \
-                        type(txt))
+    if not isinstance(txt, (str, unicode)):
+        raise TypeError(("error, argument must be of type str or unicode, "
+                         "not %s") % type(txt))
     ret= None
     try:
         ret= json.loads(txt)
