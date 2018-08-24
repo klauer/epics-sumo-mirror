@@ -631,8 +631,9 @@ def init_buildcache(scandb_name, builddb, db):
         try:
             # may raise IOError, ValueError:
             buildcache= sumolib.Builds.BuildCache.from_json_file(scandb_name,
-                                                                 False,
-                                                                 LOCK_TIMEOUT)
+                                                                 use_lock=False,
+                                                                 keep_lock= False,
+                                                                 timeout= LOCK_TIMEOUT)
         except (IOError, ValueError) as e:
             raise annotate("Error while loading build database: %s", e)
     buildcache.update_from_builddb(builddb, db)
