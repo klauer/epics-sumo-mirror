@@ -305,6 +305,12 @@ def dict_sets_to_lists(dict_):
 # file utilities
 # -----------------------------------------------
 
+def sumolib_dir():
+    """return the sumolib directory."""
+    # note: later on use ResourceManager API instead of __file__.
+    # see: http://setuptools.readthedocs.io/en/latest/pkg_resources.html#resourcemanager-api
+    return os.path.dirname(os.path.abspath(__file__))
+
 def file_w_open(filename, verbose, dry_run):
     """open a file for write."""
     if verbose:

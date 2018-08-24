@@ -14,6 +14,8 @@ if __name__ == "__main__":
     # "sumolib.[module]".
     sys.path.append("..")
 
+# pylint: disable=wrong-import-position
+import sumolib.utils
 import sumolib.JSON
 
 __version__="3.4.1" #VERSION#
@@ -62,9 +64,8 @@ class ConfigFile(object):
             search_paths= self.__class__.paths_from_env(env_name)
             if not search_paths:
                 # not specified by environment variable:
-                lib_path= os.path.dirname(os.path.abspath(__file__))
                 search_paths=["/etc",
-                              lib_path,
+                              sumolib.utils.sumolib_dir(),
                               os.environ.get("HOME"),
                               os.getcwd()]
             self._paths= []
