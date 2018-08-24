@@ -1,0 +1,10 @@
+FROM fedora:28
+MAINTAINER Goetz Pfeiffer <goetz.pfeiffer@helmholtz-berlin.de>
+
+# first do a system update:
+RUN yum update -y
+
+# install python:
+RUN yum install -y python python3 rpm-build
+
+
