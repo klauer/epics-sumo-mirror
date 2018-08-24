@@ -322,7 +322,7 @@ class SourceSpec(sumolib.JSON.Container):
         def check_dict(allowed_keys, dict_):
             """check if all dict keys are from a given list."""
             return not bool(set(dict_.keys()).difference(set(allowed_keys)))
-        if not isinstance(string, str):
+        if not isinstance(string, (str, unicode)):
             raise TypeError("wrong type of source spec %s" % repr(string))
         if (not string) or string.isspace():
             raise ValueError("invalid source spec %s" % repr(string))
