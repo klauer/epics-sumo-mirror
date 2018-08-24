@@ -58,6 +58,7 @@ KNOWN_MAIN_COMMANDS=set(("build",
 KNOWN_CONFIG_COMMANDS=set(("list",
                            "local",
                            "make",
+                           "new",
                            "show",
                            "standalone" \
                          ))
@@ -121,6 +122,8 @@ KNOWN_CONFIG_OPTIONS=set(("#preload",
 
 KNOWN_MAKERULE_TARGETS= set(("all", "config", "clean", "distclean"))
 
+KNOWN_TEMPLATES= set(("empty", "github"))
+
 CONFIG_ENV_EXPAND =set(("dbdir",
                         "dbrepo",
                         "builddir",
@@ -137,6 +140,9 @@ ENV_HELP="SUMOHELP"
 BUILDDB="BUILDS.DB"
 DB="DEPS.DB"
 STAMPNAME="sumo"
+
+DATA_SUBDIR="data"
+TEMPLATES_SUBDIR="data/templates"
 
 LOCK_TIMEOUT=4
 # timeout for file locking in seconds
@@ -1864,6 +1870,57 @@ def subcmd_config_local(arguments, options):
     ensure_dir(builddir, options.dry_run)
     config.save(CONFIG_NAME, None, options.verbose, options.dry_run)
 
+def subcmd_config_new(arguments, options):
+    """implement "config new".
+
+    May raise:
+        ValueError if TEMPLATE argument is unknown
+        IOError, TypeError, ValueError from load_config_files
+    """
+    argspec= sumolib.cli.CmdSpecs()
+    argspec.add("SUMODIR")
+    argspec.add("TEMPLATE",
+                completion= lambda o, r: \
+                   sumolib.cli.complete_list(KNOWN_TEMPLATES, o, r))
+    args= sumolib.cli.process_args(arguments, argspec, options.list,
+                                   catch_exceptions)
+
+    # may raise IOError, TypeError, ValueError:
+    (options, config)= load_config_files(options, disable_loading= True)
+
+    sumodir= os.path.abspath(args.SUMODIR) # pylint: disable=no-member
+    if os.path.exists(sumodir):
+        if not os.path.isdir(sumodir):
+            sys.exit("error: '%s' is a file" % sumodir)
+        else:
+            sys.exit("error: '%s' already exists" % sumodir)
+    #builddb= sumolib.Builds.DB(use_lock= False,
+    #                           lock_timeout= LOCK_TIMEOUT)
+    # pylint: disable=no-member
+    if args.TEMPLATE == "empty":
+        db= sumolib.Dependencies.DB(use_lock= False,
+                                    lock_timeout= LOCK_TIMEOUT)
+    elif args.TEMPLATE == "github":
+        t_dir= os.path.join(sumolib.utils.sumolib_dir(),
+                            TEMPLATES_SUBDIR, "github")
+        db= db_from_json_file(db_f(t_dir), use_lock= False)
+    else:
+        l=" ".join(sorted(KNOWN_TEMPLATES))
+        raise ValueError("only %s are allowed for TEMPLATE got %s" % \
+                         (l,repr(args.TEMPLATE)))
+    # pylint: enable=no-member
+
+    # create a dependency database file in subdir "database":
+    dbdir= os.path.join(sumodir, "database")
+    ensure_dir(dbdir, options.dry_run)
+    db.json_save(db_f(dbdir), options.verbose, options.dry_run)
+    config.set("dbdir", dbdir)
+    # create a build database file in subdir "build":
+    builddir= os.path.join(sumodir, "build")
+    config.set("builddir", builddir)
+    ensure_dir(builddir, options.dry_run)
+    config.save(CONFIG_NAME, None, options.verbose, options.dry_run)
+
 # -----------------------------------------------
 # db subcommands
 # -----------------------------------------------
@@ -3341,6 +3398,10 @@ def maincmd_config(commands, options):
         # may raise EOFError, IOError, TypeError, ValueError:
         subcmd_config_local(c_args, options)
         return
+    if cmd=="new":
+        # may raise IOError, TypeError, ValueError:
+        subcmd_config_new(c_args, options)
+        return
 
 def maincmd_lock(arguments, options):
     """implement "lock" maincommand.
@@ -3744,6 +3805,9 @@ sumo -h
             doc_commands['subcommands for maincommand "config"']\
                              ['config make FILENAME [OPTIONNAMES]'],
 
+        "config new":
+            doc_commands['subcommands for maincommand "config"']\
+                             ['config new DIRECTORY TEMPLATE'],
         "config standalone":
             doc_commands['subcommands for maincommand "config"']\
                              ['config standalone DIRECTORY'],

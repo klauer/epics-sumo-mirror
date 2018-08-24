@@ -5,6 +5,8 @@ setup.py file for sumo.
 See http://docs.python.org/install
 on how to use setup.py
 """
+# pylint: disable=line-too-long
+
 # see : http://stackoverflow.com/questions/25337706/setuptools-vs-distutils-why-is-distutils-still-a-thing
 # maybe use this in the future:
 #
@@ -22,9 +24,6 @@ from distutils.core import setup
 
 import os
 import os.path
-import shutil
-import glob
-import subprocess
 import sys
 
 # pylint: disable=invalid-name
@@ -39,6 +38,26 @@ elif sys.version_info[0] == 3:
 __version__="3.4.1" #VERSION#
 
 # utilities -------------------------
+
+def find_dirs(path):
+    """find directories below a given path.
+
+    here is an example of the returned data structure:
+    ['doc/_build/html',
+     'doc/_static',
+     'doc/_build',
+     'doc',
+     'doc/_build/html/_sources',
+     'doc/_build/doctrees',
+     'doc/_build/html/_images',
+     'doc/_build/html/_static']
+    """
+    dirs= set()
+    for dirpath, _, _ in os.walk(path):
+        if dirpath==os.curdir:
+            continue
+        dirs.add(dirpath)
+    return list(dirs)
 
 def find_files(path):
     """find files and directories below a given path.
@@ -102,7 +121,20 @@ def path_rebase(path, base):
         return ""
     return os.path.join(*path_l[len(base_l):])
 
-def data_statements(install_path, source_path):
+def dir_glob_list(module_dir, subdir):
+    """add entries for package_data.
+
+    returns something like:
+    [ "subdir/*",
+      "subdir/d1/*",
+      "subdir/d2/*"
+    ]
+    """
+    dirs= find_dirs(os.path.join(module_dir, subdir))
+    subdirs= [path_rebase(d, module_dir) for d in dirs]
+    return [os.path.join(d, "*") for d in subdirs]
+
+def data_files_make_list(install_path, source_path):
     """create data statements for arbitrary files."""
     filedict= find_files(source_path)
     data_dict= {}
@@ -134,10 +166,14 @@ if not os.path.exists(html_build_dir):
     sys.exit("Error, your distribution is incomplete: "
              "HTML documentation missing")
 
-data_files_list= [(doc_install_dir, ["README.rst", "LICENSE"])]
+if not os.path.exists(os.path.join(base_dir,"sumolib","data")):
+    sys.exit("Error, your distribution is incomplete: "
+             "extra data files are missing")
 
-# add all generated html documentation to data_files_list:
-data_files_list.extend(data_statements(html_install_dir, html_build_dir))
+data_files= [(doc_install_dir, ["README.rst", "LICENSE"])]
+
+# add all generated html documentation to data_files:
+data_files.extend(data_files_make_list(html_install_dir, html_build_dir))
 
 name='epics-sumo'
 if "bdist_rpm" in sys.argv:
@@ -183,10 +219,12 @@ setup(name=name,
 
       packages=['sumolib'],
       package_dir= {'sumolib': os.path.join(base_dir, "sumolib")},
-      #package_data={'sumo': ['data/*']},
+      package_data={'sumolib': \
+                        dir_glob_list(os.path.join(base_dir, "sumolib"),
+                                      "data")},
       # the data_files parameter is especially needed for the
       # rpm file generation:
-      data_files= data_files_list,
+      data_files= data_files,
       license= "GPLv3",
       scripts=[os.path.join(base_dir,p) \
                for p in ['bin/sumo','bin/sumo-scan']],

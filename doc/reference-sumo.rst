@@ -904,6 +904,28 @@ and options from the command line. If FILENAME is '-' dump to the console.
 OPTIONNAMES is an optional list of long option names. If OPTIONNAMES are
 specified, only options from this list are saved in the configuration file.
 
+config new DIRECTORY TEMPLATE
+:::::::::::::::::::::::::::::
+
+This command is used to create a new sumo directory with a new build directory
+and a new dependency database. 
+
+It creates a new configuration for sumo. DIRECTORY must not yet exist and is created by this command. This command takes all settings and command line options
+but sets dbdir to DIRECTORY/database. It also sets
+builddir to DIRECTORY/build. TEMPLATE determines how the dependency databasse file is created. Currently 2 values are known:
+
+empty
+  Create an empty dependency database.
+
+github
+  Create a sample dependency database file with some entries for EPICS base,
+  ASYN and the sequencer. In this sample all module repositories are fetched
+  from the internet, mostly github.
+
+If there is a file "sumo.config" in the current working directory it is copied
+to "sumo.config.bak". A new file "sumo.config" is then created in the current
+working directory.
+
 config standalone DIRECTORY
 :::::::::::::::::::::::::::
 

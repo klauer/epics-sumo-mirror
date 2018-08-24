@@ -15,6 +15,13 @@ Make up a new version VERSION and create it with::
 
   ./new-version.sh <VERSION>
 
+Setup data directories
+++++++++++++++++++++++
+
+Enter this command::
+
+  ./mk-data.sh
+
 Rebuild documentation
 +++++++++++++++++++++
 
