@@ -562,7 +562,7 @@ def process(options, commands):
             new= {}
             for (p, s) in repo_data.items():
                 sspec= sumolib.repos.SourceSpec(s)
-                if sspec.sourcetype=="path":
+                if sspec.sourcetype()=="path":
                     continue
                 new[p]= s
             bag["missing-repo"]= new
@@ -570,7 +570,7 @@ def process(options, commands):
             new= {}
             for (p, s) in repo_data.items():
                 sspec= sumolib.repos.SourceSpec(s)
-                if sspec.sourcetype=="path":
+                if sspec.sourcetype()=="path":
                     continue
                 if sspec.tag is None:
                     new[p]= s
