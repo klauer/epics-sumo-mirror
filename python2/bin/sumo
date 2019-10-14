@@ -1303,8 +1303,8 @@ def create_database(deps, repoinfo, groups, dir_patches, url_patches):
                         versionname= sumolib.utils.split_treetag(subdir)[0]
                     else:
                         versionname= "TAR-%s" % subdir
-                    # we apply not the dir_patched to the path of the tar file
-                    # here.
+                    src_sourcespec.url(url_patcher.apply(\
+                                           src_sourcespec.url()))
                 elif src_sourcespec.is_repo():
                     tag= src_sourcespec.tag()
 
