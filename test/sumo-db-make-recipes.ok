@@ -326,6 +326,7 @@ DB file:
             "dependencies": [
                 "BASE"
             ],
+            "make-recipes": {},
             "source": {
                 "git": {
                     "tag": "R3-0",
