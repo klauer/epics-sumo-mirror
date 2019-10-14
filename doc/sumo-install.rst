@@ -17,8 +17,11 @@ pypi. The sections below describe all installation options.
 Requirements
 ------------
 
-Sumo requires at least `Python <https://www.python.org>`_ version 2.5 or newer.
-It can also run with python 3.
+Sumo requires at least `Python <https://www.python.org>`_ version 2.5 or newer
+or version 3.2 or newer.
+
+**Note**: Python 2 support of sumo is deprecated! Future versions will require Python 3. See also
+`Python 2 or Python 3 <https://wiki.python.org/moin/Python2orPython3>`_.
 
 Sumo is tested on `debian <https://www.debian.org>`_ and 
 `Fedora <https://getfedora.org>`_ linux distributions but should run on all
@@ -32,12 +35,11 @@ Install from pypi with pip
 --------------------------
 
 In order to install sumo with `pip <https://en.wikipedia.org/wiki/Pip_(package_manager)>`_, 
-you use the command [1]_ [2]_::
+you use the command [1]_::
 
-  pip3 install EPICS-sumo
+  pip install EPICS-sumo
 
-.. [1] This is the example for python 3, for python 2 the command is "pip"
-.. [2] Your python 3 version of pip may have a different name, e.g. "pip-3" or "pip-3.2"
+.. [1] You may have to use ``pip3`` or ``pip-3.2`` or a similar command instead of ``pip`` on your system to use python 3.
 
 You find documentation for the usage of pip at `Installing Python Modules
 <https://docs.python.org/3/installing/index.html#installing-index>`_.
@@ -115,7 +117,8 @@ complete list of all possibilities see
 
 Note that the python interpreter you use to start setup.py determines for which python version sumo is installed. 
 
-In order to install for python 2.x use::
+In order to install for python 2.x use the following. Note that python 2
+support is **deprecated**::
 
   python2 setup.py [options]
 
@@ -124,7 +127,7 @@ In order to install for python 3.x use::
   python3 setup.py [options]
 
 Whenever ``python`` is mentioned in a command line in the following text remember
-to use ``python2`` or ``python3`` instead.
+that you may have to use ``python3`` instead.
 
 Install as root to default directories
 ::::::::::::::::::::::::::::::::::::::

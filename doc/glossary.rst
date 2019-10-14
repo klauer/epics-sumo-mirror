@@ -157,9 +157,9 @@ Here we define some of the terms used in the following text.
   regular expression
       A regular expression is a way to specify a pattern in order to match
       strings.  For further information on regular expressions see `re -
-      Regular expressions <http://docs.python.org/2/library/re.html>`_. For an
+      Regular expressions <http://docs.python.org/3/library/re.html>`_. For an
       introduction to regular expressions see 
-      `Regular Expression HOWTO <http://docs.python.org/2/howto/regex.html#regex-howto>`_.
+      `Regular Expression HOWTO <http://docs.python.org/3/howto/regex.html#regex-howto>`_.
 
   scanfile
       This is the file created by :doc:`"sumo-scan all"<reference-sumo-scan>`.
