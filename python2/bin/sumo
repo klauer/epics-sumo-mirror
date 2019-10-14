@@ -719,6 +719,7 @@ def gather_dependencies(dist_dict, db, modulename, versionname,
     return gathered_deps
 
 def _add_dependencies(module_dict, db, build_module_dict,
+                      buildtag,
                       modulename, versionname):
     """recursively add missing dependencies.
 
@@ -726,8 +727,10 @@ def _add_dependencies(module_dict, db, build_module_dict,
 
     May raise:
         KeyError from db.assert_module
+        KeyError from build_module_dict[dep]
         KeyError from _add_dependencies
     """
+    # pylint: disable=too-many-arguments
     try:
         # may raise KeyError:
         db.assert_module(modulename, versionname)
@@ -738,10 +741,18 @@ def _add_dependencies(module_dict, db, build_module_dict,
     for dep in db.iter_dependencies(modulename, versionname):
         if module_dict.has_key(dep):
             continue
-        version_present= build_module_dict[dep]
+        # may raise KeyError:
+        try:
+            version_present= build_module_dict[dep]
+        except KeyError as e:
+            raise annotate(("Error: build %s does not contain module %s "
+                            "although it should due to a dependency. "
+                            "You should delete this inconsistent "
+                            "build.") % (buildtag,dep), e)
         module_dict[dep]= version_present
         # may raise KeyError:
         _add_dependencies(module_dict, db, build_module_dict,
+                          buildtag,
                           dep, version_present)
 
 def get_dependencies(module_dict, db, builddb, buildtag):
@@ -757,7 +768,8 @@ def get_dependencies(module_dict, db, builddb, buildtag):
     for modulename, versionname in modules:
         # may raise KeyError:
         _add_dependencies(module_dict, db,
-                          build_module_dict, modulename, versionname)
+                          build_module_dict, buildtag,
+                          modulename, versionname)
 
 def builddb_match(dist_dict, db, builddb, modulename, versionname):
     """try to find matching deps in builddb.
