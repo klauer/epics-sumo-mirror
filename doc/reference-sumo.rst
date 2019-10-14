@@ -786,7 +786,7 @@ appconvert
   convert a scanfile to a MODULES file for an application
 
 modconvert
-  convert a scanfile to DB file format for a list of supports
+  print new DB file entries for the given MODULES from a scanfile
 
 edit
   edit the dependency file with an editor
