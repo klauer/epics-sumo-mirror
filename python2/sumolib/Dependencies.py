@@ -331,8 +331,9 @@ class DB(sumolib.JSON.Container):
         if (not releasefilename) or (releasefilename==default_releasefile):
             if m_dict.has_key("releasefile"):
                 del m_dict["releasefile"]
-            return
+            return None
         m_dict["releasefile"]= releasefilename
+        return None
     def weight(self, modulename, versionname, new_weight= None):
         """set the weight factor."""
         if new_weight is None:
@@ -340,6 +341,7 @@ class DB(sumolib.JSON.Container):
         if not isinstance(new_weight, int):
             raise TypeError("Error, %s is not an integer" % repr(new_weight))
         self.datadict()[modulename][versionname]["weight"]= new_weight
+        return None
     def set_make_recipes(self, modulename, versionname, target, data):
         """get or define new recipes for the makefile.
 

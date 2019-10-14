@@ -33,7 +33,7 @@ class ConfigFile(object):
         """read configuration paths from environment variable."""
         val= os.environ.get(varname)
         if not val:
-            return
+            return None
         # allow ":" and ";" as separators:
         if platform.system()=="Windows":
             sep= ";"

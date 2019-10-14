@@ -33,14 +33,14 @@ HELP_OPTS= {"-h"     : HELP_NAME,
 # completion utilities
 # -----------------------------------------------
 
-def complete_list(list_, element, dummy):
+def complete_list(list_, element, _):
     """complete for a given list."""
     if not element:
         # just return a list of all modules
         return list_
     return [e for e in list_ if e.startswith(element)]
 
-def complete_file(pattern, dummy):
+def complete_file(pattern, _):
     """return all files for a pattern for command completion"""
     if pattern is None:
         pattern= "*"
@@ -51,7 +51,7 @@ def complete_file(pattern, dummy):
         pattern+= "*"
     return [f for f in glob.glob(pattern) if os.path.isfile(f)]
 
-def complete_dir(pattern, dummy):
+def complete_dir(pattern, _):
     """return all files for a pattern."""
     if pattern is None:
         return [f for f in glob.glob("*") if os.path.isdir(f)]
@@ -715,6 +715,7 @@ def process_opts(args, optionspecs, catch_exceptions, testmode= False):
     options_off= False
     optionspec= None
 
+    # pylint: disable=no-else-return
     i=-1
     while True:
         i+=1
@@ -1077,11 +1078,11 @@ def process_args(cli_args, argspec, completion_mode,
         # no cli_args expected
         if completion_mode:
             my_exit()
-            return
+            return None
         if not cli_args:
             return Arguments()
         my_exit("error, unexpected arguments: %s" % (" ".join(cli_args)))
-        return
+        return None
     if not isinstance(argspec, CmdSpecs):
         raise TypeError("argspec '%s' has wrong type" % repr(argspec))
     argspec.start_get()
@@ -1107,7 +1108,7 @@ def process_args(cli_args, argspec, completion_mode,
                     raise
                 my_exit(str(e))
             my_exit()
-            return
+            return None
         result.put(name, arg, is_array= spec.array)
     if not argspec.more():
         if completion_mode:
@@ -1124,12 +1125,12 @@ def process_args(cli_args, argspec, completion_mode,
             # if (rargs) is kind of an error here, just do nothing in
             # completion mode:
             my_exit()
-            return
+            return None
         if rargs:
             # extra arguments
             my_exit("error, unexpected arguments: %s" % \
                  (" ".join(rcpy(rargs))))
-            return
+            return None
     else:
         if completion_mode:
             if not spec.name:
@@ -1148,12 +1149,12 @@ def process_args(cli_args, argspec, completion_mode,
                     raise
                 my_exit(str(e))
             my_exit()
-            return
+            return None
         while argspec.more():
             (name, spec)= argspec.get()
             if not spec.optional:
                 my_exit("error, mandatory argument %s missing" % name)
-                return
+                return None
             # define the argument as None in the result object:
             result.declare(name, spec.array)
     # when the command was successfully parsed, clear cache files that may have

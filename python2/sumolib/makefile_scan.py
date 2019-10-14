@@ -49,8 +49,7 @@ def _scan(filenames, external_definitions= None,
           verbose= False, dry_run= False):
     """scan makefile-like definitions.
     """
-    # pylint: disable=R0914
-    #                          Too many local variables
+    # pylint: disable=too-many-branches, too-many-locals
     for f in filenames:
         if not os.path.exists(f):
             raise IOError("file \"%s\" does not exist" % f)
@@ -153,5 +152,3 @@ def scan(filenames, external_definitions= None, pre= None,
                 continue
         new[k]= v
     return new
-
-

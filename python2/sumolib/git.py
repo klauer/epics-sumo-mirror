@@ -50,7 +50,7 @@ class Repo(object):
                              self.verbose, self.dry_run)
         except IOError, _:
             # remote repo could not be contacted.
-            return
+            return None
         for line in reply.splitlines():
             line= line.strip()
             # look for "Push" url:
@@ -60,7 +60,7 @@ class Repo(object):
                 if patcher is not None:
                     repo= patcher.apply(repo)
                 return repo
-        return
+        return None
     def _local_changes(self, matcher):
         """returns True if there are uncomitted changes.
 
@@ -141,7 +141,7 @@ class Repo(object):
                 tags.append(line)
         if not tags:
             # no tags found:
-            return
+            return None
         # return the first tag of the sorted list:
         tags.sort()
         return tags[0]
@@ -235,10 +235,10 @@ class Repo(object):
         #                          Method could be a function
         repodir= os.path.join(directory,".git")
         if not os.path.exists(repodir):
-            return
+            return None
         if hints.get("write check"):
             if not os.access(repodir, os.W_OK):
-                return
+                return None
         obj= cls(directory, hints, verbose, dry_run)
         return obj
     def source_spec(self):

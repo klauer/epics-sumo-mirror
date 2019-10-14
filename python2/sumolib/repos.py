@@ -84,7 +84,7 @@ def repo_from_dir(directory, hints, verbose, dry_run):
     obj= sumolib.cvs.Repo.scan_dir(directory, hints, verbose, dry_run)
     if obj is not None:
         return obj
-    return
+    return None
 
 def src_from_dir(directory, hints, verbose, dry_run):
     """scan a directory and return a repository object.
@@ -361,30 +361,35 @@ class SourceSpec(sumolib.JSON.Container):
         if new_val is None:
             return pars["url"]
         pars["url"]= new_val
+        return None
     def tag(self, new_val= None):
         """return the tag if it exists."""
         pars= self.datadict()
         if new_val is None:
             return pars.get("tag")
         pars["tag"]= new_val
+        return None
     def url(self, new_val= None):
         """return the url if it exists."""
         pars= self.datadict()
         if new_val is None:
             return pars.get("url")
         pars["url"]= new_val
+        return None
     def commands(self, new_val= None):
         """return the patches if they exist."""
         pars= self.datadict()
         if new_val is None:
             return pars.get("commands")
         pars["commands"]= new_val
+        return None
     def patches(self, new_val= None):
         """return the patches if they exist."""
         pars= self.datadict()
         if new_val is None:
             return pars.get("patches")
         pars["patches"]= new_val
+        return None
     def spec_val(self):
         """return the *value* of the source specification.
         """
@@ -619,12 +624,13 @@ class ManagedRepo(object):
                                  "database repository couldn't be "
                                  "contacted, forcing mode 'get'.\n")
                 sys.stderr.flush()
+        return
 
     def local_changes(self):
         """return if there are local changes."""
         if self.sourcespec is None:
             # for the "empty" ManagedRepo object just return <None>:
-            return
+            return None
         return self.repo_obj.local_changes
     def commit(self, message):
         """commit changes."""

@@ -52,10 +52,9 @@ def system(cmd, catch_stdout, catch_stderr, verbose, dry_run):
     OSError(errno,strerr)
     ValueError
     """
-    (child_stdout, child_stderr, rc)= system_rc(
-                                            cmd,
-                                            catch_stdout, catch_stderr,
-                                            verbose, dry_run)
+    (child_stdout, child_stderr, rc)= system_rc(cmd,
+                                                catch_stdout, catch_stderr,
+                                                verbose, dry_run)
     if rc!=0:
         if catch_stderr:
             raise IOError(rc,
@@ -71,7 +70,7 @@ def test_program(cmd):
     """test if a program exists."""
     if cmd in program_tests:
         # already checked
-        return
+        return None
     try:
         system(cmd+" --version", True, True, False, False)
     except IOError, e:
@@ -79,6 +78,7 @@ def test_program(cmd):
             raise IOError("Error, %s: command not found" % cmd)
         raise e
     program_tests.add(cmd)
+    return None
 
 def _test():
     """perform internal tests."""

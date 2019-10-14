@@ -242,7 +242,7 @@ class Repo(object):
             _cvs_unset_ssh()
         if rc!=0:
             # contacting the remote repo failed
-            return
+            return None
         return default_repo
     def _local_changes(self, matcher):
         """returns True if there are uncomitted changes.
@@ -376,10 +376,10 @@ class Repo(object):
         #                          Method could be a function
         repodir= os.path.join(directory,"CVS")
         if not os.path.exists(repodir):
-            return
+            return None
         if hints.get("write check"):
             if not os.access(repodir, os.W_OK):
-                return
+                return None
         obj= cls(directory, hints, verbose, dry_run)
         return obj
     def source_spec(self):
