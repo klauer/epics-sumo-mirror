@@ -61,6 +61,7 @@ def system(cmd, catch_stdout, catch_stderr, verbose, dry_run):
                                                 catch_stdout, catch_stderr,
                                                 verbose, dry_run)
     if rc!=0:
+        # pylint: disable=no-else-raise
         if catch_stderr:
             raise IOError(rc,
                           "cmd \"%s\", errmsg \"%s\"" % (cmd,child_stderr))

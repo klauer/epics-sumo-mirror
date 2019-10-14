@@ -50,4 +50,3 @@ def get(url, dest, verbose, dry_run):
         urllib.request.urlretrieve(url, dest)
         return
     raise ValueError("error, url '%s' not supported" % url)
-

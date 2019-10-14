@@ -26,7 +26,7 @@ def assert_darcs():
     """ensure that darcs exists."""
     sumolib.system.test_program("darcs")
 
-class Repo(object):
+class Repo():
     """represent a darcs repository."""
     # pylint: disable=R0902
     #                          Too many instance attributes
@@ -42,17 +42,17 @@ class Repo(object):
                                     self.verbose, self.dry_run)
         except IOError as _:
             # probably no darcs repo found
-            return
+            return None
         for line in reply.splitlines():
             m= self.__class__.rx_darcs_repo.match(line)
             if m:
                 return m.group(1).strip()
-        return
+        return None
     def _find_remote(self, patcher):
         """find and contact the remote repository."""
         default_repo= self._default_repo()
         if default_repo is None:
-            return
+            return None
         if patcher is not None:
             default_repo= patcher.apply(default_repo)
         assert_darcs()
@@ -67,7 +67,7 @@ class Repo(object):
                                   self.verbose, self.dry_run)
         except IOError as _:
             # probably no darcs repo found
-            return
+            return None
         return default_repo
     def _local_changes(self, matcher):
         """returns True if there are unrecorded changes.
@@ -212,10 +212,10 @@ class Repo(object):
         #                          Method could be a function
         repodir= os.path.join(directory,"_darcs")
         if not os.path.exists(repodir):
-            return
+            return None
         if hints.get("write check"):
             if not os.access(repodir, os.W_OK):
-                return
+                return None
         obj= cls(directory, hints, verbose, dry_run)
         return obj
     def source_spec(self):

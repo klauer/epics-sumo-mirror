@@ -56,8 +56,7 @@ def _make_url(root, repo):
         if path.startswith(":ext:"):
             path= path.replace(":ext:", "", 1)
         return "ssh://%s" % path
-    else:
-        return path
+    return path
 
 def _parse_url(url):
     """parse a sumo URL and create paths for CVS.
@@ -197,7 +196,7 @@ def assert_cvs():
     """ensure that cvs exists."""
     sumolib.system.test_program("cvs")
 
-class Repo(object):
+class Repo():
     """represent a cvs repository."""
     # pylint: disable=R0902
     #                          Too many instance attributes
@@ -242,7 +241,7 @@ class Repo(object):
             _cvs_unset_ssh()
         if rc!=0:
             # contacting the remote repo failed
-            return
+            return None
         return default_repo
     def _local_changes(self, matcher):
         """returns True if there are uncomitted changes.
@@ -376,10 +375,10 @@ class Repo(object):
         #                          Method could be a function
         repodir= os.path.join(directory,"CVS")
         if not os.path.exists(repodir):
-            return
+            return None
         if hints.get("write check"):
             if not os.access(repodir, os.W_OK):
-                return
+                return None
         obj= cls(directory, hints, verbose, dry_run)
         return obj
     def source_spec(self):
@@ -397,8 +396,7 @@ class Repo(object):
 
         if self.remote_url is None:
             raise AssertionError("no remote_url")
-        else:
-            d["url"]= self.remote_url
+        d["url"]= self.remote_url
         return d
     @staticmethod
     def checkout(spec, destdir, lock_timeout, verbose, dry_run):
@@ -502,4 +500,3 @@ class Repo(object):
         if rc:
             msg="error, 'cvs update' failed"
             raise IOError(msg)
-        return

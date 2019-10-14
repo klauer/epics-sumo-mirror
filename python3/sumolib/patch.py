@@ -48,5 +48,3 @@ def apply_patches(destdir, patchlist, verbose, dry_run):
         dest_path= os.path.join(ap_destdir, filename)
         sumolib.fileurl.get(p, dest_path, verbose, dry_run)
         call_patch(dest_path, destdir, verbose, dry_run)
-
-

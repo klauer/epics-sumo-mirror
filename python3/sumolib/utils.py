@@ -181,7 +181,7 @@ def opt_join(option, do_sort= False):
     ['a', 'b', 'c', 'd', 'e', 'f']
     """
     if option is None:
-        return
+        return None
     lst= " ".join(option).split()
     if do_sort:
         lst.sort()
@@ -411,7 +411,7 @@ def changedir(newdir):
     If newdir is empty, return <None>.
     """
     if not newdir:
-        return
+        return None
     cwd= os.getcwd()
     os.chdir(newdir)
     return cwd
@@ -542,7 +542,7 @@ def tag2version(ver):
     >>> tag2version("")
     ''
     """
-    if len(ver)<1:
+    if not ver:
         return ver
     mode=0
     # pylint: disable=consider-using-enumerate
@@ -617,7 +617,7 @@ def list_update(list1, list2):
 # classes
 # -----------------------------------------------
 
-class RegexpMatcher(object):
+class RegexpMatcher():
     """apply one or more regexes on strings."""
     def __init__(self, regexes=None):
         r"""initialize from a list of regexes.
@@ -649,7 +649,7 @@ class RegexpMatcher(object):
                 return True
         return False
 
-class RegexpPatcher(object):
+class RegexpPatcher():
     """apply one or more regexes on strings."""
     def __init__(self, tuples=None):
         r"""initialize from a list of tuples.
@@ -676,7 +676,7 @@ class RegexpPatcher(object):
             str_= rx.sub(repl, str_)
         return str_
 
-class Hints(object):
+class Hints():
     """Combine hints for sumo-scan"""
     _empty= {}
     def __init__(self, specs= None):

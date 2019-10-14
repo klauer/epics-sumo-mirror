@@ -34,8 +34,7 @@ def current_user():
     """return the current user in a hopefully portable way."""
     if pwd:
         return pwd.getpwuid(os.geteuid()).pw_name
-    else:
-        return getpass.getuser()
+    return getpass.getuser()
 
 # -----------------------------------------------
 # exceptions
@@ -43,7 +42,6 @@ def current_user():
 
 class LockedError(Exception):
     """This is raised when we can't get a lock."""
-    pass
 
 class AccessError(Exception):
     """No rights to create a lock.
@@ -51,7 +49,6 @@ class AccessError(Exception):
     This is raised when we can't create a lock due to access rights on the
     directory
     """
-    pass
 
 class NoSuchFileError(Exception):
     """Cannot create lock, path does not exist.
@@ -59,7 +56,6 @@ class NoSuchFileError(Exception):
     This is raised when we can't create a lock since the file path where we
     want to create it doesn't exist.
     """
-    pass
 
 # -----------------------------------------------
 # file locking wrapper
@@ -69,7 +65,7 @@ class NoSuchFileError(Exception):
 # order to lock the file when the sumo-edit tool is used at the same
 # time.
 
-class MyLock(object):
+class MyLock():
     """Implement a simple file locking mechanism."""
     # pylint: disable=R0903
     #                          Too few public methods
@@ -112,6 +108,7 @@ class MyLock(object):
                     os.mkdir(self.lockname)
                     open(os.path.join(self.lockname,self.info),'w').close()
             except OSError as e:
+                # pylint: disable=no-else-raise
                 # probably "File exists"
                 if e.errno==errno.EEXIST:
                     if tmo>0:
@@ -187,6 +184,7 @@ class MyLock(object):
                                  "have a lock")
         self._filename= filename_
         self.lockname= "%s.lock" % self._filename
+        return None
 
 # -----------------------------------------------
 # edit with lock:
