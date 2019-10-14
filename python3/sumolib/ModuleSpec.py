@@ -12,6 +12,8 @@ if __name__ == "__main__":
     # "sumolib.[module]".
     sys.path.append("..")
 
+# pylint: disable=wrong-import-position
+
 import sumolib.utils
 import sumolib.JSON
 
@@ -24,7 +26,7 @@ assert __version__==sumolib.JSON.__version__
 # modulespecification
 # -----------------------------------------------
 
-class Spec(object):
+class Spec():
     """a class representing a single module specification."""
     def __init__(self, modulename, versionname, versionflag):
         """initialize the object.
@@ -189,7 +191,7 @@ class Spec(object):
         return Spec.compare_versions(self.versionname, version,
                                      self.versionflag)
 
-class Specs(object):
+class Specs():
     """A class representing a list of Spec objects."""
     # pylint: disable=R0903
     #         Too few public methods

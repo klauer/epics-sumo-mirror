@@ -15,7 +15,7 @@ assert __version__==sumolib.system.__version__
 # Repo class
 # -----------------------------------------------
 
-class Repo(object):
+class Repo():
     """represent a path."""
     def _hint(self, name):
         """return the value of hint "name"."""

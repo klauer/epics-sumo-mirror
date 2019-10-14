@@ -84,7 +84,7 @@ def repo_from_dir(directory, hints, verbose, dry_run):
     obj= sumolib.cvs.Repo.scan_dir(directory, hints, verbose, dry_run)
     if obj is not None:
         return obj
-    return
+    return None
 
 def src_from_dir(directory, hints, verbose, dry_run):
     """scan a directory and return a repository object.
@@ -204,6 +204,7 @@ class SourceSpec(sumolib.JSON.Container):
         if type_ is None:
             raise ValueError(("incomplete SourceSpec %s cannot be "
                               "converted to dict\n") % repr(self))
+        # pylint: disable=no-else-return
         if type_=="path":
             # for 'path' it's a simple string:
             url= d.get("url")
@@ -361,30 +362,35 @@ class SourceSpec(sumolib.JSON.Container):
         if new_val is None:
             return pars["url"]
         pars["url"]= new_val
+        return None
     def tag(self, new_val= None):
         """return the tag if it exists."""
         pars= self.datadict()
         if new_val is None:
             return pars.get("tag")
         pars["tag"]= new_val
+        return None
     def url(self, new_val= None):
         """return the url if it exists."""
         pars= self.datadict()
         if new_val is None:
             return pars.get("url")
         pars["url"]= new_val
+        return None
     def commands(self, new_val= None):
         """return the patches if they exist."""
         pars= self.datadict()
         if new_val is None:
             return pars.get("commands")
         pars["commands"]= new_val
+        return None
     def patches(self, new_val= None):
         """return the patches if they exist."""
         pars= self.datadict()
         if new_val is None:
             return pars.get("patches")
         pars["patches"]= new_val
+        return None
     def spec_val(self):
         """return the *value* of the source specification.
         """
@@ -427,9 +433,8 @@ class SourceSpec(sumolib.JSON.Container):
             if type_ is None:
                 raise ValueError("no source type defined in %s" % \
                                  repr(other))
-            else:
-                # assume same type:
-                o_type_= type_
+            # assume same type:
+            o_type_= type_
         if type_!=o_type_:
             # different type, replace everything:
             self.copy_spec(other)
@@ -468,7 +473,7 @@ class SourceSpec(sumolib.JSON.Container):
 # ---------------------------------------------------------
 # ManagedRepo class
 
-class ManagedRepo(object):
+class ManagedRepo():
     # pylint: disable=too-many-instance-attributes
     """Object for managing data in a repository.
 
@@ -624,7 +629,7 @@ class ManagedRepo(object):
         """return if there are local changes."""
         if self.sourcespec is None:
             # for the "empty" ManagedRepo object just return <None>:
-            return
+            return None
         return self.repo_obj.local_changes
     def commit(self, message):
         """commit changes."""

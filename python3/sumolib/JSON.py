@@ -57,11 +57,9 @@ else:
 
 class ParseError(Exception):
     """This is raised when the JSON data is invalid."""
-    pass
 
 class InconsistentError(Exception):
     """This is raised when we cannot get consistent JSON data."""
-    pass
 
 # -----------------------------------------------
 # JSON functions
@@ -249,7 +247,7 @@ def loadfile(filename):
         fh.close()
     return results
 
-class Container(object):
+class Container():
     """an object that is a python structure.
 
     This is a dict that contains other dicts or lists or strings or floats or
@@ -277,10 +275,11 @@ class Container(object):
         if new_name is None:
             return self._filename
         if new_name==self._filename:
-            return
+            return None
         # remove old locks that may exist:
         self.unlock_file()
         self._filename= new_name
+        return None
     def dirname(self):
         """return the directory part of the internal filename."""
         return os.path.dirname(self._filename)

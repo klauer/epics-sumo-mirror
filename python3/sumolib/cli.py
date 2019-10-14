@@ -33,14 +33,14 @@ HELP_OPTS= {"-h"     : HELP_NAME,
 # completion utilities
 # -----------------------------------------------
 
-def complete_list(list_, element, dummy):
+def complete_list(list_, element, _):
     """complete for a given list."""
     if not element:
         # just return a list of all modules
         return list_
     return [e for e in list_ if e.startswith(element)]
 
-def complete_file(pattern, dummy):
+def complete_file(pattern, _):
     """return all files for a pattern for command completion"""
     if pattern is None:
         pattern= "*"
@@ -51,7 +51,7 @@ def complete_file(pattern, dummy):
         pattern+= "*"
     return [f for f in glob.glob(pattern) if os.path.isfile(f)]
 
-def complete_dir(pattern, dummy):
+def complete_dir(pattern, _):
     """return all files for a pattern."""
     if pattern is None:
         return [f for f in glob.glob("*") if os.path.isdir(f)]
@@ -75,7 +75,7 @@ def complete_dir(pattern, dummy):
 # container classes
 # -----------------------------------------------
 
-class Container(object):
+class Container():
     """hold all option values."""
     @staticmethod
     def normalize_name(st):
@@ -155,17 +155,15 @@ class Container(object):
 
 class Arguments(Container):
     """class for arguments and commands."""
-    pass
 
 class Options(Container):
     """class for options."""
-    pass
 
 # -----------------------------------------------
 # class for option specifications:
 # -----------------------------------------------
 
-class OptionSpec(object):
+class OptionSpec():
     """Spec for a command line option."""
     # pylint: disable=R0903
     #                          Too few public methods
@@ -225,7 +223,7 @@ class OptionSpec(object):
         lines.append("")
         return "\n".join(lines)
 
-class OptionSpecs(object):
+class OptionSpecs():
     """hold command specfications."""
     def __init__(self, specs= None):
         """Initialize the object."""
@@ -297,7 +295,7 @@ class OptionSpecs(object):
 # class for command specifications:
 # -----------------------------------------------
 
-class CmdSpec(object):
+class CmdSpec():
     """a single command specification."""
     # pylint: disable=R0903
     #                          Too few public methods
@@ -308,7 +306,7 @@ class CmdSpec(object):
         self.array= array
         self.optional= optional
 
-class CmdSpecs(object):
+class CmdSpecs():
     """hold command specfications."""
     def __init__(self):
         """Initialize the object."""
@@ -377,7 +375,6 @@ def is_opt(st):
 
 class CliError(Exception):
     """Error from command line parsing."""
-    pass
 
 def assert_options(catch_exceptions, options, *opt_list):
     """check for the presence of options."""
@@ -386,8 +383,7 @@ def assert_options(catch_exceptions, options, *opt_list):
             txt= "Error, --%s is mandatory here" % opt
             if not catch_exceptions:
                 raise CliError(txt)
-            else:
-                sys.exit(txt)
+            sys.exit(txt)
 
 def process_opts(args, optionspecs, catch_exceptions, testmode= False):
     """parse incomplete options.
@@ -727,6 +723,7 @@ def process_opts(args, optionspecs, catch_exceptions, testmode= False):
                 # not at the last argument
                 options_off= True
                 continue
+            # pylint: disable=no-else-return
             # at the last argument from here:
             if not completion_mode:
                 if consumer and not help_mode:
@@ -785,6 +782,7 @@ def process_opts(args, optionspecs, catch_exceptions, testmode= False):
                     return (None, None) # never reached
                 options.put(consumer.real_name, a, consumer.array)
                 return (options, rest_args)
+            # pylint: disable=no-else-return
             if completion_mode=="new":
                 options.put(consumer.real_name, a, consumer.array)
                 return (options, rest_args)
@@ -814,6 +812,7 @@ def process_opts(args, optionspecs, catch_exceptions, testmode= False):
                 # cannot complete "-" if options are off:
                 my_exit()
                 return (None, None) # never reached
+            # pylint: disable=no-else-return
             if completion_mode=="new":
                 rest_args.append(a)
                 return (options, rest_args)
@@ -839,6 +838,7 @@ def process_opts(args, optionspecs, catch_exceptions, testmode= False):
             if i<len(new_args)-1:
                 # unknown option in the middle, silently skip:
                 continue
+            # pylint: disable=no-else-return
             # at the last argument from here:
             if completion_mode=="new":
                 # silently skip:
@@ -854,6 +854,7 @@ def process_opts(args, optionspecs, catch_exceptions, testmode= False):
         if i>=len(new_args)-1:
             # at the end of the argument list:
             if not optionspec.arg_name:
+                # pylint: disable=no-else-return
                 # the option has no option value
                 if not completion_mode:
                     options.put(optionspec.real_name, True)
@@ -943,6 +944,7 @@ def process_cmd(cli_args, cmd_list, completion_mode,
         my_exit("%s missing" % item_name)
     if completion_mode:
         if len(cli_args)<=1:
+            # pylint: disable=no-else-return
             # only a single command
             if completion_mode=="new":
                 if cli_args[0] not in cmd_list:
@@ -1077,11 +1079,11 @@ def process_args(cli_args, argspec, completion_mode,
         # no cli_args expected
         if completion_mode:
             my_exit()
-            return
+            return None
         if not cli_args:
             return Arguments()
         my_exit("error, unexpected arguments: %s" % (" ".join(cli_args)))
-        return
+        return None
     if not isinstance(argspec, CmdSpecs):
         raise TypeError("argspec '%s' has wrong type" % repr(argspec))
     argspec.start_get()
@@ -1107,7 +1109,7 @@ def process_args(cli_args, argspec, completion_mode,
                     raise
                 my_exit(str(e))
             my_exit()
-            return
+            return None
         result.put(name, arg, is_array= spec.array)
     if not argspec.more():
         if completion_mode:
@@ -1124,12 +1126,12 @@ def process_args(cli_args, argspec, completion_mode,
             # if (rargs) is kind of an error here, just do nothing in
             # completion mode:
             my_exit()
-            return
+            return None
         if rargs:
             # extra arguments
             my_exit("error, unexpected arguments: %s" % \
                  (" ".join(rcpy(rargs))))
-            return
+            return None
     else:
         if completion_mode:
             if not spec.name:
@@ -1148,12 +1150,12 @@ def process_args(cli_args, argspec, completion_mode,
                     raise
                 my_exit(str(e))
             my_exit()
-            return
+            return None
         while argspec.more():
             (name, spec)= argspec.get()
             if not spec.optional:
                 my_exit("error, mandatory argument %s missing" % name)
-                return
+                return None
             # define the argument as None in the result object:
             result.declare(name, spec.array)
     # when the command was successfully parsed, clear cache files that may have

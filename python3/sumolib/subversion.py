@@ -20,7 +20,7 @@ def assert_svn():
     """ensure that subversion exists."""
     sumolib.system.test_program("svn")
 
-class Repo(object):
+class Repo():
     """represent a subversion repository."""
     # pylint: disable=R0902
     #                          Too many instance attributes
@@ -63,7 +63,7 @@ class Repo(object):
                     found_tags.append(tag)
         if not tags:
             # no tags found:
-            return
+            return None
         # return the first tag of the sorted list:
         tags.sort()
         return tags[0]
@@ -78,16 +78,16 @@ class Repo(object):
                               self.verbose, self.dry_run)
         if rc!=0:
             # probably no repo found
-            return
+            return None
         for line in reply.splitlines():
             if line.lower().startswith("repository root:"):
                 return line.split(":",1)[1].strip()
-        return
+        return None
     def _find_remote(self, patcher):
         """find and contact the remote repository."""
         default_repo= self._default_repo()
         if default_repo is None:
-            return
+            return None
         if patcher is not None:
             default_repo= patcher.apply(default_repo)
         assert_svn()
@@ -98,7 +98,7 @@ class Repo(object):
                                            self.verbose, self.dry_run)
         if rc!=0:
             # contacting the remote repo failed
-            return
+            return None
         return default_repo
     def _local_changes(self, matcher):
         """returns True if there are uncomitted changes.
@@ -242,10 +242,10 @@ class Repo(object):
         #                          Method could be a function
         repodir= os.path.join(directory,".svn")
         if not os.path.exists(repodir):
-            return
+            return None
         if hints.get("write check"):
             if not os.access(repodir, os.W_OK):
-                return
+                return None
         obj= cls(directory, hints, verbose, dry_run)
         return obj
     def source_spec(self):
@@ -265,8 +265,7 @@ class Repo(object):
 
         if self.remote_url is None:
             raise AssertionError("no remote_url")
-        else:
-            d["url"]= self.remote_url
+        d["url"]= self.remote_url
         return d
     @staticmethod
     def checkout(spec, destdir, _, verbose, dry_run):
@@ -352,4 +351,3 @@ class Repo(object):
         if rc:
             msg="error, 'svn update' failed"
             raise IOError(msg)
-        return

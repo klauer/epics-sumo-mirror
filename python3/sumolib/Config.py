@@ -26,14 +26,14 @@ assert __version__==sumolib.JSON.__version__
 # config file support
 # -----------------------------------------------
 
-class ConfigFile(object):
+class ConfigFile():
     """store options in a JSON file."""
     @staticmethod
     def paths_from_env(varname):
         """read configuration paths from environment variable."""
         val= os.environ.get(varname)
         if not val:
-            return
+            return None
         # allow ":" and ";" as separators:
         if platform.system()=="Windows":
             sep= ";"
@@ -43,7 +43,7 @@ class ConfigFile(object):
     @classmethod
     def from_optionlist(cls, filename, env_name, optionlist):
         """Create object from optionlist."""
-        d= dict( [(n,None) for n in optionlist])
+        d= {n: None for n in optionlist}
         return cls(filename, env_name, d)
     def __init__(self, filename, env_name, dict_):
         """create from a dict.

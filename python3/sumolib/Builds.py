@@ -111,7 +111,7 @@ class DB(sumolib.JSON.Container):
         return buildtag.startswith("AUTO-")
     def __init__(self, dict_= None, use_lock= True, lock_timeout= None):
         """create the object."""
-        super(DB, self).__init__(dict_, use_lock, lock_timeout)
+        super().__init__(dict_, use_lock, lock_timeout)
     def merge(self, other):
         """merge with another builddb.
 
@@ -172,6 +172,7 @@ class DB(sumolib.JSON.Container):
         """
         d= self.datadict()
         s= d[build_tag]["state"]
+        # pylint: disable=consider-using-in
         return (s=="testing") or (s=="stable")
     def is_unstable(self, build_tag):
         """returns True if the build is marked testing or stable.
@@ -235,7 +236,7 @@ class DB(sumolib.JSON.Container):
         build_= self.datadict()[build_tag]
         linked_ = build_.get("linked")
         if linked_ is None:
-            return
+            return None
         return linked_.get(modulename)
     def is_linked_to(self, build_tag, other_build_tag):
         """returns True if there are links to other_build_tag."""
@@ -334,7 +335,7 @@ class DB_overlay(DB):
     #                          Too many public methods
     def __init__(self, dict_= None, use_lock= True, lock_timeout= None):
         """create the object."""
-        super(DB_overlay, self).__init__(dict_, use_lock, lock_timeout)
+        super().__init__(dict_, use_lock, lock_timeout)
         self.overlay_keys= {}
         self.overlay_files= []
         self.overlay_mode= True
@@ -352,6 +353,7 @@ class DB_overlay(DB):
         if new_mode is None:
             return self.overlay_mode
         self.overlay_mode= new_mode
+        return None
     def overlay(self, filename, use_lock= True):
         """merge with another builddb from a file."""
         other= DB.from_json_file(filename, use_lock= use_lock,
@@ -378,14 +380,14 @@ class DB_overlay(DB):
             raise ValueError(("error, build '%s' is not in local build "
                               "directory due to your 'sumo config local' "
                               "configuration") % build_tag)
-        super(self.__class__, self).delete(build_tag)
+        super().delete(build_tag)
     def change_state(self, build_tag, new_state):
         """sets the state to a new value."""
         if self.overlay_mode and (self.tag_is_overlayed(build_tag)):
             raise ValueError(("error, build '%s' is not in local build "
                               "directory due to your 'sumo config local' "
                               "configuration") % build_tag)
-        super(self.__class__, self).change_state(build_tag, new_state)
+        super().change_state(build_tag, new_state)
     def to_dict(self):
         """return the object as a dict.
 
@@ -393,10 +395,10 @@ class DB_overlay(DB):
         object.
         """
         if not self.overlay_mode:
-            return super(self.__class__, self).to_dict()
-        return dict([(k,v) for (k,v) in \
-                           super(self.__class__, self).to_dict().items() \
-                           if k not in self.overlay_keys])
+            return super().to_dict()
+        return { k:v for (k,v) in \
+                           super().to_dict().items() \
+                           if k not in self.overlay_keys }
 
 class BuildCache(sumolib.JSON.Container):
     """Detailed dependency information.

@@ -118,7 +118,7 @@ def clear_caches():
 # completion functions
 # -----------------------------------------------
 
-def module(module_, dummy):
+def module(module_, _):
     """complete a module name."""
     db= db_cache()
     if not module_:
@@ -139,7 +139,7 @@ def version(module_par_name, ver, result):
         return vers
     return [v for v in vers if v.startswith(ver)]
 
-def moduleversion(module_, dummy):
+def moduleversion(module_, _):
     """try to give a sensible completion list to a module.
     """
     # pylint: disable=R0911
@@ -150,7 +150,7 @@ def moduleversion(module_, dummy):
         return db.iter_modulenames()
     if ":" not in module_:
         modules= [m for m in db.iter_modulenames() if m.startswith(module_)]
-        if len(modules)==0:
+        if not modules:
             return []
         if len(modules)>1:
             return modules
@@ -161,12 +161,12 @@ def moduleversion(module_, dummy):
     (module_,version_)= module_.split(":", 1)
     try:
         db.assert_module(module_,None)
-    except KeyError as _:
+    except KeyError:
         # module_ does not exist
         return []
     versions= [ver for ver in db.iter_versions(module_) \
                    if ver.startswith(version_)]
-    if len(versions)==0:
+    if not versions:
         # no version_ matches
         return []
 
@@ -203,7 +203,7 @@ def dependency(module_par_name, dep, result):
         return deps
     return [d for d in deps if d.startswith(dep)]
 
-def builds(build, dummy):
+def builds(build, _):
     """complete a build name."""
     builddb= build_cache()
     builds_= list(builddb.iter_builds())
@@ -211,4 +211,3 @@ def builds(build, dummy):
         # just return a list of all builds_
         return builds_
     return [b for b in builds_ if b.startswith(build)]
-

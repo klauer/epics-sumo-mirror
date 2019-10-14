@@ -20,7 +20,7 @@ assert __version__==sumolib.fileurl.__version__
 # Repo class
 # -----------------------------------------------
 
-class Repo(object):
+class Repo():
     """represent a tar."""
     def _hint(self, name):
         """return the value of hint "name"."""
@@ -43,7 +43,7 @@ class Repo(object):
                 f= directory+ext
                 if os.path.exists(f):
                     return f
-            return
+            return None
         abs_directory= os.path.abspath(directory)
         (d,base)= os.path.split(abs_directory)
         (dir_,parent)= os.path.split(d)
@@ -54,7 +54,7 @@ class Repo(object):
             result= find(p)
             if result is not None:
                 return result
-        return
+        return None
     def __init__(self, directory, tar_url, hints, verbose, dry_run):
         """initialize."""
         # pylint: disable=R0913
@@ -95,7 +95,7 @@ class Repo(object):
         if directory is not None:
             tar_file= cls._find_tar(directory)
             if tar_file is None:
-                return
+                return None
         return cls(directory, tar_file, hints, verbose, dry_run)
     def source_spec(self):
         """return a complete source specification (for SourceSpec class).
@@ -121,11 +121,11 @@ class Repo(object):
             """If dir_ has a single subdir, return it."""
             contents= os.listdir(dir_)
             if len(contents)!=1:
-                return
+                return None
             subdir= os.path.join(dir_,contents[0])
             if os.path.isdir(subdir):
                 return subdir
-            return
+            return None
 
         url       = spec["url"]
         ap_destdir= os.path.abspath(destdir)
