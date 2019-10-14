@@ -4,6 +4,7 @@
 # pylint: disable=C0103
 #                          Invalid name for type variable
 
+import os
 import subprocess
 
 __version__="3.5" #VERSION#
@@ -11,6 +12,18 @@ __version__="3.5" #VERSION#
 # -----------------------------------------------
 # basic system utilities
 # -----------------------------------------------
+
+# standard set of environment variables here:
+_new_env = dict(os.environ)
+
+# Only on Unix-Like systems:
+# Ensure that language settings for called commands are english, keep current
+# character encoding:
+if os.name=="posix" and "LANG" in _new_env:
+    _l= _new_env["LANG"].split(".")
+    if len(_l)==2:
+        _l[0]= "en_US"
+        _new_env["LANG"]= ".".join(_l)
 
 def system_rc(cmd, catch_stdout, catch_stderr, verbose, dry_run):
     """execute a command.
@@ -42,7 +55,9 @@ def system_rc(cmd, catch_stdout, catch_stderr, verbose, dry_run):
 
     p= subprocess.Popen(cmd, shell=True,
                         stdout=stdout_par, stderr=stderr_par,
-                        close_fds=True)
+                        close_fds=True,
+                        env= _new_env
+                       )
     (child_stdout, child_stderr) = p.communicate()
     # pylint: disable=E1101
     #         "Instance 'Popen'has no 'returncode' member
