@@ -34,8 +34,7 @@ def current_user():
     """return the current user in a hopefully portable way."""
     if pwd:
         return pwd.getpwuid(os.geteuid()).pw_name
-    else:
-        return getpass.getuser()
+    return getpass.getuser()
 
 # -----------------------------------------------
 # exceptions
@@ -187,6 +186,7 @@ class MyLock(object):
                                  "have a lock")
         self._filename= filename_
         self.lockname= "%s.lock" % self._filename
+        return None
 
 # -----------------------------------------------
 # edit with lock:

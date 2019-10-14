@@ -181,7 +181,7 @@ def opt_join(option, do_sort= False):
     ['a', 'b', 'c', 'd', 'e', 'f']
     """
     if option is None:
-        return
+        return None
     lst= " ".join(option).split()
     if do_sort:
         lst.sort()
@@ -411,7 +411,7 @@ def changedir(newdir):
     If newdir is empty, return <None>.
     """
     if not newdir:
-        return
+        return None
     cwd= os.getcwd()
     os.chdir(newdir)
     return cwd

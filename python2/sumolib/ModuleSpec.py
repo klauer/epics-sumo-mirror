@@ -12,6 +12,8 @@ if __name__ == "__main__":
     # "sumolib.[module]".
     sys.path.append("..")
 
+# pylint: disable=wrong-import-position
+
 import sumolib.utils
 import sumolib.JSON
 

@@ -332,6 +332,7 @@ def multiprocess_handle_exception(fun):
                 sys.stderr.write(st+"\n")
                 sys.exit(1)
             raise
+        return None
     return wrapper
 
 # -----------------------------------------------
@@ -360,6 +361,7 @@ def load_config_files(options, disable_loading):
         # may raise IOError, ValueError:
         config.load(options.config, not disable_loading)
     except (ValueError, IOError) as e:
+        # pylint: disable=raising-format-tuple
         raise annotate("Error while loading config file: %s", e)
 
     config.env_expand(CONFIG_ENV_EXPAND)
@@ -377,7 +379,7 @@ def repo_msg(prefix, args):
     """generate a standard commit message."""
     if (not prefix) and (not args):
         # no log message given
-        return
+        return None
     return "%s %s" % (prefix, " ".join(args))
 
 def repo_manager(dbdir, sourcespec_string, mode,
@@ -419,6 +421,7 @@ def repo_manager(dbdir, sourcespec_string, mode,
             sumolib.lock.AccessError,
             sumolib.lock.LockedError,
             sumolib.lock.NoSuchFileError) as e:
+        # pylint: disable=raising-format-tuple
         raise annotate("Error while creating/accessing repository, %s", e)
     return mngr
 
@@ -436,6 +439,7 @@ def db_from_json_file(filename, use_lock= True, keep_locked= False):
                                                    keep_lock=keep_locked,
                                                    timeout= LOCK_TIMEOUT)
     except (ValueError, IOError) as e:
+        # pylint: disable=raising-format-tuple
         raise annotate("Error while loading dependency database: %s", e)
     return db
 
@@ -475,6 +479,7 @@ def db_from_repo(options, keep_locked= False, changes_check= True,
                              "    'a' abort\n") % msg_,
                             ["y", "n", "a"])
                 except EOFError as e:
+                    # pylint: disable=raising-format-tuple
                     raise annotate("%s. "
                                    "You may want to use option '--yes' "
                                    "to prevent this error.", e)
@@ -501,6 +506,7 @@ def db_from_repo(options, keep_locked= False, changes_check= True,
         # may raise IOError:
         mngr.prepare_read() # executes a "pull" command
     except IOError as e:
+        # pylint: disable=raising-format-tuple
         raise annotate("Error while loading dependency database: %s" , e)
 
     # may raise IOError, ValueError, sumolib.JSON.ParseError:
@@ -534,6 +540,7 @@ def db_to_repo(options, mngr, db, command, arguments):
         # may raise IOError:
         db.json_save(db_f(options.dbdir), options.verbose, options.dry_run)
     except IOError as e:
+        # pylint: disable=raising-format-tuple
         raise annotate(_errmsg, e)
     if mngr:
         if options.logmsg:
@@ -544,6 +551,7 @@ def db_to_repo(options, mngr, db, command, arguments):
         # may raise IOError:
         mngr.finish_write(msg)
     except IOError as e:
+        # pylint: disable=raising-format-tuple
         raise annotate(_errmsg, e)
 
 def builddb_from_json_file(path, path_local, keep_locked= False,
@@ -585,6 +593,7 @@ def builddb_from_json_file(path, path_local, keep_locked= False,
                                     keep_lock= keep_locked,
                                     timeout= LOCK_TIMEOUT)
         except (IOError, ValueError) as e:
+            # pylint: disable=raising-format-tuple
             raise annotate("Error while loading build database %s" , e)
 
     if not overlay_file:
@@ -593,6 +602,7 @@ def builddb_from_json_file(path, path_local, keep_locked= False,
         # may raise IOError, ValueError:
         builddb.overlay(overlay_file)
     except (IOError, ValueError) as e:
+        # pylint: disable=raising-format-tuple
         raise annotate("Error while loading overlay build database: %s", e)
 
     return builddb
@@ -635,6 +645,7 @@ def init_buildcache(scandb_name, builddb, db):
                                                                  keep_lock= False,
                                                                  timeout= LOCK_TIMEOUT)
         except (IOError, ValueError) as e:
+            # pylint: disable=raising-format-tuple
             raise annotate("Error while loading build database: %s", e)
     buildcache.update_from_builddb(builddb, db)
     return buildcache
@@ -697,6 +708,7 @@ def gather_dependencies(dist_dict, db, modulename, versionname,
 
     called by builddb_match, command "new"
     """
+    # pylint: disable=inconsistent-return-statements
     if gathered_deps is None:
         gathered_deps= {}
     for dep_name in db.iter_dependencies(modulename, versionname):
@@ -720,6 +732,7 @@ def _add_dependencies(module_dict, db, build_module_dict,
         # may raise KeyError:
         db.assert_module(modulename, versionname)
     except KeyError as e:
+        # pylint: disable=raising-format-tuple
         raise annotate("Error in dependency database: %s", e)
 
     for dep in db.iter_dependencies(modulename, versionname):
@@ -780,7 +793,7 @@ def builddb_match(dist_dict, db, builddb, modulename, versionname):
                 break
         if match:
             return build_tag
-    return
+    return None
 
 # -----------------------------------------------
 # file generation
@@ -1023,6 +1036,7 @@ def create_source(db, modulename, versionname,
                                LOCK_TIMEOUT,
                                verbose, dry_run)
     except IOError as e:
+        # pylint: disable=raising-format-tuple
         raise annotate("Error, checkout failed: %s" , e)
 
 def delete_module(builddir, build_tag, modulename, versionname,
@@ -1356,6 +1370,7 @@ def create_database(deps, repoinfo, groups, dir_patches, url_patches):
                                   (modulename, versionname,
                                    versionedmodule_path,
                                    dep_path)
+                        # pylint: disable=raising-format-tuple
                         raise annotate(st_, e)
                     if _dep_name != dep_alias:
                         try:
@@ -1432,6 +1447,7 @@ def delete_build(builddb, build_tags, recursive, yes_option, verbose, dry_run):
                         "    'y' continue\n"
                         "    'n' abort action\n")
             except EOFError as e:
+                # pylint: disable=raising-format-tuple
                 raise annotate("%s. "
                                "You may want to use option '--yes' "
                                "to prevent this error.", e)
@@ -1566,6 +1582,7 @@ def simple_call_make(builddir, makefile, target, makeflags,
         # may raise IOError:
         sumolib.system.system(cmd, False, False, verbose, dry_run)
     except IOError as e:
+        # pylint: disable=raising-format-tuple
         raise annotate("Error: make failed: %s" , e)
 
 def call_make(buildtag, options):
@@ -1759,6 +1776,7 @@ def subcmd_config_make_show(cmd, arguments, options):
                     options.yes):
                 sys.exit(0)
         except EOFError as e:
+            # pylint: disable=raising-format-tuple
             raise annotate("%s. "
                            "You may want to use option '--yes' "
                            "to prevent this error.", e)
@@ -1792,6 +1810,7 @@ def subcmd_config_standalone(arguments, options):
                     options.yes):
                 sys.exit(0)
         except EOFError as e:
+            # pylint: disable=raising-format-tuple
             raise annotate("%s. "
                            "You may want to use option '--yes' "
                            "to prevent this error.", e)
@@ -1844,6 +1863,7 @@ def subcmd_config_local(arguments, options):
                     options.yes):
                 sys.exit(0)
         except EOFError as e:
+            # pylint: disable=raising-format-tuple
             raise annotate("%s. "
                            "You may want to use option '--yes' "
                            "to prevent this error.", e)
@@ -1964,6 +1984,7 @@ def subcmd_db_edit(arguments, options):
                     reply= sumolib.utils.ask_yes_no("Re-edit the file (y) or "
                                                     "abort (n) ? ")
                 except EOFError as e:
+                    # pylint: disable=raising-format-tuple
                     raise annotate("%s. "
                                    "You may want to use option '--yes' "
                                    "to prevent this error.", e)
@@ -2028,6 +2049,7 @@ def subcmd_db_convert(arguments, options):
         buildcache.json_save(options.scandb,
                              options.verbose, options.dry_run)
     except ValueError as e:
+        # pylint: disable=raising-format-tuple
         raise annotate("Error while saving scan database file: %s", e)
 
 def subcmd_db_convert_old(arguments, options):
@@ -2050,6 +2072,7 @@ def subcmd_db_convert_old(arguments, options):
                                                          use_lock= True,
                                                          keep_lock= False)
     except (IOError, ValueError) as e:
+        # pylint: disable=raising-format-tuple
         raise annotate("Error while loading dependency database: %s", e)
     db= olddb.convert()
     if options.dumpdb:
@@ -2102,6 +2125,7 @@ def subcmd_db_modconvert(arguments, options):
             # may raise KeyError:
             db= db.partial_copy_by_modulespecs(modulespecs_obj)
         except KeyError as e:
+            # pylint: disable=raising-format-tuple
             raise annotate("Error module not found in dependency database %s",
                            e)
     db.json_print()
@@ -2171,6 +2195,7 @@ def subcmd_db_weight(arguments, options):
         # may raise ValueError:
         weight= int(args.WEIGHT) # pylint: disable=no-member
     except ValueError as e:
+        # pylint: disable=raising-format-tuple
         raise annotate("Error WEIGHT is not an integer: %s" , e)
 
     # pylint: disable=no-member
@@ -2235,6 +2260,7 @@ def subcmd_db_show(arguments, options):
         # may raise KeyError:
         db= db.partial_copy_by_modulespecs(modulespecs_obj)
     except ValueError as e:
+        # pylint: disable=raising-format-tuple
         raise annotate("Error, module not found in dependency database: %s" , e)
 
     db.json_print()
@@ -2576,6 +2602,7 @@ def subcmd_db_clone_replace_version(command, arguments, options):
     try:
         sumolib.utils.ask_abort("Proceed ? ", options.yes)
     except EOFError as e:
+        # pylint: disable=raising-format-tuple
         raise annotate("%s. "
                        "You may want to use option '--yes' "
                        "to prevent this error.", e)
@@ -2668,6 +2695,7 @@ def subcmd_db_list(arguments, options):
             try:
                 moduleversions= db.sorted_moduleversions(modulename)
             except KeyError as e:
+                # pylint: disable=raising-format-tuple
                 raise annotate("Error module "+modulename+" not " + \
                                "found in dependency database: %s",
                                e)
@@ -2802,6 +2830,7 @@ def subcmd_build_state(arguments, options):
                                             "these.\nProceed ? " % buildtag,
                                             options.yes or options.recursive)
                 except EOFError as e:
+                    # pylint: disable=raising-format-tuple
                     raise annotate("%s. "
                                    "You may want to use option '--yes' "
                                    "to prevent this error.", e)

@@ -282,10 +282,11 @@ class Container(object):
         if new_name is None:
             return self._filename
         if new_name==self._filename:
-            return
+            return None
         # remove old locks that may exist:
         self.unlock_file()
         self._filename= new_name
+        return None
     def dirname(self):
         """return the directory part of the internal filename."""
         return os.path.dirname(self._filename)

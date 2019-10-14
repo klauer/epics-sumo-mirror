@@ -80,6 +80,7 @@ class DB(sumolib.JSON.Container):
             if not isinstance(modules, dict):
                 break
             module= _somevalue(modules)
+            # pylint: disable= consider-merging-isinstance
             if not (isinstance(module, str) or isinstance(module, unicode)):
                 break
             return
@@ -235,7 +236,7 @@ class DB(sumolib.JSON.Container):
         build_= self.datadict()[build_tag]
         linked_ = build_.get("linked")
         if linked_ is None:
-            return
+            return None
         return linked_.get(modulename)
     def is_linked_to(self, build_tag, other_build_tag):
         """returns True if there are links to other_build_tag."""
@@ -352,6 +353,7 @@ class DB_overlay(DB):
         if new_mode is None:
             return self.overlay_mode
         self.overlay_mode= new_mode
+        return None
     def overlay(self, filename, use_lock= True):
         """merge with another builddb from a file."""
         other= DB.from_json_file(filename, use_lock= use_lock,
@@ -378,14 +380,14 @@ class DB_overlay(DB):
             raise ValueError(("error, build '%s' is not in local build "
                               "directory due to your 'sumo config local' "
                               "configuration") % build_tag)
-        super(self.__class__, self).delete(build_tag)
+        super(DB_overlay, self).delete(build_tag)
     def change_state(self, build_tag, new_state):
         """sets the state to a new value."""
         if self.overlay_mode and (self.tag_is_overlayed(build_tag)):
             raise ValueError(("error, build '%s' is not in local build "
                               "directory due to your 'sumo config local' "
                               "configuration") % build_tag)
-        super(self.__class__, self).change_state(build_tag, new_state)
+        super(DB_overlay, self).change_state(build_tag, new_state)
     def to_dict(self):
         """return the object as a dict.
 
@@ -393,9 +395,9 @@ class DB_overlay(DB):
         object.
         """
         if not self.overlay_mode:
-            return super(self.__class__, self).to_dict()
+            return super(DB_overlay, self).to_dict()
         return dict([(k,v) for (k,v) in \
-                           super(self.__class__, self).to_dict().items() \
+                           super(DB_overlay, self).to_dict().items() \
                            if not self.overlay_keys.has_key(k)])
 
 class BuildCache(sumolib.JSON.Container):
