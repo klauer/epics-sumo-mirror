@@ -25,9 +25,9 @@ Added module:
     }
 }
 
-creating build with tag 'BASE-001'
-creating build with tag 'MYAPP-001'
+build 'BASE-001' created
 patching file Makefile
+build 'MYAPP-001' created
 
 directory tree (without darcs, maxdepth 2)
 .

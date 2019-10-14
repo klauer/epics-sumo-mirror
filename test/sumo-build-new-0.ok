@@ -1,5 +1,5 @@
-creating build with tag 'AUTO-001'
-creating build with tag 'AUTO-002'
+build 'AUTO-001' created
+build 'AUTO-002' created
 BUILD file:
 {
     "AUTO-001": {

@@ -3219,10 +3219,9 @@ def subcmd_build_new(arguments, options):
     if buildtag is None:
         buildtag= builddb_generate_tag(builddb, options.buildtag_stem,
                                        bool(options.localbuilddir))
-        notemsg("creating build with tag '%s'" % buildtag)
-    elif options.progress:
-        notemsg("creating build '%s'" % buildtag)
 
+    if options.progress:
+        notemsg("creating build '%s'" % buildtag)
 
     if builddb.has_build_tag(buildtag):
         # builddb __del__ method should remove lockfiles
@@ -3262,6 +3261,8 @@ def subcmd_build_new(arguments, options):
         # call_make will set the build state to "testing" if it succeeds:
         # may raise IOError, ValueError:
         call_make(buildtag, options)
+
+    notemsg("build '%s' created" % buildtag)
 
 def subcmd_build_find(arguments, options):
     """implement "subcmd_build_find".

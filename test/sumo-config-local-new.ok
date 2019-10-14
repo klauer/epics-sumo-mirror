@@ -23,7 +23,7 @@ Added module:
 }
 
 
-creating build with tag 'local-AUTO-001'
+build 'local-AUTO-001' created
 
 contents of sumo.config
 {
