@@ -32,14 +32,16 @@ class Repo(object):
         If directory is "a/b/c" look for:
           a/b/c.tar
           a/b/c.tar.gz
+          a/b/c.tgz
           a/b/c.tar.bz
           a/b-c.tar
           a/b-c.tar.gz
+          a/b-c.tgz
           a/b-c.tar.bz
         """
         def find(directory):
             """try to find the tar file."""
-            for ext in [".tar",".tar.gz",".tar.bz"]:
+            for ext in [".tar",".tar.gz",".tgz",".tar.bz"]:
                 f= directory+ext
                 if os.path.exists(f):
                     return f
@@ -137,6 +139,8 @@ class Repo(object):
         if ext==".tar":
             tar_args= "-xf"
         elif ext==".gz":
+            tar_args= "-xzf"
+        elif ext==".tgz":
             tar_args= "-xzf"
         elif ext==".bz2":
             tar_args= "-xjf"

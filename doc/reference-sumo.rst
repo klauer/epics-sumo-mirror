@@ -311,6 +311,7 @@ sources. The filename must have one of these extensions:
 
 - .tar : a simple tar file
 - .tar.gz : a tar file compressed with gzip
+- .tgz : a tar file compressed with gzip
 - .tar.bz2 : a tar file compressed with bzip2
 
 The *source data* has this form:: 
