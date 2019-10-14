@@ -886,7 +886,7 @@ def create_makefile(dist_dict, db, builddb,
     builddir= builddb.dirname()
     filename= makefilename(builddir, build_tag)
     if progress:
-        notemsg("creating makefile '%s'\n" % filename)
+        notemsg("creating makefile '%s'" % filename)
     fh= sumolib.utils.file_w_open(filename, verbose, dry_run)
 
     # Put all module path definitions in the makefile, too. We cannot use
@@ -1101,7 +1101,7 @@ def create_module(db, builddb, build_tag,
         raise ValueError("directory %s already exists" % dirname)
 
     if progress:
-        notemsg("checking out %s:%s\n" % (modulename, versionname))
+        notemsg("checking out %s:%s" % (modulename, versionname))
     # may raise IOError:
     create_source(db, modulename, versionname, dirname, verbose, dry_run)
     gen_RELEASE(db, builddb, build_tag,
@@ -1523,7 +1523,7 @@ def create_modules(dist_dict, db, builddb, builddir, build_tag,
     if builddb.is_fully_linked(build_tag):
         # the new build would contain only links, this is maybe not wanted.
         notemsg("Note: The generated build '%s' consists only of "
-                "links.\n" % build_tag)
+                "links." % build_tag)
 
     for modulename in sorted(dist_dict.keys()):
         versionname= builddb.module_version(build_tag, modulename)
@@ -1586,7 +1586,7 @@ def simple_call_make(builddir, makefile, target, makeflags,
                                     builddir,
                                     makefile, target)
     if progress:
-        notemsg("calling make %s %s\n" % (" ".join(makeflags), target))
+        notemsg("calling make %s %s" % (" ".join(makeflags), target))
     # tracemsg("CALLING MAKE: %s\n" % cmd)
     try:
         # may raise IOError:
@@ -1703,7 +1703,7 @@ def apprelease(build_tag, modulespec_complete, modulespecs,
                           "Select one of the following builds and specify "
                           "it with option '-t': \n%s") % tag_str)
         build_tag= sorted(tags)[0]
-        notemsg("using build %s\n" % build_tag)
+        notemsg("using build %s" % build_tag)
 
 
     build_modules= builddb.modules(build_tag)
@@ -3219,9 +3219,9 @@ def subcmd_build_new(arguments, options):
     if buildtag is None:
         buildtag= builddb_generate_tag(builddb, options.buildtag_stem,
                                        bool(options.localbuilddir))
-        notemsg("creating build with tag '%s'\n" % buildtag)
+        notemsg("creating build with tag '%s'" % buildtag)
     elif options.progress:
-        notemsg("creating build '%s'\n" % buildtag)
+        notemsg("creating build '%s'" % buildtag)
 
 
     if builddb.has_build_tag(buildtag):
