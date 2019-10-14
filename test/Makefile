@@ -151,6 +151,7 @@ ifeq "$(CREATE_TESTS)" "yes"
 endif
 
 sumo-db-convert.out: sumo-scan-all.tst
+sumo-db-modconvert.out: sumo-scan-all.tst
 sumo-db-dependency-delete.out: sumo-db-convert.tst
 sumo-db-dependency-add.out: sumo-db-convert.tst
 sumo-db-alias-add.out: sumo-db-convert.tst

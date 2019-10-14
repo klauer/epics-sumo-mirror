@@ -1,0 +1,34 @@
+{
+    "SEQ": {
+        "R2-1-10": {
+            "aliases": {
+                "BASE": "EPICS_BASE"
+            },
+            "dependencies": [
+                "BASE"
+            ],
+            "source": {
+                "darcs": {
+                    "tag": "R2-1-10",
+                    "url": "/data/repos/support/seq"
+                }
+            }
+        }
+    },
+    "SOFT_DEVHWCLIENT": {
+        "TAR-3-0": {
+            "aliases": {
+                "BASE": "EPICS_BASE"
+            },
+            "dependencies": [
+                "BASE"
+            ],
+            "source": {
+                "tar": {
+                    "url": "/data/epics/support/soft/devHwClient-3-0.tar.gz"
+                }
+            }
+        }
+    }
+}
+
