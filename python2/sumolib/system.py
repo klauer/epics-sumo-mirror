@@ -7,7 +7,7 @@
 import os
 import subprocess
 
-__version__="3.5" #VERSION#
+__version__="3.6" #VERSION#
 
 # -----------------------------------------------
 # basic system utilities
