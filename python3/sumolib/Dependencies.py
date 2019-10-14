@@ -349,11 +349,17 @@ class DB(sumolib.JSON.Container):
         This function is used to redefine the way the module is built by the
         main makefile.
 
-        Parameter target must be the makefile target name, e.g. "all".
+        Parameter target must be the makefile target name, e.g. "all" or None.
 
-        Parameter data must be a list of strings.
+        Parameter data must be a list of strings or None.
+
+        If target is None, set make-recipes to {}. This means that the module
+        has no makefile.
         """
         m_dict= self.datadict()[modulename][versionname]
+        if target is None:
+            m_dict["make-recipes"]= {}
+            return
         mk_dict= m_dict.setdefault("make-recipes", {})
         if not data:
             if target in mk_dict(target):

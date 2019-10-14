@@ -859,15 +859,6 @@ def create_makefile(dist_dict, db, builddb,
     """
     # pylint: disable=too-many-arguments, too-many-locals
     # pylint: disable=too-many-branches, too-many-statements
-    def has_makefile(path):
-        """checks if there is a makefile in path."""
-        fn= os.path.join(path,"Makefile")
-        if os.path.exists(fn):
-            return True
-        fn= os.path.join(path,"makefile")
-        if os.path.exists(fn):
-            return True
-        return False
     builddir= builddb.dirname()
     filename= makefilename(builddir, build_tag)
     if progress:
@@ -890,15 +881,19 @@ def create_makefile(dist_dict, db, builddb,
     sumolib.utils.file_write(fh, "\n", verbose, dry_run)
 
     paths= {}
+    special_make_recipes= {}
     for modulename, versionname in builddb.iter_modules(build_tag):
-        if not builddb.module_link(build_tag, modulename):
-            if not has_makefile(module_dir(builddir, build_tag,
-                                           modulename, versionname)):
-                continue
-            # create relative directories in makefiles:
-            paths[(modulename, versionname)]= module_dir("", build_tag,
-                                                         modulename,
-                                                         versionname)
+        if builddb.module_link(build_tag, modulename):
+            continue
+
+        # remember special make recipes for this module, if they are defined:
+        r_= db.get_all_make_recipes(modulename, versionname)
+        if r_ is not None:
+            special_make_recipes[(modulename, versionname)]= r_
+        # create relative directories in makefiles:
+        paths[(modulename, versionname)]= module_dir("", build_tag,
+                                                     modulename,
+                                                     versionname)
     standard_targets= ("all", "config", "clean", "distclean")
     # sort module_dirs by (modulename, versionname):
     module_dirs= []
@@ -924,15 +919,10 @@ def create_makefile(dist_dict, db, builddb,
         sumolib.utils.file_write(fh, "\n\n", verbose, dry_run)
 
     # collect dependencies for MODULE/stamp-all rule:
-    special_make_recipes= {}
     # write dependencies for stamp-all:
     stamp_all= STAMPNAME+"-all"
     for (modulename, versionname) in sorted(paths.keys()):
         path= paths[(modulename, versionname)]
-        # remember special make recipes for this module, if they are defined:
-        r_= db.get_all_make_recipes(modulename, versionname)
-        if r_:
-            special_make_recipes[(modulename, versionname)]= r_
         own_stamp= os.path.join(path, stamp_all)
         dep_stamps= {}
         for dep_name in db.iter_dependencies(modulename, versionname):
@@ -963,15 +953,21 @@ def create_makefile(dist_dict, db, builddb,
     all_stamp_files= " ".join([ "%s-%s" % (STAMPNAME, t) \
                               for t in standard_targets ])
     for modulename, versionname in sorted(special_make_recipes.keys()):
+        # note: recipes may be an empty dictionary, in this case we assume that
+        # the module has no makefile at all.
         recipes= special_make_recipes[(modulename, versionname)]
         # replace '$DIR' with '$(@D)':
         path= paths[(modulename, versionname)]
+        if not recipes:
+            # no makefile at all, create empty special recipes:
+            for target in KNOWN_MAKERULE_TARGETS:
+                recipes[target]= None
         for target in sorted(recipes.keys()):
             lines= recipes.get(target)
-            if not lines:
-                continue
-            lines= ["\t"+sumolib.utils.string_interpolate(s, special_vars) \
-                    for s in lines]
+            if lines:
+                lines= ["\t"+sumolib.utils.string_interpolate(s, \
+                                                              special_vars) \
+                        for s in lines]
             sumolib.utils.file_write(fh,
                                      "\n%s/%s-%s:\n" % \
                                          (path, STAMPNAME, target), \
@@ -980,8 +976,9 @@ def create_makefile(dist_dict, db, builddb,
                                      "\tcd $(@D) && rm -f %s\n" % \
                                          all_stamp_files,
                                      verbose, dry_run)
-            sumolib.utils.file_writelines_n(fh, lines,
-                                            verbose, dry_run)
+            if lines:
+                sumolib.utils.file_writelines_n(fh, lines,
+                                                verbose, dry_run)
             sumolib.utils.file_write(fh, "\ttouch $@\n", verbose, dry_run)
 
     # write pattern rules for STAMPNAME-*:
@@ -2411,7 +2408,7 @@ def subcmd_db_make_recipes(arguments, options):
 
     argspec= sumolib.cli.CmdSpecs()
     argspec.add("MODULE", completion= sumolib.complete.moduleversion)
-    argspec.add("TARGET",
+    argspec.add("TARGET", optional= True,
                 completion= lambda o, r: \
                    sumolib.cli.complete_list(KNOWN_MAKERULE_TARGETS, o, r))
     argspec.add("LINES", array= True, optional= True)
@@ -2419,9 +2416,11 @@ def subcmd_db_make_recipes(arguments, options):
     args= sumolib.cli.process_args(arguments, argspec, options.list,
                                    catch_exceptions)
     # pylint: disable=no-member
-    if args.TARGET not in KNOWN_MAKERULE_TARGETS:
-        l=" ".join(sorted(KNOWN_MAKERULE_TARGETS))
-        raise ValueError("only %s are allowed for TARGET" % l)
+    if args.TARGET is not None:
+        if args.TARGET not in KNOWN_MAKERULE_TARGETS:
+            l=" ".join(sorted(KNOWN_MAKERULE_TARGETS))
+            raise ValueError(("if TARGET is specified, only one of %s "
+                              "is allowed") % l)
 
     module_spec= sumolib.ModuleSpec.Spec.from_string(args.MODULE)
     # may raise ValueError:
@@ -2434,8 +2433,12 @@ def subcmd_db_make_recipes(arguments, options):
     if options.dumpdb:
         db.json_print()
     else:
+        if args.TARGET is None:
+            args_= []
+        else:
+            args_= [args.TARGET, "..."]
         # may raise IOError:
-        db_to_repo(options, mngr, db, "make-recipes", [args.TARGET, "..."])
+        db_to_repo(options, mngr, db, "make-recipes", args_)
         # ^^^ does also unlock the file
 
 def subcmd_db_releasefilename(arguments, options):
@@ -3851,7 +3854,7 @@ sumo -h
                              ['db commands MODULE LINES'],
         "db make-recipes":
             doc_commands['subcommands for maincommand "db"']\
-                             ['db make-recipes MODULE TARGET [LINES]'],
+                             ['db make-recipes MODULE [TARGET] [LINES]'],
         "db list":
             doc_commands['subcommands for maincommand "db"']\
                              ['db list MODULES'],

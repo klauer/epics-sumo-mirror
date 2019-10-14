@@ -137,7 +137,7 @@ The *versiondata* map has this form::
       "make-recipes": {
           <make-recipes data>
       }
-      "releasefile": <releasefilename>
+      "releasefile": <releasefilename>,
       "source": {
           <source data>
       },
@@ -182,17 +182,22 @@ make-recipes
 ::::::::::::
 
 This *optional* field is used to specify alternative make recipes for the
-makefile that is generated to build the module. For each of the make targets
-"all", "clean", "config" and "distclean" a list of lines can be defined that is
-put in the generated makefile. In the make-recipes map, each of the map keys
-"all", "clean", "config" and "distclean" is optional. For convenience, the
-string "$DIR" is replaced with the special make variable ``$(@D)`` in every
-line. This is the directory of the checked out module (see also documentation
-of the "make" command). Note that *you do not have to prepend each line with a
-<TAB> character*, sumo already does this.
+makefile that is generated for all modules of a build. 
+
+For each of the make targets "all", "clean", "config" and "distclean" a list of
+lines can be defined that is put in the generated makefile. In the make-recipes
+map, each of the map keys "all", "clean", "config" and "distclean" is optional.
+For convenience, the string "$DIR" is replaced with the special make variable
+``$(@D)`` in every line. This is the directory of the checked out module (see
+also documentation of the "make" command). Note that *you do not have to
+prepend each line with a <TAB> character*, sumo already does this.
 
 Note that for the "all" target your last recipe line is usually 
 ``$(MAKE) -C $DIR``.
+
+If you have an empty object (or dictionary in python speak) here, this means
+that the module has no makefile at all. It is just checked out and possibly
+configured (see also :ref:`"commands"<reference-sumo-db-commands>`).
 
 You have an example of a `make-recipes` structure at the top of the chapter
 :ref:`The dependency database <reference-sumo-db-The-dependency-database>` .
@@ -1209,21 +1214,28 @@ Special variables and characters when you use double quotes:
 
 .. _reference-sumo-db-make-recipes:
 
-db make-recipes MODULE TARGET [LINES]
-:::::::::::::::::::::::::::::::::::::
+db make-recipes MODULE [TARGET] [LINES]
+:::::::::::::::::::::::::::::::::::::::
 
 Define special make recipes for a :term:`module`. See also
 :ref:`"make-recipes"<reference-sumo-make-recipes>` in the chapter "The
 dependency database".
 
 MODULE here is a :term:`modulespec` of the form MODULE:VERSION that specifies a
-single version of a module. TARGET must be "all", "clean", "config" or
-"distclean" and specifies the make target for which a recipe is defined. LINES
-is a list of space separated strings. It is recommended to enclose the line
-strings in single or double quotes. If LINES is not given, all special rules
-for the TARGET are removed.
+single version of a module. 
 
-Special variables and characters when you use double quotes:
+If TARGET is given, it must be "all", "clean", "config" or "distclean" and
+specifies the make target for which a recipe is defined. LINES is a list of
+space separated strings. It is recommended to enclose the line strings in
+single or double quotes. If LINES is not given, all special rules for the
+TARGET are removed.
+
+If TARGET (and LINES) are not given, this defines *empty* make recipes. This
+has to be done for modules that have no makefile at all. These modules are only
+checked out by sumo, and possibly configured (see also
+:ref:`"commands"<reference-sumo-db-commands>`).
+
+Special variables and characters when you enclose LINES in double quotes:
 
 - ``$DIR``: (sumo) The directory of the MODULE.
 - ``\"``: (bash) A literal double quote character.
