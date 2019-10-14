@@ -24,6 +24,7 @@ if [ $docker = "yes" ]; then
     cp -dR --preserve=mode,timestamps $APPLICATION my$APPLICATION || true
     cd my$APPLICATION
     rm -rf dist
+    rm -rf pylint-2
 else
     cd ..
 fi
