@@ -21,7 +21,7 @@ import pickle
 import tempfile
 import sumolib.lock
 
-__version__="3.5" #VERSION#
+__version__="3.6" #VERSION#
 
 assert __version__==sumolib.lock.__version__
 
