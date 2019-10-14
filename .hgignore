@@ -54,3 +54,6 @@
 # distribution directory:
 ^dist/
 ^dist-bitbucket
+
+# local pylint
+^pylint-2
