@@ -1177,14 +1177,14 @@ def create_app_data(deps, repoinfo, groups):
     specs_by_path= {}
 
     for module_name, groupdata in groups.items():
-        keys= groupdata.keys()
+        keys= list(groupdata.keys())
         if len(keys)!=1:
             sys.exit("error: groupdata \"%s\" must have exactly one key" % \
                      module_name)
         root_path= keys[0]
         values= groupdata[root_path]
         if len(values)!=1:
-            sys.exit("error: groudata \"%s\" must have exactly one "
+            sys.exit("error: groupdata \"%s\" must have exactly one "
                      "subdir" % module_name)
         subdir= values[0]
         versionedmodule_path= os.path.join(root_path, subdir)
