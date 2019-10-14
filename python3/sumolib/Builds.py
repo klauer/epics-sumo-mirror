@@ -375,12 +375,16 @@ class DB_overlay(DB):
     def delete(self, build_tag):
         """delete a build."""
         if self.overlay_mode and (self.tag_is_overlayed(build_tag)):
-            raise ValueError("error, build '%s' is read-only" % build_tag)
+            raise ValueError(("error, build '%s' is not in local build "
+                              "directory due to your 'sumo config local' "
+                              "configuration") % build_tag)
         super(self.__class__, self).delete(build_tag)
     def change_state(self, build_tag, new_state):
         """sets the state to a new value."""
         if self.overlay_mode and (self.tag_is_overlayed(build_tag)):
-            raise ValueError("error, build '%s' is read-only" % build_tag)
+            raise ValueError(("error, build '%s' is not in local build "
+                              "directory due to your 'sumo config local' "
+                              "configuration") % build_tag)
         super(self.__class__, self).change_state(build_tag, new_state)
     def to_dict(self):
         """return the object as a dict.
