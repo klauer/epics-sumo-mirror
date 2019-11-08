@@ -1592,7 +1592,7 @@ def simple_call_make(builddir, makefile, target, makeflags,
     # tracemsg("CALLING MAKE: %s\n" % cmd)
     try:
         # may raise IOError:
-        sumolib.system.system(cmd, False, False, verbose, dry_run)
+        sumolib.system.system(cmd, False, False, None, verbose, dry_run)
     except IOError as e:
         # pylint: disable=raising-format-tuple
         raise annotate("Error: make failed: %s" , e)

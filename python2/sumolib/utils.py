@@ -392,7 +392,7 @@ def edit_file(filename, editor, verbose, dry_run):
     for ed in ed_lst:
         try:
             sumolib.system.system("%s %s" % (ed, filename),
-                                  False, False, verbose, dry_run)
+                                  False, False, None, verbose, dry_run)
             found= True
             break
         except IOError, e:

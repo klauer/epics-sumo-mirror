@@ -70,4 +70,4 @@ class Repo(object):
         # needed in order for rsync to work as intended here.
         cmd= "rsync -a -u -L --chmod=Fu+w \"%s\" %s" % \
              (os.path.join(url,""), destdir)
-        sumolib.system.system(cmd, False, False, verbose, dry_run)
+        sumolib.system.system(cmd, False, False, None, verbose, dry_run)

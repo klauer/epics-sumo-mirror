@@ -46,7 +46,7 @@ class Repo():
         try:
             (reply,_)= sumolib.system.system(\
                              "git -C %s remote show origin" % self.directory,
-                             True, False,
+                             True, False, None,
                              self.verbose, self.dry_run)
         except IOError as _:
             # remote repo could not be contacted.
@@ -69,7 +69,7 @@ class Repo():
         """
         assert_git()
         cmd= "git -C %s status --porcelain" % self.directory
-        (reply,_)= sumolib.system.system(cmd, True, False,
+        (reply,_)= sumolib.system.system(cmd, True, False, None,
                                          self.verbose, self.dry_run)
         changes= False
         for line in reply.splitlines():
@@ -96,7 +96,7 @@ class Repo():
         assert_git()
         cmd= "git -C %s log origin..HEAD" % self.directory
         (reply,_)= sumolib.system.system(cmd,
-                                         True, False,
+                                         True, False, None,
                                          self.verbose, self.dry_run)
 
         changes= False
@@ -119,7 +119,7 @@ class Repo():
         assert_git()
         (reply,_)= sumolib.system.system(\
                 "git -C %s rev-parse --short HEAD" % self.directory,
-                True, False,
+                True, False, None,
                 self.verbose, self.dry_run)
         # for uncomitted changes, the revision ends with a "+":
         return reply.splitlines()[0].strip()
@@ -131,7 +131,7 @@ class Repo():
         curr_rev= self.current_revision
         assert_git()
         cmd= "git -C %s tag --points-at %s" % (self.directory, curr_rev)
-        (reply,_)= sumolib.system.system(cmd, True, False,
+        (reply,_)= sumolib.system.system(cmd, True, False, None,
                                          self.verbose, self.dry_run)
         tags= []
         for line in reply.splitlines():
@@ -277,13 +277,12 @@ class Repo():
         if tag and rev:
             raise ValueError("you cannot specify both, tag '%s' and "
                              "revision '%s'" % (tag,rev))
-        sumolib.system.system(cmd, False, False, verbose, dry_run)
+        sumolib.system.system(cmd, False, False, None, verbose, dry_run)
         # the following to avoid warning if we use "git push" in this
         # repository:
         cmd="git -C %s config push.default simple" % destdir
-        sumolib.system.system(cmd, False, False,
-                              verbose,
-                              dry_run)
+        sumolib.system.system(cmd, False, False, None,
+                              verbose, dry_run)
         if (tag is None) and (rev is None):
             return
         if tag is not None:
@@ -295,7 +294,7 @@ class Repo():
         cmd+=" -q"
         cwd= sumolib.utils.changedir(destdir)
         try:
-            sumolib.system.system(cmd, False, False, verbose, dry_run)
+            sumolib.system.system(cmd, False, False, None, verbose, dry_run)
         finally:
             sumolib.utils.changedir(cwd)
     def commit(self, logmessage):
@@ -307,7 +306,7 @@ class Repo():
         assert_git()
         cmd="git -C %s commit -a -q %s" % (self.directory, m_param)
         sumolib.system.system(cmd,
-                              False, False,
+                              False, False, None,
                               self.verbose, self.dry_run)
         self.local_changes= False
     def push(self):
@@ -318,7 +317,7 @@ class Repo():
         assert_git()
         cmd="git -C %s push -q %s" % (self.directory, self.remote_url)
         sumolib.system.system(cmd,
-                              True, False,
+                              True, False, None,
                               self.verbose, self.dry_run)
     def pull_merge(self):
         """pull changes and try to merge."""
@@ -328,13 +327,13 @@ class Repo():
         assert_git()
         cmd="git -C %s fetch %s -q" % (self.directory, self.remote_url)
         sumolib.system.system(cmd,
-                              True, False,
+                              True, False, None,
                               self.verbose, self.dry_run)
 
         cmd="git -C %s merge FETCH_HEAD -q" % self.directory
 
         (_,_,rc)= sumolib.system.system_rc(cmd,
-                                           True, False,
+                                           True, False, None,
                                            self.verbose, self.dry_run)
         if rc:
             msg="error, 'git pull' failed"

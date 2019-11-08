@@ -70,7 +70,7 @@ def _scan(filenames, external_definitions= None,
 	 "\\t@printenv\\n\" | %s " +\
 	 "make -s -f - scan_makefile_pe") % (include_cmd,extra)
     data= {}
-    (reply,_)= sumolib.system.system(cmd, True, False, verbose, dry_run)
+    (reply,_)= sumolib.system.system(cmd, True, False, None, verbose, dry_run)
     if dry_run:
         return data
     name= None

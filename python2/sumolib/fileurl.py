@@ -42,7 +42,7 @@ def get(url, dest, verbose, dry_run):
         st= url.replace("ssh://","",1)
         assert_scp()
         cmd= "scp \"%s\" \"%s\"" % (st, dest)
-        sumolib.system.system(cmd, False, False, verbose, dry_run)
+        sumolib.system.system(cmd, False, False, None, verbose, dry_run)
         return
     if scheme_name in urllib_schemes:
         if verbose:

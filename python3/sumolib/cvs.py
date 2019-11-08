@@ -139,7 +139,7 @@ def _cvs_dir_status(path, verbose, dry_run):
     """
     cmd="cvs status -l \"%s\"" % path
     # since the command prints something on stderr, we catch stderr, too.
-    (reply,_)= sumolib.system.system(cmd, True, True, verbose, dry_run)
+    (reply,_)= sumolib.system.system(cmd, True, True, None, verbose, dry_run)
     data= {}
     filename= None
     for line in reply.splitlines():
@@ -235,7 +235,7 @@ class Repo():
         if is_ssh:
             _cvs_set_ssh()
         cmd= "cvs -n -q -d %s update %s" % (root, self.directory)
-        (_,_,rc)= sumolib.system.system_rc(cmd, True, True,
+        (_,_,rc)= sumolib.system.system_rc(cmd, True, True, None,
                                            self.verbose, self.dry_run)
         if is_ssh:
             _cvs_unset_ssh()
@@ -254,7 +254,7 @@ class Repo():
         if is_ssh:
             _cvs_set_ssh()
         cmd= "cvs -n -q -d %s update %s" % (root, self.directory)
-        (reply,stderr,rc)= sumolib.system.system_rc(cmd, True, True,
+        (reply,stderr,rc)= sumolib.system.system_rc(cmd, True, True, None,
                                                     self.verbose,
                                                     self.dry_run)
         if is_ssh:
@@ -428,7 +428,7 @@ class Repo():
             mylock.lock()
             # we catch stdout and throw it away in order to keep cvs
             # quiet:
-            (_, stderr, rc)= sumolib.system.system_rc(cmd, True, True,
+            (_, stderr, rc)= sumolib.system.system_rc(cmd, True, True, None,
                                                       verbose, dry_run)
             if rc:
                 sys.stdout.flush()
@@ -463,7 +463,7 @@ class Repo():
         try:
             cwd= sumolib.utils.changedir(self.directory)
             (_,stderr,rc)= sumolib.system.system_rc(cmd,
-                                                    catch_stdout, True,
+                                                    catch_stdout, True, None,
                                                     self.verbose,
                                                     self.dry_run)
         finally:
@@ -484,7 +484,7 @@ class Repo():
         if is_ssh:
             _cvs_set_ssh()
         (stdout,stderr,rc)= sumolib.system.system_rc(cmd, \
-                                           True, True, \
+                                           True, True, None, \
                                            self.verbose, self.dry_run)
         if is_ssh:
             _cvs_unset_ssh()
