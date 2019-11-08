@@ -14,6 +14,13 @@ __version__="3.6" #VERSION#
 assert __version__==sumolib.system.__version__
 
 # -----------------------------------------------
+# environment for commands
+# -----------------------------------------------
+
+_env= sumolib.system.copy_env()
+_env["DARCS_DONT_COLOR"]= "1"
+
+# -----------------------------------------------
 # Repo class
 # -----------------------------------------------
 
@@ -39,7 +46,7 @@ class Repo(object):
                                     "darcs show repo --repodir %s" % \
                                         self.directory,
                                     True, False,
-                                    None,
+                                    _env,
                                     self.verbose, self.dry_run)
         except IOError, _:
             # probably no darcs repo found
@@ -65,7 +72,7 @@ class Repo(object):
             # note: the following code doesn't show an error message on *any*
             # error that occurs with the command:
             sumolib.system.system(cmd, True, True,
-                                  None,
+                                  _env,
                                   self.verbose, self.dry_run)
         except IOError, _:
             # probably no darcs repo found
@@ -80,7 +87,7 @@ class Repo(object):
         assert_darcs()
         cmd= "darcs whatsnew -s --repodir %s" % self.directory
         (reply,_,rc)= sumolib.system.system_rc(cmd, True, False,
-                                               None,
+                                               _env,
                                                self.verbose, self.dry_run)
         # Note: a return code 1 is normal with darcs
         if rc not in (0,1):
@@ -107,7 +114,7 @@ class Repo(object):
         assert_darcs()
         cmd= "darcs push --repodir %s --dry-run" % self.directory
         (reply,_)= sumolib.system.system(cmd, True, False,
-                                         None,
+                                         _env,
                                          self.verbose, self.dry_run)
         last_line= reply.splitlines()[-1].strip()
         if last_line.startswith("No recorded local"):
@@ -124,7 +131,7 @@ class Repo(object):
         assert_darcs()
         cmd= "darcs changes -a --last 1 --repodir %s" % self.directory
         (reply,_)= sumolib.system.system(cmd, True, False,
-                                         None,
+                                         _env,
                                          self.verbose, self.dry_run)
         last_line= reply.splitlines()[-1].strip()
         if last_line.startswith("tagged "):
@@ -262,7 +269,7 @@ class Repo(object):
         cmd= " ".join(cmd_l)
         # suppress stdout in the follwing command since darcs sometimes prints
         # the message "Going to specified version":
-        sumolib.system.system(cmd, True, False, None, verbose, dry_run)
+        sumolib.system.system(cmd, True, False, _env, verbose, dry_run)
     def commit(self, logmessage):
         """commit changes."""
         if not logmessage:
@@ -278,7 +285,7 @@ class Repo(object):
         cmd="darcs record --repodir %s -a %s" % (self.directory, m_param)
         sumolib.system.system(cmd,
                               catch_stdout, False,
-                              None,
+                              _env,
                               self.verbose, self.dry_run)
         self.local_changes= False
     def push(self):
@@ -290,7 +297,7 @@ class Repo(object):
         cmd="darcs push --repodir %s -a %s" % (self.directory,
                                                self.remote_url)
         sumolib.system.system(cmd, True, False,
-                              None,
+                              _env,
                               self.verbose, self.dry_run)
     def pull_merge(self):
         """pull changes and try to merge."""
@@ -301,7 +308,7 @@ class Repo(object):
         cmd="darcs pull --repodir %s -q -a %s" % (self.directory,
                                                   self.remote_url)
         (stdout,_)= sumolib.system.system(cmd, True, False,
-                                          None,
+                                          _env,
                                           self.verbose, self.dry_run)
         print stdout
         for l in stdout.splitlines():
