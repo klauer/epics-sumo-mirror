@@ -209,7 +209,7 @@ def edit_with_lock(filename, verbose, dry_run):
         for editor in ed_lst:
             try:
                 sumolib.system.system("%s %s" % (editor, filename),
-                                      False, False, verbose, dry_run)
+                                      False, False, None, verbose, dry_run)
                 found= True
                 break
             except IOError, e:

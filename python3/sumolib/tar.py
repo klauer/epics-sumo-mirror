@@ -156,7 +156,7 @@ class Repo():
         cwd= sumolib.utils.changedir(ap_tempdir)
         try:
             sumolib.system.system("tar %s %s" % (tar_args, ap_file),
-                                  False, False, verbose, dry_run)
+                                  False, False, None, verbose, dry_run)
         finally:
             sumolib.utils.changedir(cwd)
         ap_subdir= single_subdir(ap_tempdir)

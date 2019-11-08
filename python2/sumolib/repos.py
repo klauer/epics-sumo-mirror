@@ -127,7 +127,7 @@ def apply_commands(cmds, target_dir, verbose, dry_run):
         print "> cd %s" % target_dir
     try:
         for cmd in cmds:
-            sumolib.system.system(cmd, False, False, verbose, dry_run)
+            sumolib.system.system(cmd, False, False, None, verbose, dry_run)
     finally:
         sumolib.utils.changedir(old_dir)
 

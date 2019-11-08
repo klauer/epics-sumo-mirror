@@ -42,7 +42,7 @@ class Repo(object):
         path= os.path.join(self.remote_url, "tags")
         # first get a raw list of tags:
         cmd= "svn ls %s" % path
-        (reply,_)= sumolib.system.system(cmd, True, False,
+        (reply,_)= sumolib.system.system(cmd, True, False, None,
                                          self.verbose, self.dry_run)
         tags= [format_tag(t) for t in reply.splitlines()]
         # now get a list of tags together with revision numbers: since the
@@ -50,7 +50,7 @@ class Repo(object):
         # want to rely on column numbers. Instead we match the line with the
         # list of tags from the command above.
         cmd= "svn ls %s -v" % path
-        (reply,_)= sumolib.system.system(cmd, True, False,
+        (reply,_)= sumolib.system.system(cmd, True, False, None,
                                          self.verbose, self.dry_run)
 
         found_tags= []
@@ -74,7 +74,7 @@ class Repo(object):
         # error that occurs with the command:
         (reply,_,rc)= sumolib.system.system_rc(\
                               "svn info %s" % self.directory,
-                              True, True,
+                              True, True, None,
                               self.verbose, self.dry_run)
         if rc!=0:
             # probably no repo found
@@ -94,7 +94,7 @@ class Repo(object):
         cmd= "svn ls %s --depth empty" % default_repo
         # note: the following code doesn't show an error message on *any*
         # error that occurs with the command:
-        (_,_,rc)= sumolib.system.system_rc(cmd, True, True,
+        (_,_,rc)= sumolib.system.system_rc(cmd, True, True, None,
                                            self.verbose, self.dry_run)
         if rc!=0:
             # contacting the remote repo failed
@@ -108,7 +108,7 @@ class Repo(object):
         """
         assert_svn()
         cmd= "svn status %s" % self.directory
-        (reply,_)= sumolib.system.system(cmd, True, False,
+        (reply,_)= sumolib.system.system(cmd, True, False, None,
                                          self.verbose, self.dry_run)
         # flags from svn status that indicate a modification:
         mod_flags= set(("A","C","D","M","R","!","~"))
@@ -139,7 +139,7 @@ class Repo(object):
         assert_svn()
         (reply,_)= sumolib.system.system(\
                                 "svnversion %s" % self.directory,
-                                True, False,
+                                True, False, None,
                                 self.verbose, self.dry_run)
         result= reply.splitlines()[0].strip()
         # possible results:
@@ -291,7 +291,7 @@ class Repo(object):
         cmd_l.append("-q")
         cmd_l.append(destdir)
         cmd= " ".join(cmd_l)
-        sumolib.system.system(cmd, False, False, verbose, dry_run)
+        sumolib.system.system(cmd, False, False, None, verbose, dry_run)
     def commit(self, logmessage):
         """commit changes to the repository.
 
@@ -321,7 +321,7 @@ class Repo(object):
         cmd="svn commit %s" % m_param
         cwd= sumolib.utils.changedir(self.directory)
         (_,_,rc)= sumolib.system.system_rc(cmd,
-                                           catch_stdout, False,
+                                           catch_stdout, False, None,
                                            self.verbose, self.dry_run)
         sumolib.utils.changedir(cwd)
         if rc:
@@ -337,7 +337,7 @@ class Repo(object):
         cwd= sumolib.utils.changedir(self.directory)
 
         (stdout,stderr,rc)= sumolib.system.system_rc(cmd, \
-                                                True, True, \
+                                                True, True, None, \
                                                 self.verbose, self.dry_run)
         sumolib.utils.changedir(cwd)
         if stderr:
