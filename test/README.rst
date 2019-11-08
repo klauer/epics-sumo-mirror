@@ -6,6 +6,14 @@ Preface
 
 All tests in this directory are started by invoking make. 
 
+Prepatations for the tests
+--------------------------
+
+You have to run the following commands before starting the tests::
+
+  ../administration_tools/mk-data.sh 
+  ../administration_tools/mk-sumo-doc.sh
+
 The python version
 ------------------
 
@@ -114,7 +122,7 @@ expected output in this example with this command::
 
 In order to re-run this test alone enter (note that PYVER must be set)::
 
-  rm -f sumo-build-new-make-recipes.tst
+  make sumo-build-new-make-recipes.clean
   make sumo-build-new-make-recipes.tst
 
 Run a test separately
