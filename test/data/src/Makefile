@@ -7,6 +7,6 @@ stamp:
 	touch stamp
 
 clean:
-	rm -rf base support stamp
+	rm -rf base support stamp _sh*
 
 
