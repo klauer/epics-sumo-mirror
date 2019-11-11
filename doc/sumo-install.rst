@@ -220,8 +220,12 @@ The sumo configuration file
 ---------------------------
 
 In order to use sumo on your system you should create a configuration file. The
-default name for this file is "sumo.config". See :doc:`configuration-files` for
-a complete description of configuration files, see 
-:ref:`sumo.config examples <configuration-files-config-examples>` for examples
+default name for this file is "sumo.config". 
+
+See :doc:`configuration-files` for a complete description of configuration files.
+
+See :ref:`sumo.config examples <configuration-files-config-examples>` for examples
 of configuration files.
 
+See :ref:`sumo config new <reference-sumo-config-new>` for a command that
+creates a configuration file from a template provided with sumo.

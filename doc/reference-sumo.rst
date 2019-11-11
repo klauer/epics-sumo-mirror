@@ -744,6 +744,7 @@ known subcommands here:
 - make       - create configuration file
 - standalone - create configuration for "standalone" builds
 - local      - create configuration for "local" builds
+- new        - create a new configuration file from one of the provided templates 
 
 You get help on each subcommand with::
 
@@ -910,15 +911,19 @@ and options from the command line. If FILENAME is '-' dump to the console.
 OPTIONNAMES is an optional list of long option names. If OPTIONNAMES are
 specified, only options from this list are saved in the configuration file.
 
+.. _reference-sumo-config-new:
+
 config new DIRECTORY TEMPLATE
 :::::::::::::::::::::::::::::
 
 This command is used to create a new sumo directory with a new build directory
 and a new dependency database. 
 
-It creates a new configuration for sumo. DIRECTORY must not yet exist and is created by this command. This command takes all settings and command line options
-but sets dbdir to DIRECTORY/database. It also sets
-builddir to DIRECTORY/build. TEMPLATE determines how the dependency databasse file is created. Currently 2 values are known:
+It creates a new configuration for sumo. DIRECTORY must not yet exist and is
+created by this command. This command takes all settings and command line
+options but sets dbdir to DIRECTORY/database. It also sets builddir to
+DIRECTORY/build. TEMPLATE determines how the dependency databasse file is
+created. Currently 2 values are known:
 
 empty
   Create an empty dependency database.
