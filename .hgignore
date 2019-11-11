@@ -55,5 +55,8 @@
 ^dist/
 ^dist-bitbucket
 
+# log files
+^administration_tools/.*\.LOG
+
 # local pylint
 ^pylint-2

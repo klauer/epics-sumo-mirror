@@ -5,6 +5,8 @@ MYDIR=$(dirname "$ME")
 
 cd "$MYDIR"
 
+LOGFILE="DOCKER-BUILD.LOG"
+
 APPLICATION=sumo
 
 if [ -z "$1" -o "$1" = "-h" ]; then
@@ -17,6 +19,8 @@ if [ -z "$1" -o "$1" = "-h" ]; then
     exit 1
 fi
 
+set -e
+
 DOCKERFILE="$1"
 
 DOCKERIMAGE=hzb/$APPLICATION-builder-$DOCKERFILE
@@ -26,5 +30,10 @@ if [ ! -e docker/$DOCKERFILE ]; then
     exit 1
 fi
 
-cd docker && docker build -t $DOCKERIMAGE -f `pwd -P`/$DOCKERFILE `pwd -P`
+cd docker
+
+echo "---------------------------------------" >> $MYDIR/$LOGFILE
+echo "$me $DOCKERFILE" >> $MYDIR/$LOGFILE
+
+docker build -t $DOCKERIMAGE -f `pwd -P`/$DOCKERFILE `pwd -P` 2>&1 | tee -a $MYDIR/$LOGFILE
 
