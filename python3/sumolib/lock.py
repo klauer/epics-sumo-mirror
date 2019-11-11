@@ -20,7 +20,7 @@ if __name__ == "__main__":
 import sumolib.system
 # pylint: enable=wrong-import-position
 
-__version__="3.6" #VERSION#
+__version__="3.6.1" #VERSION#
 
 use_lockfile= True
 
