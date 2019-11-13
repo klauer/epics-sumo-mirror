@@ -212,6 +212,9 @@ new-version.sh
 Documentation
 +++++++++++++
 
+mk-sumo-doc.sh
+  Create python modules with sumo online documentation.
+
 doc-rebuild.sh
   Rebuild the html documentation
 
@@ -219,7 +222,7 @@ Create distribution files
 +++++++++++++++++++++++++
 
 mk-dist.sh
-  Create distribution (*.tar.gz) files
+  Create distribution (\*.tar.gz) files
 
 cleanup-distdirs.sh
   Clean the distribution directory
