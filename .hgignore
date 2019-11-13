@@ -21,6 +21,10 @@
 ^python3/sumolib/configuration_doc.py
 ^python3/sumolib/sumo_doc.py
 
+# template files, these are copied from data/templates:
+^python2/sumolib/data
+^python3/sumolib/data
+
 # newtest directories:
 ^test/data/src/stamp
 ^test/data/src/base
