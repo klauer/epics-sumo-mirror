@@ -234,6 +234,12 @@ mk-deb.sh
   Create a debian file, should be used on a debian system or a debian docker
   container.
 
+Cleanup working copy 
+++++++++++++++++++++
+
+distclean.sh
+  Removes all generated files, only files under version control are left.
+
 pypi support
 ++++++++++++
 
