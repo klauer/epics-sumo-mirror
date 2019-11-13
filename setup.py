@@ -39,8 +39,13 @@ __version__="3.6.1" #VERSION#
 
 # utilities -------------------------
 
-def find_dirs(path):
+def find_dirs(path, dirs_must_have_files):
     """find directories below a given path.
+
+    Note: The distutils may have problems with directories that do not contain
+    files but only other directories. For this, parameter dirs_must_have_files
+    was added. If this is set, only directories that actually contain files are
+    returned.
 
     here is an example of the returned data structure:
     ['doc/_build/html',
@@ -53,9 +58,12 @@ def find_dirs(path):
      'doc/_build/html/_static']
     """
     dirs= set()
-    for dirpath, _, _ in os.walk(path):
+    for dirpath, _, filenames in os.walk(path):
         if dirpath==os.curdir:
             continue
+        if (dirs_must_have_files):
+            if not filenames:
+                continue
         dirs.add(dirpath)
     return list(dirs)
 
@@ -130,7 +138,7 @@ def dir_glob_list(module_dir, subdir):
       "subdir/d2/*"
     ]
     """
-    dirs= find_dirs(os.path.join(module_dir, subdir))
+    dirs= find_dirs(os.path.join(module_dir, subdir), True)
     subdirs= [path_rebase(d, module_dir) for d in dirs]
     return [os.path.join(d, "*") for d in subdirs]
 
