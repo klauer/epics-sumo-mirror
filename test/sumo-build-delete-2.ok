@@ -47,7 +47,6 @@ directory tree (without darcs, maxdepth 2)
 ./MISC_DEBUGMSG/R3-0+001/LICENSE
 ./MISC_DEBUGMSG/R3-0+001/Makefile
 ./SOFT_DEVHWCLIENT
-./SOFT_DEVHWCLIENT/devHwClient-3-0.tar.gz
 ./SOFT_DEVHWCLIENT/TAR-3-0+001
 ./SOFT_DEVHWCLIENT/TAR-3-0+001/configure
 ./SOFT_DEVHWCLIENT/TAR-3-0+001/LICENSE
@@ -76,8 +75,6 @@ directory tree (without darcs, maxdepth 2)
 .
 ./BUILDS.DB
 ./DEPS.DB
-./SOFT_DEVHWCLIENT
-./SOFT_DEVHWCLIENT/devHwClient-3-0.tar.gz
 
 contents of BUILDS.DB now:
 {}

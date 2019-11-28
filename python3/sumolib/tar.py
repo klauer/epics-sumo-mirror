@@ -170,3 +170,4 @@ class Repo():
         os.rename(ap_subdir, ap_renamed_subdir)
         shutil.move(ap_renamed_subdir, ap_destdir)
         os.rmdir(ap_tempdir)
+        os.remove(ap_file)
