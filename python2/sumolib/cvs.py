@@ -13,7 +13,7 @@ import sumolib.system
 import sumolib.utils
 import sumolib.lock
 
-__version__="3.6.2" #VERSION#
+__version__="3.6.3" #VERSION#
 
 assert __version__==sumolib.system.__version__
 
