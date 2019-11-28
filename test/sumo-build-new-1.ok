@@ -62,7 +62,6 @@ directory tree (without darcs, maxdepth 2)
 ./BSPDEP_VMETAS/TAGLESS-2-1-modified+MYAPP-001/Makefile
 ./BUILDS.DB
 ./CSM
-./CSM/csm-4-1.tar.gz
 ./CSM/TAR-4-1+MYAPP-001
 ./CSM/TAR-4-1+MYAPP-001/configure
 ./CSM/TAR-4-1+MYAPP-001/LICENSE
@@ -91,7 +90,6 @@ directory tree (without darcs, maxdepth 2)
 ./MISC_DEBUGMSG/R3-0+MYAPP-001/LICENSE
 ./MISC_DEBUGMSG/R3-0+MYAPP-001/Makefile
 ./SOFT_DEVHWCLIENT
-./SOFT_DEVHWCLIENT/devHwClient-3-0.tar.gz
 ./SOFT_DEVHWCLIENT/TAR-3-0+MYAPP-001
 ./SOFT_DEVHWCLIENT/TAR-3-0+MYAPP-001/configure
 ./SOFT_DEVHWCLIENT/TAR-3-0+MYAPP-001/LICENSE
