@@ -310,7 +310,8 @@ class Repo():
         (stdout,_)= sumolib.system.system(cmd, True, False,
                                           _env,
                                           self.verbose, self.dry_run)
-        print(stdout)
+        if (stdout):
+            print(stdout)
         for l in stdout.splitlines():
             if l.lower().startswith("we have conflicts"):
                 msg="error, 'darcs pull' failed"
