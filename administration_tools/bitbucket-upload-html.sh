@@ -21,6 +21,8 @@ else
 fi
 
 cp -a $MYDIR/../doc/_build/html/* "$HTML_DIR/sumo"
+mv "$HTML_DIR/sumo/index.html" "$HTML_DIR/sumo/index-orig.html" 
+cp -a $MYDIR/../doc/redirect.html "$HTML_DIR/sumo/index.html"
 hg -R "$HTML_DIR" commit
 hg -R "$HTML_DIR" push
 
