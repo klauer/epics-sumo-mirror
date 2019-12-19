@@ -1,7 +1,8 @@
 FROM debian:9
 MAINTAINER Goetz Pfeiffer <goetz.pfeiffer@helmholtz-berlin.de>
 
-# first do a system update:
+# first do a system update, somehow we have to run this twice ??
+RUN apt-get update
 RUN apt-get update
 
 # install python and stdeb:
