@@ -192,10 +192,8 @@ setup(name=name,
       description='Python support tools for EPICS software development',
       author='Goetz Pfeiffer',
       author_email='Goetz.Pfeiffer@helmholtz-berlin.de',
-      url='https://goetzpf.bitbucket.io/sumo',
-      download_url='https://bitbucket.org/goetzpf/epics-sumo/downloads',
-      bugtrack_url='https://bitbucket.org/goetzpf/epics-sumo/issues?status=new&status=open',
-
+      url='http://epics-sumo.sourceforge.net',
+      download_url='https://sourceforge.net/projects/epics-sumo/files',
       classifiers=[
           'Development Status :: 6 - Mature',
           'Environment :: Console',
