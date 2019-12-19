@@ -119,7 +119,7 @@ The source
 
 You can browse the mercurial repository here:
 
-`repository at Sourceforge <hg clone http://hg.code.sf.net/p/epics-sumo/mercurial epics-sumo>`_.
+`repository at Sourceforge <http://hg.code.sf.net/p/epics-sumo/mercurial/epics-sumo>`_.
 
 or clone it with this command:
 
