@@ -54,8 +54,7 @@ what debian version you use enter::
 
 Download the package here:
 
-* `sumo downloads at Bitbucket <https://bitbucket.org/goetzpf/epics-sumo/downloads>`_
-* `mirror of sumo downloads at Sourceforge <https://sourceforge.net/projects/epics-sumo/files/?source=navbar>`_
+* `sumo downloads at Sourceforge <https://sourceforge.net/projects/epics-sumo/files/?source=navbar>`_
 
 and install with::
 
@@ -78,8 +77,7 @@ In order to see what fedora version you use enter::
 
 Download the package here:
 
-* `sumo downloads at Bitbucket <https://bitbucket.org/goetzpf/epics-sumo/downloads>`_
-* `mirror of sumo downloads at Sourceforge <https://sourceforge.net/projects/epics-sumo/files/?source=navbar>`_
+* `sumo downloads at Sourceforge <https://sourceforge.net/projects/epics-sumo/files/?source=navbar>`_
 
 and install with::
 
@@ -97,8 +95,7 @@ Install from source (tar.gz or zip file)
 
 Download the file here:
 
-* `sumo downloads at Bitbucket <https://bitbucket.org/goetzpf/epics-sumo/downloads>`_
-* `mirror of sumo downloads at Sourceforge <https://sourceforge.net/projects/epics-sumo/files/?source=navbar>`_
+* `sumo downloads at Sourceforge <https://sourceforge.net/projects/epics-sumo/files/?source=navbar>`_
 
 unpack the tar.gz file with::
 

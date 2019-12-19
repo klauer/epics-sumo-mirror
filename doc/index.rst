@@ -92,8 +92,7 @@ Download
 
 Sumo is available as a debian or rpm package, as tar.gz or zip here:
 
-* `sumo downloads at Bitbucket <https://bitbucket.org/goetzpf/epics-sumo/downloads>`_
-* `mirror of sumo downloads at Sourceforge <https://sourceforge.net/projects/epics-sumo/files/?source=navbar>`_
+* `sumo downloads at Sourceforge <https://sourceforge.net/projects/epics-sumo/files/?source=navbar>`_
 
 Install
 =======
@@ -103,35 +102,28 @@ from source or with pip.
 
 For details on how to install sumo see :doc:`sumo-install`.
 
-Sumo at Bitbucket
-=================
-
-You find the Bitbucket summary page for sumo at
-`epics-sumo at Bitbucket <https://bitbucket.org/goetzpf/epics-sumo/src/default>`_.
-
-Sumo at sourceforge (mirror)
-============================
+Sumo at sourceforge
+===================
 
 You find the sourceforge summary page for sumo at
 `epics-sumo at Sourceforge <https://sourceforge.net/projects/epics-sumo>`_.
+
+Sumo at Bitbucket (deprecated)
+==============================
+
+Bitbucket removes support for mercurial repositories in 2020 so sumo will in
+the future no longer be hosted here.
 
 The source
 ==========
 
 You can browse the mercurial repository here:
 
-`repository at Bitbucket <https://bitbucket.org/goetzpf/epics-sumo/src/default>`_.
-
-`repository at Sourceforge (mirror) <hg clone http://hg.code.sf.net/p/epics-sumo/mercurial epics-sumo>`_.
-
+`repository at Sourceforge <hg clone http://hg.code.sf.net/p/epics-sumo/mercurial epics-sumo>`_.
 
 or clone it with this command:
 
-Bitbucket::
-
-  hg clone https://hg@bitbucket.org/goetzpf/epics-sumo
-
-Sourceforge (mirror)::
+Sourceforge::
 
   hg clone http://hg.code.sf.net/p/epics-sumo/mercurial epics-sumo
 
