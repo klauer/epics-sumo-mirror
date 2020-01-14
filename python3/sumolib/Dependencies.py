@@ -133,11 +133,29 @@ class DB(sumolib.JSON.Container):
                 vdict = m.setdefault(versionname,{})
                 vdict2= other.datadict()[modulename][versionname]
                 for dictname, dictval in vdict2.items():
-                    if dictname=="weight":
-                        # take the weight from the new dict if present
-                        vdict[dictname]= dictval
-                        continue
                     if dictname=="aliases":
+                        try:
+                            sumolib.utils.dict_update(\
+                                        vdict.setdefault(dictname,{}),
+                                        dictval)
+                        except ValueError as e:
+                            raise ValueError(\
+                              "module %s version %s aliases: %s" % \
+                              (modulename, versionname, str(e)))
+                        continue
+                    if dictname=="dependencies":
+                        if dictname not in vdict:
+                            vdict[dictname]= sorted(vdict2[dictname])
+                            continue
+                        if set(vdict[dictname])!=set(vdict2[dictname]):
+                            raise ValueError(
+                                "module %s version %s dependencies: "
+                                "contradiction %s %s" % \
+                                (modulename, versionname,
+                                 repr(vdict[dictname]),
+                                 repr(vdict2[dictname])))
+                        continue
+                    if dictname=="make-recipes":
                         try:
                             sumolib.utils.dict_update(\
                                         vdict.setdefault(dictname,{}),
@@ -171,17 +189,9 @@ class DB(sumolib.JSON.Container):
                                  repr(vdict[dictname]),
                                  repr(vdict2[dictname])))
                         continue
-                    if dictname=="dependencies":
-                        if dictname not in vdict:
-                            vdict[dictname]= sorted(vdict2[dictname])
-                            continue
-                        if set(vdict[dictname])!=set(vdict2[dictname]):
-                            raise ValueError(
-                                "module %s version %s dependencies: "
-                                "contradiction %s %s" % \
-                                (modulename, versionname,
-                                 repr(vdict[dictname]),
-                                 repr(vdict2[dictname])))
+                    if dictname=="weight":
+                        # take the weight from the new dict if present
+                        vdict[dictname]= dictval
                         continue
                     raise AssertionError("Error, unexpected dictname '%s'" % \
                                          dictname)
