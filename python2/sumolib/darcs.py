@@ -310,7 +310,7 @@ class Repo(object):
         (stdout,_)= sumolib.system.system(cmd, True, False,
                                           _env,
                                           self.verbose, self.dry_run)
-        if (stdout):
+        if stdout:
             print stdout
         for l in stdout.splitlines():
             if l.lower().startswith("we have conflicts"):
