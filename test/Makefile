@@ -96,6 +96,7 @@ clean: shallowclean
 	rm -rf *.tmp
 	rm -rf *.bak
 
+# clean only files for a single test
 %.clean: 
 	if [ -d tmp-$* ]; then \
 	    chmod -R u+w tmp-$*; \
@@ -172,6 +173,7 @@ sumo-db-dbrepo-create.out: sumo-db-convert.tst
 sumo-db-cloneversion-dbrepo.out: sumo-db-dbrepo-create.tst
 sumo-db-cloneversion-dbrepo-2.out: sumo-db-dbrepo-create.tst
 sumo-db-edit-dbrepo.out: sumo-db-dbrepo-create.tst
+sumo-db-merge.out: sumo-db-convert.tst
 sumo-db-dbrepo-pull.out: sumo-db-cloneversion-dbrepo.tst sumo-db-dbrepo-create.tst
 sumo-db-dbrepo-pull-nowrite.out: sumo-db-cloneversion-dbrepo.tst sumo-db-dbrepo-create.tst
 sumo-db-dbrepo-conflict.out: sumo-db-cloneversion-dbrepo.tst sumo-db-dbrepo-create.tst
