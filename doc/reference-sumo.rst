@@ -757,11 +757,11 @@ Show the configuration or create or modify a configuration file. These are
 known subcommands here:
 
 - list       - list loaded configuration files
-- show       - show configuration data
-- make       - create configuration file
-- standalone - create configuration for "standalone" builds
 - local      - create configuration for "local" builds
+- make       - create configuration file
 - new        - create a new configuration file from one of the provided templates 
+- show       - show configuration data
+- standalone - create configuration for "standalone" builds
 
 You get help on each subcommand with::
 
@@ -795,29 +795,26 @@ directory with option ``--dbdir`` or a configuration file.
 
 These are the known subcommands here:
 
-convert
-  convert a scanfile created by sumo-scan to a DB file
+alias-add
+  add an alias for a dependency in a module
 
 appconvert
   convert a scanfile to a MODULES file for an application
 
-modconvert
-  print new DB file entries for the given MODULES from a scanfile
+check
+  consistency check of the DB file
 
-edit
-  edit the dependency file with an editor
+clonemodule
+  add a module under a new name in the DB file
 
-format
-  reformat the dependency file
+cloneversion
+  create a new DB entry by copying an old one
 
-extra
-  define extra lines to add to RELEASE file
+commands
+  define commands to be executed after module checkout
 
-weight
-  set the weight factor for modules
-
-alias-add
-  add an alias for a dependency in a module
+convert
+  convert a scanfile created by sumo-scan to a DB file
 
 dependency-add
   add a dependency to a module
@@ -825,29 +822,29 @@ dependency-add
 dependency-delete
   delete a dependency of a module
 
-commands
-  define commands to be executed after module checkout
+edit
+  edit the dependency file with an editor
 
-make-recipes
-  define special make-recipes for a module
-
-list
-  list modules or versions of modules
-
-show
-  show details of moduleversions
+extra
+  define extra lines to add to RELEASE file
 
 find
   search for modules with a regexp
 
-check
-  consistency check of the DB file
+format
+  reformat the dependency file
+
+list
+  list modules or versions of modules
+
+make-recipes
+  define special make-recipes for a module
 
 merge
   merge two DB files
 
-cloneversion
-  create a new DB entry by copying an old one
+modconvert
+  print new DB file entries for the given MODULES from a scanfile
 
 releasefilename
   define an alternative filename for the RELEASE file
@@ -855,8 +852,11 @@ releasefilename
 replaceversion
   replace a DB entry with a new one
 
-clonemodule
-  add a module under a new name in the DB file
+show
+  show details of moduleversions
+
+weight
+  set the weight factor for modules
 
 You get help on each subcommand with::
 
@@ -874,8 +874,14 @@ configuration file.
 
 These are the known subcommands:
 
-try
-  check the module specification for completeness and consistency
+delete
+  delete a build
+
+find
+  look for builds that match a module specification
+
+list
+  list names of all builds
 
 new
   create a new build
@@ -883,23 +889,17 @@ new
 remake
   do "make clean" and "make all" with a build
 
-find
-  look for builds that match a module specification
-
-use
-  use all modules or your module specification in your application
-
-list
-  list names of all builds
-
 show
   show details of a build
 
 state
   show or change the state of a build
 
-delete
-  delete a build
+try
+  check the module specification for completeness and consistency
+
+use
+  use all modules or your module specification in your application
 
 You get help on each subcommand with::
 
@@ -913,12 +913,20 @@ config list
 
 List all configuration files that were loaded.
 
-config show [OPTIONNAMES]
-:::::::::::::::::::::::::
+config local DIRECTORY
+::::::::::::::::::::::
 
-Show the configuration in JSON format.  OPTIONNAMES is an optional list of long
-option names. If OPTIONNAMES are specified, only options from this list are
-saved in the configuration file.
+This command is used to create a new sumo directory with a new build directory
+but using existing builds from your current build directory. It also creates an
+independent copy of the dependency database. 
+
+DIRECTORY is created if it does not yet exist. This command takes all settings
+and command line options but sets dbrepomode to "pull" and dbdir to
+DIRECTORY/database. It also sets localbuilddir to DIRECTORY/build. Option
+dbrepo must be set, this is used to create a local copy of the dependency
+database in DIRECTORY/database. If there is a file "sumo.config" in the current
+working directory it is copied to "sumo.config.bak". A new file "sumo.config"
+is then created in the current working directory.
 
 config make FILENAME [OPTIONNAMES]
 ::::::::::::::::::::::::::::::::::
@@ -954,6 +962,13 @@ If there is a file "sumo.config" in the current working directory it is copied
 to "sumo.config.bak". A new file "sumo.config" is then created in the current
 working directory.
 
+config show [OPTIONNAMES]
+:::::::::::::::::::::::::
+
+Show the configuration in JSON format.  OPTIONNAMES is an optional list of long
+option names. If OPTIONNAMES are specified, only options from this list are
+saved in the configuration file.
+
 config standalone DIRECTORY
 :::::::::::::::::::::::::::
 
@@ -969,36 +984,15 @@ file "sumo.config" in the current working directory it is copied to
 "sumo.config.bak". A new file "sumo.config" is then created in the current
 working directory.
 
-config local DIRECTORY
-::::::::::::::::::::::
-
-This command is used to create a new sumo directory with a new build directory
-but using existing builds from your current build directory. It also creates an
-independent copy of the dependency database. 
-
-DIRECTORY is created if it does not yet exist. This command takes all settings
-and command line options but sets dbrepomode to "pull" and dbdir to
-DIRECTORY/database. It also sets localbuilddir to DIRECTORY/build. Option
-dbrepo must be set, this is used to create a local copy of the dependency
-database in DIRECTORY/database. If there is a file "sumo.config" in the current
-working directory it is copied to "sumo.config.bak". A new file "sumo.config"
-is then created in the current working directory.
-
 subcommands for maincommand "db"
 ++++++++++++++++++++++++++++++++
 
-db convert SCANFILE
-:::::::::::::::::::
+db alias-add MODULE DEPENDENCY ALIAS
+::::::::::::::::::::::::::::::::::::
 
-Convert a :term:`scanfile` that was created by by 
-:doc:`"sumo-scan all"<reference-sumo-scan>` to a new dependency database.  If
-SCANFILE is a dash "-", the program expects the scanfile on stdin.  Note that
-options ``--dbdir`` and ``--scandb`` are mandatory here. With ``--dbdir`` you
-specify the drectory where the new created 
-:ref:`dependency database <reference-sumo-db-The-dependency-database>` file is
-stored, with ``--scandb`` you specify the name of the scan database file. The
-scan database file contains information on what moduleversion can be used with
-what dependency version.
+Define a new :term:`alias` for a :term:`dependency` of a :term:`module`. MODULE
+here is a :term:`modulespec` of the form MODULE:VERSION that specifies a single
+version of a module.
 
 db appconvert SCANFILE
 ::::::::::::::::::::::
@@ -1009,92 +1003,21 @@ Convert a :term:`scanfile` that was created by applying
 format. If SCANFILE is a dash "-" the program expects the scanfile on stdin.
 The result is printed to the console. 
 
-db modconvert SCANFILE MODULES
-::::::::::::::::::::::::::::::
-
-Convert a :term:`scanfile` that was created by applying 
-:doc:`"sumo-scan all"<reference-sumo-scan>` to the 
-:ref:`dependency database <reference-sumo-db-The-dependency-database>`
-format for all the selected modules. If SCANFILE is a dash "-" the program
-expects the scanfile on stdin.  The result is printed to the console. This data
-can be added to the dependency database using the command `db edit`_.
-
-.. _reference-sumo-db-edit:
-
-db edit
-:::::::
-
-Start the editor specified by option ``--editor`` or the environment variables
-"VISUAL" or "EDITOR" to edit the dependency database file. This command first
-aquires a file-lock on the file, that prevents other users from acessing the
-file at the same time.  When the editor program is terminated, sumo checks if
-the file is still a valid `JSON <http://www.json.org>`_ file. If not, you can
-start the editor again or abort the program. If the file is valid 
-`JSON <http://www.json.org>`_, sumo commits the changes if option ``--dbrepo``
-was specified.  If option ``--logmsg`` was given, this is used as commit log
-message, otherwise an editor is started where you can enter a log message.
-Finally the file lock is released. If you want to edit the dependency database
-file you should always do it with this command.
-
-db format
-:::::::::
-
-Just load and save the 
-:ref:`dependency database <reference-sumo-db-The-dependency-database>`. 
-This ensures that the file is formatted in the standard sumo format. This is
-useful when the file was edited and you want to ensure that key sort order and
-indentation are restored. If you specified a repository with ``--dbrepo,`` the
-command will commit the changes. If you want a log message different from "db
-format" use option ``--logmsg`` 
-
-
-db weight WEIGHT MODULES
-::::::::::::::::::::::::
-
-Set the weight factor for modules. A weight determines where a module is placed
-in the generated RELEASE file. Modules there are sorted first by weight, then
-by dependency. Parameter MODULES is a list of :term:`modulespecs`. Use
-modulename:{+-}versionname to select more versions of a module.
-
-Note that this command *does not* use the ``--modules`` command line option.
-
-Parameter WEIGHT must be an integer.
-
-db list MODULES
-:::::::::::::::
-
-If called with no argument, list the names of all :term:`modules`. If called
-with '.', the wildcard symbol, list all :term:`versions` of all
-:term:`modules`. If called with argument MODULES, a list of :term:`modulespecs`
-MODULE:{+-}VERSION that specifies :term:`modules` and :term:`versions`, list
-all the matching :term:`versions` of all specified :term:`modules`.
-
-db show MODULES
-:::::::::::::::
-
-This command prints only the parts of the dependency database that contain the
-given :term:`modules`. 
-
-Parameter MODULES is a list of :term:`modulespecs` MODULE:{+-}VERSION that
-specifies the :term:`modules` and :term:`versions` to operate on. 
-
-db find REGEXP
-::::::::::::::
-
-This command shows all :term:`modules` whose names or :term:`sources` match a
-regexp.  Parameter REGEXP is a perl compatible :term:`regular expression`.  
-
 db check
 ::::::::
 
 Do some consistency checks on the :term:`dependency database` file in the
 directory specifed by ``--dbdir``.
 
-db merge DB
-:::::::::::
+db clonemodule OLD-MODULE NEW-MODULE [VERSIONS]
+:::::::::::::::::::::::::::::::::::::::::::::::
 
-Merge the given :term:`dependency database` file with the 
-:term:`dependency database` in the directory specifed by ``--dbdir``.
+Copy all :term:`versions` of the existing old :term:`module` and add this with
+the name of thew new :term:`module` to the :term:`dependency` database.
+OLD-MODULE and NEW-MODULE here are just the module names since the versions may
+follow as a separate argument. If there are no :term:`versions` specified, the
+command copies all existing :term:`versions`. Note that this DOES NOT add the
+new :term:`module` as :term:`dependency` to any other :term:`modules`.
 
 db cloneversion MODULE OLD-VERSION NEW-VERSION [SOURCESPEC]
 :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
@@ -1153,60 +1076,6 @@ This means that the "tag" is removed from the source specification.
 The command always asks for a confirmation of the action unless option "-y" is
 used.
 
-db releasefilename MODULE RELEASEFILENAME
-:::::::::::::::::::::::::::::::::::::::::
-
-This command defines an alternative filename for the RELEASE file of the
-:term:`module`. Usually the RELEASE file is generated as "configure/RELEASE".
-You can specify a different filename for the given :term:`module` with this
-command. This may be useful for support :term:`modules` that have no regular
-EPICS makefile system or for some special configurations of the EPICS base. If
-you set the RELEASEFILENAME to an empty string or "configure/RELEASE", the
-special entry for the filename is removed for this module in the
-:term:`dependency database`.
-
-db replaceversion MODULE OLD-VERSION NEW-VERSION
-::::::::::::::::::::::::::::::::::::::::::::::::
-
-This command replaces a :term:`version` of a :term:`module` with a new
-:term:`version`. MODULE here is just the name of the module since the version
-follows as a separate argument. All the data of the :term:`module` is copied.
-If sourcespec is given, the command changes the source part according to this
-parameter. A sourcespec has the form "path PATH", "tar TARFILE", "REPOTYPE URL"
-or "REPOTYPE URL TAG".  REPOTYPE may be "darcs", "hg" or "git". Both, URL or
-TAG may be ".", in this case the original URL or TAG remains unchanged.
-
-db clonemodule OLD-MODULE NEW-MODULE [VERSIONS]
-:::::::::::::::::::::::::::::::::::::::::::::::
-
-Copy all :term:`versions` of the existing old :term:`module` and add this with
-the name of thew new :term:`module` to the :term:`dependency` database.
-OLD-MODULE and NEW-MODULE here are just the module names since the versions may
-follow as a separate argument. If there are no :term:`versions` specified, the
-command copies all existing :term:`versions`. Note that this DOES NOT add the
-new :term:`module` as :term:`dependency` to any other :term:`modules`.
-
-db dependency-delete MODULE DEPENDENCY
-::::::::::::::::::::::::::::::::::::::
-
-Delete a :term:`dependency` of a :term:`module`. MODULE here is a
-:term:`modulespec` of the form MODULE:VERSION that specifies a single version
-of a module.
-
-db dependency-add MODULE DEPENDENCY
-:::::::::::::::::::::::::::::::::::
-
-Add a :term:`dependency` to a :term:`module`. MODULE here is a
-:term:`modulespec` of the form MODULE:VERSION that specifies a single version
-of a module.
-
-db alias-add MODULE DEPENDENCY ALIAS
-::::::::::::::::::::::::::::::::::::
-
-Define a new :term:`alias` for a :term:`dependency` of a :term:`module`. MODULE
-here is a :term:`modulespec` of the form MODULE:VERSION that specifies a single
-version of a module.
-
 db commands MODULE LINES
 ::::::::::::::::::::::::
 
@@ -1226,6 +1095,50 @@ Special variables and characters when you use double quotes:
 - ``\\$$``: (make, bash) A literal dollar character passed to the shell.
 - ``\\``: (json, bash) At the end of the json string this means line continuation for bash.
 
+db convert SCANFILE
+:::::::::::::::::::
+
+Convert a :term:`scanfile` that was created by by 
+:doc:`"sumo-scan all"<reference-sumo-scan>` to a new dependency database.  If
+SCANFILE is a dash "-", the program expects the scanfile on stdin.  Note that
+options ``--dbdir`` and ``--scandb`` are mandatory here. With ``--dbdir`` you
+specify the drectory where the new created 
+:ref:`dependency database <reference-sumo-db-The-dependency-database>` file is
+stored, with ``--scandb`` you specify the name of the scan database file. The
+scan database file contains information on what moduleversion can be used with
+what dependency version.
+
+db dependency-add MODULE DEPENDENCY
+:::::::::::::::::::::::::::::::::::
+
+Add a :term:`dependency` to a :term:`module`. MODULE here is a
+:term:`modulespec` of the form MODULE:VERSION that specifies a single version
+of a module.
+
+db dependency-delete MODULE DEPENDENCY
+::::::::::::::::::::::::::::::::::::::
+
+Delete a :term:`dependency` of a :term:`module`. MODULE here is a
+:term:`modulespec` of the form MODULE:VERSION that specifies a single version
+of a module.
+
+.. _reference-sumo-db-edit:
+
+db edit
+:::::::
+
+Start the editor specified by option ``--editor`` or the environment variables
+"VISUAL" or "EDITOR" to edit the dependency database file. This command first
+aquires a file-lock on the file, that prevents other users from acessing the
+file at the same time.  When the editor program is terminated, sumo checks if
+the file is still a valid `JSON <http://www.json.org>`_ file. If not, you can
+start the editor again or abort the program. If the file is valid 
+`JSON <http://www.json.org>`_, sumo commits the changes if option ``--dbrepo``
+was specified.  If option ``--logmsg`` was given, this is used as commit log
+message, otherwise an editor is started where you can enter a log message.
+Finally the file lock is released. If you want to edit the dependency database
+file you should always do it with this command.
+
 .. _reference-sumo-db-extra:
 
 db extra MODULE [LINES]
@@ -1237,6 +1150,32 @@ Define extra lines that are appended to the generated RELEASE file of the
 
 MODULE here is a :term:`modulespec` of the form MODULE:VERSION that specifies a
 single version of a module. 
+
+db find REGEXP
+::::::::::::::
+
+This command shows all :term:`modules` whose names or :term:`sources` match a
+regexp.  Parameter REGEXP is a perl compatible :term:`regular expression`.  
+
+db format
+:::::::::
+
+Just load and save the 
+:ref:`dependency database <reference-sumo-db-The-dependency-database>`. 
+This ensures that the file is formatted in the standard sumo format. This is
+useful when the file was edited and you want to ensure that key sort order and
+indentation are restored. If you specified a repository with ``--dbrepo,`` the
+command will commit the changes. If you want a log message different from "db
+format" use option ``--logmsg`` 
+
+db list MODULES
+:::::::::::::::
+
+If called with no argument, list the names of all :term:`modules`. If called
+with '.', the wildcard symbol, list all :term:`versions` of all
+:term:`modules`. If called with argument MODULES, a list of :term:`modulespecs`
+MODULE:{+-}VERSION that specifies :term:`modules` and :term:`versions`, list
+all the matching :term:`versions` of all specified :term:`modules`.
 
 .. _reference-sumo-db-make-recipes:
 
@@ -1270,32 +1209,92 @@ Special variables and characters when you enclose LINES in double quotes:
 - ``\\$$``: (make, bash) A literal dollar character passed to the shell.
 - ``\\``: (json, bash) At the end of the json string this means line continuation for bash.
 
+db merge DB
+:::::::::::
+
+Merge the given :term:`dependency database` file with the 
+:term:`dependency database` in the directory specifed by ``--dbdir``.
+
+db modconvert SCANFILE MODULES
+::::::::::::::::::::::::::::::
+
+Convert a :term:`scanfile` that was created by applying 
+:doc:`"sumo-scan all"<reference-sumo-scan>` to the 
+:ref:`dependency database <reference-sumo-db-The-dependency-database>`
+format for all the selected modules. If SCANFILE is a dash "-" the program
+expects the scanfile on stdin.  The result is printed to the console. This data
+can be added to the dependency database using the command `db edit`_.
+
+db releasefilename MODULE RELEASEFILENAME
+:::::::::::::::::::::::::::::::::::::::::
+
+This command defines an alternative filename for the RELEASE file of the
+:term:`module`. Usually the RELEASE file is generated as "configure/RELEASE".
+You can specify a different filename for the given :term:`module` with this
+command. This may be useful for support :term:`modules` that have no regular
+EPICS makefile system or for some special configurations of the EPICS base. If
+you set the RELEASEFILENAME to an empty string or "configure/RELEASE", the
+special entry for the filename is removed for this module in the
+:term:`dependency database`.
+
+db replaceversion MODULE OLD-VERSION NEW-VERSION
+::::::::::::::::::::::::::::::::::::::::::::::::
+
+This command replaces a :term:`version` of a :term:`module` with a new
+:term:`version`. MODULE here is just the name of the module since the version
+follows as a separate argument. All the data of the :term:`module` is copied.
+If sourcespec is given, the command changes the source part according to this
+parameter. A sourcespec has the form "path PATH", "tar TARFILE", "REPOTYPE URL"
+or "REPOTYPE URL TAG".  REPOTYPE may be "darcs", "hg" or "git". Both, URL or
+TAG may be ".", in this case the original URL or TAG remains unchanged.
+
+db show MODULES
+:::::::::::::::
+
+This command prints only the parts of the dependency database that contain the
+given :term:`modules`. 
+
+Parameter MODULES is a list of :term:`modulespecs` MODULE:{+-}VERSION that
+specifies the :term:`modules` and :term:`versions` to operate on. 
+
+db weight WEIGHT MODULES
+::::::::::::::::::::::::
+
+Set the weight factor for modules. A weight determines where a module is placed
+in the generated RELEASE file. Modules there are sorted first by weight, then
+by dependency. Parameter MODULES is a list of :term:`modulespecs`. Use
+modulename:{+-}versionname to select more versions of a module.
+
+Note that this command *does not* use the ``--modules`` command line option.
+
+Parameter WEIGHT must be an integer.
+
 subcommands for maincommand "build"
 +++++++++++++++++++++++++++++++++++
 
-build try MODULES
-:::::::::::::::::
+build delete BUILDTAGS
+::::::::::::::::::::::
 
-This command is intended to help you create :term:`module` specifications for
-the "new" command. 
+The directories of the :term:`builds` are removed and their entries in the
+:term:`build database` are deleted. If other builds depend on the
+:term:`builds` to be deleted, the command fails unless option '--recursive' is
+given. In this case all dependent builds are deleted, too.  The
+:term:`buildtags` must be given as an argument.
 
-Each MODULE here is a :term:`modulespec` of the form MODULE or
-MODULE:{+-}VERSION that specifies just a module name, a module and some
-versions or a single version. You can specify an incomplete list of
-:term:`modules`.
+build find MODULES
+::::::::::::::::::
 
-The detail of the output is determined by option ``--detail`` which is an
-integer between 0 and 3. 0, the default, gives the shortest, 3 gives the
-longest report. The program then shows which :term:`modules` you have to
+This command is used to find matching :term:`builds` for a given list of
+:term:`modulespecs`. Each module in MODULES here is a :term:`modulespec` of the
+form MODULE or MODULE:{+-}VERSION that specifies just a module name, a module
+and some versions or a single version. The command prints a list of
+:term:`buildtags` of matching :term:`builds` on the console. If option ``--brief``
+is given, the program just shows the buildtags. 
 
-In any case the command shows which :term:`modules` are missing since they
-depend on other :term:`modules` of your specification and which ones are
-missing an exact :term:`version`.
+build list
+::::::::::
 
-If you converted an existing support directory to sumo you have a scan database
-file which you can specify with option ``--scandb`` to this command.
-
-For a detailed example see :ref:`try example <example-sumo-build-try>`.
+This command lists the names of all builds.
 
 .. _reference-sumo-new:
 
@@ -1324,36 +1323,6 @@ then "make all" with the build's makefile. If you develop a support
 recompile the :term:`build` after changes in the sources. In order to provide
 arbitrary options to make use option ``--makeflags``. 
 
-build find MODULES
-::::::::::::::::::
-
-This command is used to find matching :term:`builds` for a given list of
-:term:`modulespecs`. Each module in MODULES here is a :term:`modulespec` of the
-form MODULE or MODULE:{+-}VERSION that specifies just a module name, a module
-and some versions or a single version. The command prints a list of
-:term:`buildtags` of matching :term:`builds` on the console. If option ``--brief``
-is given, the program just shows the buildtags. 
-
-.. _reference-sumo-use:
-
-build use MODULES
-:::::::::::::::::
-
-This command creates a configure/RELEASE file for an application. Each module
-given in MODULES here is a :term:`modulespec` of the form MODULE:VERSION that
-specifies a single version of a module. If option ``--buildtag`` is given, it
-checks if this is compatible with the given :term:`modules`.  Otherwise it
-looks for all :term:`builds` that have the :term:`modules` in the required
-:term:`versions`. If more than one matching :term:`build` found it takes the
-one with the alphabetically first buildtag. The RELEASE file created includes
-only the :term:`modules` that are specified. Output to another file or the
-console can be specified with option '-o'.
-
-build list
-::::::::::
-
-This command lists the names of all builds.
-
 build show BUILDTAG
 :::::::::::::::::::
 
@@ -1371,14 +1340,44 @@ the given value. If a :term:`build` is set to :term:`state` 'disabled', all
 dependend builds are also set to this :term:`state`. In this case, unless
 option '-y' or '--recursive' are given, sumo asks for your confirmation.
 
-build delete BUILDTAGS
-::::::::::::::::::::::
+build try MODULES
+:::::::::::::::::
 
-The directories of the :term:`builds` are removed and their entries in the
-:term:`build database` are deleted. If other builds depend on the
-:term:`builds` to be deleted, the command fails unless option '--recursive' is
-given. In this case all dependent builds are deleted, too.  The
-:term:`buildtags` must be given as an argument.
+This command is intended to help you create :term:`module` specifications for
+the "new" command. 
+
+Each MODULE here is a :term:`modulespec` of the form MODULE or
+MODULE:{+-}VERSION that specifies just a module name, a module and some
+versions or a single version. You can specify an incomplete list of
+:term:`modules`.
+
+The detail of the output is determined by option ``--detail`` which is an
+integer between 0 and 3. 0, the default, gives the shortest, 3 gives the
+longest report. The program then shows which :term:`modules` you have to
+
+In any case the command shows which :term:`modules` are missing since they
+depend on other :term:`modules` of your specification and which ones are
+missing an exact :term:`version`.
+
+If you converted an existing support directory to sumo you have a scan database
+file which you can specify with option ``--scandb`` to this command.
+
+For a detailed example see :ref:`try example <example-sumo-build-try>`.
+
+.. _reference-sumo-use:
+
+build use MODULES
+:::::::::::::::::
+
+This command creates a configure/RELEASE file for an application. Each module
+given in MODULES here is a :term:`modulespec` of the form MODULE:VERSION that
+specifies a single version of a module. If option ``--buildtag`` is given, it
+checks if this is compatible with the given :term:`modules`.  Otherwise it
+looks for all :term:`builds` that have the :term:`modules` in the required
+:term:`versions`. If more than one matching :term:`build` found it takes the
+one with the alphabetically first buildtag. The RELEASE file created includes
+only the :term:`modules` that are specified. Output to another file or the
+console can be specified with option '-o'.
 
 Command completion
 ------------------
