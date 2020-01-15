@@ -8,7 +8,7 @@ import shutil
 import urllib.request # not needed: urllib.parse, urllib.error
 import sumolib.system
 
-__version__="3.6.5" #VERSION#
+__version__="3.7" #VERSION#
 
 assert __version__==sumolib.system.__version__
 
