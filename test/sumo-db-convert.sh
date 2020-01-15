@@ -8,10 +8,8 @@ source settings.sh
 
 echo -e "\n-> Test sumo db convert." >&2
 
-if [ ! -d $EXAMPLEDIR ]; then
-    echo -e "\tcreating directory $EXAMPLEDIR" >&2
-    mkdir $EXAMPLEDIR
-fi
+rm -rf $EXAMPLEDIR
+mkdir $EXAMPLEDIR
 
 # the following is a trick to remove the "no dependency info" messages
 # from standard error and leave standard out untouched:

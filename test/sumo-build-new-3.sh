@@ -15,7 +15,7 @@ mkdir $EXAMPLEDIR
 cd $EXAMPLEDIR > /dev/null
 
 # use an auto generated build tag:
-$SUMO build --dbdir ../$OTHERDIR --localbuilddir . --builddir ../$OTHERDIR -m ':build:MYAPP-001 ALARM:R3-7' --buildtag MYAPP-002 --no-make new 1>&2 
+$SUMO build --dbdir ../$OTHERDIR --localbuilddir . --builddir ../$OTHERDIR -m ':build:MYAPP-001 ALARM:R3-7' --buildtag MYAPP-002 --no-make new 2>&1
 
 echo -e "\ndirectory tree"
 echo "> ls $EXAMPLEDIR:"
