@@ -7,8 +7,8 @@ source settings.sh
 echo -e "\n-> Test sumo lock" >&2
 
 rm -rf $EXAMPLEDIR
-echo -e "\tcreating directory $EXAMPLEDIR" >&2
-mkdir -p $EXAMPLEDIR
+mkdir $EXAMPLEDIR
+
 touch $EXAMPLEDIR/A
 
 echo "creating a lock"

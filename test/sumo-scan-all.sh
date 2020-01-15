@@ -4,13 +4,10 @@ ME=`basename $0 .sh`
 
 source settings.sh
 
-echo -e "\n-> Test sumo-scan: checkout many modules and scan the directory tree." >&2
-echo -e "\tIf run for the first time this may take a while..." >&2
+echo -e "\n-> Test sumo-scan: checkout many modules and scan directory tree." >&2
 
-if [ ! -d $EXAMPLEDIR ]; then
-    echo -e "\tcreating directory $EXAMPLEDIR" >&2
-    mkdir $EXAMPLEDIR
-fi
+rm -rf $EXAMPLEDIR
+mkdir $EXAMPLEDIR
 
 #echo $SUMO_SCAN -d $EXAMPLEDIR -g $EXAMPLEDIR -N TOP -N SUPPORT -N EPICS_SUPPORT -N TEMPLATE_TOP -t all 
 #$SUMO_SCAN -d $EXAMPLEDIR -g $EXAMPLEDIR -N TOP -N SUPPORT -N EPICS_SUPPORT -N TEMPLATE_TOP -t all 
