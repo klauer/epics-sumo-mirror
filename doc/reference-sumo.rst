@@ -798,9 +798,6 @@ These are the known subcommands here:
 convert
   convert a scanfile created by sumo-scan to a DB file
 
-convert-old
-  convert DB file from old to new format
-
 appconvert
   convert a scanfile to a MODULES file for an application
 
@@ -1002,15 +999,6 @@ specify the drectory where the new created
 stored, with ``--scandb`` you specify the name of the scan database file. The
 scan database file contains information on what moduleversion can be used with
 what dependency version.
-
-db convert-old OLDDB
-::::::::::::::::::::
-
-Convert a :ref:`dependency database <reference-sumo-db-The-dependency-database>` 
-file OLDDB from old to new format. The old format had architecture data
-("arch") for each moduleversion. In the new format this data is removed.  Note
-that this command IGNORES option ``--dbrepo"`` it directly operates on the
-dependency database file in the directory given with option ``--dbdir``.
 
 db appconvert SCANFILE
 ::::::::::::::::::::::

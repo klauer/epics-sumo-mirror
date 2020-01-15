@@ -70,7 +70,6 @@ KNOWN_DB_COMMANDS=set(("alias-add",
                        "cloneversion",
                        "commands",
                        "convert",
-                       "convert-old",
                        "dependency-add",
                        "dependency-delete",
                        "edit",
@@ -2065,36 +2064,6 @@ def subcmd_db_convert(arguments, options):
         # pylint: disable=raising-format-tuple
         raise annotate("Error while saving scan database file: %s", e)
 
-def subcmd_db_convert_old(arguments, options):
-    """implement "db convert-old".
-
-    May raise:
-        IOError from db_to_repo
-        ValueError, IOError from Dependencies.OldDB.from_json_file
-    """
-    argspec= sumolib.cli.CmdSpecs()
-    argspec.add("OLDDB", completion= sumolib.cli.complete_file)
-    args= sumolib.cli.process_args(arguments, argspec, options.list,
-                                   catch_exceptions)
-
-    sumolib.cli.assert_options(catch_exceptions,  options, "dbdir")
-    # pylint: disable=no-member
-    try:
-        # may raise IOError, ValueError:
-        olddb= sumolib.Dependencies.OldDB.from_json_file(args.OLDDB,
-                                                         use_lock= True,
-                                                         keep_lock= False)
-    except (IOError, ValueError) as e:
-        # pylint: disable=raising-format-tuple
-        raise annotate("Error while loading dependency database: %s", e)
-    db= olddb.convert()
-    if options.dumpdb:
-        db.json_print()
-    else:
-        # may raise IOError:
-        db_to_repo(options, None, db, "convert-old", arguments)
-        # ^^^ does also unlock the file
-
 def subcmd_db_modconvert(arguments, options):
     """implement "db modconvert".
 
@@ -3555,11 +3524,6 @@ def maincmd_db(commands, options):
         subcmd_db_convert(c_args, options)
         return
 
-    if cmd=="convert-old":
-        # may raise IOError, ValueError:
-        subcmd_db_convert_old(c_args, options)
-        return
-
     if cmd=="modconvert":
         # may raise KeyError, ValueError:
         subcmd_db_modconvert(c_args, options)
@@ -3907,9 +3871,6 @@ sumo -h
         "db convert":
             doc_commands['subcommands for maincommand "db"']\
                              ['db convert SCANFILE'],
-        "db convert-old":
-            doc_commands['subcommands for maincommand "db"']\
-                             ['db convert-old OLDDB'],
         "db appconvert":
             doc_commands['subcommands for maincommand "db"']\
                              ['db appconvert SCANFILE'],
