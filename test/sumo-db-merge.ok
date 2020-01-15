@@ -702,6 +702,10 @@ DB file:
             "dependencies": [
                 "BASE"
             ],
+            "extra": [
+                "# extra line 1",
+                "# extra line 2"
+            ],
             "make-recipes": {
                 "all": [
                     "cd $DIR && ./configure --prefix=.",

@@ -155,6 +155,14 @@ class DB(sumolib.JSON.Container):
                                  repr(vdict[dictname]),
                                  repr(vdict2[dictname])))
                         continue
+                    if dictname=="extra":
+                        if dictname not in vdict:
+                            # "[:]" : shallow copy of the list of lines:
+                            vdict[dictname]= vdict2[dictname][:]
+                            continue
+                        # merge the two list of lines by appending:
+                        vdict[dictname].extend(vdict2[dictname])
+                        continue
                     if dictname=="make-recipes":
                         try:
                             sumolib.utils.dict_update(\
@@ -343,6 +351,15 @@ class DB(sumolib.JSON.Container):
                 del m_dict["releasefile"]
             return None
         m_dict["releasefile"]= releasefilename
+        return None
+    def extra(self, modulename, versionname, lines=None):
+        """get or set extra lines for the generated module RELEASE file."""
+        if lines is None:
+            return self.datadict()[modulename][versionname].get("extra", [])
+        if not isinstance(lines, list):
+            raise TypeError("Error, %s is not a list" % repr(lines))
+        # make a shallow copy of the "lines" parameter:
+        self.datadict()[modulename][versionname]["extra"]= lines[:]
         return None
     def weight(self, modulename, versionname, new_weight= None):
         """set the weight factor."""
