@@ -32,6 +32,9 @@ $SUMO db -y --dbdir extra cloneversion MISC_DEBUGMSG R3-1 R3-2 >/dev/null
 $SUMO db -y --dbdir extra make-recipes MISC_DEBUGMSG:R3-2 all 'cd $DIR && ./configure --prefix=.' '$(MAKE) -C $DIR'
 $SUMO db -y --dbdir extra make-recipes MISC_DEBUGMSG:R3-2 clean '$(MAKE) -C $DIR realclean'
 
+# add extra RELEASE line to the new support:
+$SUMO db -y --dbdir extra extra MISC_DEBUGMSG:R3-2 '# extra line 1' '# extra line 2'
+
 # finally: do the merge:
 $SUMO db --dbdir . merge extra/DEPS.DB
 

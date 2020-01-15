@@ -45,6 +45,13 @@ dependencies. Here is an example how this file looks like::
             "aliases": {
                 "BASE": "EPICS_BASE"
             },
+            "dependencies": [
+                "BASE"
+            ],
+            "extra": [
+                "# BSPDEP_TIMER: board support specific timer support",
+                "# This is version R6-2"
+            ],
             "make-recipes": {
                 "all": [
                     "cd $DIR && ./configure --prefix=.",
@@ -54,9 +61,6 @@ dependencies. Here is an example how this file looks like::
                     "$(MAKE) -C $DIR realclean"
                 ]
             },
-            "dependencies": [
-                "BASE"
-            ],
             "source": {
                 "darcs": {
                     "tag": "R6-2",
@@ -134,9 +138,12 @@ The *versiondata* map has this form::
       "dependencies": {
           <dependency data>
       },
+      "extra": {
+          <extra data>
+      },
       "make-recipes": {
           <make-recipes data>
-      }
+      },
       "releasefile": <releasefilename>,
       "source": {
           <source data>
@@ -175,6 +182,16 @@ in the build database :term:`BUILDS.DB`.  This is the form of the
       MODULENAME,
       ...
   ]
+
+.. _reference-sumo-extra:
+
+extra
+:::::
+
+This *optional* field is used to specify extra lines that are added to the
+generated RELEASE file of the module. 
+
+This is a list of strings, one for each line to add.
 
 .. _reference-sumo-make-recipes:
 
@@ -796,6 +813,9 @@ edit
 format
   reformat the dependency file
 
+extra
+  define extra lines to add to RELEASE file
+
 weight
   set the weight factor for modules
 
@@ -1218,6 +1238,18 @@ Special variables and characters when you use double quotes:
 - ``\\$$``: (make, bash) A literal dollar character passed to the shell.
 - ``\\``: (json, bash) At the end of the json string this means line continuation for bash.
 
+.. _reference-sumo-db-extra:
+
+db extra MODULE [LINES]
+:::::::::::::::::::::::
+
+Define extra lines that are appended to the generated RELEASE file of the
+:term:`module`. See also :ref:`"extra"<reference-sumo-extra>` in the chapter
+"The dependency database" of the documentation.
+
+MODULE here is a :term:`modulespec` of the form MODULE:VERSION that specifies a
+single version of a module. 
+
 .. _reference-sumo-db-make-recipes:
 
 db make-recipes MODULE [TARGET] [LINES]
@@ -1225,7 +1257,7 @@ db make-recipes MODULE [TARGET] [LINES]
 
 Define special make recipes for a :term:`module`. See also
 :ref:`"make-recipes"<reference-sumo-make-recipes>` in the chapter "The
-dependency database".
+dependency database" of the documentation.
 
 MODULE here is a :term:`modulespec` of the form MODULE:VERSION that specifies a
 single version of a module. 
@@ -1649,8 +1681,10 @@ Here is a short overview on command line options:
 ``-x EXTRALINE, --extra EXTRALLINE``
 ++++++++++++++++++++++++++++++++++++
 
-    Specify an extra line that is added to the generated RELEASE file. A
-    default for this option can be put in a configuration file.
+    Specify an extra lines that are added to the generated RELEASE file. This
+    option can be given more than once to specify more than one line. A default
+    for this option can be put in a configuration file, there the value must be
+    a list of strings, one for each line.
 
 ``-a ALIAS, --alias ALIAS``
 +++++++++++++++++++++++++++
