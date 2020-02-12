@@ -490,13 +490,17 @@ def process(options, commands):
 
     if not commands:
         commands= ["all"]
-    for c in commands:
-        if not c in KNOWN_COMMANDS:
-            sys.exit("unknown command: %s" % c)
 
+    # If the first command is 'config', executed it straight away
+    # and don't check the rest. It has subcommands that are not
+    # recognized at the global level
     if commands[0]=="config":
         process_config(config, commands[1:], options)
         return
+
+    for c in commands:
+        if not c in KNOWN_COMMANDS:
+            sys.exit("unknown command: %s" % c)
 
     # evaluate the --hint command line option:
     hints= sumolib.utils.Hints(options.hint)
