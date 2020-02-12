@@ -118,7 +118,7 @@ class ConfigFile():
         in a config name *actually* contain "_". So this backwards compability
         hack should be removed in the future.
         """
-        for (key, val) in list(dict_.items()):
+        for (key, val) in dict_.items():
             # "_" is always replaced with "-". This will be removed in future
             # versions:
             key= key.replace("_","-")
@@ -257,7 +257,7 @@ class ConfigFile():
                     raise ValueError(
                         "error: '%s' is not a known option" % opt)
         # copy from option_obj to self:
-        for opt in list(self._dict.keys()):
+        for opt in self._dict.keys():
             # in the option object, "-" in option names is always
             # replaced with "_":
             oobj_opt= opt.replace("-", "_")
