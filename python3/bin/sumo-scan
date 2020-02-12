@@ -73,7 +73,7 @@ def scan_config_file(filename, external_definitions= None,
                                      makefile_scan_pre,
                                      False,
                                      verbose, dry_run)
-    for k in list(wanted.keys()):
+    for k in wanted.keys():
         wanted[k]= data[k]
     return wanted
 
