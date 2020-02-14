@@ -10,7 +10,7 @@ import sumolib.system
 import sumolib.utils
 import sumolib.fileurl
 
-__version__="3.7" #VERSION#
+__version__="3.7.1" #VERSION#
 
 assert __version__==sumolib.system.__version__
 assert __version__==sumolib.utils.__version__
