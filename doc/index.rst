@@ -83,7 +83,7 @@ Full list of documents
 License and copyright
 =====================
 
-Copyright (c) 2018 by `Helmholtz-Zentrum Berlin <https://www.helmholtz-berlin.de>`_.
+Copyright (c) 2020 by `Helmholtz-Zentrum Berlin <https://www.helmholtz-berlin.de>`_.
 
 This software of this project can be used under GPL v.3, see :doc:`license`.
 
