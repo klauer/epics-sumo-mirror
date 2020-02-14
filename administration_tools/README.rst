@@ -63,21 +63,6 @@ Upload the distribution files with::
 
   ./sourceforge-upload-distfiles.sh
 
-Upload files to bitbucket
-+++++++++++++++++++++++++
-
-Upload the documentation with::
-
-  ./bitbucket-upload-html.sh
-
-Upload the distribution files with::
-
-  ./bitbucket-prepare-distfiles.sh
-
-and follow the instructions printed on the console. Note
-that you have to be logged in at Bitbucket before you can 
-do this. You do the actual uploading in a web browser.
-
 Prepare the local repository
 ++++++++++++++++++++++++++++
 
@@ -188,16 +173,6 @@ Bitbucket administration
 
 bitbucket-push.sh
   Push patches to mercurial repository at Bitbucket.
-
-bitbucket-transfer-html.sh
-  Transfer documentation to my Bitbucket documentation repository.
-
-bitbucket-upload-distfiles.sh
-  Prepare upload of distfiles to Bitbucket requires still some actions in
-  firefox.
-
-bitbucket-web-checkout.sh
-  Checkout bitbucket website repo.
 
 Version handling
 ++++++++++++++++
