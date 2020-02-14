@@ -12,7 +12,7 @@ import re
 import sumolib.system
 import sumolib.JSON
 
-__version__="3.7" #VERSION#
+__version__="3.7.1" #VERSION#
 
 _pyver= (sys.version_info[0], sys.version_info[1])
 
