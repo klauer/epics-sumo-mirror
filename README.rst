@@ -20,7 +20,7 @@ Documentation
 
 Documentation is available online here:
 
-`sumo documentation <http://epics-sumo.sourceforge.net>`_.
+`sumo documentation <https://epics-sumo.sourceforge.io>`_.
 
 Documentation is also included in the software distribution in HTML format.
 
@@ -35,12 +35,12 @@ You can install sumo with `pip <https://pip.pypa.io/en/stable>`_
 
 All is described here:
 
-`sumo install <http://epics-sumo.sourceforge.net/sumo-install.html>`_.
+`sumo install <https://epics-sumo.sourceforge.io/sumo-install.html>`_.
 
 License
 -------
 
 Sumo is licensed under GNU GPL v.3. Here is the license text:
 
-`sumo license <http://epics-sumo.sourceforge.net/license.html>`_.
+`sumo license <https://epics-sumo.sourceforge.io/license.html>`_.
 
