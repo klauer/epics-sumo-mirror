@@ -108,12 +108,6 @@ Sumo at sourceforge
 You find the sourceforge summary page for sumo at
 `epics-sumo at Sourceforge <https://sourceforge.net/projects/epics-sumo>`_.
 
-Sumo at Bitbucket (deprecated)
-==============================
-
-Bitbucket removes support for mercurial repositories in 2020 so sumo will in
-the future no longer be hosted here.
-
 The source
 ==========
 
