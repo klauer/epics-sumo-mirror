@@ -192,7 +192,7 @@ setup(name=name,
       description='Python support tools for EPICS software development',
       author='Goetz Pfeiffer',
       author_email='Goetz.Pfeiffer@helmholtz-berlin.de',
-      url='http://epics-sumo.sourceforge.net',
+      url='https://epics-sumo.sourceforge.io',
       download_url='https://sourceforge.net/projects/epics-sumo/files',
       classifiers=[
           'Development Status :: 6 - Mature',
