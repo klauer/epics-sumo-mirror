@@ -137,6 +137,7 @@ Now test with these commands for python 2::
 
   virtualenv tmp
   cd tmp
+  bash
   source bin/activate
   pip install EPICS-sumo -i https://testpypi.python.org/pypi
   sumo -h
@@ -148,8 +149,9 @@ If everything worked, remove the test directory with::
 
 Now test with these commands for python 3::
 
-  virtualenv-3 tmp
+  python3 -m venv tmp
   cd tmp
+  bash
   source bin/activate
   pip install EPICS-sumo -i https://testpypi.python.org/pypi
   sumo -h
