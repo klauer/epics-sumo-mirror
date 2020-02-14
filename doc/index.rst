@@ -78,6 +78,7 @@ Full list of documents
    dev-usage
    example-sumo-build-try
    migration-examples
+   contribute
    glossary
 
 License and copyright
@@ -120,6 +121,14 @@ or clone it with this command:
 Sourceforge::
 
   hg clone http://hg.code.sf.net/p/epics-sumo/mercurial epics-sumo
+
+How to contribute
+=================
+
+If you have bug fixes or changes and extensions of sumo you are encouraged to
+send my your changes. Here is a short description:
+
+- :doc:`contribute`
 
 Indices and tables
 ==================
