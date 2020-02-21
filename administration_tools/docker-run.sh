@@ -5,6 +5,8 @@ MYDIR=$(dirname "$ME")
 
 cd "$MYDIR"
 
+source docker.config
+
 LOGFILE="DOCKER-RUN.LOG"
 
 APPLICATION=sumo
@@ -135,4 +137,4 @@ fi
 echo "---------------------------------------" >> $MYDIR/$LOGFILE
 echo "$me $DOCKERFILE" >> $MYDIR/$LOGFILE
 
-CMD "docker run -t --volume $top/$dist_dir:/root/dist --volume $top:/root/$APPLICATION -i $DOCKERIMAGE $PROG" 2>&1 | tee -a $MYDIR/$LOGFILE
+CMD "$DOCKER run -t --volume $top/$dist_dir:/root/dist --volume $top:/root/$APPLICATION -i $DOCKERIMAGE $PROG" 2>&1 | tee -a $MYDIR/$LOGFILE
