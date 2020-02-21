@@ -40,7 +40,8 @@ Enter these commands::
 Create docker images
 ++++++++++++++++++++
 
-Check if the docker images for sumo exist::
+Check if the docker images for sumo exist, note that you may use "podman"
+instead of "docker"::
 
   docker images | grep sumo
 

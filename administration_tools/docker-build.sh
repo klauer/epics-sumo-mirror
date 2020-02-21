@@ -5,6 +5,8 @@ MYDIR=$(dirname "$ME")
 
 cd "$MYDIR"
 
+source docker.config
+
 LOGFILE="DOCKER-BUILD.LOG"
 
 APPLICATION=sumo
@@ -35,5 +37,5 @@ cd docker
 echo "---------------------------------------" >> $MYDIR/$LOGFILE
 echo "$me $DOCKERFILE" >> $MYDIR/$LOGFILE
 
-docker build -t $DOCKERIMAGE -f `pwd -P`/$DOCKERFILE `pwd -P` 2>&1 | tee -a $MYDIR/$LOGFILE
+$DOCKER build -t $DOCKERIMAGE -f `pwd -P`/$DOCKERFILE `pwd -P` 2>&1 | tee -a $MYDIR/$LOGFILE
 
