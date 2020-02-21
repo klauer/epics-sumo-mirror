@@ -7,12 +7,12 @@
    :align: right
    :target: http://www.helmholtz-berlin.de
 
-==========================================================
+====================================
 Welcome to EPICS-sumo documentation!
-==========================================================
+====================================
 
 A SUpport MOdule manager for EPICS
-==================================
+----------------------------------
 
 The support module manager sumo is a program to build consistent sets of 
 `EPICS <http://www.aps.anl.gov/epics>`_ support modules and use them in 
@@ -44,10 +44,10 @@ See :doc:`introduction` for more information.
 :Author: Goetz Pfeiffer <Goetz.Pfeiffer@helmholtz-berlin.de>
 
 Documentation
-=============
+-------------
 
 Reference documents
--------------------
++++++++++++++++++++
 
 - :doc:`reference-sumo`
 - :doc:`reference-sumo-scan`
@@ -55,7 +55,7 @@ Reference documents
 - :doc:`modulespecs`
 
 Use cases
----------
++++++++++
 
 - :doc:`app-usage`
 - :doc:`example-sumo-build-try`
@@ -63,10 +63,9 @@ Use cases
 - :doc:`migration-examples`
 
 Full list of documents
-----------------------
+++++++++++++++++++++++
 
 .. toctree::
-   :maxdepth: 1
 
    sumo-install
    introduction
@@ -80,23 +79,24 @@ Full list of documents
    migration-examples
    contribute
    glossary
+   license
 
 License and copyright
-=====================
+---------------------
 
 Copyright (c) 2020 by `Helmholtz-Zentrum Berlin <https://www.helmholtz-berlin.de>`_.
 
 This software of this project can be used under GPL v.3, see :doc:`license`.
 
 Download
-========
+--------
 
 Sumo is available as a debian or rpm package, as tar.gz or zip here:
 
 * `sumo downloads at Sourceforge <https://sourceforge.net/projects/epics-sumo/files/?source=navbar>`_
 
 Install
-=======
+-------
 
 You install sumo either as a debian or rpm package with your package manager,
 from source or with pip.
@@ -104,13 +104,13 @@ from source or with pip.
 For details on how to install sumo see :doc:`sumo-install`.
 
 Sumo at sourceforge
-===================
+-------------------
 
 You find the sourceforge summary page for sumo at
 `epics-sumo at Sourceforge <https://sourceforge.net/projects/epics-sumo>`_.
 
 The source
-==========
+----------
 
 You can browse the mercurial repository here:
 
@@ -123,7 +123,7 @@ Sourceforge::
   hg clone http://hg.code.sf.net/p/epics-sumo/mercurial epics-sumo
 
 How to contribute
-=================
+-----------------
 
 If you have bug fixes or changes and extensions of sumo you are encouraged to
 send my your changes. Here is a short description:
@@ -131,7 +131,7 @@ send my your changes. Here is a short description:
 - :doc:`contribute`
 
 Indices and tables
-==================
+------------------
 
 * :ref:`genindex`
 * :ref:`modindex`
