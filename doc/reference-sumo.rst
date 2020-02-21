@@ -1,3 +1,4 @@
+====
 sumo
 ====
 
@@ -1408,15 +1409,18 @@ Activate command completion on the fly
 ++++++++++++++++++++++++++++++++++++++
 
 Enter this command::
+
   ``eval `sumo help completion-line```
  
 Activate command completion permanently
 +++++++++++++++++++++++++++++++++++++++
 
 Enter this command::
+
   ``sumo help completion-script > $HOME/_sumo``
 
 Then add the line::
+
   ``source $HOME/_sumo``
 
 to your $HOME/.bashrc or $HOME/.zshrc
