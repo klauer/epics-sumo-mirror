@@ -153,6 +153,29 @@ Upload to pypi with::
 
   ./pypi-upload.sh
 
+Third party tools needed for documentation generation
+-----------------------------------------------------
+
+You need the following tools:
+
+sphinx
+++++++
+
+Homepage: https://www.sphinx-doc.org/en/master/
+
+Package name on fedora systems: python3-sphinx
+
+Installation: Use your package manager
+
+ReadTheDocs
++++++++++++
+
+Homepage: https://sphinx-rtd-theme.readthedocs.io/en/stable/
+
+Installation: Install with pip::
+
+  pip install sphinx_rtd_theme
+
 Explanation of scripts
 ----------------------
 
