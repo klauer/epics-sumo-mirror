@@ -1,4 +1,4 @@
-#! /usr/bin/env python
+#! /usr/bin/env python3
 # -*- coding: UTF-8 -*-
 
 """
@@ -320,13 +320,13 @@ def replace_and_skip(result, no_subchapters):
             new.append(new_line)
             last_len= len(new_line)
         return new
-    for chapter_name, chapter in result.items():
+    for chapter_name, chapter in list(result.items()):
         if chapter_name=="_order":
             continue
         if no_subchapters:
             result[chapter_name]= repl_lines(chapter)
         else:
-            for subchapter_name, subchapter in chapter.items():
+            for subchapter_name, subchapter in list(chapter.items()):
                 if subchapter_name=="_order":
                     continue
                 chapter[subchapter_name]= repl_lines(subchapter)
@@ -336,13 +336,13 @@ def text_wrap(result, no_subchapters):
     def wrap(lines):
         """do the wrap."""
         return do_wrap(join_lines(lines))
-    for chapter_name, chapter in result.items():
+    for chapter_name, chapter in list(result.items()):
         if chapter_name=="_order":
             continue
         if no_subchapters:
             result[chapter_name]= wrap(chapter)
         else:
-            for subchapter_name, subchapter in chapter.items():
+            for subchapter_name, subchapter in list(chapter.items()):
                 if subchapter_name=="_order":
                     continue
                 chapter[subchapter_name]= wrap(subchapter)
@@ -469,7 +469,7 @@ def main():
         sys.exit(0)
 
     if options.out:
-        f= file(options.out, "w")
+        f= open(options.out, "w")
         out= f
 
     process(options,args)
