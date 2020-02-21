@@ -11,6 +11,24 @@
 Welcome to EPICS-sumo documentation!
 ====================================
 
+.. toctree::
+   :maxdepth: 5
+   :hidden:
+
+   sumo-install
+   introduction
+   modulespecs
+   configuration-files
+   reference-sumo-scan
+   reference-sumo
+   app-usage
+   dev-usage
+   example-sumo-build-try
+   migration-examples
+   contribute
+   glossary
+   license
+
 A SUpport MOdule manager for EPICS
 ----------------------------------
 
@@ -61,25 +79,6 @@ Use cases
 - :doc:`example-sumo-build-try`
 - :doc:`dev-usage`
 - :doc:`migration-examples`
-
-Full list of documents
-++++++++++++++++++++++
-
-.. toctree::
-
-   sumo-install
-   introduction
-   modulespecs
-   configuration-files
-   reference-sumo-scan
-   reference-sumo
-   app-usage
-   dev-usage
-   example-sumo-build-try
-   migration-examples
-   contribute
-   glossary
-   license
 
 License and copyright
 ---------------------
