@@ -160,8 +160,9 @@ class DB(sumolib.JSON.Container):
                             # "[:]" : shallow copy of the list of lines:
                             vdict[dictname]= vdict2[dictname][:]
                             continue
-                        # merge the two list of lines by appending:
-                        vdict[dictname].extend(vdict2[dictname])
+                        # merge the two lists of lines, but take only new lines
+                        # that are not already present in the list:
+                        sumolib.utils.lines_unique_update(vdict[dictname], vdict2[dictname])
                         continue
                     if dictname=="make-recipes":
                         try:
