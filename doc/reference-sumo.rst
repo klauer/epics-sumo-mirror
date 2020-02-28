@@ -1214,7 +1214,13 @@ db merge DB
 :::::::::::
 
 Merge the given :term:`dependency database` file with the 
-:term:`dependency database` in the directory specifed by ``--dbdir``.
+:term:`dependency database` in the directory specifed by ``--dbdir``. Sections
+that do not exist in the original :term:`dependency database` are added.
+Contradicting sections are treated as an error and abort the program. If a
+module has an :ref:`"extra" <reference-sumo-extra>` section, only *new* lines
+are appended to the existing :ref:`"extra" <reference-sumo-extra>` section. This
+avoids having the same line several times in 
+:ref:`"extra" <reference-sumo-extra>` after a merge operation.
 
 db modconvert SCANFILE MODULES
 ::::::::::::::::::::::::::::::

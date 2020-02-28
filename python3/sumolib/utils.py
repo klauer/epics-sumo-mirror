@@ -602,6 +602,23 @@ def dict_update(mydict, other, keylist= None):
         raise ValueError("key %s: contradicting values: %s %s" % \
                           (k,repr(old_v),repr(v)))
 
+def lines_unique_update(lines_list1, lines_list2):
+    """update a list of lines with another.
+ 
+    Only lines not already present are added.
+    """
+    if not lines_list1:
+        lines_list1.extend(lines_list2)
+        return
+    else:
+        if not lines_list2:
+            return
+    # from here: both lists are not empty
+    s= set(lines_list1)
+    for l in lines_list2:
+        if l not in s:
+            lines_list1.append(l)
+
 def list_update(list1, list2):
     """update a list with another.
 

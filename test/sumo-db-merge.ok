@@ -317,6 +317,10 @@ DB backup file:
             "dependencies": [
                 "BASE"
             ],
+            "extra": [
+                "# extra line 1",
+                "# extra line 2"
+            ],
             "source": {
                 "git": {
                     "tag": "R3-0",
@@ -673,6 +677,11 @@ DB file:
             },
             "dependencies": [
                 "BASE"
+            ],
+            "extra": [
+                "# extra line 1",
+                "# extra line 2",
+                "# extra added"
             ],
             "source": {
                 "git": {

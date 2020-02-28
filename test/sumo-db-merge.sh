@@ -21,10 +21,14 @@ echo "{" > extra/DEPS.DB
 cat DEPS.DB  | sed -n -e '/^    "SEQ"/,/^    },/p' >> extra/DEPS.DB
 # remove SEQ entry from DEPS.DB:
 sed  -e '/^    "SEQ"/,/^    },/d' -i DEPS.DB
-# extract MISC_DEBUGMSG:R3.0 from DEPS.DB:
+# extract MISC_DEBUGMSG from DEPS.DB:
 cat DEPS.DB  | sed -n -e '/^    "MISC_DEBUGMSG"/,/^    },/p' >> extra/DEPS.DB
 sed -e '$s/},/}/' -i extra/DEPS.DB
 echo "}" >> extra/DEPS.DB
+
+# add extra RELEASE line to MISC_DEBUGMSG:R3-0:
+$SUMO db -y --dbdir . extra MISC_DEBUGMSG:R3-0 '# extra line 1' '# extra line 2'
+
 # now copy MISC_DEBUGMSG:R3-1 to MISC_DEBUGMSG:R3-2
 $SUMO db -y --dbdir extra cloneversion MISC_DEBUGMSG R3-1 R3-2 >/dev/null
 
@@ -34,6 +38,10 @@ $SUMO db -y --dbdir extra make-recipes MISC_DEBUGMSG:R3-2 clean '$(MAKE) -C $DIR
 
 # add extra RELEASE line to the new support:
 $SUMO db -y --dbdir extra extra MISC_DEBUGMSG:R3-2 '# extra line 1' '# extra line 2'
+
+# add extra RELEASE lines to MISC_DEBUGMSG:R3-0:
+$SUMO db -y --dbdir extra extra MISC_DEBUGMSG:R3-0 '# extra line 1' '# extra added' '# extra line 2'
+
 
 # finally: do the merge:
 $SUMO db --dbdir . merge extra/DEPS.DB
