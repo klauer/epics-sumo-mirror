@@ -617,15 +617,21 @@ def dict_update(mydict, other, keylist= None):
 
 def lines_unique_update(lines_list1, lines_list2):
     """update a list of lines with another.
- 
+
     Only lines not already present are added.
+
+    May raise:
+        TypeError if the arguments are not lists.
     """
+    if not isinstance(lines_list1, list):
+        raise TypeError("not a list: %s" % repr(lines_list1))
+    if not isinstance(lines_list2, list):
+        raise TypeError("not a list: %s" % repr(lines_list2))
     if not lines_list1:
         lines_list1.extend(lines_list2)
         return
-    else:
-        if not lines_list2:
-            return
+    if not lines_list2:
+        return
     # from here: both lists are not empty
     s= set(lines_list1)
     for l in lines_list2:
@@ -636,9 +642,16 @@ def list_update(list1, list2):
     """update a list with another.
 
     In the returned list each element is unique and it is sorted.
+
+    May raise:
+        TypeError if the arguments are not lists.
     """
+    if not isinstance(list1, list):
+        raise TypeError("not a list: %s" % repr(list1))
+    if not isinstance(list2, list):
+        raise TypeError("not a list: %s" % repr(list2))
     if not list1:
-        return sorted(list2[:])
+        return sorted(list2)
     s= set(list1)
     s.update(list2)
     return sorted(s)
@@ -725,7 +738,11 @@ class Hints():
             for spec in specs:
                 self.add(spec)
     def add(self, spec):
-        """add a new hint."""
+        """add a new hint.
+
+        May raise:
+            ValueError if a flag is unknown.
+        """
         parts= spec.split(",")
         rx= re.compile(parts[0])
         d= {}
@@ -737,7 +754,11 @@ class Hints():
         self._hints.append((rx, d))
     @staticmethod
     def _parse_flag(flag):
-        """parse a flag string."""
+        """parse a flag string.
+
+        May raise:
+            ValueError if the flag is unknown.
+        """
         if flag=="PATH":
             return ("path", True)
         if flag=="TAGLESS":
@@ -754,6 +775,7 @@ class Hints():
 
 def _test():
     """perform internal tests."""
+    # pylint: disable= import-outside-toplevel
     import doctest
     doctest.testmod()
 
