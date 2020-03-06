@@ -664,13 +664,6 @@ def scan_aliases(aliases):
         d[from_]= to
     return d
 
-def alias(alias_dict, modulename):
-    """return a module alias."""
-    n= alias_dict.get(modulename)
-    if n is None:
-        return modulename
-    return n
-
 # -----------------------------------------------
 # error messages
 # -----------------------------------------------
@@ -1675,7 +1668,7 @@ def apprelease(build_tag, modulespec_complete, modulespecs,
 
     mods= db.sortby_weight(db.sortby_dependency(sorted(mods), True))
     for (modulename, version) in mods:
-        f.write("%s=%s\n" % (alias(aliases, modulename),
+        f.write("%s=%s\n" % (aliases.get(modulename, modulename),
                              directories[(modulename, version)]))
     for l in extra_lines:
         f.write("%s\n" % l)
