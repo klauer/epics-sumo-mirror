@@ -197,7 +197,7 @@ def loadfile(filename):
         results= json.load(fh)
     except ValueError as e:
         if filename != "-":
-            msg= "%s: %s" % (filename, str(e))
+            msg= "file %s: %s" % (filename, str(e))
             fh.close()
         else:
             msg= "<stdin>: %s" % str(e)
@@ -205,7 +205,7 @@ def loadfile(filename):
         raise ParseError(msg)
     except IOError as e:
         if filename != "-":
-            msg= "%s: %s" % (filename, str(e))
+            msg= "file %s: %s" % (filename, str(e))
             fh.close()
         else:
             msg= "<stdin>: %s" % str(e)
