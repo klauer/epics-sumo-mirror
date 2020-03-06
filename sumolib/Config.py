@@ -106,17 +106,8 @@ class ConfigFile():
                 continue
             dict_[key]= sumolib.utils.env_expand(val)
     def _merge(self, dict_):
-        """merge known keys from dict_ with self.
-
-        Note: For better backwards compatibility we replace "_" with "-" in all
-        keys found in dict_. This means that it is no longer possible that keys
-        in a config name *actually* contain "_". So this backwards compability
-        hack should be removed in the future.
-        """
+        """merge known keys from dict_ with self."""
         for (key, val) in dict_.items():
-            # "_" is always replaced with "-". This will be removed in future
-            # versions:
-            key= key.replace("_","-")
             if key not in self._dict:
                 continue # silently ignore unknown keys
             if isinstance(self._dict[key], list):
