@@ -29,8 +29,8 @@ else
     cd ..
 fi
 
-echo "creating python2 and python3 debian packages..."
-python3 setup.py --command-packages=stdeb.command sdist_dsc --with-python2=True --with-python3=True bdist_deb
+echo "creating python debian packages..."
+python3 setup.py --command-packages=stdeb.command sdist_dsc --with-python3=True bdist_deb
 if [ $docker = "yes" ]; then
     cp deb_dist/*.deb /root/dist 
     chmod 644 /root/dist/*.deb
