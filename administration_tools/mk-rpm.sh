@@ -31,10 +31,6 @@ fi
 
 echo "creating rpm package..."
 
-# from fedora-30 on the generated spec file must call python2, not python. We
-# do this with an extra parameter:
-python2 setup.py bdist_rpm --python /usr/bin/python2
-
 python3 setup.py bdist_rpm
 if [ $docker = "yes" ]; then
     cp dist/*.rpm /root/dist 
