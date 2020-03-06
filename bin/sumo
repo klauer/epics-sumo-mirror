@@ -342,7 +342,7 @@ def load_config_files(options, disable_loading):
     try:
         # may raise IOError, KeyError, TypeError:
         config.load(options.config, not disable_loading)
-    except (TypeError, KeyError, IOError) as e:
+    except (TypeError, KeyError, IOError, sumolib.JSON.ParseError) as e:
         # pylint: disable=raising-format-tuple
         raise sumolib.utils.annotate("Error while loading config file(s): %s", e)
 
