@@ -499,7 +499,7 @@ def process(options, commands):
     except (TypeError, KeyError, IOError) as e:
         if not catch_exceptions:
             raise
-        sys.exit("Error while loading config file,\n%s" % str(e))
+        sys.exit("Error while loading config file(s): %s" % str(e))
     try:
         # may raise KeyError, TypeError:
         config.merge_options(options, options.append)

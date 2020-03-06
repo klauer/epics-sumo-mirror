@@ -43,6 +43,44 @@ def show_progress(cnt, cnt_max, message= None):
     return cnt
 
 # -----------------------------------------------
+# exception utilities
+# -----------------------------------------------
+
+rx_exept= re.compile(r'^(Error|error|Err|err)[:, ] *')
+
+def uq(s):
+    """remove quotes from a string."""
+    if len(s)<2:
+        return s
+    if s[0]=="'" or s[0]=='"':
+        return s[1:-1]
+    return s
+
+def annotate(msg, e):
+    """Modify the error message of an exception text.
+
+    Where msg contains '%s' this is replaced with (a slightly modified) string
+    from the exception e.
+
+    Returns a new exception.
+    """
+    if not msg:
+        return e
+    msg= msg.strip()
+    if '%s' not in msg:
+        return e.__class__(msg)
+    st= uq(str(e))
+    e_txt= rx_exept.sub("", st)
+    return e.__class__(msg % e_txt)
+
+def exception_exit(exc):
+    """exit when an exception occured."""
+    st= uq(str(exc))
+    if not st.startswith("Error"):
+        st= "Error: "+st
+    sys.exit(st)
+
+# -----------------------------------------------
 # user interaction
 # -----------------------------------------------
 

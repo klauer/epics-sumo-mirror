@@ -177,32 +177,11 @@ def script_shortname():
     """return the name of this script without a path component."""
     return os.path.basename(sys.argv[0])
 
-rx_exept= re.compile(r'^(Error|error|Err|err)[:, ] *')
+# -----------------------------------------------
+# exception utilities
+# -----------------------------------------------
 
-def uq(s):
-    """remove quotes from a string."""
-    if len(s)<2:
-        return s
-    if s[0]=="'" or s[0]=='"':
-        return s[1:-1]
-    return s
-
-def annotate(msg, e):
-    """Modify the error message of an exception text.
-
-    Where msg contains '%s' this is replaced with (a slightly modified) string
-    from the exception e.
-
-    Returns a new exception.
-    """
-    if not msg:
-        return e
-    msg= msg.strip()
-    if '%s' not in msg:
-        return e.__class__(msg)
-    st= uq(str(e))
-    e_txt= rx_exept.sub("", st)
-    return e.__class__(msg % e_txt)
+annotate= sumolib.utils.annotate
 
 # -----------------------------------------------
 # directory utilities and filenames
@@ -330,16 +309,8 @@ def multiprocess_handle_exception(fun):
                 sumolib.JSON.ParseError, sumolib.JSON.ParseError,
                 sumolib.lock.AccessError, sumolib.lock.LockedError) as e:
             if catch_exceptions:
-                st= str(e)
-                if not st.startswith("Error"):
-                    st= "Error: "+st
-                # Note: on our debian 7 deveopment host with python 2.7.3,
-                # sys.exit(STRING) doesn't work together with
-                # multiprocessing.process(). The main process doesn't get a
-                # non-zero error code as expected.  So we separate printing to
-                # stderr from returning an error code, this seems to work:
-                sys.stderr.write(st+"\n")
-                sys.exit(1)
+                # does sys.exit() :
+                sumolib.utils.exception_exit(e)
             raise
     return wrapper
 
@@ -373,7 +344,7 @@ def load_config_files(options, disable_loading):
         config.load(options.config, not disable_loading)
     except (TypeError, KeyError, IOError) as e:
         # pylint: disable=raising-format-tuple
-        raise annotate("Error while loading config file: %s", e)
+        raise sumolib.utils.annotate("Error while loading config file(s): %s", e)
 
     # expand environment variables:
     config.env_expand()
@@ -4243,10 +4214,8 @@ def process(options, commands):
             sumolib.lock.AccessError, sumolib.lock.LockedError) as e:
         if not catch_exceptions:
             raise
-        st= str(e)
-        if not st.startswith("Error"):
-            st= "Error: "+st
-        sys.exit(st)
+        # does sys.exit() :
+        sumolib.utils.exception_exit(e)
 
 # -----------------------------------------------
 # program's main function

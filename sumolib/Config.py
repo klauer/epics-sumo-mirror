@@ -195,15 +195,12 @@ class ConfigFile():
                 for f in _load_lst(data, ["#opt-preload"]):
                     self._load_file(f, must_exist= False,
                                     enable_loading= enable_loading)
-            except (ValueError, TypeError) as e:
+            except (KeyError, TypeError) as e:
                 raise sumolib.utils.annotate("file "+filename+": %s", e)
-        err= None
         try:
             self._merge(data, append_lists= True)
-        except (ValueError, TypeError) as e:
-            err= str(e)
-        if err:
-            raise ValueError("file %s: %s" % (filename, err))
+        except (KeyError, TypeError) as e:
+            raise sumolib.utils.annotate("file "+filename+": %s", e)
         if enable_loading:
             try:
                 for f in _load_lst(data, ["#postload"]):
@@ -212,7 +209,7 @@ class ConfigFile():
                 for f in _load_lst(data, ["#opt-postload"]):
                     self._load_file(f, must_exist= False,
                                     enable_loading= enable_loading)
-            except (ValueError, TypeError) as e:
+            except (KeyError, TypeError) as e:
                 raise sumolib.utils.annotate("file "+filename+": %s", e)
     def real_paths(self):
         """return the list of files that should be loaded or were loaded."""
@@ -295,9 +292,7 @@ class ConfigFile():
             return key.replace("-", "_")
         # copy from option_obj to self:
         merge_dict= {}
-        if merge_opts_set is None:
-            merge_opts_set= set()
-        else:
+        if merge_opts_set:
             for opt in merge_opts_set:
                 o_opt= option_obj_key(opt)
                 if not hasattr(option_obj, o_opt):
@@ -305,6 +300,8 @@ class ConfigFile():
                 opt_val= getattr(option_obj, o_opt)
                 if opt_val is not None:
                     merge_dict[opt]= opt_val
+            # could possible raise KeyError, TypeError although the way it is
+            # used here this shouldn't happen:
             self._merge(merge_dict, append_lists= True)
         overwrite_dict= {}
         for opt in self._all_options:
@@ -314,6 +311,8 @@ class ConfigFile():
             opt_val= getattr(option_obj, o_opt)
             if opt_val is not None:
                 overwrite_dict[opt]= opt_val
+        # could possible raise KeyError, TypeError although the way it is
+        # used here this shouldn't happen:
         self._merge(overwrite_dict, append_lists= False)
 
         # copy from self to option_obj:
