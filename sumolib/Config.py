@@ -281,6 +281,7 @@ class ConfigFile():
 
 def _test():
     """perform internal tests."""
+    # pylint: disable= import-outside-toplevel
     import doctest
     doctest.testmod()
 

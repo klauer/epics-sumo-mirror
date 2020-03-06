@@ -2369,13 +2369,17 @@ def subcmd_db_extra(arguments, options):
     args= sumolib.cli.process_args(arguments, argspec, options.list,
                                    catch_exceptions)
 
+    # pylint: disable=no-member
     module_spec= sumolib.ModuleSpec.Spec.from_string(args.MODULE)
+    # pylint: enable=no-member
     # may raise ValueError:
     module_spec.assert_exact()
     # may raise EOFError, IOError, ValueError, sumolib.JSON.ParseError:
     (mngr, db)= db_from_repo(options,
                              not options.dumpdb and (not options.dry_run))
+    # pylint: disable=no-member
     db.extra(module_spec.modulename, module_spec.versionname, args.LINES)
+    # pylint: enable=no-member
     if options.dumpdb:
         db.json_print()
     else:
@@ -3650,6 +3654,7 @@ def print_summary():
 def _test():
     """does a self-test of some functions defined here."""
     print("performing self test...")
+    # pylint: disable= import-outside-toplevel
     import doctest
     doctest.testmod()
     print("done!")
