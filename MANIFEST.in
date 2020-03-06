@@ -1,10 +1,7 @@
 #include *.py
-include python2/bin/*
-recursive-include python2/sumolib/data *
-include python2/sumolib/*.py
-include python3/bin/*
-recursive-include python3/sumolib/data *
-include python3/sumolib/*.py
+include bin/*
+recursive-include sumolib/data *
+include sumolib/*.py
 include doc/*.rst
 include doc/*.dia
 include doc/*.png
