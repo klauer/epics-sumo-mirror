@@ -21,7 +21,7 @@ import sumolib.utils
 
 # pylint: enable=wrong-import-position
 
-__version__="3.7.3" #VERSION#
+__version__="4.0" #VERSION#
 
 assert __version__==sumolib.ModuleSpec.__version__
 assert __version__==sumolib.JSON.__version__

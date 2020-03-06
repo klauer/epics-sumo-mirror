@@ -17,7 +17,7 @@ import re
 import sumolib.system
 import sumolib.utils
 
-__version__="3.7.3" #VERSION#
+__version__="4.0" #VERSION#
 
 assert __version__==sumolib.system.__version__
 assert __version__==sumolib.utils.__version__

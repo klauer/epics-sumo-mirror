@@ -52,7 +52,7 @@ show_authors= True
 # built documents.
 #
 # The short X.Y version.
-version = "3.7.3" #VERSION#
+version = "4.0" #VERSION#
 
 # The full version, including alpha/beta/rc tags.
 release = version
