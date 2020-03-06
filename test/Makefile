@@ -6,23 +6,15 @@
 
 TOP:=$(shell pwd)
 
-PYVER:=$(strip $(PYVER))
-
-ifeq (,$(findstring $(PYVER),2 3))
-$(error error variable PYVER must be set to 2 or 3)
-endif
-
-export PYVER
-
 # set PYTHON only if it is not yet defined:
 ifeq (,$(PYTHON))
-	PYTHON:=python$(PYVER)
+	PYTHON=python3
 endif
 
-export PYTHONPATH:=$(TOP)/../python$(PYVER):$(PYTHONPATH)
+export PYTHONPATH:=$(TOP)/..:$(PYTHONPATH)
 
-BINDIR:=$(TOP)/../python$(PYVER)/bin
-LIBDIR:=$(TOP)/../python$(PYVER)/sumolib
+BINDIR:=$(TOP)/../bin
+LIBDIR:=$(TOP)/../sumolib
 
 .PRECIOUS: %.out
 
@@ -124,13 +116,13 @@ script_tests_tst= $(addsuffix .tst, $(script_tests))
 
 # static pattern rule to test python modules:
 $(module_tests_tst): %.tst: $(LIBDIR)/%.py 
-	@echo -e "\n-> run doctest of python$(PYVER)/sumolib/$*.py" >&2
+	@echo -e "\n-> run doctest of sumolib/$*.py" >&2
 	@$(PYTHON) $<
 	@touch $@
 
 # static pattern rule to test scripts:
 $(script_tests_tst): %.tst: $(BINDIR)/% 
-	@echo -e "\n-> run selftest of python$(PYVER)/$*" >&2
+	@echo -e "\n-> run selftest of $*" >&2
 	@$(PYTHON) $< --test
 	@touch $@
 
