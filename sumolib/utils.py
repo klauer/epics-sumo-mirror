@@ -15,12 +15,6 @@ import sumolib.JSON
 
 __version__="3.7.3" #VERSION#
 
-_pyver= (sys.version_info[0], sys.version_info[1])
-
-if _pyver < (2,5):
-    sys.exit("ERROR: SUMO requires at least Python 2.5, "
-             "your version is %d.%d" % _pyver)
-
 # The following variable may be set to True when
 # we have to see on stderr when sumo is waiting for
 # input from stdin:

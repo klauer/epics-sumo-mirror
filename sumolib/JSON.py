@@ -5,6 +5,7 @@
 # pylint: disable=wrong-import-position, invalid-name
 
 import sys
+import json
 
 if __name__ == "__main__":
     # if this module is directly called like a script, we have to add the path
@@ -27,30 +28,6 @@ assert __version__==sumolib.lock.__version__
 
 _pyver= (sys.version_info[0], sys.version_info[1])
 
-# -----------------------------------------------
-# ensure a certain python version
-# -----------------------------------------------
-
-if _pyver < (2,5):
-    sys.exit("ERROR: SUMO requires at least Python 2.5, "
-             "your version is %d.%d" % _pyver)
-
-if _pyver > (2,5):
-    import json
-    _JSON_TYPE= 1
-elif _pyver == (2,5):
-    # python 2.5 has no standard json module, assume that simplejson is
-    # installed:
-    try:
-        import simplejson as json
-    except ImportError as _json_err:
-        sys.exit("ERROR: If SUMO is run with Python %d.%d "
-                 "you need to have module 'simplejson' installed." % \
-                 (sys.version_info[0],sys.version_info[1]))
-    _JSON_TYPE= 0
-else:
-    # older python versions are already detected further above
-    raise AssertionError("this shouldn't happen")
 # -----------------------------------------------
 # exceptions
 # -----------------------------------------------
@@ -128,10 +105,7 @@ def json_str(var):
     }
     <BLANKLINE>
     """
-    if _JSON_TYPE==0:
-        raw_str= json.dumps(var, sort_keys= True, indent= 4*" ")
-    else:
-        raw_str= json.dumps(var, sort_keys= True, indent= 4)
+    raw_str= json.dumps(var, sort_keys= True, indent= 4)
 
     # modern python JSON modules add a trailing space at lines that end
     # with a comma. It seems that this is only fixed in python 3.4. So for
@@ -219,22 +193,15 @@ def loadfile(filename):
     else:
         fh= sys.stdin
 
-    # simplejson and json raise different kinds of exceptions
-    # in case of a syntax error within the JSON file.
-    if _JSON_TYPE==1:
-        my_exceptionclass= ValueError
-    else:
-        my_exceptionclass= json.scanner.JSONDecodeError
-
     try:
         results= json.load(fh)
-    except my_exceptionclass as e:
+    except ValueError as e:
         if filename != "-":
             msg= "%s: %s" % (filename, str(e))
             fh.close()
         else:
             msg= "<stdin>: %s" % str(e)
-        # always re-raise as a value error regardless of _JSON_TYPE:
+        # always re-raise as a value error:
         raise ParseError(msg)
     except IOError as e:
         if filename != "-":
