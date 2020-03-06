@@ -17,11 +17,7 @@ pypi. The sections below describe all installation options.
 Requirements
 ------------
 
-Sumo requires at least `Python <https://www.python.org>`_ version 2.5 or newer
-or version 3.2 or newer.
-
-**Note**: Python 2 support of sumo is deprecated! Future versions will require Python 3. See also
-`Python 2 or Python 3 <https://wiki.python.org/moin/Python2orPython3>`_.
+Sumo requires at least `Python <https://www.python.org>`_ version 3.2.3 or newer.
 
 Sumo is tested on `debian <https://www.debian.org>`_ and 
 `Fedora <https://getfedora.org>`_ linux distributions but should run on all
@@ -112,14 +108,7 @@ The following chapters are just *examples* how you could install sumo. For a
 complete list of all possibilities see 
 `<https://docs.python.org/3/installing/index.html#installing-index>`_.
 
-Note that the python interpreter you use to start setup.py determines for which python version sumo is installed. 
-
-In order to install for python 2.x use the following. Note that python 2
-support is **deprecated**::
-
-  python2 setup.py [options]
-
-In order to install for python 3.x use::
+Install with::
 
   python3 setup.py [options]
 
