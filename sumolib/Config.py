@@ -224,16 +224,16 @@ class ConfigFile():
         # pylint: disable=R0912
         #                          Too many branches
         def list_merge(a,b,name):
-            """merge two lists."""
+            """merge two lists, return sorted list with unique elements."""
             if not isinstance(a, list):
                 raise TypeError("error: %s from config file(s) is not "
                                 "a list" % name)
             if not isinstance(b, list):
                 raise TypeError("error: %s from command line options "
                                 "is not a list" % name)
-            new= a[:]
-            new.extend(b)
-            return new
+            new= set(a)
+            new.update(b)
+            return sorted(new)
 
         if merge_opts_set is None:
             merge_opts_set= set()
