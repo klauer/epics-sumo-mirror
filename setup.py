@@ -28,12 +28,10 @@ import sys
 
 # pylint: disable=invalid-name
 
-if sys.version_info[0] == 2:
-    base_name= 'python'
-    base_dir = 'python2'
-elif sys.version_info[0] == 3:
-    base_name= 'python3'
-    base_dir = 'python3'
+if sys.version_info[0] < 3:
+    sys.exit("error: python 3 or newer is required for this application")
+
+base_name= 'python'
 
 __version__="3.7.3" #VERSION#
 
@@ -61,7 +59,7 @@ def find_dirs(path, dirs_must_have_files):
     for dirpath, _, filenames in os.walk(path):
         if dirpath==os.curdir:
             continue
-        if (dirs_must_have_files):
+        if dirs_must_have_files:
             if not filenames:
                 continue
         dirs.add(dirpath)
@@ -174,7 +172,7 @@ if not os.path.exists(html_build_dir):
     sys.exit("Error, your distribution is incomplete: "
              "HTML documentation missing")
 
-if not os.path.exists(os.path.join(base_dir,"sumolib","data")):
+if not os.path.exists(os.path.join("sumolib","data")):
     sys.exit("Error, your distribution is incomplete: "
              "extra data files are missing")
 
@@ -204,10 +202,6 @@ setup(name=name,
           'Operating System :: POSIX',
           'Operating System :: Unix',
           'Programming Language :: Python',
-          'Programming Language :: Python :: 2',
-          'Programming Language :: Python :: 2.5',
-          'Programming Language :: Python :: 2.6',
-          'Programming Language :: Python :: 2.7',
           'Programming Language :: Python :: 3',
           'Programming Language :: Python :: 3.2',
           'Programming Language :: Python :: 3.3',
@@ -224,14 +218,11 @@ setup(name=name,
           ],
 
       packages=['sumolib'],
-      package_dir= {'sumolib': os.path.join(base_dir, "sumolib")},
-      package_data={'sumolib': \
-                        dir_glob_list(os.path.join(base_dir, "sumolib"),
-                                      "data")},
+      package_dir= {'sumolib': "sumolib"},
+      package_data={'sumolib': dir_glob_list("sumolib", "data") },
       # the data_files parameter is especially needed for the
       # rpm file generation:
       data_files= data_files,
       license= "GPLv3",
-      scripts=[os.path.join(base_dir,p) \
-               for p in ['bin/sumo','bin/sumo-scan']],
+      scripts= ['bin/sumo','bin/sumo-scan'],
      )
