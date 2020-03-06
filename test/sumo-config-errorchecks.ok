@@ -1,0 +1,33 @@
+sumo config show on sumo.config.ok:
+{
+    "dbdir": ".",
+    "dir-patch": [
+        "r\"^/srv/csr/Epics\",r\"rcsadm@aragon.acc.bessy.de:/opt/Epics\""
+    ],
+    "progress": true,
+    "scandb": "SCAN",
+    "verbose": true
+}
+
+
+sumo config show on sumo.config.faulty-json:
+Error while loading config file(s): file sumo.config.faulty-json: Invalid control character at: line 5 column 17 (char 86)
+
+sumo config show on sumo.config.wrong-key:
+Error while loading config file(s): file sumo.config.wrong-key: unknown key: 'DBDIR'
+
+sumo config show on sumo.config.list-for-str:
+Error while loading config file(s): file sumo.config.list-for-str: value ['.'] of key 'dbdir' is not a string
+
+sumo config show on sumo.config.str-for-list:
+Error while loading config file(s): file sumo.config.str-for-list: value 'abc' of key 'dir-patch' is not a list
+
+sumo config show on sumo.config.str-for-list2:
+Error while loading config file(s): file sumo.config.str-for-list2: value 'abc' of key '#opt-preload' is not a list
+
+sumo config show on sumo.config.dict-for-list:
+Error while loading config file(s): file sumo.config.dict-for-list: value {'abc': 1} of key 'dir-patch' is not a list
+
+sumo config show on sumo.config.dict-for-list2:
+Error while loading config file(s): file sumo.config.dict-for-list2: value {'abc': 1} of key '#opt-preload' is not a list
+
