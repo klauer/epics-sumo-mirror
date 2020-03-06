@@ -28,7 +28,6 @@ rx_ref=re.compile(r':ref:`([^<]+?)\s*<[^`]+`')
 rx_http_link=re.compile(r'`([\w\s]+)\s+(<[^>]+>)`_')
 rx_text_link=re.compile(r'`([^`]+)`_')
 
-# python2, python3 compability:
 def my_print(st):
     """print."""
     out.write(st)
