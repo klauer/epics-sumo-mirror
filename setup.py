@@ -33,7 +33,7 @@ if sys.version_info[0] < 3:
 
 base_name= 'python'
 
-__version__="3.7.3" #VERSION#
+__version__="4.0" #VERSION#
 
 # utilities -------------------------
 
