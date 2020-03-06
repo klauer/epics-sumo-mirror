@@ -163,6 +163,7 @@ class ConfigFile():
             IOError if the file couldn't be loaded
             KeyError if a dict key is unknown.
             TypeError if value of a key has the wrong type
+            sumolib.JSON.ParseError when a JSON file is invalid
         """
         def _load_lst(dict_, keys):
             """load lists from a dict."""
@@ -184,6 +185,7 @@ class ConfigFile():
                 return
             raise IOError("error: file \"%s\" doesn't exist" % filename)
         self._real_paths.append(filename)
+        # may raise sumolib.JSON.ParseError:
         data= sumolib.JSON.loadfile(filename)
         # pylint: disable=E1103
         #                     Instance of 'bool' has no 'items' member
