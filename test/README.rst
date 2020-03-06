@@ -14,26 +14,13 @@ You have to run the following commands before starting the tests::
   ../administration_tools/mk-data.sh 
   ../administration_tools/mk-sumo-doc.sh
 
-The python version
-------------------
+Running the tests
+-----------------
 
-Wether tests are performed for the python2 or python3 version is decided by the
-setting of environment variable PYVER.
+You should run the tests like this::
 
-In order to test python2, set PYVER like this::
-
-  export PYVER=2
-
-In order to test python3, set PYVER like this::
-
-  export PYVER=3
-
-Note that on order to test python2 *and* python3 you have to run "make clean"
-between the tests. So you should test both python versions like this::
-
-  PYVER=2 make all -sj
-  PYVER=2 make clean
-  PYVER=3 make all -sj
+  make clean
+  make all -sj
 
 Types of tests
 --------------
@@ -120,7 +107,7 @@ expected output in this example with this command::
 
   diff sumo-build-new-make-recipes.o*
 
-In order to re-run this test alone enter (note that PYVER must be set)::
+In order to re-run this test alone enter::
 
   make sumo-build-new-make-recipes.clean
   make sumo-build-new-make-recipes.tst

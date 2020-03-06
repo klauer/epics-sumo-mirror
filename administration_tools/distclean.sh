@@ -7,7 +7,7 @@
 ME=$(readlink -f "$0")
 MYDIR=$(dirname "$ME")
 
-(cd $MYDIR/../test && PYVER=3 make distclean -sj)
+(cd $MYDIR/../test && make distclean -sj)
 (cd $MYDIR/../doc && make clean)
 rm -f $MYDIR/*.LOG
 
