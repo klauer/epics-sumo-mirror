@@ -16,7 +16,7 @@ fi
 
 VERSION="$1"
 
-FILES="`ls ../python2/bin/*` `ls ../python3/bin/*` `ls ../python2/sumolib/[A-Za-z]*.py` `ls ../python3/sumolib/[A-Za-z]*.py` ../doc/conf.py ../setup.py"
+FILES="$(ls ../bin/*) $(ls ../sumolib/[A-Za-z]*.py) ../doc/conf.py ../setup.py"
 
 for f in $FILES; do
     sed -i -e "s/\"[^\"]\+\" \+\(#VERSION#\)/\"$VERSION\" \1/" $f

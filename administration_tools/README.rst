@@ -119,21 +119,7 @@ Run::
 
   ./pypi-test-upload.sh
 
-Now test with these commands for python 2::
-
-  virtualenv tmp
-  cd tmp
-  bash
-  source bin/activate
-  pip install EPICS-sumo -i https://testpypi.python.org/pypi
-  sumo -h
-  <ctrl-d>
-
-If everything worked, remove the test directory with::
-
-  rm -rf tmp
-
-Now test with these commands for python 3::
+Now test with these commands::
 
   python3 -m venv tmp
   cd tmp
