@@ -349,10 +349,10 @@ def load_config_files(options, disable_loading):
     config_name= None
     if not options.no_default_config:
         config_name= CONFIG_NAME
-    config= sumolib.Config.ConfigFile.from_optionlist(\
+    config= sumolib.Config.ConfigFile(\
                 config_name,
                 ENV_CONFIG,
-                KNOWN_CONFIG_OPTIONS)
+                { k: None for k in KNOWN_CONFIG_OPTIONS} )
 
     if disable_loading is None:
         disable_loading= options.disable_loading
