@@ -93,10 +93,10 @@ clean: shallowclean
 	if [ -d tmp-$* ]; then \
 	    chmod -R u+w tmp-$*; \
 	fi
-	rm -rf $*.tst
-	rm -rf $*.out
-	rm -rf $*.tmp
-	rm -rf $*.bak
+	rm -rf $**.tst
+	rm -rf $**.out
+	rm -rf $**.tmp
+	rm -rf $**.bak
 	rm -rf tmp-$*
 
 

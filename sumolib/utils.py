@@ -6,6 +6,7 @@
 # pylint: disable=invalid-name
 
 import sys
+import platform
 import os
 import os.path
 import re
@@ -446,6 +447,17 @@ def dirwalk(start_dir):
                 for (dp, dn, fn) in dirwalk(p):
                     yield (dp, dn, fn)
 
+def split_searchpath(val):
+    """split a searchpath variable by ':' or ';'."""
+    # allow ":" and ";" as separators:
+    if not val:
+        return []
+    if platform.system()=="Windows":
+        sep= ";"
+    else:
+        sep= ":"
+    return val.split(sep)
+
 # -----------------------------------------------
 # version and path support
 # -----------------------------------------------
@@ -578,6 +590,16 @@ def tag2version(ver):
 # -----------------------------------------------
 # generic datastructure utilities
 # -----------------------------------------------
+
+def set_union(*sets):
+    """return a union of all the given sets."""
+    new= None
+    for s in sets:
+        if new is None:
+            new= set(s)
+            continue
+        new= new.union(s)
+    return new
 
 def single_key(dict_):
     """dict must have exactly one key, return it.

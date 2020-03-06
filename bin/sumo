@@ -97,28 +97,36 @@ KNOWN_BUILD_COMMANDS=set(("delete",
                           "use" \
                         ))
 
-KNOWN_CONFIG_OPTIONS=set(("#preload",
-                          "#opt-preload",
-                          "#postload",
-                          "#opt-postload",
-                          "alias",
-                          "buildtag-stem",
-                          "dbdir",
-                          "dbrepo",
-                          "dbrepomode",
-                          "editor",
-                          "extra",
-                          "makeflags",
-                          "module",
-                          "progress",
-                          "readonly",
-                          "scandb",
-                          "dir-patch",
-                          "url-patch",
-                          "builddir",
-                          "localbuilddir",
-                          "verbose" \
-                        ))
+KNOWN_CONFIG_BOOL_OPTIONS= { "progress",
+                             "readonly",
+                             "verbose"
+                           }
+
+KNOWN_CONFIG_STR_OPTIONS=  { "buildtag-stem",
+                             "dbdir",
+                             "dbrepo",
+                             "dbrepomode",
+                             "editor",
+                             "scandb",
+                             "builddir",
+                             "localbuilddir",
+                           }
+
+KNOWN_CONFIG_LIST_OPTIONS= {"#preload",
+                            "#opt-preload",
+                            "#postload",
+                            "#opt-postload",
+                            "alias",
+                            "extra",
+                            "makeflags",
+                            "module",
+                            "dir-patch",
+                            "url-patch",
+                           }
+
+KNOWN_CONFIG_OPTIONS= sumolib.utils.set_union(KNOWN_CONFIG_BOOL_OPTIONS,
+                                              KNOWN_CONFIG_STR_OPTIONS,
+                                              KNOWN_CONFIG_LIST_OPTIONS)
 
 KNOWN_MAKERULE_TARGETS= set(("all", "config", "clean", "distclean"))
 
@@ -343,8 +351,8 @@ def load_config_files(options, disable_loading):
     """Load config files, merge with options and return a Config object.
 
     May raise:
-        IOError, ValueError   : from trying to load the file
-        TypeError, ValueError : from trying to merge with options
+        IOError, KeyError, TypeError   : from trying to load the file
+        TypeError, ValueError          : from trying to merge with options
     """
     config_name= None
     if not options.no_default_config:
@@ -352,21 +360,27 @@ def load_config_files(options, disable_loading):
     config= sumolib.Config.ConfigFile(\
                 config_name,
                 ENV_CONFIG,
-                { k: None for k in KNOWN_CONFIG_OPTIONS} )
+                KNOWN_CONFIG_BOOL_OPTIONS,
+                KNOWN_CONFIG_STR_OPTIONS,
+                KNOWN_CONFIG_LIST_OPTIONS,
+                CONFIG_ENV_EXPAND)
 
     if disable_loading is None:
         disable_loading= options.disable_loading
 
     try:
-        # may raise IOError, ValueError:
+        # may raise IOError, KeyError, TypeError:
         config.load(options.config, not disable_loading)
-    except (ValueError, IOError) as e:
+    except (TypeError, KeyError, IOError) as e:
         # pylint: disable=raising-format-tuple
         raise annotate("Error while loading config file: %s", e)
 
-    config.env_expand(CONFIG_ENV_EXPAND)
+    # expand environment variables:
+    config.env_expand()
 
-    # may raise TypeError, ValueError:
+    # copy from <options> object to <config> object, then copy back to
+    # <options> object.
+    # may raise KeyError, TypeError:
     config.merge_options(options, options.append)
 
     return (options, config)
@@ -3321,7 +3335,7 @@ def subcmd_build_use(arguments, options):
 
     module_list_complete= None
     # ^^^ <None> until we check if the module list is complete
-    if options.buildtag is None:
+    if not options.buildtag:
         # unspecifed build_tag, look if the module list is complete:
         # may raise ValueError:
         dist_dict= modulespecs_obj.to_dist_dict()
@@ -4259,7 +4273,7 @@ def main():
     specs.add("--disable-loading")
     specs.add("--append -A",
               lambda s,o: \
-                    sumolib.cli.complete_list(KNOWN_CONFIG_OPTIONS, s, o),
+                  sumolib.cli.complete_list(KNOWN_CONFIG_LIST_OPTIONS, s, o),
               arg_name= "optionname", array= True)
     specs.add("--#preload", sumolib.cli.complete_file, "FILES", array= True)
     specs.add("--#opt-preload", sumolib.cli.complete_file, "FILES",
