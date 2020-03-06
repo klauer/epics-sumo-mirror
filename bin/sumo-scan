@@ -54,6 +54,28 @@ IGNORE_NAMES= set(["TOP", "EPICS_SUPPORT",
 CONFIG_NAME="sumo-scan.config"
 ENV_CONFIG="SUMOSCANCONFIG"
 
+KNOWN_CONFIG_BOOL_OPTIONS= { "missing-repo",
+                             "missing-tag",
+                             "progress",
+                             "verbose"
+                           }
+
+KNOWN_CONFIG_STR_OPTIONS=  { "exclude-deps",
+                           }
+KNOWN_CONFIG_LIST_OPTIONS= { "#preload",
+                             "#opt-preload",
+                             "#postload",
+                             "#opt-postload",
+                             "dir",
+                             "exclude-path",
+                             "group-basedir",
+                             "hint",
+                             "ignore-changes",
+                             "ignore-name",
+                             "dir-patch",
+                             "url-patch",
+                           }
+
 catch_exceptions= True
 
 # -----------------------------------------------
@@ -454,36 +476,34 @@ def process(options, commands):
     global catch_exceptions
     if options.exceptions:
         catch_exceptions= False
+
+    options.dir            = sumolib.utils.opt_join(options.dir)
+    options.exclude_path   = sumolib.utils.opt_join(options.exclude_path)
+    options.group_basedir  = sumolib.utils.opt_join(options.group_basedir)
+    options.ignore_changes = sumolib.utils.opt_join(options.ignore_changes)
+    options.ignore_name    = sumolib.utils.opt_join(options.ignore_name)
+
     config_name= None
     if not options.no_default_config:
         config_name= CONFIG_NAME
     config= sumolib.Config.ConfigFile(\
                 config_name,\
                 ENV_CONFIG,\
-                { k: None for k in ("#preload", "#opt-preload", "#postload",
-                                    "#opt-postload","dir", "exclude-deps",
-                                    "exclude-path", "group-basedir",
-                                    "hint", "ignore-changes", "ignore-name",
-                                    "missing-repo", "missing-tag", "progress",
-                                    "dir-patch", "url-patch", "verbose")})
+                KNOWN_CONFIG_BOOL_OPTIONS,
+                KNOWN_CONFIG_STR_OPTIONS,
+                KNOWN_CONFIG_LIST_OPTIONS, None)
 
     try:
+        # may raise IOError, KeyError, TypeError:
         config.load(options.config, not options.disable_loading)
-    except ValueError as e:
-        if not catch_exceptions:
-            raise
-        sys.exit("Error while loading config file,\n%s" % str(e))
-    except IOError as e:
+    except (TypeError, KeyError, IOError) as e:
         if not catch_exceptions:
             raise
         sys.exit("Error while loading config file,\n%s" % str(e))
     try:
+        # may raise KeyError, TypeError:
         config.merge_options(options, options.append)
-    except ValueError as e:
-        if not catch_exceptions:
-            raise
-        sys.exit(str(e))
-    except TypeError as e:
+    except (TypeError, KeyError) as e:
         if not catch_exceptions:
             raise
         sys.exit(str(e))
@@ -512,12 +532,6 @@ def process(options, commands):
         commands.add("groups")
 
     deps= None
-
-    options.dir            = sumolib.utils.opt_join(options.dir)
-    options.exclude_path   = sumolib.utils.opt_join(options.exclude_path)
-    options.group_basedir  = sumolib.utils.opt_join(options.group_basedir)
-    options.ignore_changes = sumolib.utils.opt_join(options.ignore_changes)
-    options.ignore_name    = sumolib.utils.opt_join(options.ignore_name)
 
     if not options.ignore_name:
         options.ignore_name= IGNORE_NAMES

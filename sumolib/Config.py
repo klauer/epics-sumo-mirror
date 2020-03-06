@@ -6,7 +6,6 @@
 
 import os
 import sys
-import platform
 
 if __name__ == "__main__":
     # if this module is directly called like a script, we have to add the path
@@ -28,20 +27,12 @@ assert __version__==sumolib.JSON.__version__
 
 class ConfigFile():
     """store options in a JSON file."""
-    @staticmethod
-    def paths_from_env(varname):
-        """read configuration paths from environment variable."""
-        val= os.environ.get(varname)
-        if not val:
-            return None
-        # allow ":" and ";" as separators:
-        if platform.system()=="Windows":
-            sep= ";"
-        else:
-            sep= ":"
-        return val.split(sep)
-    def __init__(self, filename, env_name, dict_):
-        """create from a dict.
+    # pylint: disable=too-many-instance-attributes
+    def __init__(self, filename, env_name,
+                 bool_options,
+                 string_options, list_options,
+                 env_expand_options):
+        """create the object.
 
         If filename is not empty, search for config files at:
           /etc
@@ -50,13 +41,29 @@ class ConfigFile():
           <cwd>
 
         """
-        self._dict= dict(dict_)
+        # pylint: disable= too-many-arguments
+        def newset(v):
+            """simple set creator."""
+            if not v:
+                return set()
+            return set(v)
+        # pylint: disable=too-many-arguments
+        self._dict= dict()
         self._filename= filename
         self._real_paths= []
+        self._env_name= env_name
+        self._bool_options= newset(bool_options)
+        self._string_options= newset(string_options)
+        self._list_options= newset(list_options)
+        self._all_options= sumolib.utils.set_union(self._bool_options,
+                                                   self._string_options,
+                                                   self._list_options)
+        self._env_expand_options= newset(env_expand_options)
         if not filename:
             self._paths= []
         else:
-            search_paths= self.__class__.paths_from_env(env_name)
+            search_paths= sumolib.utils.split_searchpath(\
+                    os.environ.get(env_name))
             if not search_paths:
                 # not specified by environment variable:
                 search_paths=["/etc",
@@ -70,64 +77,103 @@ class ConfigFile():
                 p= os.path.join(path, filename)
                 if os.path.isfile(p):
                     self._paths.append(p)
-    def __repr__(self):
-        """return repr string."""
-        return "%s(%s, %s)" % (self.__class__.__name__,
-                               repr(self._filename),
-                               repr(self._dict))
-    def __str__(self):
-        """return string in human readable form."""
-        lines= ["filename: %s\n" % self._filename,
-                "dict:",
-                str(self._dict)]
-        return "\n".join(lines)
+    def dump_str(self):
+        """dump the object, return a list of lines"""
+        lst= []
+        lst.append("%s:" % self.__class__.__name__)
+        lst.append("\tenv_name: %s" % repr(self._env_name))
+        lst.append("\tbool_options: %s" % repr(self._bool_options))
+        lst.append("\tstring_options: %s" % repr(self._string_options))
+        lst.append("\tlist_options: %s" % repr(self._list_options))
+        lst.append("\tall_options: %s" % repr(self._all_options))
+        lst.append("\tenv_expand_options: %s" % repr(self._env_expand_options))
+        lst.append("\tfilename: %s" % repr(self._filename))
+        lst.append("\treal_paths: %s" % repr(self._real_paths))
+        lst.append("\tpaths: %s" % repr(self._paths))
+        lst.append("\tdict: %s" % repr(self._dict))
+        return lst
+    def dump(self):
+        """dump the object."""
+        print("\n".join(self.dump_str()))
 
-    def optionlist(self):
-        """return all known options of the Config object."""
-        return sorted(self._dict.keys())
     def get(self, optionname):
         """get an option."""
         return self._dict.get(optionname)
     def set(self, optionname, value):
         """set an option to an arbitrary value."""
         self._dict[optionname]= value
-    def env_expand(self, keys):
+    def env_expand(self):
         r"""expand environment variables in known values.
 
         All $VARNAME and ${VARNAME} strings are expaned with the values of the
         environment variable VARNAME for the keys in [keys]. If you want to
         keep the dollar '$' sign uninterpreted, precede it with a backslash
         like in '\$VARNAME'.
+
+        May raise:
+            AssertionError if the value to expand is not a string
         """
         dict_= self._dict
-        for key in keys:
+        for key in self._env_expand_options:
             val= dict_.get(key)
             if val is None:
                 continue
+            if not isinstance(val, str):
+                raise AssertionError("unexpected type: key: %s val: %s" % \
+                                     (repr(key), repr(val)))
             dict_[key]= sumolib.utils.env_expand(val)
-    def _merge(self, dict_):
-        """merge known keys from dict_ with self."""
+    def _merge(self, dict_, append_lists):
+        """merge known keys from dict_ with self.
+
+        May raise:
+            KeyError if a dict key is unknown.
+            TypeError if value of a key has the wrong type
+        """
         for (key, val) in dict_.items():
-            if key not in self._dict:
-                continue # silently ignore unknown keys
-            if isinstance(self._dict[key], list):
-                if not isinstance(val, list):
-                    raise ValueError("error: config merge: expected a "
-                                     "list at %s:%s" % (key,repr(val)))
-                self._dict[key].extend(val)
-            else:
+            if key in self._bool_options:
+                if not isinstance(val, bool):
+                    raise TypeError("value %s of key %s is not a bool" % \
+                                    (repr(val), repr(key)))
                 self._dict[key]= val
+                continue
+            if key in self._string_options:
+                if not isinstance(val, str):
+                    raise TypeError("value %s of key %s is not a string" % \
+                                    (repr(val), repr(key)))
+                self._dict[key]= val
+                continue
+            if key in self._list_options:
+                if not isinstance(val, list):
+                    raise TypeError("value %s of key %s is not a list" % \
+                                    (repr(val), repr(key)))
+                if append_lists:
+                    self._dict[key]= \
+                            sumolib.utils.list_update(self._dict.get(key,[]), val)
+                else:
+                    self._dict[key]= val
+                continue
+            raise KeyError("unknown key: %s" % repr(key))
     def _load_file(self, filename, must_exist, enable_loading):
         """load filename.
 
         Note that the special key "#include" means that another config file is
         included much as with the #include directive in C.
+
+        May raise:
+            IOError if the file couldn't be loaded
+            KeyError if a dict key is unknown.
+            TypeError if value of a key has the wrong type
         """
         def _load_lst(dict_, keys):
             """load lists from a dict."""
             l= []
             for k in keys:
                 v= dict_.get(k)
+                if v is None:
+                    continue
+                if not isinstance(v, list):
+                    raise TypeError("value %s of key %s is not a list" % \
+                                    (repr(v), repr(k)))
                 if not v:
                     continue
                 l.extend(v)
@@ -142,20 +188,32 @@ class ConfigFile():
         # pylint: disable=E1103
         #                     Instance of 'bool' has no 'items' member
         if enable_loading:
-            for f in _load_lst(data, ["#include", "#preload"]):
-                self._load_file(f, must_exist= True,
-                                enable_loading= enable_loading)
-            for f in _load_lst(data, ["#opt-preload"]):
-                self._load_file(f, must_exist= False,
-                                enable_loading= enable_loading)
-        self._merge(data)
+            try:
+                for f in _load_lst(data, ["#include", "#preload"]):
+                    self._load_file(f, must_exist= True,
+                                    enable_loading= enable_loading)
+                for f in _load_lst(data, ["#opt-preload"]):
+                    self._load_file(f, must_exist= False,
+                                    enable_loading= enable_loading)
+            except (ValueError, TypeError) as e:
+                raise sumolib.utils.annotate("file "+filename+": %s", e)
+        err= None
+        try:
+            self._merge(data, append_lists= True)
+        except (ValueError, TypeError) as e:
+            err= str(e)
+        if err:
+            raise ValueError("file %s: %s" % (filename, err))
         if enable_loading:
-            for f in _load_lst(data, ["#postload"]):
-                self._load_file(f, must_exist= True,
-                                enable_loading= enable_loading)
-            for f in _load_lst(data, ["#opt-postload"]):
-                self._load_file(f, must_exist= False,
-                                enable_loading= enable_loading)
+            try:
+                for f in _load_lst(data, ["#postload"]):
+                    self._load_file(f, must_exist= True,
+                                    enable_loading= enable_loading)
+                for f in _load_lst(data, ["#opt-postload"]):
+                    self._load_file(f, must_exist= False,
+                                    enable_loading= enable_loading)
+            except (ValueError, TypeError) as e:
+                raise sumolib.utils.annotate("file "+filename+": %s", e)
     def real_paths(self):
         """return the list of files that should be loaded or were loaded."""
         return self._real_paths
@@ -165,6 +223,11 @@ class ConfigFile():
         enable_loading - If True, commands like "#preload" are enabled,
                          otherwise these keys are just treated like ordinary
                          values.
+
+        May raise:
+            IOError if the file couldn't be loaded
+            KeyError if a dict key is unknown.
+            TypeError if value of a key has the wrong type
         """
         def unify(l):
             """remove double elements in a list."""
@@ -220,55 +283,47 @@ class ConfigFile():
 
         All options that are part of the set <merge_opts_set> must be lists.
         For these options the lists are concatenated.
+
+        May raise:
+            KeyError if a dict key is unknown.
+            TypeError if value of a key has the wrong type
         """
         # pylint: disable=R0912
         #                          Too many branches
-        def list_merge(a,b,name):
-            """merge two lists, return sorted list with unique elements."""
-            if not isinstance(a, list):
-                raise TypeError("error: %s from config file(s) is not "
-                                "a list" % name)
-            if not isinstance(b, list):
-                raise TypeError("error: %s from command line options "
-                                "is not a list" % name)
-            new= set(a)
-            new.update(b)
-            return sorted(new)
-
+        def option_obj_key(key):
+            """convert ConfigFile key to Options key."""
+            return key.replace("-", "_")
+        # copy from option_obj to self:
+        merge_dict= {}
         if merge_opts_set is None:
             merge_opts_set= set()
         else:
             for opt in merge_opts_set:
-                if not hasattr(option_obj, opt.replace("-","_")):
-                    raise ValueError(
-                        "error: '%s' is not a known option" % opt)
-        # copy from option_obj to self:
-        for opt in self._dict.keys():
-            # in the option object, "-" in option names is always
-            # replaced with "_":
-            oobj_opt= opt.replace("-", "_")
-            if not hasattr(option_obj, oobj_opt):
-                raise AssertionError(\
-                        "ERROR: key '%s' not in the option object" % opt)
-            val= getattr(option_obj, oobj_opt)
-            if val is not None:
-                existing= self._dict.get(opt)
-                if existing is None:
-                    self._dict[opt]= val
-                else:
-                    if opt not in merge_opts_set:
-                        self._dict[opt]= val
-                    else:
-                        self._dict[opt]= list_merge(existing, val, opt)
+                o_opt= option_obj_key(opt)
+                if not hasattr(option_obj, o_opt):
+                    raise KeyError("%s is not a known option" % repr(opt))
+                opt_val= getattr(option_obj, o_opt)
+                if opt_val is not None:
+                    merge_dict[opt]= opt_val
+            self._merge(merge_dict, append_lists= True)
+        overwrite_dict= {}
+        for opt in self._all_options:
+            if opt in merge_dict:
+                continue
+            o_opt= option_obj_key(opt)
+            opt_val= getattr(option_obj, o_opt)
+            if opt_val is not None:
+                overwrite_dict[opt]= opt_val
+        self._merge(overwrite_dict, append_lists= False)
 
         # copy from self to option_obj:
         for (opt, val) in self._dict.items():
-            oobj_opt= opt.replace("-", "_")
-            if not hasattr(option_obj, oobj_opt):
+            o_opt= option_obj_key(opt)
+            if not hasattr(option_obj, o_opt):
                 raise AssertionError(\
                         "ERROR: key '%s' not in the option object" % opt)
-            if val is not None:
-                setattr(option_obj, oobj_opt, val)
+            if val:
+                setattr(option_obj, o_opt, val)
 
 def _test():
     """perform internal tests."""
