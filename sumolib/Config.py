@@ -40,11 +40,6 @@ class ConfigFile():
         else:
             sep= ":"
         return val.split(sep)
-    @classmethod
-    def from_optionlist(cls, filename, env_name, optionlist):
-        """Create object from optionlist."""
-        d= {n: None for n in optionlist}
-        return cls(filename, env_name, d)
     def __init__(self, filename, env_name, dict_):
         """create from a dict.
 
