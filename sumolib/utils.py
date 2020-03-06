@@ -311,47 +311,60 @@ def sumolib_dir():
     # see: http://setuptools.readthedocs.io/en/latest/pkg_resources.html#resourcemanager-api
     return os.path.dirname(os.path.abspath(__file__))
 
-def file_w_open(filename, verbose, dry_run):
-    """open a file for write."""
-    if verbose:
-        print("opening file '%s'" % filename)
-    if dry_run:
-        return None
-    return open(filename, "w")
-
-def file_write(fh, st, verbose, dry_run):
-    """write a line to a file."""
-    if verbose:
-        print(st, end='')
-    if not dry_run:
-        fh.write(st)
-
-def file_writelines_n(fh, lines, verbose, dry_run):
-    """write lines to a file, append "\n" to each line."""
-    l= [s+"\n" for s in lines]
-    if verbose:
-        print("".join(l))
-    if not dry_run:
-        fh.writelines(l)
+class TextFile:
+    """simple wrapper to create text files."""
+    def __init__(self, filename, verbose, dry_run):
+        """create the object."""
+        if filename=="-":
+            # stdout
+            self.verbose= False # otherwise we would print each line twice
+            self.dry_run= False # makes no sense otherwise
+            self.fh= None
+            self.stdout= True
+        else:
+            self.stdout= False
+            self.verbose= verbose
+            self.dry_run= dry_run
+            if self.verbose:
+                print("creating file '%s'" % filename)
+            if self.dry_run:
+                self.fh= None
+            else:
+                self.fh= open(filename, "w")
+    def write(self, st):
+        """write a text."""
+        if self.stdout:
+            print(st, end='')
+        else:
+            if self.verbose:
+                print(st, end='')
+            if not self.dry_run:
+                self.fh.write(st)
+    def write_n(self, st):
+        """write a text, append linefeed"""
+        self.write(st+"\n")
+    def writelines(self, lines, sep= ""):
+        """write lines to a file."""
+        if self.stdout:
+            print(sep.join(lines), end='')
+        elif not self.dry_run:
+            self.fh.write(sep.join(lines))
+    def writelines_n(self, st):
+        """write lines to a file, append "\n" to each line."""
+        new= st[:]
+        new.append("")
+        self.writelines(new, "\n")
+    def close(self):
+        """close file if needed."""
+        if not self.stdout:
+            self.fh.close()
+            self.fh= None
 
 def mk_text_file(filename, lines, verbose, dry_run):
-    """create a text file."""
-    if verbose:
-        if filename!="-":
-            print("creating",filename)
-    if dry_run:
-        filename="-"
-    if filename=="-":
-        fh= None
-        # special settings for _fwrite:
-        verbose= True
-        dry_run= True
-    else:
-        fh= open(filename, "w")
-    for l in lines:
-        file_write(fh, l, verbose, dry_run)
-    if filename!="-":
-        fh.close()
+    """create a text file, lines must contain newline character"""
+    t= TextFile(filename, verbose, dry_run)
+    t.writelines(lines)
+    t.close()
 
 def backup_file(filename, verbose, dry_run):
     """rename "filename" to "filename.bak" to make a backup.
