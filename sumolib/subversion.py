@@ -339,15 +339,22 @@ class Repo():
                                                 True, True, None, \
                                                 self.verbose, self.dry_run)
         sumolib.utils.changedir(cwd)
+        flushed= False
         if stderr:
             # ensure that output on stderr is always printed to the console:
             sys.stdout.flush()
             sys.stderr.write(stderr)
             sys.stderr.flush()
+            flushed= True
         for l in stdout.splitlines()+stderr.splitlines():
             if "conflict" in l.lower():
                 msg="error, 'svn update' had a conflict"
+                if not flushed:
+                    sys.stdout.flush()
+                    flushed= True
                 raise IOError(msg)
         if rc:
+            if not flushed:
+                sys.stdout.flush()
             msg="error, 'svn update' failed"
             raise IOError(msg)
