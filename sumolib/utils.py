@@ -72,7 +72,13 @@ def exception_exit(exc):
     st= uq(str(exc))
     if not st.startswith("Error"):
         st= "Error: "+st
-    sys.exit(st)
+    # Note: on our debian 7 deveopment host with python 3.2.3,
+    # sys.exit(STRING) doesn't work together with
+    # multiprocessing.process(). The main process doesn't get a
+    # non-zero error code as expected.  So we separate printing to
+    # stderr from returning an error code, this seems to work:
+    sys.stderr.write(st+"\n")
+    sys.exit(1)
 
 # -----------------------------------------------
 # user interaction
