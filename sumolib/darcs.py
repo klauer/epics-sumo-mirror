@@ -6,6 +6,7 @@
 
 import re
 import os
+import sys
 #import os.path
 import sumolib.system
 
@@ -312,6 +313,7 @@ class Repo():
                                           self.verbose, self.dry_run)
         if stdout:
             print(stdout)
+            sys.stdout.flush() # print has no "flush" for python 3.2.3
         for l in stdout.splitlines():
             if l.lower().startswith("we have conflicts"):
                 msg="error, 'darcs pull' failed"
