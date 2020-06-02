@@ -22,6 +22,16 @@ You should run the tests like this::
   make clean
   make all -sj
 
+Logging of tests
+----------------
+
+After you ran a test successful on a system you may run::
+
+  ./testlog.sh
+
+This appends some data on your computing environment to file "tests.log". You
+may add this to the sumo repository or mail this file to the sumo developers.
+
 Types of tests
 --------------
 
