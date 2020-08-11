@@ -239,27 +239,30 @@ pypi-test-upload.sh
 Docker support
 ++++++++++++++
 
-docker          
+All files for the docker support are in sub-directory "docker".
+
+docker/dockerfiles
   The directory with the docker files
 
-docker-build.sh
+docker/docker-build.sh
   Build docker debian containers needed for mk-xxx.sh scripts run this as
-  docker-build.sh <system-name> with system-name one of: debian-7 debian-8
-  fedora-21 fedora-22
+  docker-build.sh DOCKERFILE. All possible DOCKERFILE names are shown with
+  option "-h".
 
-docker-build-all.sh 
+docker/docker-build-all.sh 
   Build docker containers for all supported linux systems.
 
-docker-run.sh
-  Run a docker container run this as docker-run.sh <system-name> with
-  system-name one of: debian-7 debian-8 fedora-21 fedora-22
+docker/docker-run.sh
+  Run a docker container run this as docker-run.sh DOCKERFILE, run this as
+  docker-build.sh DOCKERFILE. All possible DOCKERFILE names are shown with
+  option "-h".
 
-docker-run-all.sh
+docker/docker-run-all.sh
   Build packages for all supported linux systems.
 
-mk-deb.sh
+docker/mk-deb.sh
   Create debian packages, called from within the debian docker container.
 
-mk-rpm.sh
+docker/mk-rpm.sh
   Create rpm packages, called from within the fedora docker container.
 

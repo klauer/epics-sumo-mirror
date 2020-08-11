@@ -2,28 +2,26 @@
 
 ME=$(readlink -f "$0")
 MYDIR=$(dirname "$ME")
+SCRIPT=$(basename $ME)
 
 cd "$MYDIR"
+TOP=$(readlink -f "$MYDIR/../..")
 
 source docker.config
-
-LOGFILE="DOCKER-RUN.LOG"
-
-APPLICATION=sumo
 
 set -e
 
 function HELP {
-    me=`basename $0`
-    echo "$me : run a docker container"
+    echo "$SCRIPT : run a docker container"
     echo
-    echo "usage: $me DOCKERFILE [OPTIONS]" 
+    echo "usage: $SCRIPT DOCKERFILE [OPTIONS]" 
     echo "where DOCKERFILE is one of the following:"
-    ls docker
+    ls $DOCKERFILEDIR
     echo
     echo "options:"
     echo "  -h  : display this help"
     echo "  --shell : do not build packages, just start a shell"
+    echo "  --x11 : for --shell, start with x11 support"
     echo " -v --verbose : just show what the program would do"
     echo " -n --dry-run : just show what the program would do"
     exit 0
@@ -41,6 +39,7 @@ function CMD {
 
 declare -a ARGS
 START_SHELL=""
+START_X11=""
 VERBOSE=""
 DRY_RUN=""
 
@@ -52,6 +51,10 @@ while true; do
             ;;
         --shell )
             START_SHELL="yes"
+            shift
+            ;;
+        --x11 )
+            START_X11="yes"
             shift
             ;;
         -n | --dry-run )
@@ -80,41 +83,45 @@ if [ -z "$DOCKERFILE" ]; then
     exit 1
 fi
 
-if [ ! -e docker/$DOCKERFILE ]; then
+if [ ! -e $DOCKERFILEDIR/$DOCKERFILE ]; then
     echo "Error, there is no DOCKERFILE named $DOCKERFILE"
     exit 1
 fi
 
 DIST=""
-if grep -q '\<apt-get\>' docker/$DOCKERFILE; then 
+if grep -q '\<apt-get\>' $DOCKERFILEDIR/$DOCKERFILE; then 
     DIST="deb"
 fi
-if grep -q '\<rpm\>' docker/$DOCKERFILE; then 
+if grep -q '\<rpm\>' $DOCKERFILEDIR/$DOCKERFILE; then 
     DIST="rpm"
 fi
 
-cd ..
-
-top=`pwd`
-
-DOCKERIMAGE=hzb/$APPLICATION-builder-$DOCKERFILE
+DOCKERIMAGE=$(imagename $DOCKERFILE)
 
 # path to administration_tools inside the container:
-ADMIN_TOOL_PATH="/root/$APPLICATION/administration_tools"
+DOCKER_TOOL_PATH="/root/$APPLICATION/administration_tools/docker"
 
-dist_dir="dist/$DOCKERFILE"
+dist_dir="$TOP/dist/$DOCKERFILE"
 
 if [ ! -d "$dist_dir" ]; then
     mkdir -p "$dist_dir" && chmod 777 "$dist_dir"
+fi
+
+# create dependency file(s):
+if [ -n "$(must_make administration_tools/DEPS.RPM setup.py)" ]; then
+    cd ../..
+    python3 setup.py deps-rpm > $MYDIR/DEPS.RPM
+    python3 setup.py deps-deb > $MYDIR/DEPS.DEB
+    cd $MYDIR
+    # create the DEPS.* files if they were not created by setup.py:
+    touch DEPS.RPM DEPS.DEB
 fi
 
 if [ -n "$START_SHELL" ]; then
     echo "------------------------------------------------------------"
     echo "Create packages:"
     echo
-    if [ $DIST = "deb" ]; then
-        echo "cd $ADMIN_TOOL_PATH && ./mk-$DIST.sh"
-    fi
+    echo "cd $DOCKER_TOOL_PATH && ./mk-$DIST.sh"
     echo
     echo "------------------------------------------------------------"
     echo "Test packages:"
@@ -131,10 +138,16 @@ fi
 if [ -n "$START_SHELL" ]; then
     PROG="/bin/bash"
 else
-    PROG="$ADMIN_TOOL_PATH/mk-$DIST.sh"
+    PROG="$DOCKER_TOOL_PATH/mk-$DIST.sh"
 fi
 
-echo "---------------------------------------" >> $MYDIR/$LOGFILE
-echo "$me $DOCKERFILE" >> $MYDIR/$LOGFILE
+echo "---------------------------------------" >> $MYDIR/$RUN_LOGFILE
+echo "$me $DOCKERFILE" >> $MYDIR/$RUN_LOGFILE
 
-CMD "$DOCKER run -t --volume $top/$dist_dir:/root/dist --volume $top:/root/$APPLICATION -i $DOCKERIMAGE $PROG" 2>&1 | tee -a $MYDIR/$LOGFILE
+RM_OPT="--rm"
+X11_OPTS=""
+if [ -n "$START_X11" ]; then
+    X11_OPTS="--env DISPLAY --volume ~/.Xauthority:/root/.Xauthority:Z --net=host"
+fi
+
+CMD "$DOCKER run $RM_OPT $X11_OPTS -t --volume $dist_dir:/root/dist --volume $TOP:/root/$APPLICATION -i $DOCKERIMAGE $PROG" 2>&1 | tee -a $MYDIR/$RUN_LOGFILE

@@ -2,22 +2,18 @@
 
 ME=$(readlink -f "$0")
 MYDIR=$(dirname "$ME")
+SCRIPT=$(basename $ME)
 
 cd "$MYDIR"
 
 source docker.config
 
-LOGFILE="DOCKER-BUILD.LOG"
-
-APPLICATION=sumo
-
 if [ -z "$1" -o "$1" = "-h" ]; then
-    me=`basename $0`
-    echo "$me : create a docker container"
+    echo "$SCRIPT : create a docker container"
     echo
-    echo "usage: $me DOCKERFILE" 
+    echo "usage: $SCRIPT DOCKERFILE" 
     echo "where DOCKERFILE is one of the following:"
-    ls docker
+    ls $DOCKERFILEDIR
     exit 1
 fi
 
@@ -25,17 +21,22 @@ set -e
 
 DOCKERFILE="$1"
 
-DOCKERIMAGE=hzb/$APPLICATION-builder-$DOCKERFILE
+DOCKERIMAGE=$(imagename $DOCKERFILE)
 
-if [ ! -e docker/$DOCKERFILE ]; then
+if $DOCKER images | grep -q $DOCKERIMAGE; then
+    echo "image $DOCKERIMAGE already exists" >&2
+    exit 0
+fi
+
+if [ ! -e $DOCKERFILEDIR/$DOCKERFILE ]; then
     echo "error, debian version $DEBIANVERSION not supported"
     exit 1
 fi
 
-cd docker
+cd $DOCKERFILEDIR
 
-echo "---------------------------------------" >> $MYDIR/$LOGFILE
-echo "$me $DOCKERFILE" >> $MYDIR/$LOGFILE
+echo "---------------------------------------" >> $MYDIR/$BUILD_LOGFILE
+echo "$me $DOCKERFILE" >> $MYDIR/$BUILD_LOGFILE
 
-$DOCKER build -t $DOCKERIMAGE -f `pwd -P`/$DOCKERFILE `pwd -P` 2>&1 | tee -a $MYDIR/$LOGFILE
+$DOCKER build -t $DOCKERIMAGE -f $(pwd -P)/$DOCKERFILE $(pwd -P) 2>&1 | tee -a $MYDIR/$BUILD_LOGFILE
 

@@ -6,6 +6,8 @@ RUN apt-get update
 RUN apt-get update
 
 # install python and stdeb:
+# unfortunately, stdeb *requires" python-all to be installed even if
+# we intend to build a pure python3 program:
 RUN apt-get install -y python-all python3-all python3-pip debhelper
 
 # install stdeb directly via pip. As a regular debian package the installed
