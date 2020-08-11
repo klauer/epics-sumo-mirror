@@ -59,5 +59,8 @@
 # log files
 ^administration_tools/.*\.LOG
 
+# dependency files
+^administration_tools/docker/DEPS.*
+
 # local pylint
 ^pylint-2

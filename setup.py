@@ -182,6 +182,15 @@ data_files= [(doc_install_dir, ["README.rst", "LICENSE"])]
 data_files.extend(data_files_make_list(html_install_dir, html_build_dir))
 
 name='epics-sumo'
+
+# The following commands could be used to print dependencies:
+if "deps-pypi" in sys.argv:
+    sys.exit(0)
+if "deps-rpm" in sys.argv:
+    sys.exit(0)
+if "deps-deb" in sys.argv:
+    sys.exit(0)
+
 if "bdist_rpm" in sys.argv:
     name= base_name+"-"+name
 
