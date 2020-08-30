@@ -175,7 +175,7 @@ def _cvs_status(path, verbose, dry_run):
        './a/filea.txt': {'tag': 'Tag1', 'rev': '1.1'}
       }
     """
-    cwd= sumolib.utils.changedir(path)
+    cwd= sumolib.system.changedir(path, verbose, dry_run=False)
     data= {}
     dotslash= os.path.join(".","")
     try:
@@ -184,7 +184,7 @@ def _cvs_status(path, verbose, dry_run):
                 directory= directory.replace(dotslash,"",1)
             data.update(_cvs_dir_status(directory, verbose, dry_run))
     finally:
-        sumolib.utils.changedir(cwd)
+        sumolib.system.changedir(cwd, verbose, dry_run=False)
     return data
 
 # -----------------------------------------------
@@ -414,7 +414,7 @@ class Repo():
         # we rename this directory later:
         try:
             if destdir_head:
-                cwd= sumolib.utils.changedir(destdir_head)
+                cwd= sumolib.system.changedir(destdir_head, verbose, dry_run)
             if is_ssh:
                 _cvs_set_ssh()
             cmd_l= ["cvs", "-d", root, "checkout"]
@@ -437,11 +437,11 @@ class Repo():
                 raise IOError(msg)
             if is_ssh:
                 _cvs_unset_ssh()
-            os.rename(repo, destdir_tail)
+            sumolib.system.os_rename(repo, destdir_tail, verbose, dry_run)
         finally:
             mylock.unlock()
             if destdir_head:
-                sumolib.utils.changedir(cwd)
+                sumolib.system.changedir(cwd, verbose, dry_run)
     def commit(self, logmessage):
         """commit changes to the repository.
 
@@ -460,13 +460,14 @@ class Repo():
             catch_stdout= True
         cmd="cvs commit%s" % m_param
         try:
-            cwd= sumolib.utils.changedir(self.directory)
+            cwd= sumolib.system.changedir(self.directory,
+                                          self.verbose, self.dry_run)
             (_,stderr,rc)= sumolib.system.system_rc(cmd,
                                                     catch_stdout, True, None,
                                                     self.verbose,
                                                     self.dry_run)
         finally:
-            sumolib.utils.changedir(cwd)
+            sumolib.system.changedir(cwd, self.verbose, self.dry_run)
         if rc:
             sys.stdout.flush()
             sys.stderr.write(stderr)

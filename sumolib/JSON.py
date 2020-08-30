@@ -21,10 +21,12 @@ import time
 import pickle
 import tempfile
 import sumolib.lock
+import sumolib.utils
 
 __version__="4.0.2" #VERSION#
 
 assert __version__==sumolib.lock.__version__
+#assert __version__==sumolib.utils.__version__
 
 _pyver= (sys.version_info[0], sys.version_info[1])
 
@@ -73,13 +75,14 @@ def dump_file(filename, var, mode_file):
         fh= open(mode_file, "w")
         fh.close()
         shutil.copymode(mode_file, tmp_filename)
-        os.remove(mode_file)
+        sumolib.system.os_remove(mode_file, verbose= False, dry_run= False)
     else:
         shutil.copymode(mode_file, tmp_filename)
     # Set modification date to [now] since shutil.copymode copied the
     # modification date from mode_file:
     os.utime(tmp_filename, None)
-    os.rename(tmp_filename, filename)
+    sumolib.system.os_rename(tmp_filename, filename,
+                             verbose= False, dry_run= False)
 
 # pylint: disable=C0303
 #                          Trailing whitespace
@@ -397,7 +400,7 @@ class Container():
         if filename=="-":
             raise ValueError("filename must not be \"-\"")
         if filename:
-            if self._filename!=filename:
+            if (self._filename!=filename) and not dry_run:
                 # remove a lock that may still exist:
                 # unlocks only of self._use_lock==True:
                 self.unlock_file()
@@ -408,11 +411,14 @@ class Container():
                 self.lock_file()
             backup= sumolib.utils.backup_file(self._filename,
                                               verbose, dry_run)
-            if not dry_run:
+            if dry_run:
+                print("# create JSON file %s" % repr(self._filename))
+            else:
                 dump_file(self._filename, self.to_dict(), backup)
         finally:
             # unlocks only of self._use_lock==True:
-            self.unlock_file()
+            if not dry_run:
+                self.unlock_file()
     def pickle_save(self, filename):
         """save using cPickle, don't use lockfiles or anything."""
         # Note: in python3, a pickle file must be opened in binary mode:

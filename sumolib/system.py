@@ -4,6 +4,7 @@
 # pylint: disable=invalid-name, bad-whitespace
 
 import os
+import shutil
 import subprocess
 
 __version__="4.0.2" #VERSION#
@@ -92,6 +93,68 @@ def system(cmd, catch_stdout, catch_stderr, env, verbose, dry_run):
             raise IOError(rc,
                           "cmd \"%s\", rc %d" % (cmd, rc))
     return (child_stdout, child_stderr)
+
+def os_remove(dir_, verbose, dry_run):
+    """call os.remove with verbose and dry_run support."""
+    if verbose or dry_run:
+        print(">>> os.remove(%s)" % repr(dir_))
+    if dry_run:
+        return
+    os.remove(dir_)
+
+def os_rename(src, dest, verbose, dry_run):
+    """call os.rename with verbose and dry_run support."""
+    if verbose or dry_run:
+        print(">>> os.rename(%s, %s)" % (repr(src), repr(dest)))
+    if dry_run:
+        return
+    os.rename(src, dest)
+
+def os_rmdir(dir_, verbose, dry_run):
+    """call os.rmdir with verbose and dry_run support."""
+    if verbose or dry_run:
+        print(">>> os.rmdir(%s)" % repr(dir_))
+    if dry_run:
+        return
+    os.rmdir(dir_)
+
+def os_makedirs(dir_, verbose, dry_run):
+    """call os.makedirs with verbose and dry_run support."""
+    if verbose or dry_run:
+        print(">>> os.makedirs(%s)" % repr(dir_))
+    if dry_run:
+        return
+    os.makedirs(dir_)
+
+def shutil_move(src, dest, verbose, dry_run):
+    """call shutil.move with verbose and dry_run support."""
+    if verbose or dry_run:
+        print(">>> shutil.move(%s, %s)" % (repr(src), repr(dest)))
+    if dry_run:
+        return
+    shutil.move(src, dest)
+
+def shutil_copyfile(src, dest, verbose, dry_run):
+    """call shutil.copyfile with verbose and dry_run support."""
+    if verbose or dry_run:
+        print(">>> shutil.copyfile(%s, %s)" % (repr(src), repr(dest)))
+    if dry_run:
+        return
+    shutil.copyfile(src, dest)
+
+def changedir(newdir, verbose, dry_run):
+    """return the current dir and change to a new dir.
+
+    If newdir is empty, return <None>.
+    """
+    if not newdir:
+        return None
+    cwd= os.getcwd()
+    if verbose or dry_run:
+        print(">>> os.chdir(%s)" % repr(newdir))
+    if not dry_run:
+        os.chdir(newdir)
+    return cwd
 
 program_tests= set()
 

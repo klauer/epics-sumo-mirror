@@ -1587,13 +1587,14 @@ def call_make(buildtag, options):
                      options.progress,
                      options.verbose, options.dry_run)
 
-    # may raise IOError, ValueError:
-    builddb= builddb_from_json_file(options.builddir,
-                                    options.localbuilddir,
-                                    keep_locked= not options.dry_run)
-    builddb.change_state(buildtag, "testing")
-    builddb.json_save(None, options.verbose, options.dry_run)
-    # ^^^ does also unlock the file
+    if not options.dry_run:
+        # may raise IOError, ValueError:
+        builddb= builddb_from_json_file(options.builddir,
+                                        options.localbuilddir,
+                                        keep_locked= not options.dry_run)
+        builddb.change_state(buildtag, "testing")
+        builddb.json_save(None, options.verbose, options.dry_run)
+        # ^^^ does also unlock the file
 
 def apprelease(build_tag, modulespec_complete, modulespecs,
                builddb, db,
@@ -3325,10 +3326,11 @@ def subcmd_build_new(arguments, options):
                    options.progress,
                    options.verbose, options.dry_run)
     # may raise IOError, ValueError:
-    builddb= builddb_from_json_file(options.builddir,
-                                    options.localbuilddir,
-                                    keep_locked= not options.dry_run,
-                                    must_exist= False)
+    if not options.dry_run:
+        builddb= builddb_from_json_file(options.builddir,
+                                        options.localbuilddir,
+                                        keep_locked= not options.dry_run,
+                                        must_exist= False)
     builddb.change_state(buildtag, "unstable")
     builddb.json_save(None, options.verbose, options.dry_run)
     # ^^^ does also unlock the file

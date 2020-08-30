@@ -5,6 +5,7 @@
 import sys
 import os.path
 import time
+import sumolib.system
 import sumolib.ModuleSpec
 import sumolib.Dependencies
 
@@ -16,6 +17,7 @@ if __name__ == "__main__":
 
 __version__="4.0.2" #VERSION#
 
+assert __version__==sumolib.system.__version__
 assert __version__==sumolib.ModuleSpec.__version__
 assert __version__==sumolib.Dependencies.__version__
 
@@ -98,7 +100,7 @@ def clear_db_cache():
         # file age in seconds
         age= time.time() - os.path.getmtime(DBCACHE)
         if age>=MAX_AGE:
-            os.remove(DBCACHE)
+            sumolib.system.os_remove(DBCACHE, verbose= False, dry_run= False)
 
 def clear_build_cache():
     """remove the build cache."""
@@ -106,7 +108,8 @@ def clear_build_cache():
         # file age in seconds
         age= time.time() - os.path.getmtime(BUILDCACHE)
         if age>=MAX_AGE:
-            os.remove(BUILDCACHE)
+            sumolib.system.os_remove(BUILDCACHE,
+                                     verbose= False, dry_run= False)
 
 def clear_caches():
     """clear all caches."""

@@ -4,7 +4,6 @@
 # pylint: disable=invalid-name, bad-whitespace
 
 import os.path
-import shutil
 import sumolib.system
 import sumolib.utils
 import sumolib.fileurl
@@ -151,22 +150,27 @@ class Repo():
         sumolib.fileurl.get(url, ap_file, verbose, dry_run)
 
         ap_tempdir= destdir+".tmp"
-        os.makedirs(ap_tempdir)
-        cwd= sumolib.utils.changedir(ap_tempdir)
+        sumolib.system.os_makedirs(ap_tempdir, verbose, dry_run)
+        cwd= sumolib.system.changedir(ap_tempdir, verbose, dry_run)
         try:
             sumolib.system.system("tar %s %s" % (tar_args, ap_file),
                                   False, False, None, verbose, dry_run)
         finally:
-            sumolib.utils.changedir(cwd)
+            sumolib.system.changedir(cwd, verbose, dry_run)
+        if dry_run:
+            # in dry_run mode, the rest of the code cannot really work...
+            return
         ap_subdir= single_subdir(ap_tempdir)
         if not ap_subdir:
             # The files lie directly in ap_tempdir:
-            os.rename(ap_tempdir, ap_destdir)
+            sumolib.system.os_rename(ap_tempdir, ap_destdir, verbose, dry_run)
             return
         # The tar file created a single directory within ap_tempdir so we have
         # to remove one directory hierarchy:
         ap_renamed_subdir= os.path.join(ap_tempdir, os.path.basename(destdir))
-        os.rename(ap_subdir, ap_renamed_subdir)
-        shutil.move(ap_renamed_subdir, ap_destdir)
-        os.rmdir(ap_tempdir)
-        os.remove(ap_file)
+        sumolib.system.os_rename(ap_subdir, ap_renamed_subdir,
+                                 verbose, dry_run)
+        sumolib.system.shutil_move(ap_renamed_subdir, ap_destdir,
+                                   verbose, dry_run)
+        sumolib.system.os_rmdir(ap_tempdir, verbose, dry_run)
+        sumolib.system.os_remove(ap_file, verbose, dry_run)

@@ -317,11 +317,13 @@ class Repo():
             catch_stdout= True
         assert_svn()
         cmd="svn commit %s" % m_param
-        cwd= sumolib.utils.changedir(self.directory)
+        cwd= sumolib.system.changedir(self.directory,
+                                      self.verbose, self.dry_run)
         (_,_,rc)= sumolib.system.system_rc(cmd,
                                            catch_stdout, False, None,
                                            self.verbose, self.dry_run)
-        sumolib.utils.changedir(cwd)
+        sumolib.system.changedir(cwd,
+                                 self.verbose, self.dry_run)
         if rc:
             msg="error, 'svn commit' failed"
             raise IOError(msg)
@@ -332,12 +334,14 @@ class Repo():
         assert_svn()
         cmd="svn update --non-interactive"
         stderr= None
-        cwd= sumolib.utils.changedir(self.directory)
+        cwd= sumolib.system.changedir(self.directory,
+                                      self.verbose, self.dry_run)
 
         (stdout,stderr,rc)= sumolib.system.system_rc(cmd, \
                                                 True, True, None, \
                                                 self.verbose, self.dry_run)
-        sumolib.utils.changedir(cwd)
+        sumolib.system.changedir(cwd,
+                                 self.verbose, self.dry_run)
         flushed= False
         if stderr:
             # ensure that output on stderr is always printed to the console:

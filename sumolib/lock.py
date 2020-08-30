@@ -21,6 +21,8 @@ __version__="4.0.2" #VERSION#
 
 use_lockfile= True
 
+assert __version__==sumolib.system.__version__
+
 try:
     import pwd
 except ImportError:
@@ -170,7 +172,8 @@ class MyLock():
         else:
             for f in os.listdir(self.lockname):
                 os.unlink(os.path.join(self.lockname,f))
-            os.rmdir(self.lockname)
+            sumolib.system.os_rmdir(self.lockname,
+                                    verbose= False, dry_run= False)
         self._has_lock= False
     def filename(self, filename_= None):
         """gets or sets the name of the file that should be locked."""
