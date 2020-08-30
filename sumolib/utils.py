@@ -393,9 +393,12 @@ class TextFile:
         self.writelines(new, "\n")
     def close(self):
         """close file if needed."""
-        if not self.stdout:
-            self.fh.close()
-            self.fh= None
+        if self.stdout:
+            return
+        if self.dry_run:
+            return
+        self.fh.close()
+        self.fh= None
 
 def mk_text_file(filename, lines, verbose, dry_run):
     """create a text file, lines must contain newline character"""
