@@ -1,16 +1,21 @@
 sumo build list
 BASE-001
-DISABLED
 MYAPP-001
 MYAPP-002
 
-sumo build list --sort-build-dependencies-first
+sumo build list --all-builds
 BASE-001
 DISABLED
 MYAPP-001
 MYAPP-002
 
-sumo build list --sort-build-dependencies-last
+sumo build list --sort-build-dependencies-first --all-builds
+BASE-001
+DISABLED
+MYAPP-001
+MYAPP-002
+
+sumo build list --sort-build-dependencies-last --all-builds
 MYAPP-002
 DISABLED
 MYAPP-001

@@ -21,6 +21,34 @@ ALARM:R3-8-modified BASE:R3-14-12-2-1 BSPDEP_CPUBOARDINIT:R4-1 BSPDEP_TIMER:R6-2
 sumo build showmodules:
 BASE-001 :
     BASE:R3-14-12-2-1
+MYAPP-001 :
+    ALARM:R3-8-modified
+    BASE:R3-14-12-2-1
+    BSPDEP_CPUBOARDINIT:R4-1
+    BSPDEP_TIMER:R6-2
+    BSPDEP_VMETAS:TAGLESS-2-1-modified
+    CSM:TAR-4-1
+    EK:R2-2
+    MCAN:R2-6-3-gp
+    MISC_DBC:PATH-3-0
+    MISC_DEBUGMSG:R3-0
+    SOFT_DEVHWCLIENT:TAR-3-0
+MYAPP-002 :
+    ALARM:R3-7
+    BASE:R3-14-12-2-1
+    BSPDEP_CPUBOARDINIT:R4-1
+    BSPDEP_TIMER:R6-2
+    BSPDEP_VMETAS:TAGLESS-2-1-modified
+    CSM:TAR-4-1
+    EK:R2-2
+    MCAN:R2-6-3-gp
+    MISC_DBC:PATH-3-0
+    MISC_DEBUGMSG:R3-0
+    SOFT_DEVHWCLIENT:TAR-3-0
+
+sumo build showmodules --all-builds:
+BASE-001 :
+    BASE:R3-14-12-2-1
 DISABLED :
     BASE:R3-14-12-2-1
     BSPDEP_TIMER:R6-2
@@ -49,7 +77,7 @@ MYAPP-002 :
     MISC_DEBUGMSG:R3-0
     SOFT_DEVHWCLIENT:TAR-3-0
 
-sumo build showmodules -b:
+sumo build showmodules -b --all-builds:
 BASE:R3-14-12-2-1
 BASE:R3-14-12-2-1
 BSPDEP_TIMER:R6-2
@@ -76,13 +104,13 @@ MISC_DBC:PATH-3-0
 MISC_DEBUGMSG:R3-0
 SOFT_DEVHWCLIENT:TAR-3-0
 
-sumo build showmodules -b --lines:
+sumo build showmodules -b --lines --all-builds:
 BASE:R3-14-12-2-1
 BASE:R3-14-12-2-1 BSPDEP_TIMER:R6-2
 ALARM:R3-8-modified BASE:R3-14-12-2-1 BSPDEP_CPUBOARDINIT:R4-1 BSPDEP_TIMER:R6-2 BSPDEP_VMETAS:TAGLESS-2-1-modified CSM:TAR-4-1 EK:R2-2 MCAN:R2-6-3-gp MISC_DBC:PATH-3-0 MISC_DEBUGMSG:R3-0 SOFT_DEVHWCLIENT:TAR-3-0
 ALARM:R3-7 BASE:R3-14-12-2-1 BSPDEP_CPUBOARDINIT:R4-1 BSPDEP_TIMER:R6-2 BSPDEP_VMETAS:TAGLESS-2-1-modified CSM:TAR-4-1 EK:R2-2 MCAN:R2-6-3-gp MISC_DBC:PATH-3-0 MISC_DEBUGMSG:R3-0 SOFT_DEVHWCLIENT:TAR-3-0
 
-sumo build showmodules -b --sort-build-dependencies-last:
+sumo build showmodules -b --sort-build-dependencies-last --all-builds:
 MYAPP-002 :
     ALARM:R3-7
     BASE:R3-14-12-2-1
