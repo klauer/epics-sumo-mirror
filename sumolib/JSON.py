@@ -2,7 +2,7 @@
 """JSON utilities.
 """
 
-# pylint: disable=wrong-import-position, invalid-name
+# pylint: disable=invalid-name, bad-whitespace, wrong-import-position
 
 import sys
 import json
@@ -430,7 +430,7 @@ class Container():
 
 def _test():
     """perform internal tests."""
-    import doctest
+    import doctest # pylint: disable= import-outside-toplevel
     doctest.testmod()
 
 if __name__ == "__main__":

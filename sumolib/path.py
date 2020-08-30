@@ -1,8 +1,7 @@
 """path support
 """
 
-# pylint: disable=C0103
-#                          Invalid name for type variable
+# pylint: disable=invalid-name, bad-whitespace
 
 import os.path
 import sumolib.system

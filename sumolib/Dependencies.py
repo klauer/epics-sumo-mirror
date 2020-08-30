@@ -5,7 +5,7 @@ import sys
 import copy
 import os.path
 
-# pylint: disable=invalid-name
+# pylint: disable=invalid-name, bad-whitespace
 
 if __name__ == "__main__":
     # if this module is directly called like a script, we have to add the path

@@ -1,8 +1,7 @@
 """Lockfile support.
 """
 
-# pylint: disable=C0103
-#                          Invalid name for type variable
+# pylint: disable=invalid-name, bad-whitespace
 
 import sys
 import os
@@ -16,9 +15,7 @@ if __name__ == "__main__":
     # "sumolib.[module]".
     sys.path.append("..")
 
-# pylint: disable=wrong-import-position
-import sumolib.system
-# pylint: enable=wrong-import-position
+import sumolib.system # pylint: disable=wrong-import-position
 
 __version__="4.0.2" #VERSION#
 
@@ -220,7 +217,7 @@ def edit_with_lock(filename, verbose, dry_run):
 
 def _test():
     """perform internal tests."""
-    import doctest
+    import doctest # pylint: disable= import-outside-toplevel
     doctest.testmod()
 
 if __name__ == "__main__":
