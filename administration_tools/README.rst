@@ -40,18 +40,21 @@ Enter these commands::
 Create docker images
 ++++++++++++++++++++
 
-Check if the docker images for sumo exist, note that you may use "podman"
-instead of "docker"::
+Change directory do docker::
 
-  docker images | grep sumo
+  cd docker
 
-If you see nothing, create the images with::
+Create docker images, if they do not already exist::
 
   ./docker-build-all.sh
 
 Now create all sumo packages with::
 
   ./docker-run-all.sh
+
+Go back to parent directory::
+
+  cd ..
 
 Upload files to sourceforge
 +++++++++++++++++++++++++++
