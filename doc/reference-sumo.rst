@@ -1319,16 +1319,19 @@ build new MODULES
 
 This command creates a new :term:`build`. Each module given in MODULES here is
 a :term:`modulespec` of the form MODULE:VERSION that specifies a single version
-of a module. If the :term:`buildtag` is not given as an option, the program
-generates a :term:`buildtag` in the form "AUTO-nnn". A new :term:`build` is
-created according to the :term:`modulespecs`. Your modulespecifications must be
-*complete* and *exact* meaning that all :term:`dependencies` are included and
-all :term:`modules` are specified with exactly a single :term:`version`. Use
-command "build try" in order to create :term:`module` specifications that can
-be used with command "build new".  This command calls "make" and, after
-successful completion, sets the state of the :term:`build` to "testing". If you
-want to skip this step, use option ``--no-make``. In order to provide arbitrary
-options to make use option ``--makeflags``. 
+of a module. If a build for the given :term:`modulespecs` already exists, the
+command aborts with an error message, or terminates with a warning if option
+``--no-err-build-exists`` is given.  If the :term:`buildtag` is not given as an
+option, the program generates a :term:`buildtag` in the form "AUTO-nnn". A new
+:term:`build` is created according to the :term:`modulespecs`. Your
+modulespecifications must be *complete* and *exact* meaning that all
+:term:`dependencies` are included and all :term:`modules` are specified with
+exactly a single :term:`version`. Use command "build try" in order to create
+:term:`module` specifications that can be used with command "build new".  This
+command calls "make" and, after successful completion, sets the state of the
+:term:`build` to "testing". If you want to skip this step, use option
+``--no-make``. In order to provide arbitrary options to make use option
+``--makeflags``. 
 
 build remake BUILDTAG
 :::::::::::::::::::::
@@ -1790,6 +1793,13 @@ Here is a short overview on command line options:
     If this option is not given and --no-default-config is not given, the
     program tries to load the default configuration file sumo-scan.config from
     several standard locations (see documentation on configuration files).
+
+``-N, --no-err-build-exists``
++++++++++++++++++++++++++++++
+
+    If "build new" finds that a build for the given :term:`modulespecs` already
+    exists, it returns an error. If this option is given, the command in this
+    case only prints a warning and terminates sumo without error.
 
 ``--no-make``
 +++++++++++++
