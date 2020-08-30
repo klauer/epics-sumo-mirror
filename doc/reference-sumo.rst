@@ -896,6 +896,12 @@ show
 showmodules
   show modules of a build
 
+showdependencies
+  show dependences of a build or all builds
+
+showdependents
+  show dependents of a build or all builds
+
 state
   show or change the state of a build
 
@@ -1353,6 +1359,20 @@ option of sumo, so this may also be used to create a matching MODULES file for
 an application like in::
 
   sumo config make - module -m "$(sumo build showmodules --lines -b AUTO-004)"
+
+build showdependencies [BUILDTAG]
+:::::::::::::::::::::::::::::::::
+
+This command shows the builds that the given :term:`build` depends on.
+The :term:`buildtag` is optional, if omitted the command shows the 
+dependencies for all builds.
+
+build showdependents [BUILDTAG]
+:::::::::::::::::::::::::::::::
+
+This command shows all builds that depend on the given :term:`build`.
+The :term:`buildtag` is optional, if omitted the command shows the 
+dependents for all builds.
 
 build state BUILDTAG [NEW-STATE]
 ::::::::::::::::::::::::::::::::

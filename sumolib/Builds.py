@@ -237,6 +237,16 @@ class DB(sumolib.JSON.Container):
         if linked_ is None:
             return None
         return linked_.get(modulename)
+    def linked_to(self, build_tag):
+        """returns all builds this build is linked to."""
+        build_= self.datadict()[build_tag]
+        linked_ = build_.get("linked")
+        s= set()
+        if linked_ is None:
+            return s
+        for v in linked_.values():
+            s.add(v)
+        return s
     def is_linked_to(self, build_tag, other_build_tag):
         """returns True if there are links to other_build_tag."""
         build_= self.datadict()[build_tag]

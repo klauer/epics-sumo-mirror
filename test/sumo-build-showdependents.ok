@@ -1,0 +1,13 @@
+sumo build showdependents 04-BASE
+04-BASE : 02-MISC_DBC 03-BSPDEP_TIMER ALARM
+sumo build showdependents 03-BSPDEP_TIMER
+03-BSPDEP_TIMER : ALARM
+sumo build showdependents 02-MISC_DBC
+02-MISC_DBC : ALARM
+sumo build showdependents ALARM
+ALARM : 
+sumo build showdependents 
+02-MISC_DBC     : ALARM
+03-BSPDEP_TIMER : ALARM
+04-BASE         : 02-MISC_DBC 03-BSPDEP_TIMER ALARM
+ALARM           : 

@@ -1,0 +1,20 @@
+Create the builds...
+build '04-BASE' created
+build '03-BSPDEP_TIMER' created
+build '02-MISC_DBC' created
+build 'ALARM' created
+
+dependencies:
+sumo build showdependencies 04-BASE
+04-BASE : 
+sumo build showdependencies 03-BSPDEP_TIMER
+03-BSPDEP_TIMER : 04-BASE
+sumo build showdependencies 02-MISC_DBC
+02-MISC_DBC : 04-BASE
+sumo build showdependencies ALARM
+ALARM : 02-MISC_DBC 03-BSPDEP_TIMER 04-BASE
+sumo build showdependencies 
+02-MISC_DBC     : 04-BASE
+03-BSPDEP_TIMER : 04-BASE
+04-BASE         : 
+ALARM           : 02-MISC_DBC 03-BSPDEP_TIMER 04-BASE

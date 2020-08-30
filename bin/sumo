@@ -94,6 +94,8 @@ KNOWN_BUILD_COMMANDS=set(("delete",
                           "remake",
                           "show",
                           "showmodules",
+                          "showdependencies",
+                          "showdependents",
                           "state",
                           "try",
                           "use" \
@@ -2783,6 +2785,49 @@ def subcmd_build_showmodules(arguments, options):
                 for m in module_strings[tag]:
                     print("    %s" % m)
 
+def subcmd_build_showdependencies(arguments, options, reverse):
+    """implement "subcmd_build_showdependencies/dependents.
+
+    - reverse: if True, show dependents instead of dependencies
+
+    May raise:
+        IOError, ValueError from builddb_from_json_file
+    """
+    sumolib.cli.assert_options(catch_exceptions,  options, "builddir")
+    argspec= sumolib.cli.CmdSpecs()
+    argspec.add("BUILDTAG", optional= True,
+                completion= sumolib.complete.builds)
+    args= sumolib.cli.process_args(arguments, argspec, options.list,
+                                   catch_exceptions)
+
+    if options.buildtag:
+        sys.exit("error: you cannot use --buildtag here")
+
+    # may raise IOError, ValueError:
+    builddb= builddb_from_json_file(options.builddir,
+                                    options.localbuilddir,
+                                    keep_locked= False)
+    # pylint: disable= no-member
+    if args.BUILDTAG:
+        tags= [args.BUILDTAG]
+    else:
+        # iter_builds returns the builds alphabetically:
+        tags= list(builddb.iter_builds())
+    # pylint: enable= no-member
+    l= 0
+    for tag in tags:
+        _l= len(tag)
+        if _l > l:
+            l= _l
+    fmt= "%%-%ds : %%s" % l
+    for tag in tags:
+        # note: not recursive !
+        if not reverse:
+            deps= builddb.linked_to(tag)
+        else:
+            deps= builddb.linked_builds(tag)
+        print(fmt % (tag, " ".join(sorted(deps))))
+
 def subcmd_build_state(arguments, options):
     """implement "subcmd_build_state".
 
@@ -3653,6 +3698,16 @@ def maincmd_build(commands, options):
         subcmd_build_showmodules(c_args, options)
         return
 
+    if cmd=="showdependencies":
+        # may raise IOError, ValueError:
+        subcmd_build_showdependencies(c_args, options, reverse= False)
+        return
+
+    if cmd=="showdependents":
+        # may raise IOError, ValueError:
+        subcmd_build_showdependencies(c_args, options, reverse= True)
+        return
+
     if cmd=="state":
         # may raise EOFError, IOError, ValueError
         subcmd_build_state(c_args, options)
@@ -3958,6 +4013,12 @@ sumo -h
         "build showmodules":
             doc_commands['subcommands for maincommand "build"']\
                              ['build showmodules [BUILDTAG]'],
+        "build showdependencies":
+            doc_commands['subcommands for maincommand "build"']\
+                             ['build showdependencies [BUILDTAG]'],
+        "build showdependents":
+            doc_commands['subcommands for maincommand "build"']\
+                             ['build showdependents [BUILDTAG]'],
         "build state":
             doc_commands['subcommands for maincommand "build"']\
                              ['build state BUILDTAG [NEW-STATE]'],
