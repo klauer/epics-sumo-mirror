@@ -1,8 +1,7 @@
 """module specifications.
 """
 
-# pylint: disable=C0103
-#                          Invalid name for type variable
+# pylint: disable=invalid-name, bad-whitespace
 
 import sys
 
@@ -378,7 +377,7 @@ class Specs():
 
 def _test():
     """perform internal tests."""
-    import doctest
+    import doctest # pylint: disable= import-outside-toplevel
     doctest.testmod()
 
 if __name__ == "__main__":

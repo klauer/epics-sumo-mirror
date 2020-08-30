@@ -1,9 +1,7 @@
-# pylint: disable=C0302
-#                          Too many lines in module
 """Utilities for the SUMO scripts.
 """
 
-# pylint: disable=invalid-name
+# pylint: disable=invalid-name, bad-whitespace
 
 import sys
 import platform

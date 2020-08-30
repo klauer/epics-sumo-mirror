@@ -1,6 +1,6 @@
 """Command line interface."""
 
-# pylint: disable=too-many-lines, invalid-name
+# pylint: disable=too-many-lines, invalid-name, bad-whitespace
 
 import sys
 import glob
@@ -1164,7 +1164,7 @@ def process_args(cli_args, argspec, completion_mode,
 
 def _test():
     """perform internal tests."""
-    import doctest
+    import doctest # pylint: disable= import-outside-toplevel
     doctest.testmod()
 
 if __name__ == "__main__":

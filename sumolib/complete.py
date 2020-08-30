@@ -1,7 +1,6 @@
 """Special sumo command completion functions."""
 
-# pylint: disable=C0103
-#                          Invalid name for type variable
+# pylint: disable=invalid-name, bad-whitespace
 
 import sys
 import os.path

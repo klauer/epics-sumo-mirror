@@ -18,7 +18,7 @@ For details see: `<http://www-csr.bessy.de/control/sumo/>`_
 
 # pylint: disable=C0322,C0103
 
-from optparse import OptionParser
+from optparse import OptionParser # pylint: disable= deprecated-module
 import sys
 import os.path
 import os
@@ -95,7 +95,7 @@ def scan_config_file(filename, external_definitions= None,
                                      makefile_scan_pre,
                                      False,
                                      verbose, dry_run)
-    for k in wanted.keys():
+    for k in wanted:
         wanted[k]= data[k]
     return wanted
 

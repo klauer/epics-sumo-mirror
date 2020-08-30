@@ -77,6 +77,7 @@ def _scan(filenames, external_definitions= None,
     value= None
     for line in reply.splitlines():
         m= rx_def.match(line)
+        # pylint:disable= no-else-continue
         if m is None:
             if name is None:
                 # shouldn't happen

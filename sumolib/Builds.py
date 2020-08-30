@@ -1,8 +1,7 @@
 """Database file handling.
 """
 
-# pylint: disable=C0103
-#                          Invalid name for type variable
+# pylint: disable= invalid-name, bad-whitespace
 
 import sys
 import os.path
@@ -495,7 +494,7 @@ class BuildCache(sumolib.JSON.Container):
 
 def _test():
     """perform internal tests."""
-    import doctest
+    import doctest # pylint: disable= import-outside-toplevel
     doctest.testmod()
 
 if __name__ == "__main__":
