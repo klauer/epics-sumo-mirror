@@ -1072,6 +1072,16 @@ def create_module(db, builddb, build_tag,
 # builddb utilities
 # -----------------------------------------------
 
+def filter_buildtags(buildtags, builddb, options):
+    """filter buildtags according to option '--all-builds'.
+
+    If --all-builds is given, do nothing. Otherwise remove all
+    builds that have not the state 'stable' or 'testing'.
+    """
+    if options.all_builds:
+        return buildtags
+    return [b for b in buildtags if builddb.is_testing_or_stable(b)]
+
 def sort_buildtags(buildtags, builddb, options):
     """sort alphabetically or by dependencies."""
     if options.sort_build_dependencies_first:
@@ -2713,8 +2723,11 @@ def subcmd_build_list(arguments, options):
     builddb= builddb_from_json_file(options.builddir,
                                     options.localbuilddir,
                                     keep_locked= False, must_exist= False)
-    for buildtag in sort_buildtags(list(builddb.iter_builds()),
-                                   builddb, options):
+    buildtags= sort_buildtags(filter_buildtags(builddb.iter_builds(),
+                                               builddb, options),
+                              builddb, options)
+
+    for buildtag in buildtags:
         print(buildtag)
 
 def subcmd_build_show(arguments, options):
@@ -2766,7 +2779,9 @@ def subcmd_build_showmodules(arguments, options):
     if args.BUILDTAG:
         tags= [args.BUILDTAG]
     else:
-        tags= sort_buildtags(builddb.iter_builds(), builddb, options)
+        tags= sort_buildtags(filter_buildtags(builddb.iter_builds(),
+                                              builddb, options),
+                             builddb, options)
     # pylint: enable= no-member
     module_strings= {}
     for tag in tags:
@@ -2820,8 +2835,8 @@ def subcmd_build_showdeps(arguments, options, subcommand):
     if args.BUILDTAG:
         tags= [args.BUILDTAG]
     else:
-        # iter_builds returns the builds alphabetically:
-        tags= list(builddb.iter_builds())
+        # iter_builds already returns the builds alphabetically:
+        tags= filter_buildtags(builddb.iter_builds(), builddb, options)
     # pylint: enable= no-member
     l= 0
     for tag in tags:
@@ -4161,6 +4176,9 @@ option_help_topics= {
         "exclude_states":
                 doc_options['Options']\
                            ['``-X REGEXP, --exclude-states REGEXP``'],
+        "all-builds":
+                doc_options['Options']\
+                           ['``--all-builds``'],
         "brief":
                 doc_options['Options']\
                            ['``-b, --brief``'],
@@ -4460,6 +4478,7 @@ def main():
     specs.add("--alias -a", arg_name= "ALIAS", array= True)
     specs.add("--module -m", arg_name= "MODULESPEC", array= True)
     specs.add("--exclude-states -X", arg_name= "REGEXP", array= True)
+    specs.add("--all-builds")
     specs.add("--brief -b")
     specs.add("--lines")
     specs.add("--recursive")

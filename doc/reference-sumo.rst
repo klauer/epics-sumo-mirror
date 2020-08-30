@@ -1312,9 +1312,10 @@ can be used to change the order of the builds shown.
 build list
 ::::::::::
 
-This command lists the names of all builds. Options 
-``--sort-build-dependencies-first`` and ``--sort-build-dependencies-last``
-can be used to change the order of the builds shown.
+This command lists the names of all builds. Options
+``--sort-build-dependencies-first`` and ``--sort-build-dependencies-last`` can
+be used to change the order of the builds shown. The command shows only builds
+with state 'stable' or 'testing' unless option ``--all-builds`` is provided.
 
 .. _reference-sumo-new:
 
@@ -1357,22 +1358,30 @@ build showmodules [BUILDTAG]
 
 This command shows the modules in the form MODULE:VERSION of a :term:`build`.
 The :term:`buildtag` is optional, if omitted the command shows the modules for
-all builds. Options ``--sort-build-dependencies-first`` and
+all builds with state 'stable' or 'testing'. To see all builds regardless of
+their state use option ``--all-builds``.
+
+Options ``--sort-build-dependencies-first`` and
 ``--sort-build-dependencies-last`` can be used to change the order reported
-builds. With option "--lines" for each build the output is a single line
-instead of a number of indented lines. With "-b", the build name is not
-printed. If you use "--lines" and "-b", the output is compatible with the "-m"
-option of sumo, so this may also be used to create a matching MODULES file for
-an application like in::
+builds. 
+
+With option ``--lines`` for each build the output is a single line instead of a
+number of indented lines. With ``-b``, the build name is not printed. If you
+use ``--lines`` and ``-b``, the output is compatible with the ``-m`` option of
+sumo, so this may also be used to create a matching MODULES file for an
+application like in::
 
   sumo config make - module -m "$(sumo build showmodules --lines -b AUTO-004)"
 
 build showdependencies [BUILDTAG]
 :::::::::::::::::::::::::::::::::
 
-This command shows the builds that the given :term:`build` depends on.
-The :term:`buildtag` is optional, if omitted the command shows the 
-dependencies for all builds. Options 
+This command shows the builds that the given :term:`build` depends on. The
+:term:`buildtag` is optional, if omitted the command shows the dependencies for
+all builds with state 'stable' or 'testing'. To see all builds regardless of
+their state use option ``--all-builds``.
+
+Options 
 ``--sort-build-dependencies-first`` and ``--sort-build-dependencies-last``
 can be used to change the order reported dependencies.
 
@@ -1380,9 +1389,12 @@ can be used to change the order reported dependencies.
 build showdependents [BUILDTAG]
 :::::::::::::::::::::::::::::::
 
-This command shows all builds that depend on the given :term:`build`.
-The :term:`buildtag` is optional, if omitted the command shows the 
-dependents for all builds. Options 
+This command shows all builds that depend on the given :term:`build`.  The
+:term:`buildtag` is optional, if omitted the command shows the dependents for
+all builds with state 'stable' or 'testing'. To see all builds regardless of
+their state use option ``--all-builds``.
+
+Options 
 ``--sort-build-dependencies-first`` and ``--sort-build-dependencies-last``
 can be used to change the order reported dependents.
 
@@ -1563,6 +1575,13 @@ Here is a short overview on command line options:
     variable named 'TO'. You can specify more than one of these by repeating
     this option or by joining values in a single string separated by spaces. A
     default for this option can be put in a configuration file.
+
+``--all-builds``
+++++++++++++++++
+
+    Some subcommands of 'build' show only information for builds that have the
+    statet 'stable' or 'testing'. If this option is given, the commands show
+    *all* builds regardless of their state.
 
 ``-A, --append OPTIONNAME``
 +++++++++++++++++++++++++++++++
