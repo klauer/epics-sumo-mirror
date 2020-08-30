@@ -2957,6 +2957,7 @@ def subcmd_build_try(arguments, options):
         ValueError from modulespecs_obj.assert_unique
         KeyError, ValueError from db.sets_dict
         ValueError id argument of "--detail" is wrong
+        re.error from RegexpMatcher
     """
     # pylint: disable=R0914
     #                          Too many local variables
@@ -2975,7 +2976,13 @@ def subcmd_build_try(arguments, options):
     sumolib.cli.assert_options(catch_exceptions,  options, "builddir")
     buildtag= options.buildtag
 
-    exclude_matcher= sumolib.utils.RegexpMatcher(options.exclude_states)
+    # note that the RegexpPatcher compiles the regular expression:
+    # may raise re.error:
+    try:
+        exclude_matcher= sumolib.utils.RegexpMatcher(options.exclude_states)
+    except re.error as e:
+        # pylint: disable=raising-format-tuple
+        raise sumolib.utils.annotate("Error in --exclude-states option: %s", e)
 
     modulespecs= []
     if options.module:
@@ -3766,7 +3773,8 @@ def maincmd_build(commands, options):
         return
 
     if cmd=="try":
-        # may raise KeyError, ValueError:
+        # may raise EOFError, IOError, KeyError, re.error
+        #           sumolib.JSON.ParseError, ValueError:
         subcmd_build_try(c_args, options)
         return
 
@@ -4393,7 +4401,7 @@ def process(options, commands):
             raise AssertionError("unexpected command: %s" % cmd)
         return
     except (AssertionError, IOError, KeyError, TypeError, ValueError,
-            EOFError,
+            EOFError, re.error,
             sumolib.JSON.ParseError, sumolib.JSON.ParseError,
             sumolib.lock.AccessError, sumolib.lock.LockedError) as e:
         if not catch_exceptions:
