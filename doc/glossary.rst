@@ -6,6 +6,12 @@ Here we define some of the terms used in the following text.
 
 .. glossary:: :sorted:
 
+  configuration file
+      A file where values for some of the command line options can be
+      specified. Youn usually prepare a configuration file globally or for your
+      EPICS application or both. More details on this topic can be found at
+      :doc:`"configuration files "<configuration-files>`.
+
   modules
       See :term:`module`.
 
