@@ -1324,11 +1324,11 @@ generates a :term:`buildtag` in the form "AUTO-nnn". A new :term:`build` is
 created according to the :term:`modulespecs`. Your modulespecifications must be
 *complete* and *exact* meaning that all :term:`dependencies` are included and
 all :term:`modules` are specified with exactly a single :term:`version`. Use
-command "try" in order to create :term:`module` specifications that can be used
-with command "new".  This command calls "make" and, after successful
-completion, sets the state of the :term:`build` to "testing". If you want to
-skip this step, use option ``--no-make``. In order to provide arbitrary options
-to make use option ``--makeflags``. 
+command "build try" in order to create :term:`module` specifications that can
+be used with command "build new".  This command calls "make" and, after
+successful completion, sets the state of the :term:`build` to "testing". If you
+want to skip this step, use option ``--no-make``. In order to provide arbitrary
+options to make use option ``--makeflags``. 
 
 build remake BUILDTAG
 :::::::::::::::::::::
@@ -1389,7 +1389,7 @@ build try MODULES
 :::::::::::::::::
 
 This command is intended to help you create :term:`module` specifications for
-the "new" command. 
+the "build new" command. 
 
 Each MODULE here is a :term:`modulespec` of the form MODULE or
 MODULE:{+-}VERSION that specifies just a module name, a module and some
@@ -1580,9 +1580,9 @@ Here is a short overview on command line options:
 ++++++++++++++++++++++++
 
     Specify the stem of a buildtag. This option has only an effect on the
-    commands 'new' and 'try' if a buildtag is not specified. The program
-    generates a new tag in the form 'stem-nnn' where 'nnn' is the smallest
-    possible number that ensures that the buildtag is unique.
+    commands 'build new' and 'build try' if a buildtag is not specified. The
+    program generates a new tag in the form 'stem-nnn' where 'nnn' is the
+    smallest possible number that ensures that the buildtag is unique.
 
 ``-c FILE, --config FILE``
 ++++++++++++++++++++++++++
@@ -1781,8 +1781,8 @@ Here is a short overview on command line options:
 ``--no-checkout``
 +++++++++++++++++
 
-    With this option, "new" does not check out sources of support modules. This
-    option is only here for test purposes.
+    With this option, "build new" does not check out sources of support
+    modules. This option is only here for test purposes.
 
 ``-C, --no-default-config``
 +++++++++++++++++++++++++++
@@ -1794,7 +1794,7 @@ Here is a short overview on command line options:
 ``--no-make``
 +++++++++++++
 
-    With this option, "new" does not call "make".j
+    With this option, "build new" does not call "make".
 
 ``--noignorecase``
 ++++++++++++++++++
