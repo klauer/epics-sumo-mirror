@@ -122,14 +122,12 @@ def src_from_dir(directory, hints, verbose, dry_run):
 
 def apply_commands(cmds, target_dir, verbose, dry_run):
     """apply custom commands in module."""
-    old_dir= sumolib.utils.changedir(target_dir)
-    if dry_run or verbose:
-        print("> cd %s" % target_dir)
+    old_dir= sumolib.system.changedir(target_dir, verbose, dry_run)
     try:
         for cmd in cmds:
             sumolib.system.system(cmd, False, False, None, verbose, dry_run)
     finally:
-        sumolib.utils.changedir(old_dir)
+        sumolib.system.changedir(old_dir, verbose, dry_run)
 
 def checkout(sourcespec, destdir, lock_timeout, verbose, dry_run):
     """check out a working copy.

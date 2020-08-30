@@ -3,7 +3,6 @@
 # pylint: disable=invalid-name, bad-whitespace
 
 import re
-import shutil
 import urllib.request # not needed: urllib.parse, urllib.error
 import sumolib.system
 
@@ -32,7 +31,7 @@ def get(url, dest, verbose, dry_run):
         # try to copy:
         if verbose:
             print("shutil.copyfile(%s, %s)\n" % (repr(url), repr(dest)))
-        shutil.copyfile(url, dest)
+        sumolib.system.shutil_copyfile(url, dest, verbose, dry_run)
         return
     scheme_name= m.group(1)
     if scheme_name=="ssh":
@@ -44,8 +43,9 @@ def get(url, dest, verbose, dry_run):
         sumolib.system.system(cmd, False, False, None, verbose, dry_run)
         return
     if scheme_name in urllib_schemes:
-        if verbose:
+        if verbose or dry_run:
             print("urllib.urlretrieve(%s, %s)\n" % (repr(url), repr(dest)))
-        urllib.request.urlretrieve(url, dest)
+        if not dry_run:
+            urllib.request.urlretrieve(url, dest)
         return
     raise ValueError("error, url '%s' not supported" % url)

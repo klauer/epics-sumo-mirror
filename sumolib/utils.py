@@ -336,8 +336,6 @@ def dict_sets_to_lists(dict_):
         new[k]= sorted(list(v))
     return new
 
-
-
 # -----------------------------------------------
 # file utilities
 # -----------------------------------------------
@@ -362,7 +360,7 @@ class TextFile:
             self.stdout= False
             self.verbose= verbose
             self.dry_run= dry_run
-            if self.verbose:
+            if self.verbose or self.dry_run:
                 print("creating file '%s'" % filename)
             if self.dry_run:
                 self.fh= None
@@ -373,7 +371,7 @@ class TextFile:
         if self.stdout:
             print(st, end='')
         else:
-            if self.verbose:
+            if self.verbose or self.dry_run:
                 print(st, end='')
             if not self.dry_run:
                 self.fh.write(st)
@@ -384,7 +382,7 @@ class TextFile:
         """write lines to a file."""
         if self.stdout:
             print(sep.join(lines), end='')
-        elif not self.dry_run:
+        else:
             self.fh.write(sep.join(lines))
     def writelines_n(self, st):
         """write lines to a file, append "\n" to each line."""
@@ -416,20 +414,14 @@ def backup_file(filename, verbose, dry_run):
     if not os.path.exists(filename):
         return backup
     if os.path.exists(backup):
-        if verbose:
-            print("remove %s" % backup)
-        if not dry_run:
-            os.remove(backup)
-    if verbose:
-        print("rename %s to %s" % (filename, backup))
-    if not dry_run:
-        os.rename(filename, backup)
+        sumolib.system.os_remove(backup, verbose, dry_run)
+    sumolib.system.os_rename(filename, backup, verbose, dry_run)
     return backup
 
 def edit_file(filename, editor, verbose, dry_run):
     """open a file with an editor.
     """
-    if not os.path.exists(filename):
+    if (not os.path.exists(filename)) and (not dry_run):
         raise IOError("error: file \"%s\" doesn't exist" % filename)
     if editor:
         ed_lst= [editor]
@@ -457,17 +449,6 @@ def edit_file(filename, editor, verbose, dry_run):
 # -----------------------------------------------
 # directory utilities
 # -----------------------------------------------
-
-def changedir(newdir):
-    """return the current dir and change to a new dir.
-
-    If newdir is empty, return <None>.
-    """
-    if not newdir:
-        return None
-    cwd= os.getcwd()
-    os.chdir(newdir)
-    return cwd
 
 # The following is needed in order to support python2.5
 # where os.walk cannot follow symbolic links

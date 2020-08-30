@@ -2,8 +2,14 @@ build 'BASE-001' created
 build 'MYAPP-001' created
 
 call sumo build remake
+>>> os.remove('/tmp-sumo-build-remake/BUILDS.DB.bak')
+>>> os.rename('/tmp-sumo-build-remake/BUILDS.DB', '/tmp-sumo-build-remake/BUILDS.DB.bak')
+# create JSON file '/tmp-sumo-build-remake/BUILDS.DB'
 > make  -C /tmp-sumo-build-remake -f /tmp-sumo-build-remake/Makefile-MYAPP-001 clean
 > make  -C /tmp-sumo-build-remake -f /tmp-sumo-build-remake/Makefile-MYAPP-001 all
+>>> os.remove('/tmp-sumo-build-remake/BUILDS.DB.bak')
+>>> os.rename('/tmp-sumo-build-remake/BUILDS.DB', '/tmp-sumo-build-remake/BUILDS.DB.bak')
+# create JSON file '/tmp-sumo-build-remake/BUILDS.DB'
 
 directory tree (without darcs, maxdepth 2)
 .

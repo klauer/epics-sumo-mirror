@@ -42,7 +42,8 @@ class Repo():
         repository and fails if the repository cannot be reached.
         """
         assert_git()
-        cwd= sumolib.utils.changedir(self.directory)
+        cwd= sumolib.system.changedir(self.directory,
+                                      self.verbose, dry_run=False)
         try:
             (reply,_)= sumolib.system.system(\
                              "git remote show origin",
@@ -52,7 +53,8 @@ class Repo():
             # remote repo could not be contacted.
             return None
         finally:
-            sumolib.utils.changedir(cwd)
+            sumolib.system.changedir(cwd,
+                                     self.verbose, dry_run=False)
         for line in reply.splitlines():
             line= line.strip()
             # look for "Push" url:
@@ -70,13 +72,15 @@ class Repo():
         object are ignored. The matcher parameter may be <None>.
         """
         assert_git()
-        cwd= sumolib.utils.changedir(self.directory)
+        cwd= sumolib.system.changedir(self.directory, self.verbose,
+                                      dry_run= False)
         try:
             cmd= "git status --porcelain"
             (reply,_)= sumolib.system.system(cmd, True, False, None,
                                              self.verbose, self.dry_run)
         finally:
-            sumolib.utils.changedir(cwd)
+            sumolib.system.changedir(cwd, self.verbose,
+                                     dry_run= False)
         changes= False
         for line in reply.splitlines():
             line= line.rstrip()
@@ -100,14 +104,16 @@ class Repo():
             raise AssertionError("cannot compute local patches without "
                                  "a reachable remote repository.")
         assert_git()
-        cwd= sumolib.utils.changedir(self.directory)
+        cwd= sumolib.system.changedir(self.directory,
+                                      self.verbose, dry_run= False)
         try:
             cmd= "git log origin..HEAD"
             (reply,_)= sumolib.system.system(cmd,
                                              True, False, None,
                                              self.verbose, self.dry_run)
         finally:
-            sumolib.utils.changedir(cwd)
+            sumolib.system.changedir(cwd,
+                                     self.verbose, dry_run= False)
         changes= False
         for line in reply.splitlines():
             line= line.strip()
@@ -126,14 +132,16 @@ class Repo():
         patch.
         """
         assert_git()
-        cwd= sumolib.utils.changedir(self.directory)
+        cwd= sumolib.system.changedir(self.directory,
+                                      self.verbose, dry_run= False)
         try:
             (reply,_)= sumolib.system.system(\
                     "git rev-parse --short HEAD",
                     True, False, None,
                     self.verbose, self.dry_run)
         finally:
-            sumolib.utils.changedir(cwd)
+            sumolib.system.changedir(cwd,
+                                     self.verbose, dry_run= False)
         # for uncomitted changes, the revision ends with a "+":
         return reply.splitlines()[0].strip()
     def _tag_on_top(self):
@@ -143,13 +151,15 @@ class Repo():
         """
         curr_rev= self.current_revision
         assert_git()
-        cwd= sumolib.utils.changedir(self.directory)
+        cwd= sumolib.system.changedir(self.directory,
+                                      self.verbose, dry_run= False)
         try:
             cmd= "git tag --points-at %s" % curr_rev
             (reply,_)= sumolib.system.system(cmd, True, False, None,
                                              self.verbose, self.dry_run)
         finally:
-            sumolib.utils.changedir(cwd)
+            sumolib.system.changedir(cwd,
+                                     self.verbose, dry_run= False)
         tags= []
         for line in reply.splitlines():
             line= line.strip()
@@ -297,13 +307,13 @@ class Repo():
         sumolib.system.system(cmd, False, False, None, verbose, dry_run)
         # the following to avoid warning if we use "git push" in this
         # repository:
-        cwd= sumolib.utils.changedir(destdir)
+        cwd= sumolib.system.changedir(destdir, verbose, dry_run)
         try:
             cmd="git config push.default simple"
             sumolib.system.system(cmd, False, False, None,
                                   verbose, dry_run)
         finally:
-            sumolib.utils.changedir(cwd)
+            sumolib.system.changedir(cwd, verbose, dry_run)
         if (tag is None) and (rev is None):
             return
         if tag is not None:
@@ -313,11 +323,11 @@ class Repo():
         else:
             cmd="git checkout master"
         cmd+=" -q"
-        cwd= sumolib.utils.changedir(destdir)
+        cwd= sumolib.system.changedir(destdir, verbose, dry_run)
         try:
             sumolib.system.system(cmd, False, False, None, verbose, dry_run)
         finally:
-            sumolib.utils.changedir(cwd)
+            sumolib.system.changedir(cwd, verbose, dry_run)
     def commit(self, logmessage):
         """commit changes."""
         if not logmessage:
@@ -325,14 +335,16 @@ class Repo():
         else:
             m_param="-m '%s'" % logmessage
         assert_git()
-        cwd= sumolib.utils.changedir(self.directory)
+        cwd= sumolib.system.changedir(self.directory,
+                                      self.verbose, self.dry_run)
         try:
             cmd="git commit -a -q %s" % m_param
             sumolib.system.system(cmd,
                                   False, False, None,
                                   self.verbose, self.dry_run)
         finally:
-            sumolib.utils.changedir(cwd)
+            sumolib.system.changedir(cwd,
+                                     self.verbose, self.dry_run)
         self.local_changes= False
     def push(self):
         """push all changes changes."""
@@ -340,21 +352,24 @@ class Repo():
             raise AssertionError("cannot push local patches without "
                                  "a reachable remote repository.")
         assert_git()
-        cwd= sumolib.utils.changedir(self.directory)
+        cwd= sumolib.system.changedir(self.directory,
+                                      self.verbose, self.dry_run)
         try:
             cmd="git push -q %s" % self.remote_url
             sumolib.system.system(cmd,
                                   True, False, None,
                                   self.verbose, self.dry_run)
         finally:
-            sumolib.utils.changedir(cwd)
+            sumolib.system.changedir(cwd,
+                                     self.verbose, self.dry_run)
     def pull_merge(self):
         """pull changes and try to merge."""
         if self.remote_url is None:
             raise AssertionError("cannot pull patches without "
                                  "a reachable remote repository.")
         assert_git()
-        cwd= sumolib.utils.changedir(self.directory)
+        cwd= sumolib.system.changedir(self.directory,
+                                      self.verbose, self.dry_run)
         try:
             cmd="git fetch %s -q" % self.remote_url
             sumolib.system.system(cmd,
@@ -365,7 +380,8 @@ class Repo():
                                                True, False, None,
                                                self.verbose, self.dry_run)
         finally:
-            sumolib.utils.changedir(cwd)
+            sumolib.system.changedir(cwd,
+                                     self.verbose, self.dry_run)
         if rc:
             msg="error, 'git pull' failed"
             raise IOError(msg)
