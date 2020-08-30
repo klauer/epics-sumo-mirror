@@ -463,6 +463,9 @@ class BuildCache(sumolib.JSON.Container):
         depversiondict[dep_version]= state
     def update_from_builddb(self, builddb, db):
         """update data from a builddb.
+
+        Note: Builds that are disabled, incomplete or unstable are
+              ignored !
         """
         # pylint: disable=R0914
         #                          Too many local variables

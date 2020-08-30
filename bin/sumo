@@ -3029,19 +3029,19 @@ def subcmd_build_try(arguments, options):
     # add all missing dependencies and complete the sets_dict:
     added_modules= db.complete_sets_dict(sets_dict)
 
-    was_built= set()
-    needed_by_others= {}
-
     # examine the builds:
     # was_built is a set of (modulename,versionname) or modules
     #           that were built
     # needed_by_others is a dict mapping
     #           (depname,dep_version)->[(modulename,versionname,state)...]
-    #           where state is the build state of the build the modules
-    #           share
+    #           where state is the build state of the "stable" or "testing"
+    #           build the modules share or None if they don't share such a
+    #           build.
+    was_built= set()
+    needed_by_others= {}
 
-    for modulename in sets_dict:
-        for versionname in sets_dict[modulename]:
+    for modulename in sets_dict: # iterate on all modules
+        for versionname in sets_dict[modulename]: # iterate on all versions
             if buildcache.was_built(modulename,versionname):
                 was_built.add((modulename,versionname))
             for depname in db.iter_dependencies(modulename, versionname):
@@ -3051,7 +3051,6 @@ def subcmd_build_try(arguments, options):
                     s.append((modulename,versionname,
                               buildcache.relation(modulename,versionname,
                                                   depname, dep_version)))
-
     # now build the report structure:
     report= {}
     # pylint: disable=too-many-nested-blocks
@@ -3067,8 +3066,13 @@ def subcmd_build_try(arguments, options):
                 dd= d.setdefault("dependents", {})
                 depmods_versioncount= {}
                 for (m,v,state) in l:
+                    # Note that the state can never be "disabled", "incomplete"
+                    # or "unstable". All these builds are ignored when the
+                    # buildcache object is created.
                     depmods_versioncount.setdefault(m, 0)
                     if state is None:
+                        # this means that the modules share no common build
+                        # with the state "stable" or "testing":
                         state= "state: not tested"
                     else:
                         state= "state: %s" % state
