@@ -93,6 +93,7 @@ KNOWN_BUILD_COMMANDS=set(("delete",
                           "new",
                           "remake",
                           "show",
+                          "showmodules",
                           "state",
                           "try",
                           "use" \
@@ -2728,6 +2729,60 @@ def subcmd_build_show(arguments, options):
     new_builddb.add_build(builddb, args.BUILDTAG) # pylint: disable=no-member
     new_builddb.json_print()
 
+def subcmd_build_showmodules(arguments, options):
+    """implement "subcmd_build_showmodules".
+
+    May raise:
+        IOError, ValueError from builddb_from_json_file
+    """
+    # pylint: disable=too-many-branches
+    sumolib.cli.assert_options(catch_exceptions,  options, "builddir")
+    argspec= sumolib.cli.CmdSpecs()
+    argspec.add("BUILDTAG", optional= True,
+                completion= sumolib.complete.builds)
+    args= sumolib.cli.process_args(arguments, argspec, options.list,
+                                   catch_exceptions)
+
+    if options.buildtag:
+        sys.exit("error: you cannot use --buildtag here")
+
+    # may raise IOError, ValueError:
+    builddb= builddb_from_json_file(options.builddir,
+                                    options.localbuilddir,
+                                    keep_locked= False)
+    # pylint: disable= no-member
+    if args.BUILDTAG:
+        tags= [args.BUILDTAG]
+    else:
+        # iter_builds returns the builds alphabetically:
+        tags= list(builddb.iter_builds())
+    # pylint: enable= no-member
+    module_strings= {}
+    for tag in tags:
+        module_string_list= []
+        modules= builddb.modules(tag)
+        for module in sorted(modules.keys()):
+            m_spec= sumolib.ModuleSpec.Spec(module, modules[module], 'eq')
+            module_string_list.append(m_spec.to_string())
+        module_strings[tag]= module_string_list
+
+    if options.lines:
+        if options.brief:
+            for tag in tags:
+                print(" ".join(module_strings[tag]))
+        else:
+            fmt= "%%-%ds : %%s" % max([len(e) for e in tags])
+            for tag in tags:
+                print(fmt % (tag, " ".join(module_strings[tag])))
+    else:
+        for tag in tags:
+            if options.brief:
+                print("\n".join(module_strings[tag]))
+            else:
+                print("%s :" % tag)
+                for m in module_strings[tag]:
+                    print("    %s" % m)
+
 def subcmd_build_state(arguments, options):
     """implement "subcmd_build_state".
 
@@ -3593,6 +3648,11 @@ def maincmd_build(commands, options):
         subcmd_build_show(c_args, options)
         return
 
+    if cmd=="showmodules":
+        # may raise IOError, ValueError:
+        subcmd_build_showmodules(c_args, options)
+        return
+
     if cmd=="state":
         # may raise EOFError, IOError, ValueError
         subcmd_build_state(c_args, options)
@@ -3895,6 +3955,9 @@ sumo -h
         "build show":
             doc_commands['subcommands for maincommand "build"']\
                              ['build show BUILDTAG'],
+        "build showmodules":
+            doc_commands['subcommands for maincommand "build"']\
+                             ['build showmodules [BUILDTAG]'],
         "build state":
             doc_commands['subcommands for maincommand "build"']\
                              ['build state BUILDTAG [NEW-STATE]'],
@@ -3985,6 +4048,9 @@ option_help_topics= {
         "brief":
                 doc_options['Options']\
                            ['``-b, --brief``'],
+        "lines":
+                doc_options['Options']\
+                           ['``--lines``'],
         "recursive":
                 doc_options['Options']\
                            ['``--recursive``'],
@@ -4270,6 +4336,7 @@ def main():
     specs.add("--module -m", arg_name= "MODULESPEC", array= True)
     specs.add("--exclude-states -X", arg_name= "REGEXP", array= True)
     specs.add("--brief -b")
+    specs.add("--lines")
     specs.add("--recursive")
     specs.add("--detail", arg_name= "DETAIL", value_list=["0","1","2","3"])
     specs.add("--dir-patch -D", arg_name= "PATCHEXPRESSION", array= True)

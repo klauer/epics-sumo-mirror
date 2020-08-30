@@ -55,6 +55,7 @@ sumo-build-remake
 sumo-build-find
 sumo-build-list
 sumo-build-show
+sumo-build-showmodules
 sumo-build-use
 sumo-build-use-2
 sumo-build-use-3
