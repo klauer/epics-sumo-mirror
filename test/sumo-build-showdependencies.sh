@@ -42,3 +42,9 @@ for tag in 04-BASE 03-BSPDEP_TIMER 02-MISC_DBC ALARM ""; do
     $SUMO -c sumo.config build showdependencies $tag
 done
 
+echo -e "\nsumo build showdependencies --sort-build-dependencies-first:"
+$SUMO -c sumo.config build showdependencies --sort-build-dependencies-first
+
+echo -e "\nsumo build showdependencies --sort-build-dependencies-last:"
+$SUMO -c sumo.config build showdependencies --sort-build-dependencies-last
+

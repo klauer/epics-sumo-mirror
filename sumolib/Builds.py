@@ -237,6 +237,29 @@ class DB(sumolib.JSON.Container):
         if linked_ is None:
             return None
         return linked_.get(modulename)
+    def sortby_linkage(self, build_tags, reverse):
+        """sort build so that dependencies of a build always come first."""
+        taglist= sorted(build_tags)
+        keys= { t: 1 for t in taglist }
+        links= { t: self.linked_to(t) for t in taglist }
+        loopcount=0
+        changes= True
+        while changes:
+            loopcount+=1
+            if loopcount > 100:
+                warn("warning: internal error, sortby_linkage failed")
+                break
+            changes= False
+            for t in taglist:
+                for d in links[t]:
+                    if keys.setdefault(d, 1) >= keys[t]:
+                        keys[t]= keys[d]+1
+                        changes= True
+        if not reverse:
+            l= sorted(taglist, key= lambda tag: (keys[tag],tag))
+        else:
+            l= sorted(taglist, key= lambda tag: (-keys[tag],tag))
+        return l
     def linked_to(self, build_tag):
         """returns all builds this build is linked to."""
         build_= self.datadict()[build_tag]

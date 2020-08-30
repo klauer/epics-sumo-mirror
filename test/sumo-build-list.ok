@@ -3,3 +3,15 @@ BASE-001
 DISABLED
 MYAPP-001
 MYAPP-002
+
+sumo build list --sort-build-dependencies-first
+BASE-001
+DISABLED
+MYAPP-001
+MYAPP-002
+
+sumo build list --sort-build-dependencies-last
+MYAPP-002
+DISABLED
+MYAPP-001
+BASE-001

@@ -1072,6 +1072,14 @@ def create_module(db, builddb, build_tag,
 # builddb utilities
 # -----------------------------------------------
 
+def sort_buildtags(buildtags, builddb, options):
+    """sort alphabetically or by dependencies."""
+    if options.sort_build_dependencies_first:
+        return builddb.sortby_linkage(buildtags, reverse= False)
+    if options.sort_build_dependencies_last:
+        return builddb.sortby_linkage(buildtags, reverse= True)
+    return sorted(buildtags)
+
 _builddb= [None]
 def mspecs_from_build(options):
     """generate a function to return module specs from a build.
@@ -2704,7 +2712,8 @@ def subcmd_build_list(arguments, options):
     builddb= builddb_from_json_file(options.builddir,
                                     options.localbuilddir,
                                     keep_locked= False, must_exist= False)
-    for buildtag in builddb.iter_builds():
+    for buildtag in sort_buildtags(list(builddb.iter_builds()),
+                                   builddb, options):
         print(buildtag)
 
 def subcmd_build_show(arguments, options):
@@ -2756,8 +2765,7 @@ def subcmd_build_showmodules(arguments, options):
     if args.BUILDTAG:
         tags= [args.BUILDTAG]
     else:
-        # iter_builds returns the builds alphabetically:
-        tags= list(builddb.iter_builds())
+        tags= sort_buildtags(builddb.iter_builds(), builddb, options)
     # pylint: enable= no-member
     module_strings= {}
     for tag in tags:
@@ -2785,7 +2793,7 @@ def subcmd_build_showmodules(arguments, options):
                 for m in module_strings[tag]:
                     print("    %s" % m)
 
-def subcmd_build_showdependencies(arguments, options, reverse):
+def subcmd_build_showdeps(arguments, options, subcommand):
     """implement "subcmd_build_showdependencies/dependents.
 
     - reverse: if True, show dependents instead of dependencies
@@ -2822,11 +2830,17 @@ def subcmd_build_showdependencies(arguments, options, reverse):
     fmt= "%%-%ds : %%s" % l
     for tag in tags:
         # note: not recursive !
-        if not reverse:
+        if subcommand=="showdependencies":
             deps= builddb.linked_to(tag)
-        else:
+        elif subcommand=="showdependents":
             deps= builddb.linked_builds(tag)
-        print(fmt % (tag, " ".join(sorted(deps))))
+        else:
+            raise AssertionError(("internal error at subcmd_build_showdeps, "
+                                  "unknown subcommand: %s") % repr(subcommand))
+        # sort found dependencies / dependents according to options
+        # --sort-build-dependencies-first or --sort-build-dependencies-last:
+        deps_lst= sort_buildtags(deps, builddb, options)
+        print(fmt % (tag, " ".join(deps_lst)))
 
 def subcmd_build_state(arguments, options):
     """implement "subcmd_build_state".
@@ -3382,7 +3396,8 @@ def subcmd_build_find(arguments, options):
         print("no matching buildtrees found")
     else:
         if options.brief:
-            for buildtag in new_builddb.iter_builds():
+            for buildtag in sort_buildtags(list(new_builddb.iter_builds()),
+                                           builddb, options):
                 print(buildtag)
         else:
             new_builddb.json_print()
@@ -3726,12 +3741,12 @@ def maincmd_build(commands, options):
 
     if cmd=="showdependencies":
         # may raise IOError, ValueError:
-        subcmd_build_showdependencies(c_args, options, reverse= False)
+        subcmd_build_showdeps(c_args, options, cmd)
         return
 
     if cmd=="showdependents":
         # may raise IOError, ValueError:
-        subcmd_build_showdependencies(c_args, options, reverse= True)
+        subcmd_build_showdeps(c_args, options, cmd)
         return
 
     if cmd=="state":
@@ -4162,6 +4177,12 @@ option_help_topics= {
         "no_err_build_exists":
                 doc_options['Options']\
                            ['``-N, --no-err-build-exists``'],
+        "sort_build_dependencies_first":
+                doc_options['Options']\
+                           ['``--sort-build-dependencies-first``'],
+        "sort_build_dependencies_last":
+                doc_options['Options']\
+                           ['``--sort-build-dependencies-last``'],
         "makeflags":
                 doc_options['Options']\
                            ['``--makeflags MAKEFLAGS``'],
@@ -4438,6 +4459,8 @@ def main():
     specs.add("--makeflags", arg_name= "MAKEFLAGS", array= True,
               arg_is_option= True)
     specs.add("--no-err-build-exists -N")
+    specs.add("--sort-build-dependencies-first")
+    specs.add("--sort-build-dependencies-last")
     specs.add("--readonly")
     specs.add("--nolock")
     specs.add("--no-multiprocessing")

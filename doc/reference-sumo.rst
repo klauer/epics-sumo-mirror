@@ -1305,12 +1305,16 @@ This command is used to find matching :term:`builds` for a given list of
 form MODULE or MODULE:{+-}VERSION that specifies just a module name, a module
 and some versions or a single version. The command prints a list of
 :term:`buildtags` of matching :term:`builds` on the console. If option ``--brief``
-is given, the program just shows the buildtags. 
+is given, the program just shows the buildtags. In this case, options 
+``--sort-build-dependencies-first`` and ``--sort-build-dependencies-last``
+can be used to change the order of the builds shown.
 
 build list
 ::::::::::
 
-This command lists the names of all builds.
+This command lists the names of all builds. Options 
+``--sort-build-dependencies-first`` and ``--sort-build-dependencies-last``
+can be used to change the order of the builds shown.
 
 .. _reference-sumo-new:
 
@@ -1368,14 +1372,20 @@ build showdependencies [BUILDTAG]
 
 This command shows the builds that the given :term:`build` depends on.
 The :term:`buildtag` is optional, if omitted the command shows the 
-dependencies for all builds.
+dependencies for all builds. Options 
+``--sort-build-dependencies-first`` and ``--sort-build-dependencies-last``
+can be used to change the order reported dependencies.
+
 
 build showdependents [BUILDTAG]
 :::::::::::::::::::::::::::::::
 
 This command shows all builds that depend on the given :term:`build`.
 The :term:`buildtag` is optional, if omitted the command shows the 
-dependents for all builds.
+dependents for all builds. Options 
+``--sort-build-dependencies-first`` and ``--sort-build-dependencies-last``
+can be used to change the order reported dependents.
+
 
 build state BUILDTAG [NEW-STATE]
 ::::::::::::::::::::::::::::::::
@@ -1846,6 +1856,20 @@ Here is a short overview on command line options:
 
     Specify the (optional) :term:`SCANDB` file. The scan database file contains
     information on what moduleversion can be used with what dependency version.
+
+``--sort-build-dependencies-first``
++++++++++++++++++++++++++++++++++++
+
+    For commands "build list", "build find -b", "build showdependencies" and
+    "build showdependents" sort the builds that dependencies of a build always
+    come before the build. 
+
+``--sort-build-dependencies-last``
+++++++++++++++++++++++++++++++++++
+
+    For commands "build list", "build find -b", "build showdependencies" and
+    "build showdependents" sort the builds that dependencies of a build always
+    come after the build. 
 
 ``--summary``
 +++++++++++++
