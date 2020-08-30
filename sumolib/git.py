@@ -298,12 +298,17 @@ class Repo():
         if url is None:
             raise ValueError("spec '%s' has no url" % repr(spec))
         assert_git()
-        cmd= "git clone -q %s %s" % (url, destdir)
         tag= spec.get("tag")
         rev= spec.get("rev")
         if tag and rev:
             raise ValueError("you cannot specify both, tag '%s' and "
                              "revision '%s'" % (tag,rev))
+        opts= "-c advice.detachedHead=false -q"
+        if tag:
+            opts+= " -b %s" % tag
+        if rev:
+            opts+= " -b %s" % rev
+        cmd= "git clone %s %s %s" % (opts, url, destdir)
         sumolib.system.system(cmd, False, False, None, verbose, dry_run)
         # the following to avoid warning if we use "git push" in this
         # repository:
@@ -312,20 +317,6 @@ class Repo():
             cmd="git config push.default simple"
             sumolib.system.system(cmd, False, False, None,
                                   verbose, dry_run)
-        finally:
-            sumolib.system.changedir(cwd, verbose, dry_run)
-        if (tag is None) and (rev is None):
-            return
-        if tag is not None:
-            cmd="git checkout %s" % tag
-        elif rev is not None:
-            cmd="git checkout %s" % rev
-        else:
-            cmd="git checkout master"
-        cmd+=" -q"
-        cwd= sumolib.system.changedir(destdir, verbose, dry_run)
-        try:
-            sumolib.system.system(cmd, False, False, None, verbose, dry_run)
         finally:
             sumolib.system.changedir(cwd, verbose, dry_run)
     def commit(self, logmessage):
