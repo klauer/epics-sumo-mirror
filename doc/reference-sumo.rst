@@ -1368,10 +1368,18 @@ builds.
 With option ``--lines`` for each build the output is a single line instead of a
 number of indented lines. With ``-b``, the build name is not printed. If you
 use ``--lines`` and ``-b``, the output is compatible with the ``-m`` option of
-sumo, so this may also be used to create a matching MODULES file for an
-application like in::
+sumo. Here are examples for this:
 
-  sumo config make - module -m "$(sumo build showmodules --lines -b AUTO-004)"
+Create a matching MODULES file for build 'AUTO-004' for an application::
+
+  sumo config make MODULES module -m "$(sumo build showmodules AUTO-004 --lines -b)"
+
+Re-create a complete set of builds from an existing BUILDS.DB on a different
+machine::
+
+  [machine 1] $ sumo build showmodules --lines -b --sort-build-dependencies-first >  BUILDS.TXT
+
+  [machine 2] $ cat BUILDS.TXT | while read line; do sumo build new -m "$line"; done
 
 build showdependencies [BUILDTAG]
 :::::::::::::::::::::::::::::::::
