@@ -693,3 +693,85 @@ Command 'new' would create build with tag 'AUTO-003'
 
 Your module specifications are complete. You can use these with command
 'new' to create a new build.
+
+----------------------------
+
+try with completely versioned modulelist, only stable builds, detail 3:
+
+Details on all modules:
+
+{
+    "ALARM": {
+        "R3-8-modified": {
+            "built": false,
+            "dependents": {
+                "MCAN:TAGLESS-2-6-1": "state: not tested"
+            }
+        }
+    },
+    "BASE": {
+        "R3-14-12-2-1": {
+            "built": true,
+            "dependents": {
+                "ALARM:R3-8-modified": "state: not tested",
+                "BSPDEP_TIMER:R6-2": "state: stable",
+                "BSPDEP_VMETAS:TAGLESS-2-1-modified": "state: not tested",
+                "MCAN:TAGLESS-2-6-1": "state: stable",
+                "MISC_DBC:PATH-3-0": "state: stable",
+                "MISC_DEBUGMSG:R3-0": "state: stable",
+                "SOFT_DEVHWCLIENT:TAR-3-0": "state: stable"
+            }
+        }
+    },
+    "BSPDEP_TIMER": {
+        "R6-2": {
+            "built": true,
+            "dependents": {
+                "ALARM:R3-8-modified": "state: not tested"
+            }
+        }
+    },
+    "BSPDEP_VMETAS": {
+        "TAGLESS-2-1-modified": {
+            "built": false,
+            "dependents": {
+                "MCAN:TAGLESS-2-6-1": "state: not tested"
+            }
+        }
+    },
+    "MCAN": {
+        "TAGLESS-2-6-1": {
+            "built": true
+        }
+    },
+    "MISC_DBC": {
+        "PATH-3-0": {
+            "built": true,
+            "dependents": {
+                "ALARM:R3-8-modified": "state: not tested",
+                "MCAN:TAGLESS-2-6-1": "state: stable"
+            }
+        }
+    },
+    "MISC_DEBUGMSG": {
+        "R3-0": {
+            "built": true,
+            "dependents": {
+                "MCAN:TAGLESS-2-6-1": "state: stable"
+            }
+        }
+    },
+    "SOFT_DEVHWCLIENT": {
+        "TAR-3-0": {
+            "built": true,
+            "dependents": {
+                "MCAN:TAGLESS-2-6-1": "state: stable"
+            }
+        }
+    }
+}
+
+Command 'new' would create build with tag 'AUTO-003'
+
+Your module specifications are complete. You can use these with command
+'new' to create a new build.
