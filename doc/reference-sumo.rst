@@ -1494,66 +1494,11 @@ Options
 
 Here is a short overview on command line options:
 
-``--version``
-+++++++++++++
+``--#opt-postload FILES``
++++++++++++++++++++++++++
 
-    show program's version number and exit
-
-``-h [OPTIONS], --help [OPTIONS]``
-++++++++++++++++++++++++++++++++++
-
-    If other OPTIONS are given, show help for these options. If OPTIONS is
-    'all', show help for all options. If OPTIONS is missing, show a short
-    generic help message for the program.
-
-``--summary``
-+++++++++++++
-    Print a summary of the function of the program.
-
-
-``--test``
-++++++++++
-    Perform some self tests.
-
-
-``-c FILE, --config FILE``
-++++++++++++++++++++++++++
-
-    Load options from the given configuration file. You can specify more than
-    one of these.  Unless --no-default-config is given, the program always
-    loads configuration files from several standard directories first before it
-    loads your configuration file. The contents of all configuration files are
-    merged.
-
-``-C, --no-default-config``
-+++++++++++++++++++++++++++
-
-    If this option is not given and --no-default-config is not given, the
-    program tries to load the default configuration file sumo-scan.config from
-    several standard locations (see documentation on configuration files).
-
-``--disable-loading``
-+++++++++++++++++++++
-
-    If given, disable execution of load commands like '#preload' in
-    configuration files. In this case these keys are treated like ordinary
-    keys.
-
-``-A, --append OPTIONNAME``
-+++++++++++++++++++++++++++++++
-
-    If an option with name OPTIONNAME is given here and it is a list option,
-    the list from the command line is *appended* to the list from the
-    configuration file. The default is that options from the command line
-    *override* option values from the configuration file.
-
-``--#preload FILES``
-++++++++++++++++++++
-
-    Specify a an '#preload' directive in the configuration file. This option
-    has only a meaning if a configuration file is created with the 'makeconfig'
-    command. '#preload' means that the following file(s) are loaded before the
-    rest of the configuration file.
+    This option does the same as --#postload but the file loading is optional.
+    If they do not exist the program continues without an error.
 
 ``--#opt-preload FILES``
 ++++++++++++++++++++++++
@@ -1569,17 +1514,82 @@ Here is a short overview on command line options:
     command. '#postload' means that the following file(s) are loaded after the
     rest of the configuration file.
 
-``--#opt-postload FILES``
-+++++++++++++++++++++++++
+``--#preload FILES``
+++++++++++++++++++++
 
-    This option does the same as --#postload but the file loading is optional.
-    If they do not exist the program continues without an error.
+    Specify a an '#preload' directive in the configuration file. This option
+    has only a meaning if a configuration file is created with the 'makeconfig'
+    command. '#preload' means that the following file(s) are loaded before the
+    rest of the configuration file.
+
+``-a ALIAS, --alias ALIAS``
++++++++++++++++++++++++++++
+
+    Define an alias for the command 'use'. An alias must have the form FROM:TO.
+    The path of module named 'FROM' is put in the generated RELEASE file as a
+    variable named 'TO'. You can specify more than one of these by repeating
+    this option or by joining values in a single string separated by spaces. A
+    default for this option can be put in a configuration file.
+
+``-A, --append OPTIONNAME``
++++++++++++++++++++++++++++++++
+
+    If an option with name OPTIONNAME is given here and it is a list option,
+    the list from the command line is *appended* to the list from the
+    configuration file. The default is that options from the command line
+    *override* option values from the configuration file.
+
+``-b, --brief``
++++++++++++++++
+
+    Create a more brief output for some commands.
+
+``--builddir BUILDDIR``
++++++++++++++++++++++++
+
+    Specify the support directory. If this option is not given take the current
+    working directory as support directory. A default for this option can be
+    put in a configuration file.
+
+``-t BUILDTAG, --buildtag BUILDTAG``
+++++++++++++++++++++++++++++++++++++
+
+    Specify a buildtag.
+
+``--buildtag-stem STEM``
+++++++++++++++++++++++++
+
+    Specify the stem of a buildtag. This option has only an effect on the
+    commands 'new' and 'try' if a buildtag is not specified. The program
+    generates a new tag in the form 'stem-nnn' where 'nnn' is the smallest
+    possible number that ensures that the buildtag is unique.
+
+``-c FILE, --config FILE``
+++++++++++++++++++++++++++
+
+    Load options from the given configuration file. You can specify more than
+    one of these.  Unless --no-default-config is given, the program always
+    loads configuration files from several standard directories first before it
+    loads your configuration file. The contents of all configuration files are
+    merged.
 
 ``--dbdir DBDIR``
 +++++++++++++++++
 
     Define the directory where the dependency database file 'DEPS.DB' is found.
     A default for this option can be put in a configuration file.
+
+``--dbrepo REPOSITORY``
++++++++++++++++++++++++
+
+    Define a REPOSITORY for the db file. REPOSITORY must have the form
+    'REPOTYPE URL' or 'type=REPOTYPE url=URL". REPOTYPE may be 'darcs', 'hg' or
+    'git'. Option --dbdir must specify a directory that will contain the
+    repository for the db file.  Before reading the db file a 'pull' command
+    will be executed. When the file is changed, a 'commit' and a 'push' command
+    will be executed. If the repository doesn't exist the program tries to
+    check out a working copy from the given URL. A default for this option can
+    be put in a configuration file.
 
 ``--dbrepomode MODE``
 +++++++++++++++++++++
@@ -1628,114 +1638,6 @@ Here is a short overview on command line options:
     |      |          |centr. VCS: update, commit changes          |
     +------+----------+--------------------------------------------+
 
-
-``--dbrepo REPOSITORY``
-+++++++++++++++++++++++
-
-    Define a REPOSITORY for the db file. REPOSITORY must have the form
-    'REPOTYPE URL' or 'type=REPOTYPE url=URL". REPOTYPE may be 'darcs', 'hg' or
-    'git'. Option --dbdir must specify a directory that will contain the
-    repository for the db file.  Before reading the db file a 'pull' command
-    will be executed. When the file is changed, a 'commit' and a 'push' command
-    will be executed. If the repository doesn't exist the program tries to
-    check out a working copy from the given URL. A default for this option can
-    be put in a configuration file.
-
-``--scandb SCANDB``
-+++++++++++++++++++
-
-    Specify the (optional) :term:`SCANDB` file. The scan database file contains
-    information on what moduleversion can be used with what dependency version.
-
-``--dumpdb``
-++++++++++++
-
-    Dump the modified db on the console, currently only for the commands
-    "weight", "merge", "cloneversion" and "replaceversion".
-
-``--logmsg LOGMESSAGE``
-+++++++++++++++++++++++
-
-    Specify a logmessage for automatic commits when --dbrepo is used.
-
-``-t BUILDTAG, --buildtag BUILDTAG``
-++++++++++++++++++++++++++++++++++++
-
-    Specify a buildtag.
-
-``--buildtag-stem STEM``
-++++++++++++++++++++++++
-
-    Specify the stem of a buildtag. This option has only an effect on the
-    commands 'new' and 'try' if a buildtag is not specified. The program
-    generates a new tag in the form 'stem-nnn' where 'nnn' is the smallest
-    possible number that ensures that the buildtag is unique.
-
-``--builddir BUILDDIR``
-+++++++++++++++++++++++
-
-    Specify the support directory. If this option is not given take the current
-    working directory as support directory. A default for this option can be
-    put in a configuration file.
-
-``--localbuilddir BUILDDIR``
-++++++++++++++++++++++++++++
-
-    Specify a *local* support directory. Modules from the directory specifed
-    by --builddir are used but this directory is not modfied. All new builds
-    are created in the local build directory and only the build database file
-    there is modified.
-
-``-o OUTPUTFILE, --output OUTPUTFILE``
-++++++++++++++++++++++++++++++++++++++
-
-    Define the output for command 'use'. If this option is not given, 'use'
-    writes to 'configure/RELEASE'. If this option is '-', the command writes to
-    standard-out.",
-
-``-x EXTRALINE, --extra EXTRALLINE``
-++++++++++++++++++++++++++++++++++++
-
-    Specify an extra lines that are added to the generated RELEASE file. This
-    option can be given more than once to specify more than one line. A default
-    for this option can be put in a configuration file, there the value must be
-    a list of strings, one for each line.
-
-``-a ALIAS, --alias ALIAS``
-+++++++++++++++++++++++++++
-
-    Define an alias for the command 'use'. An alias must have the form FROM:TO.
-    The path of module named 'FROM' is put in the generated RELEASE file as a
-    variable named 'TO'. You can specify more than one of these by repeating
-    this option or by joining values in a single string separated by spaces. A
-    default for this option can be put in a configuration file.
-
-``-m MODULE, --module MODULE``
-++++++++++++++++++++++++++++++
-
-    Define a :term:`modulespec`. If you specify modules with this option you
-    don't have to put :term:`modulespecs` after some of the commands. You can
-    specify more than one of these by repeating this option or by joining
-    values in a single string separated by spaces. A default for this option
-    can be put in a configuration file.
-
-``-X REGEXP, --exclude-states REGEXP``
-++++++++++++++++++++++++++++++++++++++
-
-    For command 'try' exclude all 'dependents' whose state does match one of
-    the regular expressions (REGEXP).
-
-``-b, --brief``
-+++++++++++++++
-
-    Create a more brief output for some commands.
-
-``--recursive``
-+++++++++++++++
-
-    For command 'build delete', delete all dependend builds, too. For command
-    'build state' with state 'disabled', disable all dependend builds, too.
-
 ``--detail NO``
 +++++++++++++++
 
@@ -1751,93 +1653,28 @@ Here is a short overview on command line options:
     path generated. You can specify more than one patchexpression. A default
     for this option can be put in a configuration file.
 
-``-U EXPRESSION, --url-patch EXPRESSION``
-+++++++++++++++++++++++++++++++++++++++++
+``--disable-loading``
++++++++++++++++++++++
 
-    Specify a repository url patchexpression. Such an expression consists of a
-    tuple of 2 python strings. The first is the match expression, the second
-    one is the replacement string. The regular expression is applied to every
-    source url generated. You can specify more than one patchexpression. A
-    default for this option can be put in a configuration file.
+    If given, disable execution of load commands like '#preload' in
+    configuration files. In this case these keys are treated like ordinary
+    keys.
 
-``--noignorecase``
-++++++++++++++++++
-
-    For command 'find', do NOT ignore case.
-
-``--no-checkout``
+``-n, --dry-run``
 +++++++++++++++++
 
-    With this option, "new" does not check out sources of support modules. This
-    option is only here for test purposes.
-
-``--no-make``
-+++++++++++++
-
-    With this option, "new" does not call "make".j
-
-``--makeflags MAKEFLAGS``
-+++++++++++++++++++++++++
-
-    Specify extra option strings for make You can specify more than one of
-    these by repeating this option or by joining values in a single string
-    separated by spaces. A default for this option can be put in a
-    configuration file.
-
-``--readonly``
-++++++++++++++
-
-    Do not allow modifying the database files or the support directory. A
-    default for this option can be put in a configuration file.
-
-``--nolock``
-++++++++++++
-
-    Do not use file locking.
-
-``--no-multiprocessing``
-++++++++++++++++++++++++
-
-    Do not use multiprocessing in the program. This is mainly here to help
-    debugging the program. Currently multiprocessing is used when the sources
-    for modules of a build are created by checking out from version control
-    systems.
-
-``-p, --progress``
-++++++++++++++++++
-
-    Show progress of some commands on stderr. A default for this option can be
-    put in a configuration file.
-
-``--trace``
-+++++++++++
-
-    Switch on some trace messages.
-
-``--tracemore``
-+++++++++++++++
-
-    Switch on even more trace messages.
+    Just show what the program would do.
 
 ``--dump-modules``
 ++++++++++++++++++
 
     Dump module specs, then stop the program.
 
-``--lines``
-+++++++++++
- 
-    Show results of "build showmodules" in single lines.
+``--dumpdb``
+++++++++++++
 
-``--list``
-++++++++++
-
-    Show information for automatic command completion.
-
-``-y, --yes``
-+++++++++++++
-
-    All questions the program may ask are treated as if the user replied 'yes'.
+    Dump the modified db on the console, currently only for the commands
+    "weight", "merge", "cloneversion" and "replaceversion".
 
 ``--editor EDITOR``
 +++++++++++++++++++
@@ -1852,6 +1689,161 @@ Here is a short overview on command line options:
     show a python stacktrace instead of an error message and may be useful for
     debugging the program."
 
+``-X REGEXP, --exclude-states REGEXP``
+++++++++++++++++++++++++++++++++++++++
+
+    For command 'try' exclude all 'dependents' whose state does match one of
+    the regular expressions (REGEXP).
+
+``-x EXTRALINE, --extra EXTRALLINE``
+++++++++++++++++++++++++++++++++++++
+
+    Specify an extra lines that are added to the generated RELEASE file. This
+    option can be given more than once to specify more than one line. A default
+    for this option can be put in a configuration file, there the value must be
+    a list of strings, one for each line.
+
+``-h [OPTIONS], --help [OPTIONS]``
+++++++++++++++++++++++++++++++++++
+
+    If other OPTIONS are given, show help for these options. If OPTIONS is
+    'all', show help for all options. If OPTIONS is missing, show a short
+    generic help message for the program.
+
+``--lines``
++++++++++++
+ 
+    Show results of "build showmodules" in single lines.
+
+``--list``
+++++++++++
+
+    Show information for automatic command completion.
+
+``--localbuilddir BUILDDIR``
+++++++++++++++++++++++++++++
+
+    Specify a *local* support directory. Modules from the directory specifed
+    by --builddir are used but this directory is not modfied. All new builds
+    are created in the local build directory and only the build database file
+    there is modified.
+
+``--logmsg LOGMESSAGE``
++++++++++++++++++++++++
+
+    Specify a logmessage for automatic commits when --dbrepo is used.
+
+``--makeflags MAKEFLAGS``
++++++++++++++++++++++++++
+
+    Specify extra option strings for make You can specify more than one of
+    these by repeating this option or by joining values in a single string
+    separated by spaces. A default for this option can be put in a
+    configuration file.
+
+``-m MODULE, --module MODULE``
+++++++++++++++++++++++++++++++
+
+    Define a :term:`modulespec`. If you specify modules with this option you
+    don't have to put :term:`modulespecs` after some of the commands. You can
+    specify more than one of these by repeating this option or by joining
+    values in a single string separated by spaces. A default for this option
+    can be put in a configuration file.
+
+``--no-multiprocessing``
+++++++++++++++++++++++++
+
+    Do not use multiprocessing in the program. This is mainly here to help
+    debugging the program. Currently multiprocessing is used when the sources
+    for modules of a build are created by checking out from version control
+    systems.
+
+``--no-checkout``
++++++++++++++++++
+
+    With this option, "new" does not check out sources of support modules. This
+    option is only here for test purposes.
+
+``-C, --no-default-config``
++++++++++++++++++++++++++++
+
+    If this option is not given and --no-default-config is not given, the
+    program tries to load the default configuration file sumo-scan.config from
+    several standard locations (see documentation on configuration files).
+
+``--no-make``
++++++++++++++
+
+    With this option, "new" does not call "make".j
+
+``--noignorecase``
+++++++++++++++++++
+
+    For command 'find', do NOT ignore case.
+
+``--nolock``
+++++++++++++
+
+    Do not use file locking.
+
+``-o OUTPUTFILE, --output OUTPUTFILE``
+++++++++++++++++++++++++++++++++++++++
+
+    Define the output for command 'use'. If this option is not given, 'use'
+    writes to 'configure/RELEASE'. If this option is '-', the command writes to
+    standard-out.",
+
+``-p, --progress``
+++++++++++++++++++
+
+    Show progress of some commands on stderr. A default for this option can be
+    put in a configuration file.
+
+``--readonly``
+++++++++++++++
+
+    Do not allow modifying the database files or the support directory. A
+    default for this option can be put in a configuration file.
+
+``--recursive``
++++++++++++++++
+
+    For command 'build delete', delete all dependend builds, too. For command
+    'build state' with state 'disabled', disable all dependend builds, too.
+
+``--scandb SCANDB``
++++++++++++++++++++
+
+    Specify the (optional) :term:`SCANDB` file. The scan database file contains
+    information on what moduleversion can be used with what dependency version.
+
+``--summary``
++++++++++++++
+    Print a summary of the function of the program.
+
+``--test``
+++++++++++
+    Perform some self tests.
+
+``--trace``
++++++++++++
+
+    Switch on some trace messages.
+
+``--tracemore``
++++++++++++++++
+
+    Switch on even more trace messages.
+
+``-U EXPRESSION, --url-patch EXPRESSION``
++++++++++++++++++++++++++++++++++++++++++
+
+    Specify a repository url patchexpression. Such an expression consists of a
+    tuple of 2 python strings. The first is the match expression, the second
+    one is the replacement string. The regular expression is applied to every
+    source url generated. You can specify more than one patchexpression. A
+    default for this option can be put in a configuration file.
+
 ``-v, --verbose``
 +++++++++++++++++
 
@@ -1863,7 +1855,8 @@ Here is a short overview on command line options:
 
     Show the program version and exit.
 
-``-n, --dry-run``
-+++++++++++++++++
+``-y, --yes``
++++++++++++++
 
-    Just show what the program would do.
+    All questions the program may ask are treated as if the user replied 'yes'.
+
