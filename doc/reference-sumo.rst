@@ -893,6 +893,9 @@ remake
 show
   show details of a build
 
+showmodules
+  show modules of a build
+
 state
   show or change the state of a build
 
@@ -1335,6 +1338,21 @@ build show BUILDTAG
 
 This command shows the data of a :term:`build`. The :term:`buildtag` must be
 given as an argument.
+
+build showmodules [BUILDTAG]
+::::::::::::::::::::::::::::
+
+This command shows the modules in the form MODULE:VERSION of a :term:`build`.
+The :term:`buildtag` is optional, if omitted the command shows the modules for
+all builds. Options ``--sort-build-dependencies-first`` and
+``--sort-build-dependencies-last`` can be used to change the order reported
+builds. With option "--lines" for each build the output is a single line
+instead of a number of indented lines. With "-b", the build name is not
+printed. If you use "--lines" and "-b", the output is compatible with the "-m"
+option of sumo, so this may also be used to create a matching MODULES file for
+an application like in::
+
+  sumo config make - module -m "$(sumo build showmodules --lines -b AUTO-004)"
 
 build state BUILDTAG [NEW-STATE]
 ::::::::::::::::::::::::::::::::
@@ -1805,6 +1823,11 @@ Here is a short overview on command line options:
 ++++++++++++++++++
 
     Dump module specs, then stop the program.
+
+``--lines``
++++++++++++
+ 
+    Show results of "build showmodules" in single lines.
 
 ``--list``
 ++++++++++

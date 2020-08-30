@@ -196,6 +196,7 @@ sumo-build-remake.out: sumo-db-convert.tst
 sumo-build-find.out: sumo-build-new-2.tst
 sumo-build-list.out: sumo-build-new-2.tst
 sumo-build-show.out: sumo-build-new-2.tst
+sumo-build-showmodules.out: sumo-build-new-2.tst
 sumo-build-use.out: sumo-build-new-2.tst
 sumo-build-use-2.out: sumo-build-new-2.tst
 sumo-build-use-3.out: sumo-build-new-2.tst
