@@ -580,12 +580,14 @@ class ManagedRepo():
                                  self.directory)
 
         no_write_access= False
+        errmsg= None
         # get a repository lock:
         try:
             self.lock.lock()
-        except (sumolib.lock.AccessError, sumolib.lock.LockedError):
+        except (sumolib.lock.AccessError, sumolib.lock.LockedError) as e:
             # we do not have write access on the repository:
             no_write_access= True
+            errmsg= str(e)
 
         if no_write_access:
             # basically disable all action on the repository:
@@ -593,9 +595,10 @@ class ManagedRepo():
             # ManagedRepo object.
             if self.mode!='get':
                 sys.stdout.flush()
-                sys.stderr.write("warning: no write access to dependency "
-                                 "database repository, disabling "
-                                 "repository operations\n")
+                sys.stderr.write(("warning: locking the dependency database "
+                                  "failed: '%s'. Disabling repository "
+                                  "operations on the dependency database "
+                                  "for now.") % errmsg)
                 sys.stderr.flush()
             self.sourcespec= None
             return
