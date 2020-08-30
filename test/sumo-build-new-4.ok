@@ -1,33 +1,8 @@
-Note: The generated build 'MYAPP-002' consists only of links.
-build 'MYAPP-002' created
+Try to recreate a build...
+There already exists a build MYAPP-001 that matches your module specification. Creation of new build aborted.
+Sumo return code: 1
 Changes in BUILDS.DB:
-35a36,64
->     },
->     "MYAPP-002": {
->         "linked": {
->             "ALARM": "MYAPP-001",
->             "BASE": "BASE-001",
->             "BSPDEP_CPUBOARDINIT": "MYAPP-001",
->             "BSPDEP_TIMER": "MYAPP-001",
->             "BSPDEP_VMETAS": "MYAPP-001",
->             "CSM": "MYAPP-001",
->             "EK": "MYAPP-001",
->             "MCAN": "MYAPP-001",
->             "MISC_DBC": "MYAPP-001",
->             "MISC_DEBUGMSG": "MYAPP-001",
->             "SOFT_DEVHWCLIENT": "MYAPP-001"
->         },
->         "modules": {
->             "ALARM": "R3-8-modified",
->             "BASE": "R3-14-12-2-1",
->             "BSPDEP_CPUBOARDINIT": "R4-1",
->             "BSPDEP_TIMER": "R6-2",
->             "BSPDEP_VMETAS": "TAGLESS-2-1-modified",
->             "CSM": "TAR-4-1",
->             "EK": "R2-2",
->             "MCAN": "R2-6-3-gp",
->             "MISC_DBC": "PATH-3-0",
->             "MISC_DEBUGMSG": "R3-0",
->             "SOFT_DEVHWCLIENT": "TAR-3-0"
->         },
->         "state": "unstable"
+Try to recreate the build again with --no-err-build-exists ...
+found existing build(s): MYAPP-001
+Sumo return code: 0
+Changes in BUILDS.DB:

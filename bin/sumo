@@ -3259,6 +3259,32 @@ def subcmd_build_new(arguments, options):
                                     keep_locked= not options.dry_run,
                                     must_exist= False)
 
+    # now test if there already is a build that satisfies the module
+    # specifications:
+    matching_builddb= builddb.filter_by_modulespecs(modulespecs_obj)
+    matching_tags= None
+    if not matching_builddb.is_empty():
+        # take only builds that are "testing" or "stable":
+        matching_tags= [b for b in matching_builddb.iter_builds() \
+                        if builddb.is_testing_or_stable(b)]
+    if matching_tags:
+        if options.no_err_build_exists:
+            # if --no-err-build-exists is given, an already existing build is
+            # not trated as an error:
+            notemsg("found existing build(s): %s" % \
+                    (" ".join(sorted(matching_tags))))
+            return
+
+        if len(matching_tags)<=1:
+            st= ("There already exists a build %s that matches "
+                 "your module specification. Creation of new "
+                 "build aborted.") % matching_tags[0]
+        else:
+            st= ("There already exist builds that match "
+                 "your module specification: %s. Creation of new "
+                 "build aborted.") % (" ".join(sorted(matching_tags)))
+        sys.exit(st)
+
     if buildtag is None:
         buildtag= builddb_generate_tag(builddb, options.buildtag_stem,
                                        bool(options.localbuilddir))
@@ -4133,6 +4159,9 @@ option_help_topics= {
         "no_make":
                 doc_options['Options']\
                            ['``--no-make``'],
+        "no_err_build_exists":
+                doc_options['Options']\
+                           ['``-N, --no-err-build-exists``'],
         "makeflags":
                 doc_options['Options']\
                            ['``--makeflags MAKEFLAGS``'],
@@ -4408,6 +4437,7 @@ def main():
     # with arg_is_option we allow the option argument to start with a "-":
     specs.add("--makeflags", arg_name= "MAKEFLAGS", array= True,
               arg_is_option= True)
+    specs.add("--no-err-build-exists -N")
     specs.add("--readonly")
     specs.add("--nolock")
     specs.add("--no-multiprocessing")
