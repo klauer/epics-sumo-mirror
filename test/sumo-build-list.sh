@@ -13,3 +13,11 @@ cd $TESTDIR > /dev/null
 echo -e "sumo build list"
 $SUMO build --dbdir . --builddir . list
 
+echo
+echo -e "sumo build list --sort-build-dependencies-first"
+$SUMO build --dbdir . --builddir . list --sort-build-dependencies-first
+
+echo
+echo -e "sumo build list --sort-build-dependencies-last"
+$SUMO build --dbdir . --builddir . list --sort-build-dependencies-last
+

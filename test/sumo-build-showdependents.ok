@@ -11,3 +11,15 @@ sumo build showdependents
 03-BSPDEP_TIMER : ALARM
 04-BASE         : 02-MISC_DBC 03-BSPDEP_TIMER ALARM
 ALARM           : 
+
+sumo build showdependents --sort-build-dependencies-first:
+02-MISC_DBC     : ALARM
+03-BSPDEP_TIMER : ALARM
+04-BASE         : 02-MISC_DBC 03-BSPDEP_TIMER ALARM
+ALARM           : 
+
+sumo build showdependents --sort-build-dependencies-last:
+02-MISC_DBC     : ALARM
+03-BSPDEP_TIMER : ALARM
+04-BASE         : ALARM 02-MISC_DBC 03-BSPDEP_TIMER
+ALARM           : 

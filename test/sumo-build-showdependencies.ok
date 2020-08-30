@@ -18,3 +18,15 @@ sumo build showdependencies
 03-BSPDEP_TIMER : 04-BASE
 04-BASE         : 
 ALARM           : 02-MISC_DBC 03-BSPDEP_TIMER 04-BASE
+
+sumo build showdependencies --sort-build-dependencies-first:
+02-MISC_DBC     : 04-BASE
+03-BSPDEP_TIMER : 04-BASE
+04-BASE         : 
+ALARM           : 04-BASE 02-MISC_DBC 03-BSPDEP_TIMER
+
+sumo build showdependencies --sort-build-dependencies-last:
+02-MISC_DBC     : 04-BASE
+03-BSPDEP_TIMER : 04-BASE
+04-BASE         : 
+ALARM           : 02-MISC_DBC 03-BSPDEP_TIMER 04-BASE

@@ -1,4 +1,4 @@
-sumo build find MCAN -b:
+sumo build find MCAN:
 {
     "MYAPP-001": {
         "linked": {
@@ -136,3 +136,15 @@ sumo-build find MCAN ALARM:+R3-8:
     }
 }
 
+
+sumo build find MCAN -b:
+MYAPP-001
+MYAPP-002
+
+sumo build find MCAN -b --sort-build-dependencies-first:
+MYAPP-001
+MYAPP-002
+
+sumo build find MCAN -b --sort-build-dependencies-last:
+MYAPP-002
+MYAPP-001
