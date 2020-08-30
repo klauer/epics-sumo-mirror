@@ -33,11 +33,11 @@ Create a "HEAD" version of a module
 -----------------------------------
 
 We now create a new entry in our local dependency database for the test version
-of module "ALARM". Our version control system is darcs in this case, this could
-also be "hg", "git", "svn" or "cvs". We have to use "darcs ." in this case in
-order to create an entry in the dependency database that uses to tag::
+of module "ALARM". The "tag" argument exactly in this form defines an *empty*
+tag, this means we create an entry in the dependency database that uses to
+tag::
 
-  sumo db cloneversion ALARM R3-8 HEAD darcs .
+  sumo db cloneversion ALARM R3-8 HEAD tag='""'
 
 Answer 'y' when the program asks if the changes are correct.
 
