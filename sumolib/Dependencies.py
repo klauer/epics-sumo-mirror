@@ -700,8 +700,6 @@ class DB(sumolib.JSON.Container):
 
         A sets dict has this form:
 
-        convert modulespecs to a sets dict::
-
           { modulename1 : set(version1,version2),
             modulename2 : set(version1,version2),
           }
