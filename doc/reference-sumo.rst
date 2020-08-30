@@ -965,8 +965,8 @@ empty
 
 github
   Create a sample dependency database file with some entries for EPICS base,
-  ASYN and the sequencer. In this sample all module repositories are fetched
-  from the internet, mostly github.
+  ASYN, STREAMDEVICE, AREADETECTOR, SEQUENCER and more. In this sample all
+  module repositories are fetched from the internet, mostly github.
 
 If there is a file "sumo.config" in the current working directory it is copied
 to "sumo.config.bak". A new file "sumo.config" is then created in the current
