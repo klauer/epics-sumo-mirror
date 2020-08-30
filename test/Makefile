@@ -6,10 +6,20 @@
 
 TOP:=$(shell pwd)
 
+# set to YES to create coverage data:
+CREATE_COVERAGE=NO
+
 # set PYTHON only if it is not yet defined:
 ifeq (,$(PYTHON))
-	PYTHON=python3
+	ifeq (YES,$(CREATE_COVERAGE))
+		PYTHON=coverage run --parallel-mode
+	else
+		PYTHON=python3
+	endif
 endif
+
+# override PYTHON definition in settings.sh:
+export PYTHON
 
 export PYTHONPATH:=$(TOP)/..:$(PYTHONPATH)
 
@@ -35,6 +45,10 @@ shell_tests_sh:= $(addsuffix .sh, $(shell_tests))
 shell_tests_tst:= $(addsuffix .tst, $(shell_tests))
 
 all: target_module_tests target_script_tests target_shell_tests
+
+ifeq (YES,$(CREATE_COVERAGE))
+all: coverage_report
+endif
 
 help:
 	@echo "make targets:"
@@ -87,6 +101,7 @@ clean: shallowclean
 	rm -rf *.out
 	rm -rf *.tmp
 	rm -rf *.bak
+	rm -rf .coverage.*
 
 # clean only files for a single test
 %.clean: 
@@ -211,3 +226,10 @@ $(shell_tests_tst): %.tst: %.sh %.ok %.out
 	@diff $(wordlist 2, 3, $+) 
 	@touch $@
 
+
+ifeq (YES,$(CREATE_COVERAGE))
+coverage_report: target_shell_tests
+	coverage combine . tmp-sumo*
+	coverage html
+	echo "Coverage data created in test/htmlcov/index.html"
+endif

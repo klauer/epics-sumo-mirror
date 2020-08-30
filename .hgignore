@@ -33,6 +33,8 @@
 ^test/data/epics/base
 ^test/data/epics/support
 ^test/tmp-.*
+^test/.*\.coverage
+^test/htmlcov
 ^test/.*\.tmp
 ^test/.*\.bak
 ^test/.*\.out
