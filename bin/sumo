@@ -4281,6 +4281,7 @@ def print_option_help(option_list=None):
     if pager_mode=="on" or pager_mode=="always":
         if lineno>24 or pager_mode=="always":
             pydoc.pager(txt)
+            return
     print(txt)
 
 
