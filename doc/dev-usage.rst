@@ -34,7 +34,7 @@ Create a "HEAD" version of a module
 
 We now create a new entry in our local dependency database for the test version
 of module "ALARM". The "tag" argument exactly in this form defines an *empty*
-tag, this means we create an entry in the dependency database that uses to
+tag, this means we create an entry in the dependency database that uses no
 tag::
 
   sumo db cloneversion ALARM R3-8 HEAD tag='""'
