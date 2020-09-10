@@ -4,6 +4,20 @@ sumo administration scripts
 How to create a new release
 ---------------------------
 
+Update RELEASES.rst
++++++++++++++++++++
+
+Create a LOG file like this::
+
+  hg log --style changelog -r $(./show-version.sh -b):tip > LOG
+
+and then manually add new entries like this::
+
+  nvim -o LOG ../RELEASES.rst
+
+Create a new entry with today's date and the new VERSION number 
+(see below).
+
 Create a new version
 ++++++++++++++++++++
 
