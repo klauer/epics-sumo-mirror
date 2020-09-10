@@ -1588,7 +1588,7 @@ Here is a short overview on command line options:
 ++++++++++++++++
 
     Some subcommands of 'build' show only information for builds that have the
-    statet 'stable' or 'testing'. If this option is given, the commands show
+    states 'stable' or 'testing'. If this option is given, the commands show
     *all* builds regardless of their state.
 
 ``-A, --append OPTIONNAME``
