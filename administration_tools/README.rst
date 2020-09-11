@@ -100,13 +100,6 @@ Push all patches to the central sourceforge repository::
 
   ./sourceforge-push.sh
 
-upload the repository to bitbucket
-++++++++++++++++++++++++++++++++++
-
-Enter this command::
-
-  ./bitbucket-push.sh
-
 Upload to pypi
 ++++++++++++++
 
