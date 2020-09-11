@@ -176,7 +176,7 @@ if not os.path.exists(os.path.join("sumolib","data")):
     sys.exit("Error, your distribution is incomplete: "
              "extra data files are missing")
 
-data_files= [(doc_install_dir, ["README.rst", "LICENSE"])]
+data_files= [(doc_install_dir, ["README.rst", "RELEASES.rst", "LICENSE"])]
 
 # add all generated html documentation to data_files:
 data_files.extend(data_files_make_list(html_install_dir, html_build_dir))
