@@ -100,3 +100,25 @@ Compatibility
   command to do the same as in older versions of sumo, add option
   "--all-builds" like in "sumo build list --all-builds".
 
+Release 4.1.1
+-------------
+
+Date: 2020-09-11
+
+Internal changes
+++++++++++++++++
+
+- test/tests.log was updated
+
+Documentation
++++++++++++++
+
+- small bugfixes
+- a file RELEASES.rst was added. This contains information about changes
+  between releases.
+
+Bugfixes
+++++++++
+
+- "sumo -h all" printed the option help twice, this was fixed
+
