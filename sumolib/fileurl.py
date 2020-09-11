@@ -6,7 +6,7 @@ import re
 import urllib.request # not needed: urllib.parse, urllib.error
 import sumolib.system
 
-__version__="4.1" #VERSION#
+__version__="4.1.1" #VERSION#
 
 assert __version__==sumolib.system.__version__
 
