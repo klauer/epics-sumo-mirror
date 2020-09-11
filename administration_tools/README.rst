@@ -9,25 +9,32 @@ Update RELEASES.rst
 
 Create a LOG file like this::
 
-  hg log --style changelog -r $(./show-version.sh -b):tip > LOG
+  hg log --style changelog -r $(./show-last-release.sh):tip > LOG
 
-and then manually add new entries like this::
-
-  nvim -o LOG ../RELEASES.rst
-
-Create a new entry with today's date and the new VERSION number 
-(see below).
-
-Create a new version
-++++++++++++++++++++
-
-Show the current version with this command::
+Now get the current version::
 
   ./show-version.sh
 
-Make up a new version VERSION and create it with::
+and make up a new version number.
 
-  ./new-version.sh <VERSION>
+Manually add new entries to RELEASES.rst like this::
+
+  nvim -o LOG ../RELEASES.rst
+
+Create a new entry at the end with today's date and the new VERSION number 
+like in this example::
+
+  Release 4.1.1
+  -------------
+  
+  Date: 2020-09-11
+  
+Create a new version
+++++++++++++++++++++
+
+Set up a new version like this::
+
+  ./new-version.sh $(./show-last-release.sh)
 
 Setup data directories
 ++++++++++++++++++++++
@@ -91,7 +98,7 @@ Use these commands to change mq patches to regular mercurial patches::
 
 Give a tag::
 
-  hg tag <VERSION>
+  hg tag $(./show-last-release.sh)
 
 upload the repository to sourceforge
 ++++++++++++++++++++++++++++++++++++
