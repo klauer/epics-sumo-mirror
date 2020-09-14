@@ -11,7 +11,7 @@ import re
 import sumolib.system
 import sumolib.JSON
 
-__version__="4.1.1" #VERSION#
+__version__="4.1.2" #VERSION#
 
 # The following variable may be set to True when
 # we have to see on stderr when sumo is waiting for
