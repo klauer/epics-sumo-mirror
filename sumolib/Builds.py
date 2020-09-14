@@ -16,7 +16,7 @@ if __name__ == "__main__":
 import sumolib.ModuleSpec
 import sumolib.JSON
 
-__version__="4.1.1" #VERSION#
+__version__="4.1.2" #VERSION#
 
 assert __version__==sumolib.ModuleSpec.__version__
 assert __version__==sumolib.JSON.__version__

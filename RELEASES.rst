@@ -122,3 +122,15 @@ Bugfixes
 
 - "sumo -h all" printed the option help twice, this was fixed
 
+Release 4.1.2
+-------------
+
+Date: 2020-09-14
+
+Internal changes
+++++++++++++++++
+
+- added RELEASES.rst to the distribution
+- removed supported of sumo repository at bitbucket
+- update of new version recipe in administration_tools/README.rst
+
