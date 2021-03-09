@@ -134,3 +134,29 @@ Internal changes
 - removed supported of sumo repository at bitbucket
 - update of new version recipe in administration_tools/README.rst
 
+Release 4.1.3
+-------------
+
+Date: 2021-03-09
+
+Bugfixes
+++++++++
+
+- A git source specification didn't work when a revision was given.
+- administration_tools/show-last-release.sh was added. The should have been
+  added in some previous release. It is just a small utility to create new
+  revisions of the program.
+- Compatibility fix for Darcs 2.16.
+
+Documentation
++++++++++++++
+
+- test/README.rst now lists the version control systems needed to run the
+  tests.
+
+Management
+++++++++++
+
+- Support for packages for debian-8 and fedora-31 was removed, support for
+  packages for debian-11 and fedora-33 was added.
+
