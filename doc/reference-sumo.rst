@@ -422,15 +422,15 @@ The *source data* has this form::
       }
   }
 
-The keys "commands" and "patches" are *optional*. 
+The keys "commands" and "patches", "rev" and "tag" are *optional*. 
 
-The key "rev" is *optional*, if it is given it specifies the git revision
-that is used to fetch the source. Note that "rev" and "tag" MUST NOT be given
-both.
+Note that "rev" and "tag" **must not** be given both.
 
-The key "tag" is also *optional*, if it is given it specifies the git tag
-that is used to fetch the source. Note that "rev" and "tag" MUST NOT be given
-both.
+If key "rev" is given it specifies the revision key of a *git commit*. After
+the initial ``git clone`` sumo performs ``git checkout REVISION``.
+
+If the key "tag" is given, it specifies a *tag* or a *branch* that is used to
+fetch the source with ``git clone -b TAG``.
 
 The key "url" is a git repository specification (see manual of git for
 further information).
