@@ -6,6 +6,17 @@ Preface
 
 All tests in this directory are started by invoking make. 
 
+Prerequisites
+-------------
+
+In order for all the tests to run you need these version control systems:
+
+- CVS
+- Subversion
+- Darcs
+- Mercurial
+- Git
+
 Prepatations for the tests
 --------------------------
 
