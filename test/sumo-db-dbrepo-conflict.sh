@@ -62,7 +62,7 @@ $SUMO db --dbdir local-git   --dbrepo "darcs central-git" --dbrepomode get -y cl
 
 echo "Conflict in darcs repo:"
 echo "-----------------------"
-$SUMO db -y --logmsg "local changes" --dbdir local-darcs --dbrepo "darcs central-darcs" --dbrepomode pull show ALARM 2>&1 || true
+$SUMO db -y --logmsg "local changes" --dbdir local-darcs --dbrepo "darcs central-darcs" --dbrepomode pull show ALARM 2>&1 | grep -v '^Backing up' | grep -v '^ *$' || true
 echo
 echo "Conflict in mercurial repo:"
 echo "---------------------------"
