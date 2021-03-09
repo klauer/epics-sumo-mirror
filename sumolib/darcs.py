@@ -307,13 +307,22 @@ class Repo():
         assert_darcs()
         cmd="darcs pull --repodir %s -q -a %s" % (self.directory,
                                                   self.remote_url)
-        (stdout,_)= sumolib.system.system(cmd, True, False,
-                                          _env,
-                                          self.verbose, self.dry_run)
+        (stdout,stderr)= sumolib.system.system(cmd, True, True,
+                                               _env,
+                                               self.verbose, self.dry_run)
+        output_lines= []
+        if stderr:
+            output_lines.extend(stderr.splitlines())
+            # ensure that output on stderr is always printed to the console:
+            sys.stdout.flush()
+            sys.stderr.write(stderr)
+            sys.stderr.flush()
+            flushed= True
         if stdout:
+            output_lines.extend(stdout.splitlines())
             print(stdout)
             sys.stdout.flush() # print has no "flush" for python 3.2.3
-        for l in stdout.splitlines():
+        for l in output_lines:
             if l.lower().startswith("we have conflicts"):
                 msg="error, 'darcs pull' failed"
                 raise IOError(msg)

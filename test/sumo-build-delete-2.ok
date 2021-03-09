@@ -1,9 +1,5 @@
 call sumo build new, let the command fail on purpose...
-
-darcs failed:  Not a repository: /data/repo/mybase/3-14-12-2-1 (/data/repo/mybase/3-14-12-2-1/_darcs/inventory does not exist)
-
-HINT: Do you have the right URI for the repository?
-
+Not a repository: /data/repo/mybase/3-14-12-2-1 (/data/repo/mybase/3-14-12-2-1/_darcs/inventory does not exist)
 Error, checkout failed: [Errno 2] cmd "darcs get -t '^R3-14-12-2-1\s*$' -q /data/repo/mybase/3-14-12-2-1 /tmp-sumo-build-delete-2/BASE/R3-14-12-2-1+001", rc 2
 
 directory tree (without darcs, maxdepth 2)

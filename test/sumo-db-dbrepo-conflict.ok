@@ -1,10 +1,7 @@
 Conflict in darcs repo:
 -----------------------
-Backing up ./DEPS.DB(.~0~)
 We have conflicts in the following files:
 ./DEPS.DB
-
-
 Error while loading dependency database: 'darcs pull' failed
 
 Conflict in mercurial repo:
