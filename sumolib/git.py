@@ -1,7 +1,7 @@
 """git support
 """
 
-# pylint: disable= invalid-name, bad-whitespace
+# pylint: disable= invalid-name
 
 # test like this:
 # cd test/src
@@ -306,8 +306,6 @@ class Repo():
         opts= "-c advice.detachedHead=false -q"
         if tag:
             opts+= " -b %s" % tag
-        if rev:
-            opts+= " -b %s" % rev
         cmd= "git clone %s %s %s" % (opts, url, destdir)
         sumolib.system.system(cmd, False, False, None, verbose, dry_run)
         # the following to avoid warning if we use "git push" in this
@@ -317,6 +315,23 @@ class Repo():
             cmd="git config push.default simple"
             sumolib.system.system(cmd, False, False, None,
                                   verbose, dry_run)
+        finally:
+            sumolib.system.changedir(cwd, verbose, dry_run)
+        if (tag is None) and (rev is None):
+            # nothing more to do, HEAD was checked out
+            return
+        if tag is not None:
+            # tag/branch was given. Due to option "-b" with "git clone"
+            # everything is already set up correctly, we have nothing more to
+            # do.
+            return
+        # From here: (rev is not None)
+        # We have to run checkout:
+        opts= "-q"
+        cmd="git checkout %s %s" % (opts, rev)
+        cwd= sumolib.system.changedir(destdir, verbose, dry_run)
+        try:
+            sumolib.system.system(cmd, False, False, None, verbose, dry_run)
         finally:
             sumolib.system.changedir(cwd, verbose, dry_run)
     def commit(self, logmessage):
