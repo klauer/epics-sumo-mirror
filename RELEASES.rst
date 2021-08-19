@@ -160,3 +160,20 @@ Management
 - Support for packages for debian-8 and fedora-31 was removed, support for
   packages for debian-11 and fedora-33 was added.
 
+Release 4.1.4
+-------------
+
+Date: 2021-08-19
+
+Internal changes
+++++++++++++++++
+
+- Some changes in Builds.py due to pylint warnings.
+- test/tests.log was updated
+
+Bugfixes
+++++++++
+
+- Builds.py: The "multiple build tag" warning didn't show the build name.
+
+
