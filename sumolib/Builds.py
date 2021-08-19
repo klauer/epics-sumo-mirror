@@ -1,7 +1,7 @@
 """Database file handling.
 """
 
-# pylint: disable= invalid-name, bad-whitespace
+# pylint: disable= invalid-name
 
 import sys
 import os.path
@@ -450,7 +450,7 @@ class BuildCache(sumolib.JSON.Container):
     """
     def __init__(self, dict_= None, use_lock= True, lock_timeout= None):
         """create the object."""
-        super(BuildCache, self).__init__(dict_, use_lock, lock_timeout)
+        super().__init__(dict_, use_lock, lock_timeout)
     def add_dependency(self, modulename, versionname,
                        dep_name, dep_version, state):
         """add a single dependency with a state."""
