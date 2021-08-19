@@ -124,8 +124,8 @@ class DB(sumolib.JSON.Container):
         new_builds= set()
         for b in other.iter_builds():
             if self.has_build_tag(b):
-                warn("warning: buildtag '%s' found in both build databases, "
-                     "the later one will be ignored.")
+                warn(("warning: buildtag '%s' found in both build databases, "
+                      "the later one will be ignored.") % b)
                 continue
             # note: this is *NOT* a deepcopy, just the reference is copied:
             d[b]= od[b]
