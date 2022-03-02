@@ -1,4 +1,4 @@
-FROM fedora:32
+FROM fedora:34
 MAINTAINER Goetz Pfeiffer <goetz.pfeiffer@helmholtz-berlin.de>
 
 # first do a system update:
