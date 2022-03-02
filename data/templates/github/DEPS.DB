@@ -124,6 +124,25 @@
                 }
             }
         },
+        "R3-15-9": {
+            "make-recipes": {
+                "config": [
+                    "echo \"export EPICS_HOST_ARCH=$$(perl $(BASE)/src/tools/EpicsHostArch.pl)\" > $DIR/setenv.sh",
+                    "echo \"export EPICS_BASE=$(BASE)\" >> $DIR/setenv.sh",
+                    "echo \"export PATH=\\$$EPICS_BASE/bin/\\$$EPICS_HOST_ARCH:\\$$PATH\" >> $DIR/setenv.sh"
+                ],
+                "distclean": [
+                    "$(MAKE) -C $DIR distclean",
+                    "rm -f $DIR/setenv.sh"
+                ]
+            },
+            "source": {
+                "git": {
+                    "tag": "R3.15.9",
+                    "url": "https://github.com/epics-base/epics-base.git"
+                }
+            }
+        },
         "R3-16-2": {
             "make-recipes": {
                 "config": [
