@@ -176,4 +176,20 @@ Bugfixes
 
 - Builds.py: The "multiple build tag" warning didn't show the build name.
 
+Release 4.1.5
+-------------
+
+Date: 2022-03-02
+
+Data files
+++++++++++
+
+- Added BASE:R3-15-9 to data/templates/github/DEPS.DB, BASE:R3-15-8 cannot
+  always be built.
+
+Package building
+++++++++++++++++
+
+- Support for building RPM packages for fedora-34 and fedora-35 was added,
+  support for fedora-32 and fedora-33 was removed.
 
