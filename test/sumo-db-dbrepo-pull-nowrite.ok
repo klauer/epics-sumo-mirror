@@ -38,35 +38,50 @@ sumo db list ALARM without --dbrepo:
 
 sumo db list ALARM with --dbrepo (fetch changes from central repo)
 ------------------------------------------------------------------
-warning: locking the dependency database failed: 'no rights to create lock for file 'local-darcs/repo''. Disabling repository operations on the dependency database for now.{
+warning: locking the dependency database failed: no rights to create
+  lock for file 'local-darcs/repo'. Disabling repository operations on
+  the dependency database for now.
+{
     "ALARM": [
         "R3-8-modified",
         "R3-7"
     ]
 }
 
-warning: locking the dependency database failed: 'no rights to create lock for file 'local-hg/repo''. Disabling repository operations on the dependency database for now.{
+warning: locking the dependency database failed: no rights to create
+  lock for file 'local-hg/repo'. Disabling repository operations on
+  the dependency database for now.
+{
     "ALARM": [
         "R3-8-modified",
         "R3-7"
     ]
 }
 
-warning: locking the dependency database failed: 'no rights to create lock for file 'local-git/repo''. Disabling repository operations on the dependency database for now.{
+warning: locking the dependency database failed: no rights to create
+  lock for file 'local-git/repo'. Disabling repository operations on
+  the dependency database for now.
+{
     "ALARM": [
         "R3-8-modified",
         "R3-7"
     ]
 }
 
-warning: locking the dependency database failed: 'no rights to create lock for file 'local-svn/repo''. Disabling repository operations on the dependency database for now.{
+warning: locking the dependency database failed: no rights to create
+  lock for file 'local-svn/repo'. Disabling repository operations on
+  the dependency database for now.
+{
     "ALARM": [
         "R3-8-modified",
         "R3-7"
     ]
 }
 
-warning: locking the dependency database failed: 'no rights to create lock for file 'local-cvs/repo''. Disabling repository operations on the dependency database for now.{
+warning: locking the dependency database failed: no rights to create
+  lock for file 'local-cvs/repo'. Disabling repository operations on
+  the dependency database for now.
+{
     "ALARM": [
         "R3-8-modified",
         "R3-7"

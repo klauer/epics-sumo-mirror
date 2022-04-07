@@ -8,6 +8,7 @@ import platform
 import os
 import os.path
 import re
+import textwrap
 import sumolib.system
 import sumolib.JSON
 
@@ -167,6 +168,26 @@ def env_expand(st):
     if not st:
         return st
     return os.path.expandvars(st.replace(r'\$',"$ ")).replace("$ ","$")
+
+def linebreaks(txt, initial_indent, subsequent_indent, final_linefeed= True):
+    """text wrap."""
+    lines= textwrap.wrap(txt, initial_indent= initial_indent,
+                         subsequent_indent= subsequent_indent,
+                         break_on_hyphens= False)
+    if final_linefeed:
+        lines.append("")
+    return "\n".join(lines)
+
+def errmessage(txt, initial_indent="", subsequent_indent="  ", wrap= True):
+    """print something on stderr."""
+    sys.stdout.flush()
+    if not wrap:
+        sys.stderr.write(txt+'\n')
+    else:
+        sys.stderr.write(linebreaks(txt,
+                                    initial_indent= initial_indent,
+                                    subsequent_indent= subsequent_indent))
+    sys.stderr.flush()
 
 rx_ivar= re.compile(r'(?<!\\)\$([A-Za-z_]\w*)')
 rx_ivar2= re.compile(r'(?<!\\)\$\{([A-Za-z_]\w*)\}')

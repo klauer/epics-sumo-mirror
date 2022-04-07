@@ -29,9 +29,9 @@ dry_run
 
 import os.path
 import re
-import sys
 
 import sumolib.system
+import sumolib.utils
 
 __version__="4.1.5" #VERSION#
 
@@ -82,12 +82,11 @@ def _scan(filenames, external_definitions= None,
             if name is None:
                 # shouldn't happen
                 if warnings:
-                    sys.stdout.flush()
-                    sys.stderr.write("\nmakefile_scan.py: warning:\n"
-                                     "\tline not parsable in %s\n"
-                                     "\t%s\n" % \
-                                     (" ".join(filenames),repr(line)))
-                    sys.stderr.flush()
+                    sumolib.utils.errmessage(\
+                        ("\nmakefile_scan.py: warning:\n"
+                         "\tline not parsable in %s\n"
+                         "\t%s\n" % \
+                         (" ".join(filenames),repr(line))), wrap= False)
                 continue
             # assume that this belongs to a multi-line value:
             value+= "\n"

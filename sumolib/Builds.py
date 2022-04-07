@@ -5,6 +5,7 @@
 
 import sys
 import os.path
+import sumolib.utils
 
 if __name__ == "__main__":
     # if this module is directly called like a script, we have to add the path
@@ -20,16 +21,6 @@ __version__="4.1.5" #VERSION#
 
 assert __version__==sumolib.ModuleSpec.__version__
 assert __version__==sumolib.JSON.__version__
-
-# -----------------------------------------------
-# warnings
-# -----------------------------------------------
-
-def warn(text):
-    """print a warning to the console."""
-    sys.stdout.flush()
-    sys.stderr.write(text+"\n")
-    sys.stderr.flush()
 
 # -----------------------------------------------
 # class definitions
@@ -124,8 +115,9 @@ class DB(sumolib.JSON.Container):
         new_builds= set()
         for b in other.iter_builds():
             if self.has_build_tag(b):
-                warn(("warning: buildtag '%s' found in both build databases, "
-                      "the later one will be ignored.") % b)
+                sumolib.utils.errmessage(\
+                    ("warning: buildtag '%s' found in both build databases, "
+                     "the later one will be ignored.") % b)
                 continue
             # note: this is *NOT* a deepcopy, just the reference is copied:
             d[b]= od[b]
@@ -247,7 +239,8 @@ class DB(sumolib.JSON.Container):
         while changes:
             loopcount+=1
             if loopcount > 100:
-                warn("warning: internal error, sortby_linkage failed")
+                sumolib.utils.errmessage(\
+                    "warning: internal error, sortby_linkage failed")
                 break
             changes= False
             for t in taglist:
@@ -492,9 +485,10 @@ class BuildCache(sumolib.JSON.Container):
                     dep_names= list(db.iter_dependencies(modulename,
                                                          versionname))
                 except KeyError as _:
-                    warn("WARNING: build '%s', module '%s:%s' not "
+                    sumolib.utils.errmessage(\
+                        ("WARNING: build '%s', module '%s:%s' not "
                          "in dependency db!" % \
-                         (buildtag,modulename,versionname))
+                         (buildtag,modulename,versionname)))
                     continue
                 for dep_name in dep_names:
                     v= build_dict.get(dep_name)

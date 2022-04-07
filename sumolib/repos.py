@@ -592,11 +592,10 @@ class ManagedRepo():
             # Setting self.sourcespec to <None> basically disables the
             # ManagedRepo object.
             if self.mode!='get':
-                sys.stdout.flush()
-                sys.stderr.write(("warning: locking the dependency database "
-                                  "failed: '%s'. Disabling repository "
-                                  "operations on the dependency database "
-                                  "for now.") % errmsg)
+                sumolib.utils.errmessage(\
+                    ("warning: locking the dependency database failed: "
+                     "%s. Disabling repository operations on the "
+                     "dependency database for now.") % errmsg)
                 sys.stderr.flush()
             self.sourcespec= None
             return
@@ -620,11 +619,10 @@ class ManagedRepo():
             if self.repo_obj.get_remote_url() is None:
                 # repo found but remote repo couldn't be contacted:
                 self.mode='get'
-                sys.stdout.flush()
-                sys.stderr.write("warning: remote repository for dependency "
-                                 "database repository couldn't be "
-                                 "contacted, forcing mode 'get'.\n")
-                sys.stderr.flush()
+                sumolib.utils.errmessage(\
+                    "warning: remote repository for dependency "
+                    "database repository couldn't be contacted, "
+                    "forcing mode 'get'.")
 
     def local_changes(self):
         """return if there are local changes."""
