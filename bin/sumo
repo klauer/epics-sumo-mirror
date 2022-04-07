@@ -4390,6 +4390,16 @@ def process(options, commands):
         (options, _)= load_config_files(options, None)
         # ^^ disable_loading==None means: use options.disable_loading
 
+        if options.readonly:
+            # We set dbrepomode to 'get' in this case. This avoids error
+            # messages when dbrepomode is 'pull' or 'push' but the dependency
+            # database is not writable. When --readonly was given in the
+            # configuration, we assume that it is okay when the dependency
+            # database is not writable, we get no warning messages when
+            # dbrepomode is 'get'.
+            if options.dbrepo:
+                options.dbrepomode= 'get'
+
         # Set callbacks for completion module here, they are needed for some
         # command completion functions:
         if options.list:
@@ -4557,7 +4567,7 @@ def main():
     options.module     = sumolib.utils.opt_join(options.module)
     options.makeflags   = sumolib.utils.opt_join(options.makeflags)
 
-    # ^^^ A set of all options where lists from the command line are *appended*
+    # A set of all options where lists from the command line are *appended*
     # to lists from the config file. The default is that lists from the command
     # line overwrite settings from the config file.
     if not options.append:
