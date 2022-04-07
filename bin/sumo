@@ -12,7 +12,6 @@ import shutil
 import filecmp
 import textwrap
 import pydoc
-import functools
 import multiprocessing
 
 import sumolib.system
@@ -35,7 +34,8 @@ from sumolib.configuration_doc import text as doc_configuration
 # version of the program:
 __version__= "4.1.5" #VERSION#
 
-if sys.version_info[0:2] < (3,2):
+_pyver= sys.version_info[0:2]
+if _pyver < (3,2):
     sys.exit("error: python 3.2 or newer is required for this application")
 # Note: The Python version is checked in:
 #     setup.py, sumo, sumo-scan
@@ -293,34 +293,6 @@ def _assume_dir(dir_, dry_run):
     if not dry_run:
         if not os.path.exists(dir_):
             sys.exit("Error, directory 'configure' not found")
-
-# -----------------------------------------------
-# exception handling for multiprocessing
-# -----------------------------------------------
-
-# This wrapper is needed for functions started with multiprocessing.Process.
-# When such a function raises an exception it is terminated within the
-# multiprocessing.Process code. The exception handling code in function
-# Process() here in sumo is never reached. So we have to re-implement the
-# exception handling here. Function multiprocess_handle_exception can be used
-# as a decorator for an arbitrary function.
-
-def multiprocess_handle_exception(fun):
-    @functools.wraps(fun)
-    def wrapper(*args, **kwargs):
-        # pylint: disable=broad-except
-        if not use_multiprocessing:
-            return fun(*args, **kwargs)
-        try:
-            return fun(*args, **kwargs)
-        except (AssertionError, IOError, KeyError, TypeError, ValueError,
-                sumolib.JSON.ParseError, sumolib.JSON.ParseError,
-                sumolib.lock.AccessError, sumolib.lock.LockedError) as e:
-            if catch_exceptions:
-                # does sys.exit() :
-                sumolib.utils.exception_exit(e)
-            raise
-    return wrapper
 
 # -----------------------------------------------
 # load config files
@@ -1033,7 +1005,6 @@ def delete_module(builddir, build_tag, modulename, versionname,
         # remove the parent directory if it is empty:
     rm_empty_dir(modulename, verbose, dry_run)
 
-@multiprocess_handle_exception
 def create_module(db, builddb, build_tag,
                   dist_dict,
                   modulename, versionname,
@@ -1055,7 +1026,7 @@ def create_module(db, builddb, build_tag,
         ValueError if directory cannot be created
 
     Note that this function is called with multiprocessing.Process(), this is
-    the reason why we need the multiprocess_handle_exception decorator.
+    the reason why we need the multiprocessing_function decorator.
     """
     # pylint: disable=R0913
     #                          Too many arguments
@@ -1075,6 +1046,16 @@ def create_module(db, builddb, build_tag,
                 dirname,
                 extra_defs,
                 verbose, dry_run)
+
+# This wrapper is needed when create_module is used with multiprocessing.
+# pool.map_async requires that the function gets only a single agument.
+# Python 3.2.3 compatibility:
+#   we do not use starmap here to remain compatible with python 3.2.3.
+
+def create_module_multiproc(args):
+    """multiprocessing version of create_module.
+    """
+    return create_module(*args)
 
 # -----------------------------------------------
 # builddb utilities
@@ -1521,7 +1502,7 @@ def create_modules(dist_dict, db, builddb, builddir, build_tag,
         ensure_dir(builddir, dry_run)
     if no_checkout:
         return
-    processes= []
+    args_list= []
     for module_dict in module_list:
         # may raise IOError, ValueError:
         args=(db, builddb, build_tag,
@@ -1534,27 +1515,27 @@ def create_modules(dist_dict, db, builddb, builddir, build_tag,
         if not use_multiprocessing:
             create_module(*args)
         else:
-            processes.append( \
-                multiprocessing.Process( target= create_module, args= args))
-    for p in processes:
-        p.start()
-    for p in processes:
-        p.join()
-    for p in processes:
-        # check if one of the processes had an error:
-        if p.exitcode!=0:
-            if catch_exceptions:
-                # the error message was already printed by the sub process, so
-                # silently exit the program:
-                sys.exit(p.exitcode)
-            else:
-                # if catch_exceptions is False we want a traceback that shows
-                # the developer *where* something went wrong. Since the
-                # exception traceback from the sub process does not contain
-                # *this* position in the code, we raise a second exception here
-                # in the main program:
-                raise IOError("create_module sub process failed")
-
+            args_list.append(args)
+    if use_multiprocessing:
+        if _pyver < (3,3):
+            # Python 3.2.3 compatibility: "with" doesn't work with "Pool" in
+            # this version.
+            # pylint: disable= consider-using-with
+            pool= multiprocessing.Pool()
+            res= pool.map_async(create_module_multiproc, args_list)
+            res.get()
+            pool.close()
+            pool.join()
+        else:
+            with multiprocessing.Pool() as pool:
+                res= pool.map_async(create_module_multiproc, args_list)
+                # The following "get" waits for all calls to
+                # create_module_multiproc() to complete and will raise an exception
+                # when one of the calls of create_module_multiproc() raised an
+                # exception. The exception message contains the information where
+                # in create_module_multiproc() and create_module() the exception
+                # occured.
+                res.get()
 
 def simple_call_make(builddir, makefile, target, makeflags,
                      progress, verbose, dry_run):
