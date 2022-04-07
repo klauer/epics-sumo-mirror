@@ -20,10 +20,9 @@ In order for all the tests to run you need these version control systems:
 Prepatations for the tests
 --------------------------
 
-You have to run the following commands before starting the tests::
+You have to run the following command once before starting the tests::
 
-  ../administration_tools/mk-data.sh 
-  ../administration_tools/mk-sumo-doc.sh
+  ./init.sh
 
 Running the tests
 -----------------
