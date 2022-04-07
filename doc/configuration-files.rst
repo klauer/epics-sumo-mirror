@@ -270,6 +270,11 @@ extra
   files,
   for details see :ref:`sumo options <reference-sumo-Options>`.
 
+jobs
+  Specify the maximum number of jobs in sumo to run simultaneously within
+  sumo, 
+  for details see :ref:`sumo options <reference-sumo-Options>`.
+
 localbuilddir
   The local build directory, for details see 
   :ref:`sumo options <reference-sumo-Options>`. This key has 
@@ -281,10 +286,6 @@ makeflags
 
 module
   A list of module specifications,
-  for details see :ref:`sumo options <reference-sumo-Options>`.
-
-no-multiprocessing
-  Do not use multiprocessing in the program,
   for details see :ref:`sumo options <reference-sumo-Options>`.
 
 no-err-build-exists

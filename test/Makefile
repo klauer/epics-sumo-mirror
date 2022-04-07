@@ -197,6 +197,7 @@ sumo-build-new-commands.out: sumo-db-commands.tst
 sumo-build-modulespecs.out: sumo-build-new-0.tst sumo-db-convert.tst
 sumo-build-try.out: sumo-build-new-0.tst sumo-db-convert.tst
 sumo-build-new.out: sumo-db-convert.tst
+sumo-build-new-fail.out: sumo-db-convert.tst
 sumo-build-new-1.out: sumo-db-convert.tst
 sumo-build-delete-2.out: sumo-db-convert.tst
 sumo-build-state.out: sumo-build-new-0.tst 

@@ -1,0 +1,40 @@
+Not a repository: /data/repo/mybase/3-14-12-2-1 (/data/repo/mybase/3-14-12-2-1/_darcs/inventory does not exist)
+Error, checkout failed: [Errno 2] cmd "darcs get -t '^R3-14-12-2-1\s*$' -q /data/repo/mybase/3-14-12-2-1 /tmp-sumo-build-new-fail/BASE/R3-14-12-2-1+001", rc 2
+Not a repository: /data/repo/mybase/3-14-12-2-1 (/data/repo/mybase/3-14-12-2-1/_darcs/inventory does not exist)
+Error, checkout failed: [Errno 2] cmd "darcs get -t '^R3-14-12-2-1\s*$' -q /data/repo/mybase/3-14-12-2-1 /tmp-sumo-build-new-fail/BASE/R3-14-12-2-1+002", rc 2
+
+number of directories created in first build (must be 1)
+1
+
+Test if number of directories created in second build is greater than 1
+ok
+
+contents of BUILDS.DB:
+{
+    "001": {
+        "modules": {
+            "ALARM": "R3-8-modified",
+            "BASE": "R3-14-12-2-1",
+            "BSPDEP_TIMER": "R6-2",
+            "BSPDEP_VMETAS": "TAGLESS-2-1-modified",
+            "MCAN": "R2-6-3-gp",
+            "MISC_DBC": "PATH-3-0",
+            "MISC_DEBUGMSG": "R3-0",
+            "SOFT_DEVHWCLIENT": "TAR-3-0"
+        },
+        "state": "incomplete"
+    },
+    "002": {
+        "modules": {
+            "ALARM": "R3-8-modified",
+            "BASE": "R3-14-12-2-1",
+            "BSPDEP_TIMER": "R6-2",
+            "BSPDEP_VMETAS": "TAGLESS-2-1-modified",
+            "MCAN": "R2-6-3-gp",
+            "MISC_DBC": "PATH-3-0",
+            "MISC_DEBUGMSG": "R3-0",
+            "SOFT_DEVHWCLIENT": "TAR-3-0"
+        },
+        "state": "incomplete"
+    }
+}

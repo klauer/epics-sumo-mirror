@@ -1777,6 +1777,17 @@ Here is a short overview on command line options:
     'all', show help for all options. If OPTIONS is missing, show a short
     generic help message for the program.
 
+``--jobs``
+++++++++++
+
+    Specify the maximum number of jobs in sumo to run simultaneously. Currently
+    this is used when the sources for modules of a build are created by
+    checking out from version control systems. This number should be an integer
+    greater or equal to 0. 0 means that the job number is equal to the number
+    of CPUs, 1 means that there is only 1 job running at the same time, all
+    greater numbers specify the number of jobs running simultaneously. The
+    default for this option is 0.
+
 ``--lines``
 +++++++++++
  
@@ -1816,14 +1827,6 @@ Here is a short overview on command line options:
     specify more than one of these by repeating this option or by joining
     values in a single string separated by spaces. A default for this option
     can be put in a configuration file.
-
-``--no-multiprocessing``
-++++++++++++++++++++++++
-
-    Do not use multiprocessing in the program. This is mainly here to help
-    debugging the program. Currently multiprocessing is used when the sources
-    for modules of a build are created by checking out from version control
-    systems.
 
 ``--no-checkout``
 +++++++++++++++++

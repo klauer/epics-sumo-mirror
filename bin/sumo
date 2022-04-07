@@ -166,7 +166,7 @@ LOCK_TIMEOUT=4
 catch_exceptions= True
 pager_mode= "on"
 
-use_multiprocessing= True
+processes= None # means to use the same number as there are CPU cores.
 
 env_help= os.environ.get(ENV_HELP,"")
 if env_help:
@@ -1512,22 +1512,23 @@ def create_modules(dist_dict, db, builddb, builddir, build_tag,
               extra_lines,
               progress,
               verbose, dry_run)
-        if not use_multiprocessing:
+        if processes==1:
             create_module(*args)
         else:
             args_list.append(args)
-    if use_multiprocessing:
+    if processes!=1:
+        # note: processes is a global variable
         if _pyver < (3,3):
             # Python 3.2.3 compatibility: "with" doesn't work with "Pool" in
             # this version.
             # pylint: disable= consider-using-with
-            pool= multiprocessing.Pool()
+            pool= multiprocessing.Pool(processes= processes)
             res= pool.map_async(create_module_multiproc, args_list)
             res.get()
             pool.close()
             pool.join()
         else:
-            with multiprocessing.Pool() as pool:
+            with multiprocessing.Pool(processes= processes) as pool:
                 res= pool.map_async(create_module_multiproc, args_list)
                 # The following "get" waits for all calls to
                 # create_module_multiproc() to complete and will raise an exception
@@ -4213,9 +4214,9 @@ option_help_topics= {
         "nolock":
                 doc_options['Options']\
                            ['``--nolock``'],
-        "no-multiprocessing":
+        "jobs":
                 doc_options['Options']\
-                           ['``--no-multiprocessing``'],
+                           ['``--jobs``'],
         "progress":
                 doc_options['Options']\
                            ['``-p, --progress``'],
@@ -4353,11 +4354,19 @@ def process(options, commands):
     """do all the work.
     """
     # pylint: disable=global-statement, too-many-branches
-    global catch_exceptions, use_multiprocessing
+    global catch_exceptions, processes
     if options.exceptions:
         catch_exceptions= False
-    if options.no_multiprocessing:
-        use_multiprocessing= False
+    if options.jobs:
+        try:
+            processes= int(options.jobs)
+            if processes<0:
+                raise ValueError
+        except ValueError as e:
+            raise ValueError("error, value for '--jobs' must be "
+                             "an integer greater or equal to 0") from e
+        if processes==0:
+            processes= None # see docs for multiprocessing.Pool()
 
     try:
         (cmd, c_args)= sumolib.cli.process_cmd(commands, KNOWN_MAIN_COMMANDS,
@@ -4493,7 +4502,7 @@ def main():
     specs.add("--sort-build-dependencies-last")
     specs.add("--readonly")
     specs.add("--nolock")
-    specs.add("--no-multiprocessing")
+    specs.add("--jobs", arg_name= "JOBS")
     specs.add("--progress -p")
     specs.add("--trace")
     specs.add("--tracemore")

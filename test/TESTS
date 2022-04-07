@@ -41,6 +41,7 @@ sumo-build-modulespecs
 sumo-build-try
 sumo-build-new
 sumo-build-new-1
+sumo-build-new-fail
 sumo-build-delete-2
 sumo-build-state
 sumo-build-state-2
