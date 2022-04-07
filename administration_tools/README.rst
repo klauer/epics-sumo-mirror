@@ -36,6 +36,12 @@ Set up a new version like this::
 
   ./new-version.sh $(./show-last-release.sh)
 
+Optionally run the tests
+++++++++++++++++++++++++
+
+If you decide to do this, read file test/README.rst, the part "Logging of
+tests".
+
 Setup data directories
 ++++++++++++++++++++++
 
