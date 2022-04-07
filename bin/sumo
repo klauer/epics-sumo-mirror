@@ -3482,12 +3482,14 @@ def subcmd_build_use(arguments, options):
 
     module_list_complete= None
     # ^^^ <None> until we check if the module list is complete
+
+    # may raise EOFError, ValueError, IOError, sumolib.JSON.ParseError:
+    (_, db)= db_from_repo(options)
+
     if not options.buildtag:
         # unspecifed build_tag, look if the module list is complete:
         # may raise ValueError:
         dist_dict= modulespecs_obj.to_dist_dict()
-        # may raise EOFError, ValueError, IOError, sumolib.JSON.ParseError:
-        (_, db)= db_from_repo(options)
         try:
             # may raise KeyError, ValueError:
             db.assert_complete_modulelist(dist_dict)
@@ -3500,8 +3502,6 @@ def subcmd_build_use(arguments, options):
         _assume_dir("configure", options.dry_run)
         output= os.path.join("configure","RELEASE")
 
-    # may raise EOFError, IOError, ValueError, sumolib.JSON.ParseError:
-    (_, db)= db_from_repo(options)
     # may raise IOError, ValueError:
     builddb= builddb_from_json_file(options.builddir,
                                     options.localbuilddir,
