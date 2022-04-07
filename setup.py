@@ -7,23 +7,11 @@ on how to use setup.py
 """
 # pylint: disable=line-too-long
 
-# see : http://stackoverflow.com/questions/25337706/setuptools-vs-distutils-why-is-distutils-still-a-thing
-# maybe use this in the future:
-#
-# if len(sys.argv) >= 2 and ('--help' in sys.argv[1:] or
-#         sys.argv[1] in ('--help-commands', 'egg_info', '--version',
-#                         'clean')):
-#     # Use setuptools for these commands (they don't work well or at all
-#     # with distutils).  For normal builds use distutils.
-#     try: from setuptools import setup
-#     except ImportError:
-#         from distutils.core import setup
-
-from distutils.core import setup
-
 import os
 import os.path
 import sys
+
+from setuptools import setup
 
 # pylint: disable=invalid-name
 
@@ -234,6 +222,7 @@ setup(name=name,
       package_data={'sumolib': dir_glob_list("sumolib", "data") },
       # the data_files parameter is especially needed for the
       # rpm file generation:
+      # NOTE: data_files is deprecated in setuptools !!
       data_files= data_files,
       license= "GPLv3",
       scripts= ['bin/sumo','bin/sumo-scan'],
