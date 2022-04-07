@@ -213,8 +213,8 @@ Keys in the sumo configuration file
 
 The following keys may be part of a configuration file for sumo:
 
-#preload
-  A list of files to *preload*, see 
+#opt-postload
+  A list of optional files to *postload*, see 
   :ref:`Loading other files <configuration-files-loading>`.
 
 #opt-preload
@@ -225,13 +225,18 @@ The following keys may be part of a configuration file for sumo:
   A list of files to *postload*, see 
   :ref:`Loading other files <configuration-files-loading>`.
 
-#opt-postload
-  A list of optional files to *postload*, see 
+#preload
+  A list of files to *preload*, see 
   :ref:`Loading other files <configuration-files-loading>`.
 
 alias
   A list of module aliases in the form FROM:TO,
   for details see :ref:`sumo options <reference-sumo-Options>`.
+
+builddir
+  The build directory,
+  for details see :ref:`sumo options <reference-sumo-Options>`. This key has
+  `Environment variable expansion`_.
 
 buildtag-stem
   A string that specifies a buildtag stem,
@@ -251,6 +256,11 @@ dbrepomode
   A string that specifies the mode for the dependency database repository, 
   for details see :ref:`sumo options <reference-sumo-Options>`.
 
+dir-patch
+  A list of directory patch expressions for the ``db convert`` and
+  ``db modconvert`` commands. For details see 
+  :ref:`sumo options <reference-sumo-Options>`.
+
 editor
   A string that specifies the editor for command ``sumo db edit``, for details
   see :ref:`sumo options <reference-sumo-Options>`.
@@ -260,6 +270,11 @@ extra
   files,
   for details see :ref:`sumo options <reference-sumo-Options>`.
 
+localbuilddir
+  The local build directory, for details see 
+  :ref:`sumo options <reference-sumo-Options>`. This key has 
+  `Environment variable expansion`_.
+
 makeflags
   A list of strings that specify extra options for "make",
   for details see :ref:`sumo options <reference-sumo-Options>`.
@@ -267,6 +282,15 @@ makeflags
 module
   A list of module specifications,
   for details see :ref:`sumo options <reference-sumo-Options>`.
+
+no-multiprocessing
+  Do not use multiprocessing in the program,
+  for details see :ref:`sumo options <reference-sumo-Options>`.
+
+no-err-build-exists
+  When with ``build new`` a build matching the :term:`modulespecs`
+  already exists, just print a warning and terminate without an error.
+  For details see :ref:`sumo options <reference-sumo-Options>`.
 
 progress
   A boolean flag that controls the printing of progress markers,
@@ -280,23 +304,10 @@ scandb
   The filename of the scan database,
   for details see :ref:`sumo options <reference-sumo-Options>`.
   
-dir-patch
-  A list of directory patch expressions, 
-  for details see :ref:`sumo options <reference-sumo-Options>`.
-
 url-patch
-  A list of url patch expressions, 
+  A list of url patch expressions for the ``db convert`` and
+  ``db modconvert`` commands. For details see 
   for details see :ref:`sumo options <reference-sumo-Options>`.
-
-builddir
-  The build directory,
-  for details see :ref:`sumo options <reference-sumo-Options>`. This key has
-  `Environment variable expansion`_.
-
-localbuilddir
-  The local build directory, for details see 
-  :ref:`sumo options <reference-sumo-Options>`. This key has 
-  `Environment variable expansion`_.
 
 verbose
   A boolean flag that controls the verbosity level,

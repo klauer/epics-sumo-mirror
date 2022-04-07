@@ -1713,11 +1713,12 @@ Here is a short overview on command line options:
 ``-D EXPRESSION, --dir-patch EXPRESSION``
 +++++++++++++++++++++++++++++++++++++++++
 
-    Specify a directory patchexpression. Such an expression consists of a tuple
-    of 2 python strings. The first is the match expression, the second one is
-    the replacement string. The regular expression is applied to every source
-    path generated. You can specify more than one patchexpression. A default
-    for this option can be put in a configuration file.
+    This option is used for commands ``db convert`` and ``db modconvert``. It
+    specifies a directory patchexpression. Such an expression consists of a
+    tuple of 2 python strings. The first is the match expression, the second
+    one is the replacement string. The regular expression is applied to every
+    source path generated. You can specify more than one patchexpression. A
+    default for this option can be put in a configuration file.
 
 ``--disable-loading``
 +++++++++++++++++++++
@@ -1753,7 +1754,7 @@ Here is a short overview on command line options:
 
     On fatal errors that raise python exceptions, don't catch these. This will
     show a python stacktrace instead of an error message and may be useful for
-    debugging the program."
+    debugging the program.
 
 ``-X REGEXP, --exclude-states REGEXP``
 ++++++++++++++++++++++++++++++++++++++
@@ -1925,6 +1926,7 @@ Here is a short overview on command line options:
 ``-U EXPRESSION, --url-patch EXPRESSION``
 +++++++++++++++++++++++++++++++++++++++++
 
+    This option is used for commands ``db convert`` and ``db modconvert``.
     Specify a repository url patchexpression. Such an expression consists of a
     tuple of 2 python strings. The first is the match expression, the second
     one is the replacement string. The regular expression is applied to every
