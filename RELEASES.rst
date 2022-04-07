@@ -193,3 +193,43 @@ Package building
 - Support for building RPM packages for fedora-34 and fedora-35 was added,
   support for fedora-32 and fedora-33 was removed.
 
+Release 4.2
+-----------
+
+Date: 2022-04-07
+
+Bugfixes
+++++++++
+
+- One of the tests no longer worked although the program had no error
+- A read-only file system is now treated the same as missing write permissions
+
+Internal changes
+++++++++++++++++
+
+- pylint warnings were removed in all files
+- sumo build use now opens DEPS.DB only once instead of twice
+- The multiprocessing implementation now uses multiprocessing pool
+- all programe check for python version >= 3.2
+- init.sh script prepares the "test" directory
+- administration_tools/README.rst has a hint on running the tests
+
+Changes in warnings
++++++++++++++++++++
+
+- Warning messages are now formatted in a more readable way.
+- Better warning when global and local builddir have builds of the same name
+- sumo messages no longer call a build a "buildtree"
+
+Documentation
++++++++++++++
+
+- Possible values for --dbdir are now better documented
+- Configuration file documentation: Tags are now in alphabetical order
+
+New/Changed functions
++++++++++++++++++++++
+
+- sumo --readonly implies repomode "get".
+- "sumo --jobs JOBNUMBER" replaces "sumo --no-multiprocessing"
+
