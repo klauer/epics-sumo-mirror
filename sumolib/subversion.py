@@ -1,7 +1,7 @@
 """mercurial support
 """
 
-# pylint: disable=invalid-name, bad-whitespace
+# pylint: disable=invalid-name
 
 import os.path
 import sys

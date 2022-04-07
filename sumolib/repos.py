@@ -1,7 +1,7 @@
 """Repository support
 """
 
-# pylint: disable=invalid-name, bad-whitespace
+# pylint: disable=invalid-name
 
 import os.path
 import sys
@@ -191,7 +191,7 @@ class SourceSpec(sumolib.JSON.Container):
             # sumolib.JSON.Container defines __del__(). We handle this problem
             # in function __del__ in sumolib.JSON.
             raise ValueError("invalid source spec dict %s" % repr(dict_))
-        super(SourceSpec, self).__init__(dict_, use_lock= True)
+        super().__init__(dict_, use_lock= True)
     # pylint: disable=C0301
     #                          Line too long
     def to_deps_dict(self):

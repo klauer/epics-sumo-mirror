@@ -1,7 +1,7 @@
 """Lockfile support.
 """
 
-# pylint: disable=invalid-name, bad-whitespace
+# pylint: disable=invalid-name
 
 import sys
 import os
@@ -105,6 +105,7 @@ class MyLock():
                     os.symlink(self.info, self.lockname)
                 else:
                     os.mkdir(self.lockname)
+                    # pylint: disable=consider-using-with
                     open(os.path.join(self.lockname,self.info),'w').close()
             except OSError as e:
                 # pylint: disable=no-else-raise
@@ -117,19 +118,20 @@ class MyLock():
                     if self.method=="link":
                         raise LockedError("file '%s' is locked: %s" % \
                                       (self._filename,
-                                       os.readlink(self.lockname)))
+                                       os.readlink(self.lockname))) from e
                     else:
                         txt= " ".join(os.listdir(self.lockname))
                         raise LockedError("file '%s' is locked: %s" % \
-                                      (self._filename, txt))
+                                      (self._filename, txt)) from e
                 elif e.errno==errno.EACCES:
                     # cannot write to directory
                     raise AccessError(("no rights to create lock for "
-                                       "file '%s'") % self._filename)
+                                       "file '%s'") % self._filename) from e
                 elif e.errno==errno.ENOENT:
                     # no such file or directory
                     raise NoSuchFileError(("cannot create %s, path doesn't "
-                                           "exist")  % repr(self.lockname))
+                                           "exist")  % repr(self.lockname)) \
+                          from e
                 else:
                     # re-raise exception in all other cases
                     raise

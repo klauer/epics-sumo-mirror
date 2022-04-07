@@ -5,7 +5,7 @@ import sys
 import copy
 import os.path
 
-# pylint: disable=invalid-name, bad-whitespace
+# pylint: disable=invalid-name
 
 if __name__ == "__main__":
     # if this module is directly called like a script, we have to add the path
@@ -57,7 +57,7 @@ class OldDB(sumolib.JSON.Container):
     def __init__(self, dict_= None, use_lock= True, lock_timeout= None):
         """create the object."""
         # pylint: disable=useless-super-delegation
-        super(OldDB, self).__init__(dict_, use_lock, lock_timeout)
+        super().__init__(dict_, use_lock, lock_timeout)
     def convert(self):
         """convert to a Dependencies and BuildCache object.
         """
@@ -116,7 +116,7 @@ class DB(sumolib.JSON.Container):
     def __init__(self, dict_= None, use_lock= True, lock_timeout= None):
         """create the object."""
         # pylint: disable=useless-super-delegation
-        super(DB, self).__init__(dict_, use_lock, lock_timeout)
+        super().__init__(dict_, use_lock, lock_timeout)
     def merge(self, other):
         """merge another Dependencies object to self.
 
@@ -141,7 +141,7 @@ class DB(sumolib.JSON.Container):
                         except ValueError as e:
                             raise ValueError(\
                               "module %s version %s aliases: %s" % \
-                              (modulename, versionname, str(e)))
+                              (modulename, versionname, str(e))) from e
                         continue
                     if dictname=="dependencies":
                         if dictname not in vdict:
@@ -162,7 +162,8 @@ class DB(sumolib.JSON.Container):
                             continue
                         # merge the two lists of lines, but take only new lines
                         # that are not already present in the list:
-                        sumolib.utils.lines_unique_update(vdict[dictname], vdict2[dictname])
+                        sumolib.utils.lines_unique_update(vdict[dictname],
+                                                          vdict2[dictname])
                         continue
                     if dictname=="make-recipes":
                         try:
@@ -172,7 +173,7 @@ class DB(sumolib.JSON.Container):
                         except ValueError as e:
                             raise ValueError(\
                               "module %s version %s aliases: %s" % \
-                              (modulename, versionname, str(e)))
+                              (modulename, versionname, str(e))) from e
                         continue
                     if dictname=="releasefile":
                         if dictname not in vdict:
@@ -248,7 +249,7 @@ class DB(sumolib.JSON.Container):
             ret= old_spec.change_source_by_tag(tag)
         except ValueError as e:
             raise ValueError("Error, '%s:%s' %s" % \
-                             (module_name, versionname, _uq(str(e))))
+                             (module_name, versionname, _uq(str(e)))) from e
         if ret:
             version["source"]= old_spec.to_deps_dict()
         return ret
@@ -682,9 +683,9 @@ class DB(sumolib.JSON.Container):
             found= False
             try:
                 versions= list(self.iter_versions(modulename))
-            except KeyError as _:
+            except KeyError as e:
                 raise KeyError("Error, module '%s' not found in "
-                               "dependency database" % modulename)
+                               "dependency database" % modulename) from e
             for version in versions:
                 if not modulespec.test(version):
                     continue

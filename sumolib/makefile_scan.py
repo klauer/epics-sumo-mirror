@@ -25,13 +25,13 @@ dry_run
 
 """
 
+# pylint: disable= invalid-name
+
 import os.path
 import re
 import sys
 
 import sumolib.system
-
-# pylint: disable=C0322,C0103
 
 __version__="4.1.5" #VERSION#
 
@@ -149,7 +149,7 @@ def scan(filenames, external_definitions= None, pre= None,
     new= {}
     for (k,v) in post.items():
         if k in pre:
-            if pre[k]==post[k]:
+            if pre[k]==v:
                 continue
         new[k]= v
     return new

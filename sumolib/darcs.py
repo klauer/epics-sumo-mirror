@@ -1,7 +1,7 @@
 """darcs support
 """
 
-# pylint: disable=invalid-name, bad-whitespace
+# pylint: disable=invalid-name
 
 import re
 import os
@@ -317,7 +317,6 @@ class Repo():
             sys.stdout.flush()
             sys.stderr.write(stderr)
             sys.stderr.flush()
-            flushed= True
         if stdout:
             output_lines.extend(stdout.splitlines())
             print(stdout)

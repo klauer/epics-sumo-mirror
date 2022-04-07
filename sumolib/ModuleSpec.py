@@ -1,7 +1,7 @@
 """module specifications.
 """
 
-# pylint: disable=invalid-name, bad-whitespace
+# pylint: disable=invalid-name
 
 import sys
 

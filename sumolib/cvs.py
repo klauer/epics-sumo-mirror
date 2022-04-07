@@ -1,7 +1,7 @@
 """mercurial support
 """
 
-# pylint: disable=invalid-name, bad-whitespace
+# pylint: disable=invalid-name
 
 import os.path
 import re
@@ -34,6 +34,7 @@ def PTRACE(st, verbose):
 
 def _first_line(path):
     """return the first line of a text file."""
+    # pylint: disable=consider-using-with
     f= open(path, "r")
     for line in f:
         f.close()

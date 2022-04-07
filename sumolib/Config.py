@@ -1,7 +1,7 @@
 """Configuration file support.
 """
 
-# pylint: disable=invalid-name, bad-whitespace
+# pylint: disable=invalid-name
 
 import os
 import sys

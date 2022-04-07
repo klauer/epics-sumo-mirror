@@ -2,7 +2,7 @@
 """JSON utilities.
 """
 
-# pylint: disable=invalid-name, bad-whitespace, wrong-import-position
+# pylint: disable=invalid-name, wrong-import-position
 
 import sys
 import json
@@ -72,6 +72,7 @@ def dump_file(filename, var, mode_file):
     if not os.path.exists(mode_file):
         # No mode file exists, create one. We assume that is a portable way to
         # get the standard file permissions on any operating system:
+        # pylint: disable=consider-using-with
         fh= open(mode_file, "w")
         fh.close()
         shutil.copymode(mode_file, tmp_filename)
@@ -182,8 +183,8 @@ def anytxt2scalar(txt):
     if ret is None:
         try:
             ret= json.loads('"'+txt+'"')
-        except ValueError as _:
-            raise ValueError("error, invalid string: %s" % repr(txt))
+        except ValueError as e:
+            raise ValueError("error, invalid string: %s" % repr(txt)) from e
     return ret
 
 def loadfile(filename):
@@ -191,6 +192,7 @@ def loadfile(filename):
 
     If filename is "-" read from stdin.
     """
+    # pylint: disable=consider-using-with
     if filename != "-":
         fh= open(filename)
     else:
@@ -205,7 +207,7 @@ def loadfile(filename):
         else:
             msg= "<stdin>: %s" % str(e)
         # always re-raise as a value error:
-        raise ParseError(msg)
+        raise ParseError(msg) from e
     except IOError as e:
         if filename != "-":
             msg= "file %s: %s" % (filename, str(e))
@@ -422,16 +424,14 @@ class Container():
     def pickle_save(self, filename):
         """save using cPickle, don't use lockfiles or anything."""
         # Note: in python3, a pickle file must be opened in binary mode:
-        fh= open(filename, "wb")
-        pickle.dump(self.to_dict(), fh)
-        fh.close()
+        with open(filename, "wb") as fh:
+            pickle.dump(self.to_dict(), fh)
     @classmethod
     def from_pickle_file(cls, filename):
         """load from a cPickle file, don't use lockfiles or anything."""
         # Note: in python3, a pickle file must be opened in binary mode:
-        fh= open(filename, "rb")
-        data= pickle.load(fh)
-        fh.close()
+        with open(filename, "rb") as fh:
+            data= pickle.load(fh)
         return cls(data)
 
 def _test():

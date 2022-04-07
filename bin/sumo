@@ -2,7 +2,6 @@
 # -*- coding: UTF-8 -*-
 
 # pylint: disable=too-many-lines, missing-docstring, invalid-name
-# pylint: disable=bad-whitespace
 
 import sys
 import os.path
@@ -348,7 +347,8 @@ def load_config_files(options, disable_loading):
         config.load(options.config, not disable_loading)
     except (TypeError, KeyError, IOError, sumolib.JSON.ParseError) as e:
         # pylint: disable=raising-format-tuple
-        raise sumolib.utils.annotate("Error while loading config file(s): %s", e)
+        raise sumolib.utils.annotate("Error while loading config file(s): %s",
+                                     e) from e
 
     # expand environment variables:
     config.env_expand()
@@ -411,7 +411,8 @@ def repo_manager(dbdir, sourcespec_string, mode,
             sumolib.lock.LockedError,
             sumolib.lock.NoSuchFileError) as e:
         # pylint: disable=raising-format-tuple
-        raise annotate("Error while creating/accessing repository, %s", e)
+        raise annotate("Error while creating/accessing repository, %s", e) \
+              from e
     return mngr
 
 def db_from_json_file(filename, use_lock= True, keep_locked= False):
@@ -429,7 +430,7 @@ def db_from_json_file(filename, use_lock= True, keep_locked= False):
                                                    timeout= LOCK_TIMEOUT)
     except (ValueError, IOError) as e:
         # pylint: disable=raising-format-tuple
-        raise annotate("Error while loading dependency database: %s", e)
+        raise annotate("Error while loading dependency database: %s", e) from e
     return db
 
 def db_from_repo(options, keep_locked= False, changes_check= True,
@@ -471,7 +472,7 @@ def db_from_repo(options, keep_locked= False, changes_check= True,
                     # pylint: disable=raising-format-tuple
                     raise annotate("%s. "
                                    "You may want to use option '--yes' "
-                                   "to prevent this error.", e)
+                                   "to prevent this error.", e) from e
             if reply=="a":
                 sys.exit(1)
             if reply=="y":
@@ -484,9 +485,9 @@ def db_from_repo(options, keep_locked= False, changes_check= True,
                     # may raise ValueError, IOError
                     # or sumolib.JSON.ParseError:
                     db= db_from_json_file(db_file, use_lock= False)
-                    # the version control system should prompt for a log message if
-                    # none was given with --logmsg:
-                    # may raise IOError:
+                    # the version control system should prompt for a log
+                    # message if none was given with --logmsg: may raise
+                    # IOError:
                     db_to_repo(options, mngr, db, None, None)
                 finally:
                     mylock.unlock()
@@ -496,7 +497,7 @@ def db_from_repo(options, keep_locked= False, changes_check= True,
         mngr.prepare_read() # executes a "pull" command
     except IOError as e:
         # pylint: disable=raising-format-tuple
-        raise annotate("Error while loading dependency database: %s" , e)
+        raise annotate("Error while loading dependency database: %s" , e) from e
 
     # may raise IOError, ValueError, sumolib.JSON.ParseError:
     db= db_from_json_file(db_f(options.dbdir), True, keep_locked)
@@ -530,7 +531,7 @@ def db_to_repo(options, mngr, db, command, arguments):
         db.json_save(db_f(options.dbdir), options.verbose, options.dry_run)
     except IOError as e:
         # pylint: disable=raising-format-tuple
-        raise annotate(_errmsg, e)
+        raise annotate(_errmsg, e) from e
     if mngr:
         if options.logmsg:
             msg= options.logmsg
@@ -541,7 +542,7 @@ def db_to_repo(options, mngr, db, command, arguments):
         mngr.finish_write(msg)
     except IOError as e:
         # pylint: disable=raising-format-tuple
-        raise annotate(_errmsg, e)
+        raise annotate(_errmsg, e) from e
 
 def builddb_from_json_file(path, path_local, keep_locked= False,
                            must_exist= True):
@@ -583,7 +584,7 @@ def builddb_from_json_file(path, path_local, keep_locked= False,
                                     timeout= LOCK_TIMEOUT)
         except (IOError, ValueError) as e:
             # pylint: disable=raising-format-tuple
-            raise annotate("Error while loading build database %s" , e)
+            raise annotate("Error while loading build database %s" , e) from e
 
     if not overlay_file:
         return builddb
@@ -592,7 +593,8 @@ def builddb_from_json_file(path, path_local, keep_locked= False,
         builddb.overlay(overlay_file)
     except (IOError, ValueError) as e:
         # pylint: disable=raising-format-tuple
-        raise annotate("Error while loading overlay build database: %s", e)
+        raise annotate("Error while loading overlay build database: %s", e) \
+              from e
 
     return builddb
 
@@ -629,13 +631,14 @@ def init_buildcache(scandb_name, builddb, db):
     else:
         try:
             # may raise IOError, ValueError:
-            buildcache= sumolib.Builds.BuildCache.from_json_file(scandb_name,
-                                                                 use_lock=False,
-                                                                 keep_lock= False,
-                                                                 timeout= LOCK_TIMEOUT)
+            buildcache= sumolib.Builds.BuildCache.from_json_file(\
+                                scandb_name,
+                                use_lock=False,
+                                keep_lock= False,
+                                timeout= LOCK_TIMEOUT)
         except (IOError, ValueError) as e:
             # pylint: disable=raising-format-tuple
-            raise annotate("Error while loading build database: %s", e)
+            raise annotate("Error while loading build database: %s", e) from e
     buildcache.update_from_builddb(builddb, db)
     return buildcache
 
@@ -717,7 +720,7 @@ def _add_dependencies(module_dict, db, build_module_dict,
         db.assert_module(modulename, versionname)
     except KeyError as e:
         # pylint: disable=raising-format-tuple
-        raise annotate("Error in dependency database: %s", e)
+        raise annotate("Error in dependency database: %s", e) from e
 
     for dep in db.iter_dependencies(modulename, versionname):
         if dep in module_dict:
@@ -729,7 +732,7 @@ def _add_dependencies(module_dict, db, build_module_dict,
             raise annotate(("Error: build %s does not contain module %s "
                             "although it should due to a dependency. "
                             "You should delete this inconsistent "
-                            "build.") % (buildtag,dep), e)
+                            "build.") % (buildtag,dep), e) from e
         module_dict[dep]= version_present
         # may raise KeyError:
         _add_dependencies(module_dict, db, build_module_dict,
@@ -1004,7 +1007,7 @@ def create_source(db, modulename, versionname,
                                verbose, dry_run)
     except IOError as e:
         # pylint: disable=raising-format-tuple
-        raise annotate("Error, checkout failed: %s" , e)
+        raise annotate("Error, checkout failed: %s" , e) from e
 
 def delete_module(builddir, build_tag, modulename, versionname,
                   must_exist,
@@ -1356,7 +1359,7 @@ def create_database(deps, repoinfo, groups, dir_patches, url_patches):
                                    versionedmodule_path,
                                    dep_path)
                         # pylint: disable=raising-format-tuple
-                        raise annotate(st_, e)
+                        raise annotate(st_, e) from e
                     if _dep_name != dep_alias:
                         try:
                             db.add_alias(modulename, versionname,
@@ -1435,7 +1438,7 @@ def delete_build(builddb, build_tags, recursive, yes_option, verbose, dry_run):
                 # pylint: disable=raising-format-tuple
                 raise annotate("%s. "
                                "You may want to use option '--yes' "
-                               "to prevent this error.", e)
+                               "to prevent this error.", e) from e
             if not reply:
                 sys.exit(1)
 
@@ -1465,8 +1468,8 @@ def delete_build(builddb, build_tags, recursive, yes_option, verbose, dry_run):
         if error:
             errmsg(("Error, "
                     "build %s couldn't be deleted completely.\n"
-                    "You have to fix the problem and try to delete the build again.") % \
-                   build)
+                    "You have to fix the problem and try to delete the build "
+                    "again.") % build)
 
         makefile= makefilename(builddb.dirname(), build)
         if os.path.exists(makefile):
@@ -1568,7 +1571,7 @@ def simple_call_make(builddir, makefile, target, makeflags,
         sumolib.system.system(cmd, False, False, None, verbose, dry_run)
     except IOError as e:
         # pylint: disable=raising-format-tuple
-        raise annotate("Error: make failed: %s" , e)
+        raise annotate("Error: make failed: %s" , e) from e
 
 def call_make(buildtag, options):
     """the initial call of "make", mark the build "testing" on success.
@@ -1747,7 +1750,7 @@ def subcmd_config_make_show(cmd, arguments, options):
             # pylint: disable=raising-format-tuple
             raise annotate("%s. "
                            "You may want to use option '--yes' "
-                           "to prevent this error.", e)
+                           "to prevent this error.", e) from e
     # pylint: disable=no-member
     config.save(filename, args.OPTIONNAMES, options.verbose, options.dry_run)
 
@@ -1781,7 +1784,7 @@ def subcmd_config_standalone(arguments, options):
             # pylint: disable=raising-format-tuple
             raise annotate("%s. "
                            "You may want to use option '--yes' "
-                           "to prevent this error.", e)
+                           "to prevent this error.", e) from e
     ensure_dir(sumodir, options.dry_run)
     if not config.get("dbrepo"):
         sys.exit("error, dbrepo must be specified as command line option "
@@ -1834,7 +1837,7 @@ def subcmd_config_local(arguments, options):
             # pylint: disable=raising-format-tuple
             raise annotate("%s. "
                            "You may want to use option '--yes' "
-                           "to prevent this error.", e)
+                           "to prevent this error.", e) from e
     ensure_dir(sumodir, options.dry_run)
     if not config.get("dbrepo"):
         sys.exit("error, dbrepo must be specified as command line option "
@@ -1956,7 +1959,7 @@ def subcmd_db_edit(arguments, options):
                     # pylint: disable=raising-format-tuple
                     raise annotate("%s. "
                                    "You may want to use option '--yes' "
-                                   "to prevent this error.", e)
+                                   "to prevent this error.", e) from e
                 if not reply:
                     # "finally" will take care of the lock
                     sys.exit("aborting, your changes are in file %s" % db_tmp)
@@ -2019,7 +2022,7 @@ def subcmd_db_convert(arguments, options):
                              options.verbose, options.dry_run)
     except ValueError as e:
         # pylint: disable=raising-format-tuple
-        raise annotate("Error while saving scan database file: %s", e)
+        raise annotate("Error while saving scan database file: %s", e) from e
 
 def subcmd_db_modconvert(arguments, options):
     """implement "db modconvert".
@@ -2066,7 +2069,7 @@ def subcmd_db_modconvert(arguments, options):
         except KeyError as e:
             # pylint: disable=raising-format-tuple
             raise annotate("Error module not found in dependency database %s",
-                           e)
+                           e) from e
     db.json_print()
 
 def subcmd_db_appconvert(arguments, options):
@@ -2135,7 +2138,7 @@ def subcmd_db_weight(arguments, options):
         weight= int(args.WEIGHT) # pylint: disable=no-member
     except ValueError as e:
         # pylint: disable=raising-format-tuple
-        raise annotate("Error WEIGHT is not an integer: %s" , e)
+        raise annotate("Error WEIGHT is not an integer: %s" , e) from e
 
     # pylint: disable=no-member
     # may raise ValueError:
@@ -2200,7 +2203,8 @@ def subcmd_db_show(arguments, options):
         db= db.partial_copy_by_modulespecs(modulespecs_obj)
     except ValueError as e:
         # pylint: disable=raising-format-tuple
-        raise annotate("Error, module not found in dependency database: %s" , e)
+        raise annotate("Error, module not found in dependency "
+                        "database: %s" , e) from e
 
     db.json_print()
 
@@ -2580,7 +2584,7 @@ def subcmd_db_clone_replace_version(command, arguments, options):
         # pylint: disable=raising-format-tuple
         raise annotate("%s. "
                        "You may want to use option '--yes' "
-                       "to prevent this error.", e)
+                       "to prevent this error.", e) from e
     if options.dumpdb:
         db.json_print()
     else:
@@ -2673,7 +2677,7 @@ def subcmd_db_list(arguments, options):
                 # pylint: disable=raising-format-tuple
                 raise annotate("Error module "+modulename+" not " + \
                                "found in dependency database: %s",
-                               e)
+                               e) from e
             versions= [v for v in moduleversions if modulespec.test(v)]
             result[modulename]= versions
     sumolib.JSON.dump(result)
@@ -2916,7 +2920,7 @@ def subcmd_build_state(arguments, options):
                     # pylint: disable=raising-format-tuple
                     raise annotate("%s. "
                                    "You may want to use option '--yes' "
-                                   "to prevent this error.", e)
+                                   "to prevent this error.", e) from e
             builds.add(buildtag)
 
         for b in builds:
@@ -3062,8 +3066,9 @@ def subcmd_build_try(arguments, options):
     was_built= set()
     needed_by_others= {}
 
-    for modulename in sets_dict: # iterate on all modules
-        for versionname in sets_dict[modulename]: # iterate on all versions
+    for modulename, moduleversions in sets_dict.items():
+                                           # ^ iterate on all modules
+        for versionname in moduleversions: # iterate on all versions
             if buildcache.was_built(modulename,versionname):
                 was_built.add((modulename,versionname))
             for depname in db.iter_dependencies(modulename, versionname):
@@ -3076,10 +3081,10 @@ def subcmd_build_try(arguments, options):
     # now build the report structure:
     report= {}
     # pylint: disable=too-many-nested-blocks
-    for modulename in sets_dict:
+    for modulename, moduleversions in sets_dict.items():
         mdict= report.setdefault(modulename, {})
-        no_of_versions= len(sets_dict[modulename])
-        for versionname in sets_dict[modulename]:
+        no_of_versions= len(moduleversions)
+        for versionname in moduleversions:
             d= {}
             mdict[versionname]= d
             d["built"]= (modulename,versionname) in was_built
@@ -3120,8 +3125,9 @@ def subcmd_build_try(arguments, options):
     if options.detail:
         try:
             detail= int(options.detail)
-        except ValueError:
-            raise ValueError("error, value for '--detail' must be 1, 2 or 3")
+        except ValueError as e:
+            raise ValueError("error, value for '--detail' must be "
+                             "1, 2 or 3") from e
         wanted= set(modules_not_exact_spec)
         wanted.update(added_modules)
         if (detail==1) and wanted:
@@ -3830,9 +3836,6 @@ def _test():
     doctest.testmod()
     print("done!")
 
-# pylint: disable=C0330
-#                          Wrong indentation
-
 help_topics= {
         "":"""
 No help topic given. Use
@@ -4293,9 +4296,6 @@ Enter '%s help' for help on commands,
       '%s -h option [option]' for help on the given options
 """ % tuple([me]*4)
 
-# pylint: enable=C0330
-#                          Wrong indentation
-
 def maincmd_help(arguments, options):
     """implement "help" command.
     """
@@ -4313,8 +4313,8 @@ def maincmd_help(arguments, options):
             return []
         return [k for k in s if k.startswith(st)]
 
-    main_topics_list= [k for k in help_topics.keys() if " " not in k]
-    sub_topics_list = [k for k in help_topics.keys() if " " in k]
+    main_topics_list= [k for k in help_topics if " " not in k]
+    sub_topics_list = [k for k in help_topics if " " in k]
     sub_topics= {}
 
     for s in sub_topics_list:

@@ -1,6 +1,6 @@
 """urlsupport"""
 
-# pylint: disable=invalid-name, bad-whitespace
+# pylint: disable=invalid-name
 
 import re
 import urllib.request # not needed: urllib.parse, urllib.error

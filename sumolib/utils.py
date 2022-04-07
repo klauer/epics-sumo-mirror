@@ -1,7 +1,7 @@
 """Utilities for the SUMO scripts.
 """
 
-# pylint: disable=invalid-name, bad-whitespace
+# pylint: disable=invalid-name
 
 import sys
 import platform
@@ -98,8 +98,8 @@ def ask_from_options(question, options):
             if _trace_input:
                 sys.stderr.write("(wait for input on stdin)\n")
             inp= input(question).strip()
-        except EOFError as _:
-            raise EOFError("EOF while waiting for input")
+        except EOFError as e:
+            raise EOFError("EOF while waiting for input") from e
         if inp in options:
             return inp
         # not found
@@ -125,8 +125,8 @@ def ask_yes_no(question, force_yes= None):
             if _trace_input:
                 sys.stderr.write("(wait for input on stdin)\n")
             inp= input(question).lower().strip()
-        except EOFError as _:
-            raise EOFError("EOF while waiting for input")
+        except EOFError as e:
+            raise EOFError("EOF while waiting for input") from e
         if inp in ["yes","y"]:
             return True
         if inp in ["no", "n"]:
@@ -365,6 +365,7 @@ class TextFile:
             if self.dry_run:
                 self.fh= None
             else:
+                # pylint: disable=consider-using-with
                 self.fh= open(filename, "w")
     def write(self, st):
         """write a text."""

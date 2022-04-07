@@ -1,6 +1,6 @@
 """Special sumo command completion functions."""
 
-# pylint: disable=invalid-name, bad-whitespace
+# pylint: disable=invalid-name
 
 import sys
 import os.path
@@ -44,11 +44,8 @@ build_cache_callback= dummy
 
 def touch(fname, times=None):
     """do "touch" on a file."""
-    fhandle = open(fname, 'a')
-    try:
+    with open(fname, 'a'): # open/create file
         os.utime(fname, times)
-    finally:
-        fhandle.close()
 
 def db_cache():
     """create a module cache in $HOME/.sumo.modulecache if needed.

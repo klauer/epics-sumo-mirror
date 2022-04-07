@@ -1,6 +1,6 @@
 """patch file support."""
 
-# pylint: disable=invalid-name, bad-whitespace
+# pylint: disable=invalid-name
 
 import os
 import subprocess
@@ -31,6 +31,7 @@ def call_patch(patch_file, target_dir, verbose, dry_run):
     old_dir= sumolib.system.changedir(target_dir,
                                       verbose= False, dry_run= False)
     try:
+        # pylint: disable=consider-using-with
         inp= open(patch_file, "r")
         p= subprocess.Popen(cmd, shell=True,
                             stdin= inp,

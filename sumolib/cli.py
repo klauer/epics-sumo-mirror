@@ -1,6 +1,6 @@
 """Command line interface."""
 
-# pylint: disable=too-many-lines, invalid-name, bad-whitespace
+# pylint: disable=too-many-lines, invalid-name
 
 import sys
 import glob

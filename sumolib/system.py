@@ -1,7 +1,7 @@
 """System utilities.
 """
 
-# pylint: disable=invalid-name, bad-whitespace
+# pylint: disable=invalid-name
 
 import os
 import shutil
@@ -60,6 +60,7 @@ def system_rc(cmd, catch_stdout, catch_stderr, env, verbose, dry_run):
     if env is None:
         env= _new_env
 
+    # pylint: disable=consider-using-with
     p= subprocess.Popen(cmd, shell=True,
                         stdout=stdout_par, stderr=stderr_par,
                         close_fds=True,
@@ -167,8 +168,8 @@ def test_program(cmd):
         system(cmd+" --version", True, True, None, False, False)
     except IOError as e:
         if "not found" in str(e):
-            raise IOError("Error, %s: command not found" % cmd)
-        raise e
+            raise IOError("Error, %s: command not found" % cmd) from e
+        raise e from e
     program_tests.add(cmd)
 
 def _test():
