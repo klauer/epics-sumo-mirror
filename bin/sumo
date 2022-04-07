@@ -3414,7 +3414,7 @@ def subcmd_build_find(arguments, options):
         sys.exit(0)
     new_builddb= builddb.filter_by_modulespecs(modulespecs_obj)
     if new_builddb.is_empty():
-        print("no matching buildtrees found")
+        print("no matching builds found")
     else:
         if options.brief:
             for buildtag in sort_buildtags(list(new_builddb.iter_builds()),
