@@ -113,16 +113,15 @@ class DB(sumolib.JSON.Container):
         d= self.datadict()
         od= other.datadict()
         new_builds= set()
+        ignored_builds= set()
         for b in other.iter_builds():
             if self.has_build_tag(b):
-                sumolib.utils.errmessage(\
-                    ("warning: buildtag '%s' found in both build databases, "
-                     "the later one will be ignored.") % b)
+                ignored_builds.add(b)
                 continue
             # note: this is *NOT* a deepcopy, just the reference is copied:
             d[b]= od[b]
             new_builds.add(b)
-        return new_builds
+        return (new_builds, ignored_builds)
     def is_empty(self):
         """shows of the object is empty."""
         return not bool(self.datadict())
@@ -364,6 +363,7 @@ class DB_overlay(DB):
         self.overlay_keys= {}
         self.overlay_files= []
         self.overlay_mode= True
+        self.ignored_keys= set()
     def overlaymode(self, new_mode= None):
         """get or set the overlay mode.
 
@@ -383,7 +383,16 @@ class DB_overlay(DB):
         """merge with another builddb from a file."""
         other= DB.from_json_file(filename, use_lock= use_lock,
                                  keep_lock= False)
-        new_keys= self.merge(other)
+        (new_keys, ignored_keys)= self.merge(other)
+        if ignored_keys:
+            sumolib.utils.errmessage(\
+                ("Warning: The following build tags in %s were ignored "
+                 "since they already exist in %s:") % \
+                 (filename, self._filename))
+            sumolib.utils.errmessage(" ".join(sorted(ignored_keys)))
+            # list of builds:
+            # (sumo build list 2>&1 >/dev/null) | tail -n +1
+
         self.overlay_files.append(filename)
         idx= len(self.overlay_files)-1
         for k in new_keys:
