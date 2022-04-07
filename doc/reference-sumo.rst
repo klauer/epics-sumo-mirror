@@ -1633,6 +1633,8 @@ Here is a short overview on command line options:
     loads your configuration file. The contents of all configuration files are
     merged.
 
+.. _reference-sumo-Options-dbdir:
+
 ``--dbdir DBDIR``
 +++++++++++++++++
 
@@ -1645,13 +1647,15 @@ Here is a short overview on command line options:
 +++++++++++++++++++++++
 
     Define a REPOSITORY for the db file. REPOSITORY must have the form
-    'REPOTYPE URL' or 'type=REPOTYPE url=URL". REPOTYPE may be 'darcs', 'hg' or
-    'git'. Option --dbdir must specify a directory that will contain the
-    repository for the db file.  Before reading the db file a 'pull' command
-    will be executed. When the file is changed, a 'commit' and a 'push' command
-    will be executed. If the repository doesn't exist the program tries to
-    check out a working copy from the given URL. A default for this option can
-    be put in a configuration file.
+    'REPOTYPE URL' or 'type=REPOTYPE url=URL". REPOTYPE may be 'darcs', 'hg',
+    'git', 'svn' or 'cvs'. Option :ref:`--dbdir <reference-sumo-Options-dbdir>`.
+    must specify a directory that will
+    contain the repository for the db file. What repository operations sumo performs 
+    when it reads or writes the db file depends on option 
+    :ref:`--dbrepomode <reference-sumo-Options-dbrepomode>`.
+    A default for this option can be put in a configuration file.
+
+.. _reference-sumo-Options-dbrepomode:
 
 ``--dbrepomode MODE``
 +++++++++++++++++++++
