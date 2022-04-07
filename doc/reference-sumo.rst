@@ -1639,6 +1639,8 @@ Here is a short overview on command line options:
     Define the directory where the dependency database file 'DEPS.DB' is found.
     A default for this option can be put in a configuration file.
 
+.. _reference-sumo-Options-dbrepo:
+
 ``--dbrepo REPOSITORY``
 +++++++++++++++++++++++
 
