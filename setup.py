@@ -126,7 +126,9 @@ def path_rebase(path, base):
             return path
     if len(path_l)==len(base_l):
         return ""
-    return os.path.join(*path_l[len(base_l):])
+    # a bit complicated in order to make pylint happy:
+    lst_= path_l[len(base_l):]
+    return os.path.join(lst_[0], *lst_[1:])
 
 def dir_glob_list(module_dir, subdir):
     """add entries for package_data.
