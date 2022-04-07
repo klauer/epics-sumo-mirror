@@ -34,6 +34,11 @@ makefile_scan_pre= {}
 # version of the program:
 __version__= "4.1.5" #VERSION#
 
+if sys.version_info[0:2] < (3,2):
+    sys.exit("error: python 3.2 or newer is required for this application")
+# Note: The Python version is checked in:
+#     setup.py, sumo, sumo-scan
+
 assert __version__==sumolib.system.__version__
 assert __version__==sumolib.Config.__version__
 assert __version__==sumolib.utils.__version__

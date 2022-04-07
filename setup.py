@@ -15,8 +15,7 @@ on how to use setup.py
 #                         'clean')):
 #     # Use setuptools for these commands (they don't work well or at all
 #     # with distutils).  For normal builds use distutils.
-#     try:
-#         from setuptools import setup
+#     try: from setuptools import setup
 #     except ImportError:
 #         from distutils.core import setup
 
@@ -28,8 +27,10 @@ import sys
 
 # pylint: disable=invalid-name
 
-if sys.version_info[0] < 3:
-    sys.exit("error: python 3 or newer is required for this application")
+if sys.version_info[0:2] < (3,2):
+    sys.exit("error: python 3.2 or newer is required for this application")
+# Note: The Python version is checked in:
+#     setup.py, sumo, sumo-scan
 
 base_name= 'python'
 
