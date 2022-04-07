@@ -123,6 +123,10 @@ class MyLock():
                         txt= " ".join(os.listdir(self.lockname))
                         raise LockedError("file '%s' is locked: %s" % \
                                       (self._filename, txt)) from e
+                elif e.errno==errno.EROFS:
+                    # read-only filesystem
+                    raise AccessError(("no rights to create lock for "
+                                       "file '%s'") % self._filename) from e
                 elif e.errno==errno.EACCES:
                     # cannot write to directory
                     raise AccessError(("no rights to create lock for "
