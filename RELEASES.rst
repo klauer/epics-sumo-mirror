@@ -233,3 +233,29 @@ New/Changed functions
 - sumo --readonly implies repomode "get".
 - "sumo --jobs JOBNUMBER" replaces "sumo --no-multiprocessing"
 
+Release 4.3
+-----------
+
+Date: 2022-06-09
+
+Internal changes
+++++++++++++++++
+
+- Small changes in administration_tools/README.rst.
+
+Documentation
++++++++++++++
+
+- Some spelling errors were removed.
+
+Error checking
+++++++++++++++
+
+- "sumo config make FILENAME [OPTIONNAMES]" checks if OPTIONNAMES are valid.
+
+New/Changed functions
++++++++++++++++++++++
+
+- "sumo build find" now shows matching/non-matching/missing modules.
+- "sumo build getmodules" and the "sumo config make --getmodules" were added.
+

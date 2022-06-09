@@ -32,7 +32,7 @@ import sumolib.repos
 makefile_scan_pre= {}
 
 # version of the program:
-__version__= "4.2" #VERSION#
+__version__= "4.3" #VERSION#
 
 if sys.version_info[0:2] < (3,2):
     sys.exit("error: python 3.2 or newer is required for this application")

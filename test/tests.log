@@ -428,3 +428,44 @@ darcs 2.16.4 (release)
 mercurial: 4.4
 git: 2.9.4
 =================================================
+
+=================================================
+2022-06-09T21:58:54+02:00
+Tests ran successfully on this environment:
+-------------------------------------------------
+host: orange
+LSB Version:	:core-4.1-amd64:core-4.1-noarch:cxx-4.1-amd64:cxx-4.1-noarch:desktop-4.1-amd64:desktop-4.1-noarch:languages-4.1-amd64:languages-4.1-noarch:printing-4.1-amd64:printing-4.1-noarch
+Distributor ID:	Fedora
+Description:	Fedora release 35 (Thirty Five)
+Release:	35
+Codename:	ThirtyFive
+-------------------------------------------------
+sumo: 4.3
+bash: 5.1.8(1)-release (x86_64-redhat-linux-gnu)
+python: 3.10.4
+cvs: 1.11.23 (client/server)
+subversion: 1.14.1 (r1886195)
+darcs 2.16.4 (release)
+mercurial: 5.9.3
+git: 2.35.1
+=================================================
+
+=================================================
+2022-06-09T22:04:04+02:00
+Tests ran successfully on this environment:
+-------------------------------------------------
+host: stretch.acc.bessy.de
+Distributor ID:	Debian
+Description:	Debian GNU/Linux 9.13 (stretch)
+Release:	9.13
+Codename:	stretch
+-------------------------------------------------
+sumo: 4.3
+bash: 4.4.12(1)-release (x86_64-pc-linux-gnu)
+python: 3.5.3
+cvs: 1.12.13-MirDebian-22 (client/server)
+subversion: 1.9.5 (r1770682)
+darcs 2.16.3 (release)
+mercurial: 6.0.3
+git: 2.9.4
+=================================================
