@@ -291,6 +291,61 @@ class DB(sumolib.JSON.Container):
                 all_.update(self.linked_builds(b))
         all_.remove(build_tag)
         return all_
+    def check_by_modulespecs(self, modulespecs):
+        """checks which builds match or partially match the modulespecs.
+
+        returns: a dict
+          { buildtag : { "matched": matched_modules,
+                         "wrongversion": wrong_version_modules,
+                         "missing": missing_modules,
+                         "modules": {
+                                      modulename: (flag, modulespec)
+                                      ...
+                                    }
+                         ...
+                       }
+          }
+        """
+        # pylint: disable=too-many-locals
+        result= {}
+
+        if not isinstance(modulespecs, sumolib.ModuleSpec.Specs):
+            raise TypeError("wrong type: '%s'" % repr(modulespecs))
+        modulespecs= modulespecs.sorted()
+        for build_tag in self.iter_builds():
+            this_build_result= {}
+            missing_cnt=0
+            wrong_version_cnt=0
+            match_version_cnt=0
+            m= self.modules(build_tag)
+            for modulespec in modulespecs:
+                modulename= modulespec.modulename
+                v= m.get(modulename)
+                if v is None:
+                    # module is not part of build:
+                    res= ("-", modulename)
+                    missing_cnt+= 1
+                else:
+                    spec_st= sumolib.ModuleSpec.Spec(modulename, v,
+                                                     "eq").to_string()
+                    if not modulespec.test(v):
+                        res= ("!=", spec_st)
+                        wrong_version_cnt+= 1
+                    elif modulespec.equal(v):
+                        res= ("==", spec_st)
+                        match_version_cnt+= 1
+                    else:
+                        res= ("=~", spec_st)
+                        match_version_cnt+= 1
+                this_build_result[modulename]= res
+            if wrong_version_cnt!=0 or match_version_cnt!=0:
+                result[build_tag]= { "matched": match_version_cnt,
+                                     "wrongversion": wrong_version_cnt,
+                                     "missing": missing_cnt,
+                                     "modules": this_build_result
+                                   }
+        return result
+
     def filter_by_modulespecs(self, modulespecs):
         """return a new Builddb that satisfies the given list of specs.
 

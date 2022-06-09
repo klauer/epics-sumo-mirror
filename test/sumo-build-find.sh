@@ -10,24 +10,40 @@ TESTDIR=tmp-sumo-build-new-2
 
 cd $TESTDIR > /dev/null
 
-echo -e "sumo build find MCAN:"
-$SUMO build --dbdir . --builddir . find MCAN 
+NL=""
 
-echo -e "\nsumo-build find MCAN ALARM:R3-7"
-$SUMO build --dbdir . --builddir . find MCAN ALARM:R3-7
+function do_test {
+    # $1: command
+    echo -e "${NL}sumo $1:"
+    $SUMO --dbdir . --builddir . $1
+}
 
-echo -e "\nsumo-build find MCAN ALARM:-R3-7:"
-$SUMO build --dbdir . --builddir . find MCAN ALARM:-R3-7 
+do_test "build find MCAN"
+NL='\n'
 
-echo -e "\nsumo-build find MCAN ALARM:+R3-8:"
-$SUMO build --dbdir . --builddir . find MCAN ALARM:+R3-8 
+do_test "build find MCAN ALARM:R3-7"
 
-echo -e "\nsumo build find MCAN -b:"
-$SUMO build --dbdir . --builddir . find MCAN -b
+do_test "build find MCAN ALARM:R3-7 --detail 1"
 
-echo -e "\nsumo build find MCAN -b --sort-build-dependencies-first:"
-$SUMO build --dbdir . --builddir . find MCAN -b --sort-build-dependencies-first 
+do_test "build find MCAN ALARM:-R3-7"
 
-echo -e "\nsumo build find MCAN -b --sort-build-dependencies-last:"
-$SUMO build --dbdir . --builddir . find MCAN -b --sort-build-dependencies-last 
+do_test "build find MCAN ALARM:-R3-7 --detail 1"
+
+do_test "build find MCAN ALARM:+R3-8"
+
+do_test "build find MCAN ALARM:+R3-8 --detail 1"
+
+do_test "build find MCAN:R2-6-3 XY:R1-2 --detail 1"
+
+do_test "build find MCAN:R2-6-3 XY:R1-2 --detail 2"
+
+do_test "build find BASE:R3-14-12-2-1 BSPDEP_TIMER:R6-2 --detail 2"
+
+do_test "build find BASE:R3-14-12-2-1 BSPDEP_TIMER:R6-2 --detail 2 --all-builds"
+
+do_test "build --dbdir . --builddir . find MCAN -b"
+
+do_test "build --dbdir . --builddir . find MCAN -b --sort-build-dependencies-first"
+
+do_test "build --dbdir . --builddir . find MCAN -b --sort-build-dependencies-last"
 

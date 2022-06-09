@@ -159,6 +159,15 @@ class Spec():
             return k1<=k2
         raise ValueError("unknown flag: '%s'" % repr(flag))
 
+    def equal(self, version):
+        """Test if a version is equal to a spec.
+
+        Note: this returns always False when self.versionflag!="eq".
+        """
+        if self.versionflag!="eq":
+            return False
+        return self.versionname == version
+
     def test(self, version):
         """Test if a version matches the spec.
 
@@ -214,6 +223,10 @@ class Specs():
         """return repr string."""
         return "%s(%s)" % (self.__class__.__name__,
                            ",".join([repr(s) for s in self.specs]))
+    def sorted(self):
+        """return a sorted "specs" object."""
+        new= sorted(self.specs, key= lambda s: s.modulename)
+        return self.__class__(new)
     def __iter__(self):
         """the default iterator."""
         for m in self.specs:

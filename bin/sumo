@@ -1061,23 +1061,44 @@ def create_module_multiproc(args):
 # builddb utilities
 # -----------------------------------------------
 
-def filter_buildtags(buildtags, builddb, options):
-    """filter buildtags according to option '--all-builds'.
+def filter_buildtags(buildtags, builddb, all_builds):
+    """filter buildtags according to parameter all_builds.
 
-    If --all-builds is given, do nothing. Otherwise remove all
+    If all_builds is given, do nothing. Otherwise remove all
     builds that have not the state 'stable' or 'testing'.
-    """
-    if options.all_builds:
-        return buildtags
-    return [b for b in buildtags if builddb.is_testing_or_stable(b)]
 
-def sort_buildtags(buildtags, builddb, options):
-    """sort alphabetically or by dependencies."""
+    returns:
+      - a list of buildtags
+    """
+    if all_builds:
+        return list(buildtags)
+    # pylint: disable=consider-using-generator
+    return list([b for b in buildtags if builddb.is_testing_or_stable(b)])
+
+def sort_buildtag_order(options):
+    """calc sort_buildtags sort_order from options."""
+    sort_order= "alphabetically"
     if options.sort_build_dependencies_first:
-        return builddb.sortby_linkage(buildtags, reverse= False)
+        sort_order= "build-dependecies-first"
     if options.sort_build_dependencies_last:
+        sort_order= "build-dependecies-last"
+    return sort_order
+
+def sort_buildtags(buildtags, builddb, sort_order):
+    """sort alphabetically or by dependencies.
+
+    values for sort_order:
+    - "alphabetically"
+    - "build-dependecies-first"
+    - "build-dependecies-last"
+    """
+    if sort_order=="alphabetically":
+        return sorted(buildtags)
+    if sort_order=="build-dependecies-first":
+        return builddb.sortby_linkage(buildtags, reverse= False)
+    if sort_order=="build-dependecies-last":
         return builddb.sortby_linkage(buildtags, reverse= True)
-    return sorted(buildtags)
+    raise AssertionError("wrong sort_order: "+repr(sort_order))
 
 _builddb= [None]
 def mspecs_from_build(options):
@@ -2715,8 +2736,8 @@ def subcmd_build_list(arguments, options):
                                     options.localbuilddir,
                                     keep_locked= False, must_exist= False)
     buildtags= sort_buildtags(filter_buildtags(builddb.iter_builds(),
-                                               builddb, options),
-                              builddb, options)
+                                               builddb, options.all_builds),
+                              builddb, sort_buildtag_order(options))
 
     for buildtag in buildtags:
         print(buildtag)
@@ -2771,8 +2792,8 @@ def subcmd_build_showmodules(arguments, options):
         tags= [args.BUILDTAG]
     else:
         tags= sort_buildtags(filter_buildtags(builddb.iter_builds(),
-                                              builddb, options),
-                             builddb, options)
+                                              builddb, options.all_builds),
+                             builddb, sort_buildtag_order(options))
     # pylint: enable= no-member
     module_strings= {}
     for tag in tags:
@@ -2827,7 +2848,8 @@ def subcmd_build_showdeps(arguments, options, subcommand):
         tags= [args.BUILDTAG]
     else:
         # iter_builds already returns the builds alphabetically:
-        tags= filter_buildtags(builddb.iter_builds(), builddb, options)
+        tags= filter_buildtags(builddb.iter_builds(), builddb,
+                               options.all_builds)
     # pylint: enable= no-member
     l= 0
     for tag in tags:
@@ -2846,7 +2868,7 @@ def subcmd_build_showdeps(arguments, options, subcommand):
                                   "unknown subcommand: %s") % repr(subcommand))
         # sort found dependencies / dependents according to options
         # --sort-build-dependencies-first or --sort-build-dependencies-last:
-        deps_lst= sort_buildtags(deps, builddb, options)
+        deps_lst= sort_buildtags(deps, builddb, sort_buildtag_order(options))
         print(fmt % (tag, " ".join(deps_lst)))
 
 def subcmd_build_state(arguments, options):
@@ -3110,11 +3132,13 @@ def subcmd_build_try(arguments, options):
                      modulename)
 
     if options.detail:
+        _errmsg= "error, value for '--detail' must be 1, 2 or 3"
         try:
             detail= int(options.detail)
         except ValueError as e:
-            raise ValueError("error, value for '--detail' must be "
-                             "1, 2 or 3") from e
+            raise ValueError(_errmsg) from e
+        if detail not in (1,2,3):
+            raise ValueError(_errmsg)
         wanted= set(modules_not_exact_spec)
         wanted.update(added_modules)
         if (detail==1) and wanted:
@@ -3375,8 +3399,40 @@ def subcmd_build_find(arguments, options):
         ValueError, IOError from builddb_from_json_file
         ValueError from ModuleSpec.Specs.from_strings
     """
-    # pylint: disable=R0912
-    #                          Too many branches
+    # pylint: disable=too-many-statements, too-many-arguments
+    # pylint: disable=too-many-branches
+    def print_match_results(dict_, builddb, sort_order,
+                            detail,
+                            brief, all_builds):
+        """print results from builddb.check_by_modulespecs()."""
+        def keyfunc(b):
+            """for sorting."""
+            return dict_[b]["matched"]*2 + dict_[b]["wrongversion"]
+        if not dict_:
+            return
+        build_tags= filter_buildtags(dict_.keys(), builddb, all_builds)
+        if sort_order=="rank":
+            # first sort alphabetically:
+            build_tags.sort()
+            # now sort by match rank
+            build_tags.sort(key= keyfunc, reverse= True)
+        else:
+            build_tags= sort_buildtags(build_tags, builddb, sort_order)
+        if detail<=1:
+            # remove builds with missing matches
+            build_tags= [b for b in build_tags if dict_[b]["missing"]==0]
+        if detail<=0:
+            # remove builds with wrong versions
+            build_tags= [b for b in build_tags if dict_[b]["wrongversion"]==0]
+        if brief:
+            print("\n".join(build_tags))
+        else:
+            for buildtag in build_tags:
+                print(buildtag)
+                module_dict= dict_[buildtag]["modules"]
+                for modulename in sorted(module_dict.keys()):
+                    print("    %-2s %s" % module_dict[modulename])
+
     sumolib.cli.assert_options(catch_exceptions,  options, "dbdir")
 
     argspec= sumolib.cli.CmdSpecs()
@@ -3412,16 +3468,28 @@ def subcmd_build_find(arguments, options):
     if options.dump_modules:
         dump_modules(modulespecs_obj)
         sys.exit(0)
-    new_builddb= builddb.filter_by_modulespecs(modulespecs_obj)
-    if new_builddb.is_empty():
+
+    detail= 0
+    if options.detail:
+        _errmsg= "error, value for '--detail' must be 0, 1 or 2"
+        try:
+            detail= int(options.detail)
+        except ValueError as e:
+            raise ValueError(_errmsg) from e
+        if detail not in (0,1,2):
+            raise ValueError(_errmsg)
+
+    match_results= builddb.check_by_modulespecs(modulespecs_obj)
+
+    if not match_results:
         print("no matching builds found")
-    else:
-        if options.brief:
-            for buildtag in sort_buildtags(list(new_builddb.iter_builds()),
-                                           builddb, options):
-                print(buildtag)
-        else:
-            new_builddb.json_print()
+        return
+    sort_order= sort_buildtag_order(options)
+    if sort_order=="alphabetically":
+        sort_order= "rank"
+    print_match_results(match_results,
+                        builddb, sort_order, detail, options.brief,
+                        options.all_builds)
 
 def subcmd_build_use(arguments, options):
     """implement "subcmd_build_use".

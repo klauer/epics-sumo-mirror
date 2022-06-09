@@ -1303,11 +1303,64 @@ build find MODULES
 This command is used to find matching :term:`builds` for a given list of
 :term:`modulespecs`. Each module in MODULES here is a :term:`modulespec` of the
 form MODULE or MODULE:{+-}VERSION that specifies just a module name, a module
-and some versions or a single version. The command prints a list of
-:term:`buildtags` of matching :term:`builds` on the console. If option ``--brief``
-is given, the program just shows the buildtags. In this case, options 
-``--sort-build-dependencies-first`` and ``--sort-build-dependencies-last``
-can be used to change the order of the builds shown.
+and some versions or a single version. For details on :term:`modulespecs` see
+:doc:`Module Specifications <modulespecs>`.
+
+With option ``--brief`` the command just prints :term:`buildtags` of matching
+:term:`builds`. 
+
+Otherwise each :term:`buildtag` is followed by a list of flags and
+:term:`module` names. Each flag indicates whether the :term:`module` was found
+with a matching :term:`version`, if it was found with a wrong :term:`version`
+or if it is missing in the :term:`build`. 
+
+If option ``--all-builds`` is given, builds whose :term:`state` is not 'stable'
+or 'testing' are also shown.
+
+Options ``--sort-build-dependencies-first`` and
+``--sort-build-dependencies-last`` can be used to change the order reported
+builds. Without these options, :term:`builds` are sorted by *match rank*.
+Builds that have more :term:`modules` with matching :term:`versions` are placed
+first, followed by the ones with more wrong :term:`versions` followed by the
+ones with more missing :term:`versions`.
+
+Option ``--detail`` determines, what is shown. This must be an integer between
+0 and 2. With ``0``, the default, only :term:`builds` with matching
+:term:`module` :term:`versions` are shown. With ``1``, also :term:`builds` with
+wrong :term:`versions` are shown and with ``2`` even :term:`builds` with
+missing :term:`modules` are shown.
+
+This is the meaning of the *flags* in the output of this command:
+
+- ``==``: The :term:`module` :term:`version` matches exactly.
+- ``=~``: The :term:`module` :term:`version` matches the module specification.
+- ``!=``: The :term:`module` has the wrong :term:`version`.
+- ``-``: The :term:`module` is missing in the :term:`build`.
+
+Here is an example::
+
+  $ sumo build find MCAN ALARM:R3-7 --detail 1:
+  MYAPP-002
+      == ALARM:R3-7
+      =~ MCAN:R2-6-3-gp
+  MYAPP-001
+      != ALARM:R3-8-modified
+      =~ MCAN:R2-6-3-gp
+
+We wanted *any* version of `MCAN` and version `R3-7` of `ALARM`. The command
+found two builds, `MYAPP-002` and `MYAPP-001`.
+
+In `MYAPP-002`, `ALARM` matches exactly the version we wanted, `MCAN` matches
+our specification since we didn't define a version.
+
+In `MYAPP-001`, `ALARM` has not the :term:`version` we specified, but this
+:term:`build` is reported anyway since we used ``--detail 1``. `MCAN` matches
+our specification since we didn't define a version.
+
+Finally, if the command ``sumo build use`` doesn't find a build for your module
+specifications, you may want to run ``sumo build find --detail 1`` or ``sumo
+build find --detail 2``. This may help you finding errors in your module
+specification in file `configure/MODULES`.
 
 build list
 ::::::::::
@@ -1456,6 +1509,18 @@ looks for all :term:`builds` that have the :term:`modules` in the required
 one with the alphabetically first buildtag. The RELEASE file created includes
 only the :term:`modules` that are specified. Output to another file or the
 console can be specified with option '-o'.
+
+If no :term:`build` is found you may:
+
+- Look if you module specification has an error by looking for *almost*
+  matching :term:`builds` with:
+
+  - ``sumo build find --detail 1``
+  - ``sumo build find --detail 2``
+
+- Create a :term:`build` matching your :term:`module` specification with:
+
+  - ``sumo build new``
 
 Command completion
 ------------------
