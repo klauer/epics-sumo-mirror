@@ -881,6 +881,10 @@ delete
 find
   look for builds that match a module specification
 
+getmodules
+  From a missing or incomplete module specification create a valid module
+  specification from an existing build.
+
 list
   list names of all builds
 
@@ -938,6 +942,8 @@ database in DIRECTORY/database. If there is a file "sumo.config" in the current
 working directory it is copied to "sumo.config.bak". A new file "sumo.config"
 is then created in the current working directory.
 
+.. _reference-config-make:
+
 config make FILENAME [OPTIONNAMES]
 ::::::::::::::::::::::::::::::::::
 
@@ -945,6 +951,22 @@ Create a new configuration file from the options read from configuration files
 and options from the command line. If FILENAME is '-' dump to the console.
 OPTIONNAMES is an optional list of long option names. If OPTIONNAMES are
 specified, only options from this list are saved in the configuration file.
+
+If this command is provided with option ``--getmodules BUILDTAG``, module specifications are updated from the specified build. This works like the command
+:ref:`"build getmodules <reference-sumo-build-getmodules>`.
+
+Here are two examples how to use this option:
+
+If configure/MODULES does not yet exist, create a matching MODULES file for
+build 'AUTO-004' for an application::
+
+  sumo config make configure/MODULES alias module --getmodules AUTO-004
+
+If configure/MODULES already exists (and is automatically loaded, see also
+:ref:`sumo.config examples <configuration-files-config-examples>`), update
+versions in MODULES file from the versions used in build 'AUTO-004'::
+
+  sumo config make configure/MODULES alias module --getmodules AUTO-004
 
 .. _reference-sumo-config-new:
 
@@ -1362,6 +1384,43 @@ specifications, you may want to run ``sumo build find --detail 1`` or ``sumo
 build find --detail 2``. This may help you finding errors in your module
 specification in file `configure/MODULES`.
 
+.. _reference-sumo-build-getmodules:
+
+build getmodules BUILDTAG [MODULES]
+:::::::::::::::::::::::::::::::::::
+
+This command shows the modules in the form MODULE:VERSION of a :term:`build`.
+
+The :term:`buildtag` is mandatory.
+
+.. note::
+   Sumo doesn't distinguish between modules defined on the command line or in
+   configuration files like `configure/MODULES`. If modules *are somewhere*
+   defined, they will be used by this command.
+
+If :term:`modules` are specified, only these modules and
+their dependent modules with the versions from the specified build are shown.
+If the build doesn't contain all the requested modules, sumo stops with an
+error message.
+
+With option ``--lines`` for each build the output is a single line instead of a
+number of indented lines. In this case, the output is compatible with the
+``-m`` option of sumo. 
+
+Here are some applications for this, please look also at :ref:`"config make
+<reference-config-make>` with option ``--getmodules`` which doesn the same:
+
+If configure/MODULES does not yet exist, create a matching MODULES file for
+build 'AUTO-004' for an application::
+
+  sumo config make configure/MODULES alias module -m "$(sumo build getmodules AUTO-004 --lines)"
+
+If configure/MODULES already exists (and is automatically loaded, see also
+:ref:`sumo.config examples <configuration-files-config-examples>`), update
+versions in MODULES file from the versions used in build 'AUTO-004'::
+
+  sumo config make configure/MODULES alias module -m "$(sumo build getmodules AUTO-004 --lines)"
+
 build list
 ::::::::::
 
@@ -1410,9 +1469,12 @@ build showmodules [BUILDTAG]
 ::::::::::::::::::::::::::::
 
 This command shows the modules in the form MODULE:VERSION of a :term:`build`.
-The :term:`buildtag` is optional, if omitted the command shows the modules for
-all builds with state 'stable' or 'testing'. To see all builds regardless of
-their state use option ``--all-builds``.
+
+The :term:`buildtag` is optional if :term:`modules` are also not specified.
+
+Without a :term:`buildtag`, the command shows the modules for all builds with
+state 'stable' or 'testing'. To see all builds regardless of their state use
+option ``--all-builds``.
 
 Options ``--sort-build-dependencies-first`` and
 ``--sort-build-dependencies-last`` can be used to change the order reported
@@ -1421,11 +1483,12 @@ builds.
 With option ``--lines`` for each build the output is a single line instead of a
 number of indented lines. With ``-b``, the build name is not printed. If you
 use ``--lines`` and ``-b``, the output is compatible with the ``-m`` option of
-sumo. Here are examples for this:
+sumo. Here are some applications for this:
 
-Create a matching MODULES file for build 'AUTO-004' for an application::
+If configure/MODULES does not yet exist, create a matching MODULES file for
+build 'AUTO-004' for an application::
 
-  sumo config make MODULES module -m "$(sumo build showmodules AUTO-004 --lines -b)"
+  sumo config make configure/MODULES alias module -m "$(sumo build showmodules AUTO-004 --lines -b)"
 
 Re-create a complete set of builds from an existing BUILDS.DB on a different
 machine::
@@ -1834,6 +1897,13 @@ Here is a short overview on command line options:
     option can be given more than once to specify more than one line. A default
     for this option can be put in a configuration file, there the value must be
     a list of strings, one for each line.
+
+``--getmodules BUILDTAG``
++++++++++++++++++++++++++
+
+    If this option is used with command `config make` it updates your module
+    specifications like the command "build getmodules BUILDTAG`. See also 
+    description of :ref:`config make <reference-config-make>`.
 
 ``-h [OPTIONS], --help [OPTIONS]``
 ++++++++++++++++++++++++++++++++++

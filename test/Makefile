@@ -187,6 +187,7 @@ sumo-db-dbrepo-pull-nowrite.out: sumo-db-cloneversion-dbrepo.tst sumo-db-dbrepo-
 sumo-db-dbrepo-conflict.out: sumo-db-cloneversion-dbrepo.tst sumo-db-dbrepo-create.tst
 sumo-config-make.out: sumo-db-convert.tst
 sumo-config-make-2.out: sumo-db-convert.tst
+sumo-config-make-3.out: sumo-build-new-2.tst
 sumo-config-errorchecks.out: sumo-config-make.tst
 sumo-build-new-0.out: sumo-db-convert.tst
 sumo-build-new-4.out: sumo-build-new.tst
@@ -211,6 +212,7 @@ sumo-scan-all-2.out: sumo-build-new-2.tst
 sumo-build-new-3.out: sumo-build-new.tst sumo-db-convert.tst
 sumo-build-remake.out: sumo-db-convert.tst
 sumo-build-find.out: sumo-build-new-2.tst
+sumo-build-getmodules.out: sumo-build-new-2.tst
 sumo-build-list.out: sumo-build-new-2.tst
 sumo-build-show.out: sumo-build-new-2.tst
 sumo-build-showmodules.out: sumo-build-new-2.tst

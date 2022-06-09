@@ -29,6 +29,7 @@ sumo-db-dbrepo-pull-nowrite
 sumo-db-dbrepo-conflict
 sumo-config-make
 sumo-config-make-2
+sumo-config-make-3
 sumo-config-errorchecks
 sumo-config-env
 sumo-config-new
@@ -60,6 +61,7 @@ sumo-build-show
 sumo-build-showmodules
 sumo-build-showdependencies
 sumo-build-showdependents
+sumo-build-getmodules
 sumo-build-use
 sumo-build-use-2
 sumo-build-use-3

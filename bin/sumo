@@ -93,6 +93,7 @@ KNOWN_DB_COMMANDS=set(("alias-add",
 
 KNOWN_BUILD_COMMANDS=set(("delete",
                           "find",
+                          "getmodules",
                           "list",
                           "new",
                           "remake",
@@ -1740,6 +1741,15 @@ def subcmd_config_make_show(cmd, arguments, options):
     (options, config)= load_config_files(options, disable_loading= None)
     # ^^ disable_loading==None means: use options.disable_loading
 
+    # now that the existing configuration is loaded, we can check for builddir
+    # and dbdir:
+    if options.getmodules:
+        # in this case, the build and dependency database must be loaded. Check
+        # that this is specified:
+        sumolib.cli.assert_options(catch_exceptions,  options, "builddir")
+        sumolib.cli.assert_options(catch_exceptions,  options, "dbdir")
+
+    modulespecs_obj= None
     if options.module:
         # may raise ValueError:
         # mspecs_from_build may raise AssertionError, ValueError:
@@ -1747,6 +1757,26 @@ def subcmd_config_make_show(cmd, arguments, options):
                              options.module,
                              mspecs_from_build(options))
         config.set("module", modulespecs_obj.to_stringlist())
+
+    db= None
+    builddb= None
+    if options.getmodules:
+        if modulespecs_obj:
+            # Must read dependency database:
+            # May raise EOFError, IOError, ValueError, sumolib.JSON.ParseError:
+            (_, db)= db_from_repo(options)
+
+        # Must read build database:
+        # may raise IOError, ValueError:
+        builddb= builddb_from_json_file(options.builddir,
+                                        options.localbuilddir,
+                                        keep_locked= False)
+        new_modulespecs_obj= build_getmodules(db, builddb,
+                                              modulespecs_obj,
+                                              options.getmodules)
+        config.set("module", new_modulespecs_obj.to_stringlist())
+
+
     if filename!="-" and os.path.exists(filename):
         # may raise EOFError:
         try:
@@ -2766,13 +2796,115 @@ def subcmd_build_show(arguments, options):
     new_builddb.add_build(builddb, args.BUILDTAG) # pylint: disable=no-member
     new_builddb.json_print()
 
+def build_getmodules(db, builddb, modulespecs_obj, buildtag):
+    """implement "build_getmodules without option processing.
+    """
+    modulenames_set= None
+    if modulespecs_obj:
+        # a set of all wanted module names:
+        modulenames_set= modulespecs_obj.module_set()
+
+    modulenames_found= set()
+    build_module_specs= sumolib.ModuleSpec.Specs()
+    modules= builddb.modules(buildtag)
+    for module in sorted(modules.keys()):
+        if modulenames_set:
+            if module not in modulenames_set:
+                continue
+            modulenames_found.add(module)
+        build_module_specs.add(sumolib.ModuleSpec.Spec(module,
+                                                       modules[module],
+                                                       'eq'))
+
+    # Possibly complete the module list. This may be needed when some
+    # modules were filtered out when modulenames_set is not None.
+    if modulespecs_obj:
+        # First test if all required modules were found:
+        if modulenames_set != modulenames_found:
+            missing= sorted(modulenames_set.difference(modulenames_found))
+            raise ValueError(("Error, module(s) %s were not found "
+                              "in build %s.") % \
+                             (", ".join(missing), buildtag))
+
+        # Use functions of the Dependencies.DB class to complete the module
+        # list.
+        # may raise KeyError, ValueError:
+        sets_dict= db.sets_dict(build_module_specs)
+
+        # add all missing dependencies:
+        for added_module in db.complete_sets_dict(sets_dict):
+            build_module_specs.add(\
+                    sumolib.ModuleSpec.Spec(added_module,
+                                            modules[added_module], 'eq'))
+
+    return build_module_specs
+
+
+def subcmd_build_getmodules(arguments, options):
+    """implement "subcmd_build_getmodules".
+
+    May raise:
+        IOError, ValueError from builddb_from_json_file
+    """
+    # pylint: disable=too-many-branches, too-many-locals, too-many-statements
+    sumolib.cli.assert_options(catch_exceptions,  options, "builddir")
+    sumolib.cli.assert_options(catch_exceptions,  options, "dbdir")
+    argspec= sumolib.cli.CmdSpecs()
+    argspec.add("BUILDTAG", optional= False,
+                completion= sumolib.complete.builds)
+    argspec.add("MODULES", array= True, optional= True,
+                completion= sumolib.complete.moduleversion)
+    args= sumolib.cli.process_args(arguments, argspec, options.list,
+                                   catch_exceptions)
+
+    if options.buildtag:
+        sys.exit("error: you cannot use --buildtag here")
+
+    modulespecs= []
+    if options.module:
+        modulespecs.extend(options.module)
+    if args.defined("MODULES"):
+        if "module" in options.append:
+            modulespecs.extend(args.MODULES) # pylint: disable=no-member
+        else:
+            modulespecs= args.MODULES # pylint: disable=no-member
+
+    modulespecs_obj= None
+    db= None
+    if modulespecs:
+        # Must read dependency database.
+        # May raise EOFError, IOError, ValueError, sumolib.JSON.ParseError:
+        (_, db)= db_from_repo(options)
+
+        # mspecs_from_build may raise AssertionError, ValueError:
+        # may raise ValueError:
+        modulespecs_obj= sumolib.ModuleSpec.Specs.from_strings(\
+                             modulespecs,
+                             None)
+
+    # may raise IOError, ValueError:
+    builddb= builddb_from_json_file(options.builddir,
+                                    options.localbuilddir,
+                                    keep_locked= False)
+    # dict with modules of all considered builds:
+    buildtag= args.BUILDTAG # pylint: disable=no-member
+
+    new_modulespecs_obj= build_getmodules(db, builddb,
+                                          modulespecs_obj, buildtag)
+    module_strings= new_modulespecs_obj.sorted().to_stringlist()
+
+    if options.lines:
+        print(" ".join(module_strings))
+    else:
+        print("\n".join(module_strings))
+
 def subcmd_build_showmodules(arguments, options):
     """implement "subcmd_build_showmodules".
 
     May raise:
         IOError, ValueError from builddb_from_json_file
     """
-    # pylint: disable=too-many-branches
+    # pylint: disable=too-many-branches, too-many-locals, too-many-statements
     sumolib.cli.assert_options(catch_exceptions,  options, "builddir")
     argspec= sumolib.cli.CmdSpecs()
     argspec.add("BUILDTAG", optional= True,
@@ -2797,12 +2929,13 @@ def subcmd_build_showmodules(arguments, options):
     # pylint: enable= no-member
     module_strings= {}
     for tag in tags:
-        module_string_list= []
+        build_module_specs= sumolib.ModuleSpec.Specs()
         modules= builddb.modules(tag)
         for module in sorted(modules.keys()):
-            m_spec= sumolib.ModuleSpec.Spec(module, modules[module], 'eq')
-            module_string_list.append(m_spec.to_string())
-        module_strings[tag]= module_string_list
+            build_module_specs.add(sumolib.ModuleSpec.Spec(module,
+                                                           modules[module],
+                                                           'eq'))
+        module_strings[tag]= build_module_specs.sorted().to_stringlist()
 
     if options.lines:
         if options.brief:
@@ -3828,6 +3961,10 @@ def maincmd_build(commands, options):
         subcmd_build_showmodules(c_args, options)
         return
 
+    if cmd=="getmodules":
+        # may raise IOError, ValueError:
+        subcmd_build_getmodules(c_args, options)
+
     if cmd=="showdependencies":
         # may raise IOError, ValueError:
         subcmd_build_showdeps(c_args, options, cmd)
@@ -4129,6 +4266,9 @@ sumo -h
         "build find":
             doc_commands['subcommands for maincommand "build"']\
                              ['build find MODULES'],
+        "build getmodules":
+            doc_commands['subcommands for maincommand "build"']\
+                             ['build getmodules BUILDTAG [MODULES]'],
         "build use":
             doc_commands['subcommands for maincommand "build"']\
                              ['build use MODULES'],
@@ -4207,6 +4347,9 @@ option_help_topics= {
         "logmsg":
             doc_options['Options']\
                        ['``--logmsg LOGMESSAGE``'],
+        "getmodules":
+                doc_options['Options']\
+                           ['``--getmodules BUILDTAG``'],
         "buildtag":
                 doc_options['Options']\
                            ['``-t BUILDTAG, --buildtag BUILDTAG``'],
@@ -4551,6 +4694,7 @@ def main():
     specs.add("--extra -x", arg_name= "EXTRALINE", array= True)
     specs.add("--alias -a", arg_name= "ALIAS", array= True)
     specs.add("--module -m", arg_name= "MODULESPEC", array= True)
+    specs.add("--getmodules", arg_name= "BUILDTAG")
     specs.add("--exclude-states -X", arg_name= "REGEXP", array= True)
     specs.add("--all-builds")
     specs.add("--brief -b")

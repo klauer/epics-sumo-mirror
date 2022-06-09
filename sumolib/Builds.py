@@ -504,6 +504,8 @@ class BuildCache(sumolib.JSON.Container):
                       }
       }
 
+    Note: "depvers" is the version of "depmodule", "state" is the state of the
+    build that depmodule:depvers is part of.
     """
     def __init__(self, dict_= None, use_lock= True, lock_timeout= None):
         """create the object."""

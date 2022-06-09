@@ -941,6 +941,7 @@ def process_cmd(cli_args, cmd_list, completion_mode,
             complete("", cmd_list)
             my_exit()
             return ("",[])
+        # may produce "command missing" message:
         my_exit("%s missing" % item_name)
     if completion_mode:
         if len(cli_args)<=1:
@@ -968,6 +969,7 @@ def process_cmd(cli_args, cmd_list, completion_mode,
             return(cli_args[0], cli_args[1:])
     # not completion_mode from here:
     if cli_args[0] not in cmd_list:
+        # may produce "unknown command" message:
         my_exit("unknown %s: %s" % (item_name, cli_args[0]))
         return ("",[])
     return(cli_args[0], cli_args[1:])

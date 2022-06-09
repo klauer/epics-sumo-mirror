@@ -1,0 +1,72 @@
+sumo -y -m MCAN:R2-6-3 -m BASE:R3-14-12-2-1 config make CONFIG-MAKE-3-MODULES module --exceptions:
+Contents of MODULES file before changes:
+{
+    "module": [
+        "BASE:R3-14-12-2-1",
+        "MCAN:R2-6-3"
+    ]
+}
+sumo -y -c CONFIG-MAKE-3-MODULES config make CONFIG-MAKE-3-MODULES module --getmodules MYAPP-002:
+Contents of MODULES after changes:
+{
+    "module": [
+        "ALARM:R3-7",
+        "BASE:R3-14-12-2-1",
+        "BSPDEP_TIMER:R6-2",
+        "BSPDEP_VMETAS:TAGLESS-2-1-modified",
+        "MCAN:R2-6-3-gp",
+        "MISC_DBC:PATH-3-0",
+        "MISC_DEBUGMSG:R3-0",
+        "SOFT_DEVHWCLIENT:TAR-3-0"
+    ]
+}
+sumo -y -m MCAN:R2-6-3 -m BASE:R3-14-12-2-1 -m BSPDEP_TIMER:1 -m CSM:2 config make CONFIG-MAKE-3-MODULES module:
+Contents of MODULES file before changes:
+{
+    "module": [
+        "BASE:R3-14-12-2-1",
+        "BSPDEP_TIMER:1",
+        "CSM:2",
+        "MCAN:R2-6-3"
+    ]
+}
+sumo -y -c CONFIG-MAKE-3-MODULES config make CONFIG-MAKE-3-MODULES module --getmodules MYAPP-002:
+Contents of MODULES after changes:
+{
+    "module": [
+        "ALARM:R3-7",
+        "BASE:R3-14-12-2-1",
+        "BSPDEP_TIMER:R6-2",
+        "BSPDEP_VMETAS:TAGLESS-2-1-modified",
+        "CSM:TAR-4-1",
+        "MCAN:R2-6-3-gp",
+        "MISC_DBC:PATH-3-0",
+        "MISC_DEBUGMSG:R3-0",
+        "SOFT_DEVHWCLIENT:TAR-3-0"
+    ]
+}
+sumo -y -m MCAN:R2-6-3 -m BASE:R3-14-12-2-1 -m BSPDEP_TIMER:1 -m CSM:2 -m AB:1 -m XY:2 config make CONFIG-MAKE-3-MODULES module:
+Contents of MODULES file before changes:
+{
+    "module": [
+        "AB:1",
+        "BASE:R3-14-12-2-1",
+        "BSPDEP_TIMER:1",
+        "CSM:2",
+        "MCAN:R2-6-3",
+        "XY:2"
+    ]
+}
+sumo -y -c CONFIG-MAKE-3-MODULES config make CONFIG-MAKE-3-MODULES module --getmodules MYAPP-002:
+Error, module(s) AB, XY were not found in build MYAPP-002.
+Contents of MODULES after changes:
+{
+    "module": [
+        "AB:1",
+        "BASE:R3-14-12-2-1",
+        "BSPDEP_TIMER:1",
+        "CSM:2",
+        "MCAN:R2-6-3",
+        "XY:2"
+    ]
+}

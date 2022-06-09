@@ -203,7 +203,7 @@ class Specs():
     """A class representing a list of Spec objects."""
     # pylint: disable=R0903
     #         Too few public methods
-    def __init__(self, speclist):
+    def __init__(self, speclist= None):
         """note: this DOES NOT a deep copy of the list.
 
         Here is an example:
@@ -218,7 +218,10 @@ class Specs():
         Spec('A','R2','eq')
         Spec('B','R2','eq')
         """
-        self.specs= speclist
+        if speclist is None:
+            self.specs= []
+        else:
+            self.specs= speclist
     def __repr__(self):
         """return repr string."""
         return "%s(%s)" % (self.__class__.__name__,
@@ -231,6 +234,9 @@ class Specs():
         """the default iterator."""
         for m in self.specs:
             yield m
+    def add(self, spec):
+        """add a new module spec."""
+        self.specs.append(spec)
     @staticmethod
     def scan_special(st):
         """scan special in-line commands."""
@@ -387,6 +393,12 @@ class Specs():
         for spec in self:
             d[spec.modulename]= spec.versionname
         return d
+    def module_set(self):
+        """return a set containing all module names."""
+        s= set()
+        for spec in self:
+            s.add(spec.modulename)
+        return s
 
 def _test():
     """perform internal tests."""
