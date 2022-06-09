@@ -71,6 +71,9 @@ Change directory do docker::
 
   cd docker
 
+Configure in file "docker.config" variable "DOCKER". Set it to "docker" when
+you use docker as container builder or to "podman" when you use podman.
+
 Create docker images, if they do not already exist::
 
   ./docker-build-all.sh
@@ -151,6 +154,7 @@ Now test with these commands::
   pip install EPICS-sumo -i https://testpypi.python.org/pypi
   sumo -h
   <ctrl-d>
+  cd ..
 
 If everything worked, remove the test directory with::
 
@@ -200,12 +204,6 @@ sourceforge-upload-distfiles.sh
 
 sourceforge-upload-html.sh
   Upload html documentation to sourceforge.
-
-Bitbucket administration
-++++++++++++++++++++++++
-
-bitbucket-push.sh
-  Push patches to mercurial repository at Bitbucket.
 
 Version handling
 ++++++++++++++++
@@ -268,7 +266,7 @@ docker/dockerfiles
   The directory with the docker files
 
 docker/docker-build.sh
-  Build docker debian containers needed for mk-xxx.sh scripts run this as
+  Build docker debian containers needed for mk-xxx.sh scripts, run this as
   docker-build.sh DOCKERFILE. All possible DOCKERFILE names are shown with
   option "-h".
 
@@ -288,4 +286,32 @@ docker/mk-deb.sh
 
 docker/mk-rpm.sh
   Create rpm packages, called from within the fedora docker container.
+
+Dependencies
+------------
+
+How to find packages in Fedora
+++++++++++++++++++++++++++++++
+
+When you know a filename, enter::
+
+  dnf provides FILENAME
+
+How to find packages in debian
+++++++++++++++++++++++++++++++
+
+Enter::
+
+  apt-get install apt-file
+  apt-file update 
+  apt-file search FILENAME
+
+How to find packages in Pypi
+++++++++++++++++++++++++++++
+
+Look for the package name from the fedora package with::
+
+  dnf inst FEDORAPACKAGE
+
+There under "Name" is the official name.
 
