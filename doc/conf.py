@@ -44,7 +44,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'EPICS-sumo'
-copyright = u'2020, Helmholtz-Zentrum Berlin GmbH'
+copyright = u'2022, Helmholtz-Zentrum Berlin GmbH'
 show_authors= True
 
 # The version info for the project you're documenting, acts as replacement for
