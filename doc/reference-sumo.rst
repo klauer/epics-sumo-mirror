@@ -979,7 +979,7 @@ and a new dependency database.
 It creates a new configuration for sumo. DIRECTORY must not yet exist and is
 created by this command. This command takes all settings and command line
 options but sets dbdir to DIRECTORY/database. It also sets builddir to
-DIRECTORY/build. TEMPLATE determines how the dependency databasse file is
+DIRECTORY/build. TEMPLATE determines how the dependency database file is
 created. Currently 2 values are known:
 
 empty
@@ -1039,7 +1039,7 @@ db check
 ::::::::
 
 Do some consistency checks on the :term:`dependency database` file in the
-directory specifed by ``--dbdir``.
+directory specified by ``--dbdir``.
 
 db clonemodule OLD-MODULE NEW-MODULE [VERSIONS]
 :::::::::::::::::::::::::::::::::::::::::::::::
@@ -1069,7 +1069,7 @@ A sourcespec has the form::
   NAME=VALUE[,VALUE...] [NAME=VALUE[,VALUE..] ...]
 
 In general, NAME must start with a letter or underscore character and must be
-following by a sequence of letters, underscrores or digits.
+following by a sequence of letters, underscores or digits.
 
 A VALUE must be a JSON simple value (no map or list). If VALUE is a string, it
 must be enclosed in double quotes '"' if it contains any of the characters '"',
@@ -1134,7 +1134,7 @@ Convert a :term:`scanfile` that was created by by
 :doc:`"sumo-scan all"<reference-sumo-scan>` to a new dependency database.  If
 SCANFILE is a dash "-", the program expects the scanfile on stdin.  Note that
 options ``--dbdir`` and ``--scandb`` are mandatory here. With ``--dbdir`` you
-specify the drectory where the new created 
+specify the directory where the new created 
 :ref:`dependency database <reference-sumo-db-The-dependency-database>` file is
 stored, with ``--scandb`` you specify the name of the scan database file. The
 scan database file contains information on what moduleversion can be used with
@@ -1161,7 +1161,7 @@ db edit
 
 Start the editor specified by option ``--editor`` or the environment variables
 "VISUAL" or "EDITOR" to edit the dependency database file. This command first
-aquires a file-lock on the file, that prevents other users from acessing the
+acquires a file-lock on the file, that prevents other users from accessing the
 file at the same time.  When the editor program is terminated, sumo checks if
 the file is still a valid `JSON <http://www.json.org>`_ file. If not, you can
 start the editor again or abort the program. If the file is valid 
@@ -1245,7 +1245,7 @@ db merge DB
 :::::::::::
 
 Merge the given :term:`dependency database` file with the 
-:term:`dependency database` in the directory specifed by ``--dbdir``. Sections
+:term:`dependency database` in the directory specified by ``--dbdir``. Sections
 that do not exist in the original :term:`dependency database` are added.
 Contradicting sections are treated as an error and abort the program. If a
 module has an :ref:`"extra" <reference-sumo-extra>` section, only *new* lines
@@ -1408,7 +1408,7 @@ number of indented lines. In this case, the output is compatible with the
 ``-m`` option of sumo. 
 
 Here are some applications for this, please look also at :ref:`"config make
-<reference-config-make>` with option ``--getmodules`` which doesn the same:
+<reference-config-make>` with option ``--getmodules`` which does the same:
 
 If configure/MODULES does not yet exist, create a matching MODULES file for
 build 'AUTO-004' for an application::
@@ -1441,7 +1441,7 @@ command aborts with an error message, or terminates with a warning if option
 ``--no-err-build-exists`` is given.  If the :term:`buildtag` is not given as an
 option, the program generates a :term:`buildtag` in the form "AUTO-nnn". A new
 :term:`build` is created according to the :term:`modulespecs`. Your
-modulespecifications must be *complete* and *exact* meaning that all
+module specifications must be *complete* and *exact* meaning that all
 :term:`dependencies` are included and all :term:`modules` are specified with
 exactly a single :term:`version`. Use command "build try" in order to create
 :term:`module` specifications that can be used with command "build new".  This
@@ -1531,7 +1531,7 @@ The :term:`buildtag` must be given as an argument. If there is no new
 :term:`state` given, it just shows the current :term:`state` of the
 :term:`build`. Otherwise the :term:`state` of the :term:`build` is changed to
 the given value. If a :term:`build` is set to :term:`state` 'disabled', all
-dependend builds are also set to this :term:`state`. In this case, unless
+dependent builds are also set to this :term:`state`. In this case, unless
 option '-y' or '--recursive' are given, sumo asks for your confirmation.
 
 build try MODULES
@@ -1640,7 +1640,7 @@ contains the string "nocache" like in::
 
   export SUMOHELP="nocache"
 
-If there are other help options defined in SUMOHELP, you should seperate them
+If there are other help options defined in SUMOHELP, you should separate them
 with commas ",".
 
 The help pager
@@ -1665,7 +1665,7 @@ variable "SUMOHELP" like in::
 
     export SUMOHELP="pager:off"
 
-If there are other help options defined in SUMOHELP, you should seperate them
+If there are other help options defined in SUMOHELP, you should separate them
 with commas ",".
 
 Options

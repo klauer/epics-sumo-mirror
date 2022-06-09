@@ -1,0 +1,5 @@
+In vim:
+
+:mkspell en.utf-8.add
+:set spellfile=en.utf-8.add
+:set spell spelllang=en
