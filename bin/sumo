@@ -1721,6 +1721,7 @@ def subcmd_config_make_show(cmd, arguments, options):
         IOError, TypeError, ValueError from load_config_files
         ValueError from ModuleSpec.Specs.from_strings
     """
+    # pylint: disable= too-many-branches
     argspec= sumolib.cli.CmdSpecs()
     if cmd=="make":
         argspec.add("CONFIGFILE", completion= sumolib.cli.complete_file)
@@ -1731,6 +1732,15 @@ def subcmd_config_make_show(cmd, arguments, options):
 
     args= sumolib.cli.process_args(arguments, argspec, options.list,
                                    catch_exceptions)
+
+    if args.OPTIONNAMES: # pylint: disable=no-member
+        for n in args.OPTIONNAMES: # pylint: disable=no-member
+            invalid= set()
+            if n not in KNOWN_CONFIG_OPTIONS:
+                invalid.add(n)
+            if invalid:
+                raise ValueError("Error, invalid OPTIONNAMES: %s" % \
+                                 (" ".join(invalid)))
 
     if cmd=="make":
         filename= args.CONFIGFILE # pylint: disable=no-member
