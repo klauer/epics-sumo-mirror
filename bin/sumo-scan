@@ -599,10 +599,6 @@ def process(options, commands):
 
 # pylint: enable=R0912
 
-def print_doc():
-    """print a short summary of the scripts function."""
-    print(__doc__)
-
 def print_summary():
     """print a short summary of the scripts function."""
     print("%-20s: a tool for scanning EPICS support trees \n" % \
@@ -661,10 +657,6 @@ def main():
     parser.add_option("--summary",
                       action="store_true",
                       help="Print a summary of the function of the program.",
-                     )
-    parser.add_option("--doc",
-                      action="store_true",
-                      help="Print a longer description of the program.",
                      )
     parser.add_option("--test",
                       action="store_true",
@@ -923,10 +915,6 @@ def main():
 
     if options.summary:
         print_summary()
-        sys.exit(0)
-
-    if options.doc:
-        print_doc()
         sys.exit(0)
 
     if options.test:
