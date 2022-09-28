@@ -15,7 +15,7 @@ if __name__ == "__main__":
     # "sumolib.[module]".
     sys.path.append("..")
 
-__version__="4.3" #VERSION#
+__version__="4.3.1" #VERSION#
 
 assert __version__==sumolib.system.__version__
 assert __version__==sumolib.ModuleSpec.__version__

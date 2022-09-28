@@ -7,7 +7,7 @@ import os
 import shutil
 import subprocess
 
-__version__="4.3" #VERSION#
+__version__="4.3.1" #VERSION#
 
 # -----------------------------------------------
 # basic system utilities

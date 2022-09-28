@@ -259,3 +259,23 @@ New/Changed functions
 - "sumo build find" now shows matching/non-matching/missing modules.
 - "sumo build getmodules" and the "sumo config make --getmodules" were added.
 
+Release 4.3.1
+-------------
+
+Date: 2022-09-28
+
+Improvements
+++++++++++++
+
+- sumo-scan: Option "--doc" doesn't do anything and was removed.
+
+Distribution
+------------
+
+- Create rpm packages for Fedora 35 and Fedora 36.
+
+Documentation
++++++++++++++
+
+- Small changes and fixes in the documentation and sumo-scan online-help.
+

@@ -23,7 +23,7 @@ import tempfile
 import sumolib.lock
 import sumolib.utils
 
-__version__="4.3" #VERSION#
+__version__="4.3.1" #VERSION#
 
 assert __version__==sumolib.lock.__version__
 #assert __version__==sumolib.utils.__version__
