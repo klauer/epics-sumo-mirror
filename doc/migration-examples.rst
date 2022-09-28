@@ -10,6 +10,13 @@ could be applied at other sites with some changes.
 Migrating the support directory
 -------------------------------
 
+.. note::
+   It is assumed that the supports in your support directory are located at
+   paths with the schema "[BASEDIR]/[MODULEPATH]/[VERSION]". If you
+   don't have this schema, the output ouf sumo-scan will require to be edited
+   manually. See also 
+   :ref:`sumo-scan Phase II, Grouping <reference-sumo-scan-Phase-II-Grouping>`.
+
 This chapter shows how to *migrate* your existing installation of support
 modules to sumo. sumo-scan can help you to create a first version of the
 :ref:`dependency database <reference-sumo-db-The-dependency-database>`.
@@ -88,7 +95,7 @@ We assume that ``$SUMODIR`` is defined and that the subdirectory ``database``
 exists as described further above.  You convert the scan file to a dependency
 database with this command::
 
-  sumo db --dbdir $SUMODIR/database --scandb $SUMODIR/database/SCAN.DB db convert $SUMODIR/scan/SCAN
+  sumo --dbdir $SUMODIR/database --scandb $SUMODIR/database/SCAN.DB db convert $SUMODIR/scan/SCAN
 
 Create the sumo configuration file
 ++++++++++++++++++++++++++++++++++
@@ -103,7 +110,7 @@ We create the file with this command::
 For a system-wide configuration you may want to place this file in sumo's
 library path. You get the name of this directory with this command::
 
-  python -c 'import sumolib;from os.path import *; print dirname(sumolib.__file__)'
+  python -c 'import sumolib;from os.path import *; print(dirname(sumolib.__file__))'
 
 You find more information on configuration files at 
 :doc:`configuration-files`.
