@@ -2,6 +2,7 @@
 # -*- coding: UTF-8 -*-
 
 # pylint: disable=too-many-lines, missing-docstring, invalid-name
+# pylint: disable=consider-using-f-string
 
 import sys
 import os.path
@@ -2003,11 +2004,11 @@ def subcmd_db_edit(arguments, options):
                 try:
                     reply= sumolib.utils.ask_yes_no("Re-edit the file (y) or "
                                                     "abort (n) ? ")
-                except EOFError as e:
+                except EOFError as e2:
                     # pylint: disable=raising-format-tuple
                     raise annotate("%s. "
                                    "You may want to use option '--yes' "
-                                   "to prevent this error.", e) from e
+                                   "to prevent this error.", e2) from e2
                 if not reply:
                     # "finally" will take care of the lock
                     sys.exit("aborting, your changes are in file %s" % db_tmp)
