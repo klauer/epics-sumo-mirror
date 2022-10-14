@@ -33,7 +33,7 @@ import re
 import sumolib.system
 import sumolib.utils
 
-__version__="4.3.1" #VERSION#
+__version__="4.3.2" #VERSION#
 
 assert __version__==sumolib.system.__version__
 

@@ -270,7 +270,7 @@ Improvements
 - sumo-scan: Option "--doc" doesn't do anything and was removed.
 
 Distribution
-------------
+++++++++++++
 
 - Create rpm packages for Fedora 35 and Fedora 36.
 
@@ -278,4 +278,20 @@ Documentation
 +++++++++++++
 
 - Small changes and fixes in the documentation and sumo-scan online-help.
+
+Release 4.3.2
+-------------
+
+Date: 2022-10-14
+
+Internal changes
+++++++++++++++++
+
+- Some pylint warnings in sumo were removed.
+
+Documentation
++++++++++++++
+
+- The online help for main-commands in sumo was fixed.
+- A recipe for a complete demo for sumo was added to the documentation.
 
