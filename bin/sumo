@@ -4062,12 +4062,12 @@ A maincommand provides a grouping for the various commands of sumo.
 While some maincommands can be used without a subcommand, others must be
 followed by a subcommand. These are the known maincommands:
 
-  config [subcommand] - operations on configuration files
-  edit FILE           - lock, then edit a file
-  lock FILE           - just lock a file
-  unlock FILE         - unlock a file
-  db [subcommand]     - operation on the dependency database
-  build [subcommand]  - manage the build database and builds
+  help [maintopic] [subtopic] - show help for a topic
+  config [subcommand]         - operations on configuration files
+  lock FILE                   - just lock a file
+  unlock FILE                 - unlock a file
+  db [subcommand]             - operation on the dependency database
+  build [subcommand]          - manage the build database and builds
 
 For all of the db subcommands you have to specify the dependency database
 directory with option --dbdir or a configuration file.
