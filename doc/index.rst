@@ -24,6 +24,7 @@ Welcome to EPICS-sumo documentation!
    app-usage
    dev-usage
    example-sumo-build-try
+   demo
    migration-examples
    contribute
    glossary
@@ -59,6 +60,9 @@ Some of the features are:
 
 See :doc:`introduction` for more information.
 
+See :doc:`demo` for a quickstart demo on your host (only for Linux/Unix
+Systems).
+
 :Author: Goetz Pfeiffer <Goetz.Pfeiffer@helmholtz-berlin.de>
 
 Documentation
@@ -79,6 +83,7 @@ Use cases
 - :doc:`example-sumo-build-try`
 - :doc:`dev-usage`
 - :doc:`migration-examples`
+- :doc:`demo`
 
 License and copyright
 ---------------------

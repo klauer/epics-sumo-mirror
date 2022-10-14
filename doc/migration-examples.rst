@@ -7,6 +7,8 @@ installation of support modules and applications.
 The examples here are shown for our development environment here at the HZB but
 could be applied at other sites with some changes.
 
+.. _migration-examples-supports:
+
 Migrating the support directory
 -------------------------------
 
@@ -140,6 +142,8 @@ dependent modules.
 You may direct the output to a file and use 
 :ref:`sumo edit <reference-sumo-db-edit>` to add this to the 
 :ref:`dependency database <reference-sumo-db-The-dependency-database>`.
+
+.. _migration-examples-application:
 
 Migrating an application
 ------------------------

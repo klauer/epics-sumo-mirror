@@ -737,6 +737,8 @@ to be followed by a *subcommand*.
 maincommands
 ++++++++++++
 
+.. _reference-sumo-help:
+
 help COMMAND
 ::::::::::::
 
@@ -922,6 +924,8 @@ You get help on each subcommand with::
 subcommands for maincommand "config"
 ++++++++++++++++++++++++++++++++++++
 
+.. _reference-sumo-config-list:
+
 config list
 :::::::::::
 
@@ -993,6 +997,8 @@ github
 If there is a file "sumo.config" in the current working directory it is copied
 to "sumo.config.bak". A new file "sumo.config" is then created in the current
 working directory.
+
+.. _reference-sumo-config-show:
 
 config show [OPTIONNAMES]
 :::::::::::::::::::::::::
@@ -1200,6 +1206,8 @@ indentation are restored. If you specified a repository with ``--dbrepo,`` the
 command will commit the changes. If you want a log message different from "db
 format" use option ``--logmsg`` 
 
+.. _reference-sumo-db-list:
+
 db list MODULES
 :::::::::::::::
 
@@ -1285,6 +1293,8 @@ If sourcespec is given, the command changes the source part according to this
 parameter. A sourcespec has the form "path PATH", "tar TARFILE", "REPOTYPE URL"
 or "REPOTYPE URL TAG".  REPOTYPE may be "darcs", "hg" or "git". Both, URL or
 TAG may be ".", in this case the original URL or TAG remains unchanged.
+
+.. _reference-sumo-db-show:
 
 db show MODULES
 :::::::::::::::
@@ -1421,6 +1431,8 @@ versions in MODULES file from the versions used in build 'AUTO-004'::
 
   sumo config make configure/MODULES alias module -m "$(sumo build getmodules AUTO-004 --lines)"
 
+.. _reference-sumo-build-list:
+
 build list
 ::::::::::
 
@@ -1458,6 +1470,8 @@ then "make all" with the build's makefile. If you develop a support
 :term:`module` (see also "config standalone" and "config local") you want to
 recompile the :term:`build` after changes in the sources. In order to provide
 arbitrary options to make use option ``--makeflags``. 
+
+.. _reference-sumo-build-show:
 
 build show BUILDTAG
 :::::::::::::::::::
@@ -1584,6 +1598,8 @@ If no :term:`build` is found you may:
 - Create a :term:`build` matching your :term:`module` specification with:
 
   - ``sumo build new``
+
+.. _reference-sumo-command-completion:
 
 Command completion
 ------------------
@@ -1847,6 +1863,8 @@ Here is a short overview on command line options:
     one is the replacement string. The regular expression is applied to every
     source path generated. You can specify more than one patchexpression. A
     default for this option can be put in a configuration file.
+
+.. _reference-sumo-disable-loading:
 
 ``--disable-loading``
 +++++++++++++++++++++
