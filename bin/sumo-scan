@@ -84,23 +84,6 @@ catch_exceptions= True
 # RELEASE file scanning
 # -----------------------------------------------
 
-def scan_config_file(filename, external_definitions= None,
-                     verbose= False, dry_run= False):
-    """scan CONFIG file.
-
-    return CROSS_COMPILER_TARGET_ARCHS.
-    """
-    wanted= { 'CROSS_COMPILER_TARGET_ARCHS': None
-            }
-    data= sumolib.makefile_scan.scan(filename,
-                                     external_definitions,
-                                     makefile_scan_pre,
-                                     False,
-                                     verbose, dry_run)
-    for k in wanted:
-        wanted[k]= data[k]
-    return wanted
-
 def scan_release_file(filename,
                       ignore_names,
                       external_definitions= None,
