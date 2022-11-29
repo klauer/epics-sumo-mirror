@@ -295,3 +295,23 @@ Documentation
 - The online help for main-commands in sumo was fixed.
 - A recipe for a complete demo for sumo was added to the documentation.
 
+Release 4.4
+-------------
+
+Date: 2022-11-29
+
+Documentation
++++++++++++++
+
+- Document "make distclean" for the test directory in test/README.rst.
+
+Internal changes
+++++++++++++++++
+
+- sumo-scan: Obsolete function "scan_config_file" was removed.
+
+Improvements
+++++++++++++
+
+- sumo-scan: Do not abort on errors caused by faulty RELEASE files.
+

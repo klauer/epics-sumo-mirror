@@ -33,7 +33,7 @@ from sumolib.sumo_doc import commands as doc_commands, \
 from sumolib.configuration_doc import text as doc_configuration
 
 # version of the program:
-__version__= "4.3.2" #VERSION#
+__version__= "4.4" #VERSION#
 
 _pyver= sys.version_info[0:2]
 if _pyver < (3,2):

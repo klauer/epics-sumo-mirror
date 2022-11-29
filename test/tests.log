@@ -469,3 +469,64 @@ darcs 2.16.3 (release)
 mercurial: 6.0.3
 git: 2.9.4
 =================================================
+
+=================================================
+2022-11-29T23:23:01+01:00
+Tests ran successfully on this environment:
+-------------------------------------------------
+host: orange
+LSB Version:	:core-4.1-amd64:core-4.1-noarch:cxx-4.1-amd64:cxx-4.1-noarch:desktop-4.1-amd64:desktop-4.1-noarch:languages-4.1-amd64:languages-4.1-noarch:printing-4.1-amd64:printing-4.1-noarch
+Distributor ID:	Fedora
+Description:	Fedora release 36 (Thirty Six)
+Release:	36
+Codename:	ThirtySix
+-------------------------------------------------
+sumo: 4.4
+bash: 5.2.9(1)-release (x86_64-redhat-linux-gnu)
+python: 3.10.8
+cvs: 1.11.23 (client/server)
+subversion: 1.14.2 (r1899510)
+darcs 2.16.4 (release)
+mercurial: 6.1.4
+git: 2.38.1
+=================================================
+
+=================================================
+2022-11-29T23:38:53+01:00
+Tests ran successfully on this environment:
+-------------------------------------------------
+host: stretch.acc.bessy.de
+Distributor ID:	Debian
+Description:	Debian GNU/Linux 9.13 (stretch)
+Release:	9.13
+Codename:	stretch
+-------------------------------------------------
+sumo: 4.4
+bash: 4.4.12(1)-release (x86_64-pc-linux-gnu)
+python: 3.5.3
+cvs: 1.12.13-MirDebian-22 (client/server)
+subversion: 1.9.5 (r1770682)
+darcs 2.16.3 (release)
+mercurial: 6.0.3
+git: 2.9.4
+=================================================
+
+=================================================
+2022-11-29T23:56:21+0100
+Tests ran successfully on this environment:
+-------------------------------------------------
+host: elbe.acc.bessy.de
+Distributor ID:	Debian
+Description:	Debian GNU/Linux 7.11 (wheezy)
+Release:	7.11
+Codename:	wheezy
+-------------------------------------------------
+sumo: 4.4
+bash: 4.2.37(1)-release (x86_64-pc-linux-gnu)
+python: 3.2.3
+cvs: 1.12.13-MirDebian-9 (client/server)
+subversion: 1.8.10 (r1615264)
+darcs 2.16.4 (release)
+mercurial: 4.4
+git: 2.9.4
+=================================================
