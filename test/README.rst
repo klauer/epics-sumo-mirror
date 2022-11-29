@@ -42,6 +42,17 @@ After you ran a test successful on a system you may run::
 This appends some data on your computing environment to file "tests.log". You
 may add this to the sumo repository or mail this file to the sumo developers.
 
+Distclean
+---------
+
+Note that you usually don't need to do this.
+
+"make clean" only removes the files that were generated as results of the
+tests. In order to remove *all* generated files, especially various generated
+repositories, enter this::
+
+  make distclean
+
 Types of tests
 --------------
 
