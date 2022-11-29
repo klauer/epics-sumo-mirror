@@ -89,7 +89,11 @@ def scan_release_file(filename,
                       external_definitions= None,
                       verbose= False, dry_run= False):
     """scan a release file.
+
+    may raise:
+    IOError
     """
+    # may raise IOError:
     data= sumolib.makefile_scan.scan(filename,
                                      external_definitions,
                                      makefile_scan_pre,
@@ -114,8 +118,13 @@ def scan_support_deps(support_path,
                       ignore_names,
                       verbose= False, dry_run= False):
     """scan the RELEASE file of a support.
+
+    may raise:
+    IOError - In case "make" fails, for example when file RELEASE contains
+              errors
     """
     external_definitions= { "TOP": support_path }
+    # may raise IOError:
     return scan_release_file(os.path.join(support_path,"configure","RELEASE"),
                              ignore_names,
                              external_definitions,
@@ -187,10 +196,12 @@ def support_configure_data(support_trees,
     # progress indicatiors would interfere with trace messages:
     if trace:
         progress= False
+    # pylint: disable= too-many-nested-blocks
     for support_tree in support_trees:
         for (dirpath, dirnames, filenames) in \
                                  sumolib.utils.dirwalk(support_tree):
             if trace:
+                # pylint: disable= consider-using-f-string
                 sys.stderr.write("%s\n" % dirpath)
             if progress:
                 cnt= sumolib.utils.show_progress(cnt, cnt_max)
@@ -218,11 +229,23 @@ def support_configure_data(support_trees,
                 last= os.path.basename(dirpath)
                 if last=="configure":
                     if "RELEASE" in filenames:
-                        data= scan_support_deps(versioned_path,
-                                                ignore_names,
-                                                verbose= verbose,
-                                                dry_run= dry_run)
-                        release_dict[versioned_path]= data
+                        # pylint: disable= consider-using-f-string
+                        try:
+                            # scan_support_deps may fail when the RELEASE
+                            # file is faulty. In such a case we do not want
+                            # to stop sumo-scan but continue with a warning.
+                            data= scan_support_deps(versioned_path,
+                                                    ignore_names,
+                                                    verbose= verbose,
+                                                    dry_run= dry_run)
+                            release_dict[versioned_path]= data
+                        except IOError:
+                            # since the make command in scan_support_deps()
+                            # already printed the error message to stderr
+                            # we do not have to print the exception text
+                            # here:
+                            sys.stderr.write("Warning: scanning of file '%s' "
+                                             "failed\n" % dirpath)
                     purge(dirnames)
                     continue
     if progress:
@@ -308,6 +331,7 @@ def filter_exclude_deps(deps, regexp, trace):
             new[path]= dependency_dict
         else:
             if trace:
+                # pylint: disable= consider-using-f-string
                 sys.stderr.write("filter_exclude_deps removes: %s\n" % path)
     return new
 
@@ -411,6 +435,7 @@ def get_configuration(options):
         sys.exit("--dir is mandatory")
     for d in options.dir:
         if not os.path.exists(d):
+            # pylint: disable= consider-using-f-string
             sys.exit("error, directory \"%s\" doesn't exist" % d)
     exclude_matcher= sumolib.utils.RegexpMatcher(options.exclude_path)
     if options.ignore_name:
@@ -433,6 +458,7 @@ def process_config(config, commands, options):
     if not commands:
         sys.exit("command missing")
     if commands[0] not in KNOWN_CONFIG_COMMANDS:
+        # pylint: disable= consider-using-f-string
         sys.exit("unknown command: %s" % commands[0])
 
     if commands[0]=="list":
@@ -485,6 +511,7 @@ def process(options, commands):
     except (TypeError, KeyError, IOError) as e:
         if not catch_exceptions:
             raise
+        # pylint: disable= consider-using-f-string
         sys.exit("Error while loading config file(s): %s" % str(e))
     try:
         # may raise KeyError, TypeError:
@@ -506,6 +533,7 @@ def process(options, commands):
 
     for c in commands:
         if not c in KNOWN_COMMANDS:
+            # pylint: disable= consider-using-f-string
             sys.exit("unknown command: %s" % c)
 
     # evaluate the --hint command line option:
@@ -585,6 +613,7 @@ def process(options, commands):
 
 def print_summary():
     """print a short summary of the scripts function."""
+    # pylint: disable= consider-using-f-string
     print("%-20s: a tool for scanning EPICS support trees \n" % \
           script_shortname())
 
@@ -631,6 +660,7 @@ def main():
     parse the command-line options and perform the command
     """
     # command-line options and command-line help:
+    # pylint: disable= consider-using-f-string
     parser = OptionParser(usage=usage,
                           version="%%prog %s" % __version__,
                           description="This program scans EPICS support "+\

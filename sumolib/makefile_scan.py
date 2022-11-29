@@ -48,10 +48,14 @@ def _scan(filenames, external_definitions= None,
           warnings= True,
           verbose= False, dry_run= False):
     """scan makefile-like definitions.
+
+    may raise:
+    IOError
     """
     # pylint: disable=too-many-locals, too-many-branches
     for f in filenames:
         if not os.path.exists(f):
+            # pylint: disable= consider-using-f-string
             raise IOError("file \"%s\" does not exist" % f)
     if filenames:
         include_cmd= "include " + (" ".join(filenames))
@@ -61,6 +65,7 @@ def _scan(filenames, external_definitions= None,
     if external_definitions:
         l= []
         for (k,v) in external_definitions.items():
+            # pylint: disable= consider-using-f-string
             l.append("%s=\"%s\"" % (k,v))
         l.append("")
         extra= " ".join(l)
@@ -70,6 +75,7 @@ def _scan(filenames, external_definitions= None,
 	 "\\t@printenv\\n\" | %s " +\
 	 "make -s -f - scan_makefile_pe") % (include_cmd,extra)
     data= {}
+    # may raise IOError:
     (reply,_)= sumolib.system.system(cmd, True, False, None, verbose, dry_run)
     if dry_run:
         return data
@@ -82,6 +88,7 @@ def _scan(filenames, external_definitions= None,
             if name is None:
                 # shouldn't happen
                 if warnings:
+                    # pylint: disable= consider-using-f-string
                     sumolib.utils.errmessage(\
                         ("\nmakefile_scan.py: warning:\n"
                          "\tline not parsable in %s\n"
@@ -112,6 +119,9 @@ def scan(filenames, external_definitions= None, pre= None,
     dictionary with all definitions made in these files. All definitions
     are resolved meaning that all variables that are used in the values
     of definitions are replaces with their values.
+
+    may raise:
+    IOError
 
     filenames
         a single filename (string) or a list of filenames (list of strings)
@@ -144,6 +154,8 @@ def scan(filenames, external_definitions= None, pre= None,
         if not pre: # empty dict
             pre.update(_scan([], external_definitions, warnings,
                              verbose, dry_run))
+
+    # _scan may raise IOError here:
     post= _scan(filenames, external_definitions, warnings, verbose, dry_run)
     new= {}
     for (k,v) in post.items():

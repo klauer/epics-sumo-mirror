@@ -1,0 +1,154 @@
+/tmp-sumo-scan-all-err/ALARM/R3-8-modified+MYAPP-001/configure/RELEASE:6: xyz: No such file or directory
+make[1]: *** No rule to make target 'xyz'.  Stop.
+Warning: scanning of file 'tmp-sumo-scan-all-err/ALARM/R3-8-modified+MYAPP-001/configure' failed
+{
+    "dependencies": {
+        "/tmp-sumo-scan-all-err/ALARM/R3-8-modified+MYAPP-001": {},
+        "/tmp-sumo-scan-all-err/BASE/R3-14-12-2-1+BASE-001": {},
+        "/tmp-sumo-scan-all-err/BSPDEP_CPUBOARDINIT/R4-1+MYAPP-001": {
+            "EPICS_BASE": "/tmp-sumo-scan-all-err/BASE/R3-14-12-2-1+BASE-001"
+        },
+        "/tmp-sumo-scan-all-err/BSPDEP_TIMER/R6-2+MYAPP-001": {
+            "EPICS_BASE": "/tmp-sumo-scan-all-err/BASE/R3-14-12-2-1+BASE-001"
+        },
+        "/tmp-sumo-scan-all-err/BSPDEP_VMETAS/TAGLESS-2-1-modified+MYAPP-001": {
+            "EPICS_BASE": "/tmp-sumo-scan-all-err/BASE/R3-14-12-2-1+BASE-001"
+        },
+        "/tmp-sumo-scan-all-err/CSM/TAR-4-1+MYAPP-001": {
+            "EPICS_BASE": "/tmp-sumo-scan-all-err/BASE/R3-14-12-2-1+BASE-001"
+        },
+        "/tmp-sumo-scan-all-err/EK/R2-2+MYAPP-001": {
+            "EPICS_BASE": "/tmp-sumo-scan-all-err/BASE/R3-14-12-2-1+BASE-001",
+            "MISC": "/tmp-sumo-scan-all-err/MISC_DEBUGMSG/R3-0+MYAPP-001"
+        },
+        "/tmp-sumo-scan-all-err/MCAN/R2-6-3-gp+MYAPP-001": {
+            "ALARM": "/tmp-sumo-scan-all-err/ALARM/R3-8-modified+MYAPP-001",
+            "DBC": "/tmp-sumo-scan-all-err/MISC_DBC/PATH-3-0+MYAPP-001",
+            "DEBUGMSG": "/tmp-sumo-scan-all-err/MISC_DEBUGMSG/R3-0+MYAPP-001",
+            "DEVHWCLIENT": "/tmp-sumo-scan-all-err/SOFT_DEVHWCLIENT/TAR-3-0+MYAPP-001",
+            "EPICS_BASE": "/tmp-sumo-scan-all-err/BASE/R3-14-12-2-1+BASE-001",
+            "VMETAS": "/tmp-sumo-scan-all-err/BSPDEP_VMETAS/TAGLESS-2-1-modified+MYAPP-001"
+        },
+        "/tmp-sumo-scan-all-err/MISC_DBC/PATH-3-0+MYAPP-001": {
+            "EPICS_BASE": "/tmp-sumo-scan-all-err/BASE/R3-14-12-2-1+BASE-001"
+        },
+        "/tmp-sumo-scan-all-err/MISC_DEBUGMSG/R3-0+MYAPP-001": {
+            "EPICS_BASE": "/tmp-sumo-scan-all-err/BASE/R3-14-12-2-1+BASE-001"
+        },
+        "/tmp-sumo-scan-all-err/SOFT_DEVHWCLIENT/TAR-3-0+MYAPP-001": {
+            "EPICS_BASE": "/tmp-sumo-scan-all-err/BASE/R3-14-12-2-1+BASE-001"
+        }
+    },
+    "groups": {
+        "ALARM": {
+            "/tmp-sumo-scan-all-err/ALARM": [
+                "R3-8-modified+MYAPP-001"
+            ]
+        },
+        "BASE": {
+            "/tmp-sumo-scan-all-err/BASE": [
+                "R3-14-12-2-1+BASE-001"
+            ]
+        },
+        "BSPDEP_CPUBOARDINIT": {
+            "/tmp-sumo-scan-all-err/BSPDEP_CPUBOARDINIT": [
+                "R4-1+MYAPP-001"
+            ]
+        },
+        "BSPDEP_TIMER": {
+            "/tmp-sumo-scan-all-err/BSPDEP_TIMER": [
+                "R6-2+MYAPP-001"
+            ]
+        },
+        "BSPDEP_VMETAS": {
+            "/tmp-sumo-scan-all-err/BSPDEP_VMETAS": [
+                "TAGLESS-2-1-modified+MYAPP-001"
+            ]
+        },
+        "CSM": {
+            "/tmp-sumo-scan-all-err/CSM": [
+                "TAR-4-1+MYAPP-001"
+            ]
+        },
+        "EK": {
+            "/tmp-sumo-scan-all-err/EK": [
+                "R2-2+MYAPP-001"
+            ]
+        },
+        "MCAN": {
+            "/tmp-sumo-scan-all-err/MCAN": [
+                "R2-6-3-gp+MYAPP-001"
+            ]
+        },
+        "MISC_DBC": {
+            "/tmp-sumo-scan-all-err/MISC_DBC": [
+                "PATH-3-0+MYAPP-001"
+            ]
+        },
+        "MISC_DEBUGMSG": {
+            "/tmp-sumo-scan-all-err/MISC_DEBUGMSG": [
+                "R3-0+MYAPP-001"
+            ]
+        },
+        "SOFT_DEVHWCLIENT": {
+            "/tmp-sumo-scan-all-err/SOFT_DEVHWCLIENT": [
+                "TAR-3-0+MYAPP-001"
+            ]
+        }
+    },
+    "repos": {
+        "/tmp-sumo-scan-all-err/ALARM/R3-8-modified+MYAPP-001": {
+            "tag": "R3-8-modified",
+            "type": "darcs",
+            "url": "/data/epics/support/alarm/3-8"
+        },
+        "/tmp-sumo-scan-all-err/BASE/R3-14-12-2-1+BASE-001": {
+            "tag": "R3-14-12-2-1",
+            "type": "darcs",
+            "url": "/data/repos/base/3-14-12-2-1"
+        },
+        "/tmp-sumo-scan-all-err/BSPDEP_CPUBOARDINIT/R4-1+MYAPP-001": {
+            "tag": "R4-1",
+            "type": "cvs",
+            "url": "/data/repos/support/bspDep/cpuBoardInit/cpuBoardInit"
+        },
+        "/tmp-sumo-scan-all-err/BSPDEP_TIMER/R6-2+MYAPP-001": {
+            "tag": "R6-2",
+            "type": "darcs",
+            "url": "/data/epics/support/bspDep/timer/6-2"
+        },
+        "/tmp-sumo-scan-all-err/BSPDEP_VMETAS/TAGLESS-2-1-modified+MYAPP-001": {
+            "rev": "ABCDABCDABCD",
+            "type": "hg",
+            "url": "/data/epics/support/bspDep/VMEtas/2-1-modified"
+        },
+        "/tmp-sumo-scan-all-err/CSM/TAR-4-1+MYAPP-001": {
+            "type": "path",
+            "url": "/tmp-sumo-scan-all-err/CSM/TAR-4-1+MYAPP-001"
+        },
+        "/tmp-sumo-scan-all-err/EK/R2-2+MYAPP-001": {
+            "tag": "R2-2",
+            "type": "svn",
+            "url": "file:///data/repos/support/ek"
+        },
+        "/tmp-sumo-scan-all-err/MCAN/R2-6-3-gp+MYAPP-001": {
+            "tag": "R2-6-3-gp",
+            "type": "darcs",
+            "url": "/data/repos/support/mcan"
+        },
+        "/tmp-sumo-scan-all-err/MISC_DBC/PATH-3-0+MYAPP-001": {
+            "type": "path",
+            "url": "/tmp-sumo-scan-all-err/MISC_DBC/PATH-3-0+MYAPP-001"
+        },
+        "/tmp-sumo-scan-all-err/MISC_DEBUGMSG/R3-0+MYAPP-001": {
+            "tag": "R3-0",
+            "type": "git",
+            "url": "/data/repos/support/misc/debugmsg"
+        },
+        "/tmp-sumo-scan-all-err/SOFT_DEVHWCLIENT/TAR-3-0+MYAPP-001": {
+            "type": "path",
+            "url": "/tmp-sumo-scan-all-err/SOFT_DEVHWCLIENT/TAR-3-0+MYAPP-001"
+        }
+    }
+}
+
